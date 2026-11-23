@@ -62,12 +62,11 @@ export const leafDoc = { component: 'FloatButton', primaryApi: 'FloatButtonProps
 | --- | --- | --- | --- |
 | `tooltip` | `ReactNode` | — | 悬浮或聚焦时展示的提示内容。 |
 | `fixed` | `boolean` | `true` | 固定在视口角落；false 时参与页面布局。 |
-| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'solid'` | 按钮外观，默认使用实底。 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
-| `danger` | `boolean` | `false` | 使用危险语义颜色，不改变按钮行为。 |
+| `placement` | `'bottom-end' \| 'bottom-start' \| 'top-end' \| 'top-start' \| 'bottom-right' \| 'bottom-left' \| 'top-right' \| 'top-left'` | `'bottom-end'` | 固定定位时相对视口的角落位置。 |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link' \| 'danger'` | `'solid'` | 按钮外观，默认使用实底。 |
+| `size` | `'sm' \| 'md' \| 'lg' \| 'icon' \| 'icon-sm' \| 'icon-lg'` | `'md'` | 展示尺寸。 |
+| `danger` | `boolean` | `false` | 已废弃，改用 `variant="danger"`；传入时统一回退为危险按钮外观。 |
 | `loading` | `boolean` | `false` | 展示加载状态。 |
-| `startIcon` | `ReactNode` | — | 按钮文字前的图标；仅图标按钮还需 aria-label。 |
-| `endIcon` | `ReactNode` | — | 按钮文字后的图标。 |
 | `fullWidth` | `boolean` | `false` | 让按钮填满所在容器的宽度。 |
 
 ### FloatButtonGroup API
@@ -82,6 +81,7 @@ export const leafDoc = { component: 'FloatButton', primaryApi: 'FloatButtonProps
 | `onOpenChange` | `(open: boolean) => void` | — | 触发器、组外点击、Escape 或操作项请求改变展开状态时调用。 |
 | `expandable` | `boolean` | `true` | 提供展开操作组的按钮。 |
 | `fixed` | `boolean` | `true` | 固定在视口角落；false 时参与页面布局。 |
+| `placement` | `'bottom-end' \| 'bottom-start' \| 'top-end' \| 'top-start' \| 'bottom-right' \| 'bottom-left' \| 'top-right' \| 'top-left'` | `'bottom-end'` | 固定定位时相对视口的角落位置。 |
 | `icon` | `ReactNode` | — | 图标内容。 |
 | `className` | `string` | — | 添加到组件外层的 CSS 类名。 |
 

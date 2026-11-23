@@ -4,7 +4,6 @@ import { DrawerPlacement } from '../../src/examples/drawer/placement';
 import { DrawerSections } from '../../src/examples/drawer/sections';
 import { DrawerResize } from '../../src/examples/drawer/resize';
 import { DrawerNested } from '../../src/examples/drawer/nested';
-import { DrawerTabs } from '../../src/examples/drawer/tabs';
 
 export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 
@@ -16,11 +15,12 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 
 ## 基础用法
 
-通过 `onClose` 响应关闭请求并更新 `open`。没有 `title` 时，使用 `aria-label` 提供名称。
+通过 `title` 和 `description` 展示标题与下方说明，`onClose` 响应关闭请求并更新 `open`。没有 `title` 时，使用 `aria-label` 提供名称。
 
 <ComponentExample exampleId="basic" preview={<DrawerBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/drawer/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -29,24 +29,26 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 
 ## 示例
 
-### 展开方向
+### 展开方向与滑动手柄
 
-左右方向使用 `width`，上下方向使用 `height`。
+左右方向使用 `width`，上下方向使用 `height`。所有方向默认四周留白悬浮展示并使用圆角外观；`placement="bottom"` 时默认显示 `showSwipeHandle` 顶部拖拽条并支持向下滑动关闭，也可手动传入 `showSwipeHandle` 控制任意方向的显示。
 
 <ComponentExample exampleId="placement" preview={<DrawerPlacement />} fileName="placement.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/drawer/placement.tsx"
+
 ```
 
 </ComponentExample>
 
 ### 底部提交
 
-通过按钮的 `form` 属性关联抽屉内的表单，保留原生校验；提交与关闭都由应用处理。
+通过按钮的 `form` 属性关联抽屉内的表单，保留原生校验；提交与关闭都由应用处理。`footer` 区域已内置操作按钮间距，可直接放置多个按钮；可通过 `divided` 在操作栏顶部增加分隔线，并通过 `padding` 按整体或 `header` / `body` / `footer` 分区自定义内边距。
 
 <ComponentExample exampleId="sections" preview={<DrawerSections />} fileName="sections.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/drawer/sections.tsx"
+
 ```
 
 </ComponentExample>
@@ -60,6 +62,7 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 <ComponentExample exampleId="resize" preview={<DrawerResize />} fileName="resize.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/drawer/resize.tsx"
+
 ```
 
 </ComponentExample>
@@ -71,17 +74,7 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 <ComponentExample exampleId="nested" preview={<DrawerNested />} fileName="nested.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/drawer/nested.tsx"
-```
 
-</ComponentExample>
-
-### 标签页抽屉
-
-通过 `tabs` 在标题下方或顶部嵌入线形标签页。标签栏固定在正文滚动区上方，即使 `divided={false}`（默认值）也会保留标签栏底部分割线；若仅将标签栏用于切换状态并把内容写在 Drawer 的 `children` 中，可省略各项的 `children`。
-
-<ComponentExample exampleId="tabs" preview={<DrawerTabs />} fileName="tabs.tsx" width="fit-content">
-
-```tsx lineNumbers file="../../src/examples/drawer/tabs.tsx"
 ```
 
 </ComponentExample>
@@ -101,7 +94,6 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 | `open` | `boolean` | 必填 | 受控的打开状态，应用负责更新。 |
 | `title` | `ReactNode` | — | 抽屉标题。 |
 | `description` | `ReactNode` | — | 补充说明。 |
-| `tabs` | [`DrawerTabsProps`](#drawertabs-api) | — | 内嵌标签页；无标题时替代标题栏，有标题时位于其下方；底部分割线始终保留。 |
 | `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
 | `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | 展开方向 |
 | `width` | `number \| string` | `380` | 左右抽屉宽度 |
@@ -109,12 +101,14 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 | `footer` | `ReactNode` | — | 底部内容 |
 | `extra` | `ReactNode` | — | 标题旁的操作内容 |
 | `icon` | `ReactNode` | — | 标题左侧的装饰图标。 |
-| `divided` | `boolean` | `false` | 用浅分隔线划分标题、内容和底部操作区。 |
+| `divided` | `boolean` | `false` | 在底部操作栏顶部显示细分隔线。 |
+| `padding` | `number \| string \| 'none' \| { header?: number \| string \| 'none'; body?: number \| string \| 'none'; footer?: number \| string \| 'none' }` | — | 整体或按 header / body / footer 分区覆盖抽屉内边距；数字按 px，'none' 为 0。 |
 | `closable` | `boolean` | `true` | 显示关闭按钮。 |
 | `maskClosable` | `boolean` | `true` | 点击遮罩时请求关闭。 |
 | `keyboard` | `boolean` | `true` | 允许按 Escape 请求关闭。 |
 | `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 指定打开后的初始焦点。 |
 | `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | 关闭后返回原焦点；也可指定目标或设为 false。 |
+| `showSwipeHandle` | `boolean` | bottom 为 true，其余为 false | 在靠近展开边缘的一侧显示拖拽手柄条并支持滑动关闭；bottom 方向默认开启。 |
 | `resizable` | `boolean` | `false` | 允许拖动和使用方向键调整大小。 |
 | `minSize` | `number` | `240` | 最小尺寸，单位为像素。 |
 | `maxSize` | `number` | `900` | 最大尺寸，单位为像素。 |
@@ -125,11 +119,3 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 | `preserve` | `boolean` | — | 指定是否保留内容，优先于 destroyOnClose；不重置组件外的受控状态。 |
 | `forceRender` | `boolean` | `false` | 打开前也挂载内容，关闭时保持隐藏。 |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | 指定 Portal 挂载目标，也可返回 ShadowRoot。 |
-
-### DrawerTabs API
-
-内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Drawer 固定使用 `type="line"` 与 `placement="top"`，标签栏固定在正文滚动区上方，底部分割线不受 `divided={false}` 影响；`items` 为空时恢复普通抽屉。
-
-```ts
-type DrawerTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
-```

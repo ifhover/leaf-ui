@@ -20,6 +20,7 @@ export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 <ComponentExample exampleId="basic" preview={<AlertBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/alert/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -30,11 +31,12 @@ export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 
 ### 提示类型
 
-通过 `type` 区分信息、成功、警告和危险提示。新代码使用 `danger`；`error` 仅作为兼容别名保留。
+默认展示中性样式，也可通过 `type` 区分成功、警告和危险提示。新代码使用 `danger`；`error` 仅作为兼容别名保留。
 
 <ComponentExample exampleId="types" preview={<AlertTypes />} fileName="types.tsx">
 
 ```tsx lineNumbers file="../../src/examples/alert/types.tsx"
+
 ```
 
 </ComponentExample>
@@ -46,6 +48,7 @@ export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 <ComponentExample exampleId="extra" preview={<AlertExtra />} fileName="extra.tsx">
 
 ```tsx lineNumbers file="../../src/examples/alert/extra.tsx"
+
 ```
 
 </ComponentExample>
@@ -57,6 +60,7 @@ export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 <ComponentExample exampleId="closable" preview={<AlertClosable />} fileName="closable.tsx">
 
 ```tsx lineNumbers file="../../src/examples/alert/closable.tsx"
+
 ```
 
 </ComponentExample>
@@ -68,6 +72,7 @@ export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 <ComponentExample exampleId="icons" preview={<AlertIcons />} fileName="icons.tsx">
 
 ```tsx lineNumbers file="../../src/examples/alert/icons.tsx"
+
 ```
 
 </ComponentExample>
@@ -85,7 +90,7 @@ export const leafDoc = { component: 'Alert', primaryApi: 'AlertProps' };
 | `title` | `ReactNode` | 必填 | 提示内容 |
 | `description` | `ReactNode` | — | 补充说明 |
 | `extra` | `ReactNode` | — | 尾部的补充内容。 |
-| `type` | `FeedbackType \| 'error'` | `'info'` | 提示类型；`error` 为兼容别名 |
+| `type` | `'default' \| 'success' \| 'warning' \| 'danger' \| 'error'` | `'default'` | 提示类型；`error` 为兼容别名 |
 | `icon` | `ReactNode` | — | 图标内容。 |
 | `showIcon` | `boolean` | `true` | 展示语义图标 |
 | `closable` | `boolean` | `false` | 允许关闭当前提示 |

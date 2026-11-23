@@ -206,11 +206,14 @@ for (const [mode, p] of Object.entries(palettes)) {
   components += text(32, 450, 'Fields / default · focus · error', 20, p.text, 700);
   for (const [index, state] of ['Default', 'Focus', 'Error'].entries()) {
     const x = 32 + index * 264;
-    components += `<g id="input-${state.toLowerCase()}">${rect(x, 487, 240, controlHeight, p.surface, 8, state === 'Error' ? p.danger : state === 'Focus' ? p.primary : p.border)}${text(x + 10, 487 + controlHeight / 2 + 5, state, 14, p.text)}</g>`;
+    components += `<g id="input-${state.toLowerCase()}">${rect(x, 487, 240, controlHeight, p.surface, 8, state === 'Error' ? p.danger : state === 'Focus' ? p['text-muted'] : p.border)}${text(x + 10, 487 + controlHeight / 2 + 5, state, 14, p.text)}</g>`;
   }
   components += `<g id="alert-info">${rect(32, 557, 784, 72, p['surface-muted'], 12, p.border)}${text(59, 596, 'i', 18, p.info, 700)}${text(90, 584, 'Keep the team informed', 14, p.text, 500)}${text(90, 608, 'Readable spacing and a semantic status icon.', 14, p['text-muted'])}</g>`;
-  components += `<g id="result-success">${rect(32, 657, 784, 188, p.surface, 12, p.border)}${rect(392, 681, 64, 64, p['surface-muted'], 32)}<path d="M410 713 L420 723 L439 702" fill="none" stroke="${p.success}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${text(332, 778, 'Project saved', 24, p.text, 700)}${text(278, 812, 'Your changes are ready for the team.', 14, p['text-muted'])}</g>`;
-  components += `<g id="dialog-anatomy">${rect(32, 877, 784, 170, p.surface, 16, p.border)}${text(56, 910, 'Dialog heading', 16, p.text, 700)}${rect(56, 940, 736, controlHeight, p.surface, 8, p.border)}${text(66, 940 + controlHeight / 2 + 5, 'Form and footer share an inline edge', 14, p['text-muted'])}${rect(680, 997, 112, controlHeight, p.primary, 8)}${text(710, 997 + controlHeight / 2 + 5, 'Save', 14, p['on-primary'], 500)}</g>`;
+  components += `<g id="result-success">${rect(32, 657, 784, 188, p.surface, 12, p.border)}${rect(404, 689, 40, 40, p['success-soft'], 10)}<path d="M417 709 L422 714 L432 703" fill="none" stroke="${p['success-ink']}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>${text(372, 766, 'Project saved', 16, p.text, 500)}${text(306, 790, 'Your changes are ready for the team.', 13, p['text-muted'])}</g>`;
+  const dialogPad = densityTokens.comfortable['density-dialog-inline'];
+  const dialogInnerX = 32 + dialogPad;
+  const dialogInnerW = 784 - dialogPad * 2;
+  components += `<g id="dialog-anatomy">${rect(32, 877, 784, 170, p.surface, 16, p.border)}${text(dialogInnerX, 910, 'Dialog heading', 16, p.text, 700)}${rect(dialogInnerX, 940, dialogInnerW, controlHeight, p.surface, 8, p.border)}${text(dialogInnerX + 10, 940 + controlHeight / 2 + 5, 'Form and footer share an inline edge', 14, p['text-muted'])}${rect(32 + 784 - dialogPad - 112, 997, 112, controlHeight, p.primary, 8)}${text(32 + 784 - dialogPad - 82, 997 + controlHeight / 2 + 5, 'Save', 14, p['on-primary'], 500)}</g>`;
   const svg = (height, content) =>
     `<svg xmlns="http://www.w3.org/2000/svg" width="848" height="${height}" viewBox="0 0 848 ${height}" font-family="Inter, Arial, sans-serif"><title>Leaf UI ${mode} design resources</title>${rect(0, 0, 848, height, p.surface, 0)}${content}</svg>\n`;
   await fs.writeFile(

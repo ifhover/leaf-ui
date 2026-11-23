@@ -77,7 +77,7 @@ import type { VirtualListProps } from '@ifhover/leaf-ui';
 | `items` | `readonly T[]` | Required | Items; keep keys unique and stable |
 | `itemKey` | `(item: T, index: number) => Key` | Required | Return a stable identifier |
 | `renderItem` | `(item: T, index: number) => ReactNode` | Required | Custom item renderer |
-| `height` | `number` | `320` | Height, numbers are in pixels |
+| `height` | `number \| string` | `320` | Height; numbers are in pixels and CSS lengths are also supported. |
 | `estimateSize` | `number \| ((item: T, index: number) => number)` | `40` | Estimated item size; actual size is measured |
 | `overscan` | `number` | `5` | Items rendered outside the visible range |
 | `horizontal` | `boolean` | `false` | Horizontal virtual list |
@@ -94,5 +94,5 @@ import type { VirtualListHandle } from '@ifhover/leaf-ui';
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
 | `element` | `HTMLDivElement \| null` | Required | Scroll container element |
-| `scrollToIndex` | `(index: number, align?: 'auto' \| 'start' \| 'center' \| 'end') => void` | Required | Scroll to an item |
-| `scrollToOffset` | `(offset: number) => void` | Required | Scroll to an offset |
+| `scrollToIndex` | `( index: number, align?: 'auto' \| 'start' \| 'center' \| 'end', behavior?: 'auto' \| 'smooth', ) => void` | Required | Scroll to an item; optionally pass a scroll behavior. |
+| `scrollToOffset` | `(offset: number, behavior?: 'auto' \| 'smooth') => void` | Required | Scroll to an offset; optionally pass a scroll behavior. |

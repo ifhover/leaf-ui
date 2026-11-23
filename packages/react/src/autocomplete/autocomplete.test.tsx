@@ -70,7 +70,7 @@ describe('AutoComplete', () => {
       .getByRole('listbox')
       .closest<HTMLElement>('.leaf-autocomplete__panel');
     expect(compactPanel).not.toBeNull();
-    expect(compactPanel?.style.getPropertyValue('--leaf-autocomplete-option-height')).toBe('30px');
+    expect(compactPanel?.style.getPropertyValue('--leaf-autocomplete-option-height')).toBe('28px');
 
     unmount();
     render(<AutoComplete aria-label="自定义建议" options={options} optionHeight={28} />);

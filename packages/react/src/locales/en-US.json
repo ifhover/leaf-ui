@@ -82,15 +82,16 @@
   },
   "pagination": {
     "label": "Pagination",
-    "previousPage": "Previous page",
-    "nextPage": "Next page",
-    "page": "Page",
+    "previousPage": "Previous",
+    "nextPage": "Next",
+    "page": "page",
     "pageSize": "Page size",
+    "pageSizeOption": "{count} / page",
     "jumpTo": "Go to",
     "pageBack": "Jump back 5 pages",
     "pageForward": "Jump forward 5 pages",
     "pageLabel": "Page {page}",
-    "pageSizeOption": "{count} / page",
+    "rowsPerPage": "Rows per page",
     "total": "Total {total} items"
   },
   "input": {
@@ -251,7 +252,8 @@
   },
   "qrCode": {
     "qrCode": "QR code",
-    "refreshCode": "Refresh code"
+    "refreshCode": "Refresh code",
+    "expired": "QR code expired"
   },
   "scrollbar": {
     "verticalScrollbar": "Vertical scrollbar",
@@ -274,8 +276,6 @@
     "collapseRow": "Collapse row: {label}",
     "expandRow": "Expand row: {label}",
     "expandRows": "Expand rows",
-    "expandDetails": "Expand details",
-    "collapseDetails": "Collapse details",
     "sortAscending": "Sort ascending",
     "sortDescending": "Sort descending",
     "clearSorting": "Clear sorting"
@@ -334,5 +334,8 @@
     "dropped": "Dropped {label}",
     "cancelled": "Reordering cancelled",
     "outside": "No drop target"
+  },
+  "drawer": {
+    "resize": "Resize drawer"
   }
 }

@@ -1,5 +1,7 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { LoadingBasic } from '../../../src/examples/en/loading/basic';
+import { LoadingVariants } from '../../../src/examples/en/loading/variants';
+import { LoadingDefaultVariant } from '../../../src/examples/en/loading/default-variant';
 import { LoadingSizes } from '../../../src/examples/en/loading/sizes';
 import { LoadingOverlay } from '../../../src/examples/en/loading/overlay';
 import { LoadingDelay } from '../../../src/examples/en/loading/delay';
@@ -31,9 +33,31 @@ Display a loading indicator while waiting for content or an operation to complet
 
 Use `size` to choose the loading indicator size.
 
-<ComponentExample exampleId="sizes" preview={<LoadingSizes />} width="fit-content" fileName="sizes.tsx">
+<ComponentExample exampleId="sizes" preview={<LoadingSizes />} width={480} fileName="sizes.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/loading/sizes.tsx"
+```
+
+</ComponentExample>
+
+### Animation variants
+
+Use `variant` to choose a loading animation style (`spinner` by default), or configure a shared default through `ConfigProvider`'s `components.Loading`.
+
+<ComponentExample exampleId="variants" preview={<LoadingVariants />} width={600} fileName="variants.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/loading/variants.tsx"
+```
+
+</ComponentExample>
+
+### Global default variant
+
+Wrap your application or a subtree with [ConfigProvider](/en/components/config-provider) and pass `components.Loading` to set a shared default animation for `Loading` instances without an explicit `variant`; an instance prop still takes precedence over the global config.
+
+<ComponentExample exampleId="default-variant" preview={<LoadingDefaultVariant />} width={480} fileName="default-variant.tsx">
+
+```tsx lineNumbers file="../../../src/examples/en/loading/default-variant.tsx"
 ```
 
 </ComponentExample>
@@ -74,6 +98,7 @@ Props for loading state, status content and delayed display.
 | --- | --- | --- | --- |
 | `spinning` | `boolean` | `true` | Whether loading |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Indicator size |
+| `variant` | `'spinner' \| 'ring' \| 'dual' \| 'orbit' \| 'chase' \| 'dots' \| 'wave' \| 'bars' \| 'pulse' \| 'grid' \| 'blocks' \| 'flip'` | `'spinner'` | Animation style of the loading indicator. |
 | `tip` | `ReactNode` | — | Hint text |
 | `delay` | `number` | `0` | Display delay in milliseconds |
 | `children` | `ReactNode` | — | Content covered by the loading overlay. |

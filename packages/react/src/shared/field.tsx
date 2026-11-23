@@ -20,13 +20,16 @@ export function useMergedRef<T>(local: RefObject<T | null>, forwarded?: Ref<T>) 
 export function useFieldValue<T>(
   value: T | undefined,
   defaultValue: T,
-  ref: RefObject<HTMLButtonElement | HTMLInputElement | HTMLTextAreaElement | null>,
+  ref: RefObject<HTMLElement | null>,
   formId?: string,
 ) {
   const [internal, setInternal] = useState(defaultValue);
   useEffect(() => {
+    const element = ref.current;
     const form =
-      ref.current?.form ??
+      (element && 'form' in element
+        ? (element as HTMLButtonElement | HTMLInputElement | HTMLTextAreaElement).form
+        : element?.closest('form')) ??
       (formId ? (document.getElementById(formId) as HTMLFormElement | null) : null);
     if (!form) return;
     const reset = (event: Event) => {
@@ -49,7 +52,7 @@ interface FormValueProps {
   form?: string;
   disabled?: boolean;
   required?: boolean;
-  triggerRef: RefObject<HTMLButtonElement | HTMLInputElement | null>;
+  triggerRef: RefObject<HTMLElement | null>;
 }
 
 /** A non-interactive form proxy; custom overlays never use native picker controls. */

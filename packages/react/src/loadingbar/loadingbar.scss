@@ -1,12 +1,11 @@
 @layer leaf-ui {
   .leaf-loading-bar {
     position: fixed;
-    left: 0;
-    right: 0;
+    inset-inline: 0;
     z-index: calc(var(--leaf-z-index-message) + 1);
     pointer-events: none;
     opacity: 1;
-    transition: opacity var(--leaf-motion-fast) var(--leaf-motion-easing);
+    transition: var(--leaf-action-transition);
     &[data-complete] {
       opacity: 0;
       transition-delay: var(--leaf-motion-fast);
@@ -25,16 +24,16 @@
       height: 100%;
       background: var(--leaf-color-primary);
       box-shadow: none;
-      border-radius: 0 100px 100px 0;
+      border-start-end-radius: 100px;
+      border-end-end-radius: 100px;
       transition:
-        width var(--leaf-motion-slow) var(--leaf-motion-easing),
-        background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+        var(--leaf-action-transition),
+        width var(--leaf-motion-slow) var(--leaf-motion-easing);
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-loading-bar,
+  @media (forced-colors: active) {
     .leaf-loading-bar > span {
-      transition: none;
+      background: Highlight;
     }
   }
 }

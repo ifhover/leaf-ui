@@ -63,7 +63,6 @@ export function VersionSwitcher() {
         aria-label={english ? `Documentation version ${version}` : `文档版本 ${version}`}
         aria-haspopup="menu"
         aria-expanded={open}
-        endIcon={<ChevronDown size={12} />}
         onClick={() => {
           setLocation({ pathname: window.location.pathname, hash: window.location.hash });
           setOpen((value) => !value);
@@ -76,6 +75,7 @@ export function VersionSwitcher() {
         }}
       >
         v{version}
+        <ChevronDown aria-hidden="true" />
       </Button>
       {open && (
         <div

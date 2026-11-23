@@ -2,15 +2,45 @@
 
 @layer leaf-ui {
   .leaf-popover {
-    --leaf-popover-radius: var(--leaf-component-popover-radius, var(--leaf-radius-lg));
+    --leaf-popover-radius: var(--leaf-component-popover-radius, var(--leaf-radius-md));
+    --leaf-popover-padding-block: 14px;
+    --leaf-popover-padding-inline: 16px;
     --leaf-surface-radius: var(--leaf-popover-radius);
-    padding: var(--leaf-component-popover-padding, 14px 16px);
+    --leaf-surface-padding: var(--leaf-popover-padding-inline);
+    --leaf-surface-padding-top: var(
+      --leaf-component-popover-padding-top,
+      var(--leaf-popover-padding-block)
+    );
+    --leaf-surface-padding-right: var(
+      --leaf-component-popover-padding-right,
+      var(--leaf-popover-padding-inline)
+    );
+    --leaf-surface-padding-bottom: var(
+      --leaf-component-popover-padding-bottom,
+      var(--leaf-popover-padding-block)
+    );
+    --leaf-surface-padding-left: var(
+      --leaf-component-popover-padding-left,
+      var(--leaf-popover-padding-inline)
+    );
+    padding: var(
+      --leaf-component-popover-padding,
+      var(--leaf-surface-padding-top) var(--leaf-surface-padding-right)
+        var(--leaf-surface-padding-bottom) var(--leaf-surface-padding-left)
+    );
     border-radius: var(--leaf-popover-radius);
     outline: none;
     overflow-wrap: anywhere;
-    border-color: var(--leaf-color-divider);
+    @include mixins.floating-paint(popover, var(--leaf-color-border));
     @include mixins.floating-arrow;
     & > .leaf-floating__viewport {
+      // 从外层留白借出 4px 设为视口内边距，防止 Popconfirm 按钮按压下移（1px）及焦点环被视口边缘裁切。
+      box-sizing: border-box;
+      width: auto;
+      height: auto;
+      max-width: none;
+      margin: -4px;
+      padding: 4px;
       border-radius: var(--leaf-surface-inner-radius);
     }
     &__title {
@@ -18,6 +48,7 @@
       color: var(--leaf-color-text);
       font-weight: var(--leaf-font-weight);
       font-size: var(--leaf-font-size);
+      line-height: var(--leaf-line-height);
     }
     &__content {
       min-width: 0;
@@ -30,9 +61,5 @@
         margin-block-end: 0;
       }
     }
-  }
-
-  .leaf-popover {
-    @include mixins.floating-paint(popover, var(--leaf-color-divider));
   }
 }

@@ -1,6 +1,6 @@
 export const themeColorPresets = [
   { color: '#007aff', zh: '默认蓝', en: 'Default blue' },
-  { color: '#18181b', zh: '黑色', en: 'Black' },
+  { color: 'neutral', zh: '黑白单色', en: 'Monochrome' },
   { color: '#ff6900', zh: '活力橙', en: 'Orange' },
   { color: '#1e964f', zh: '森绿', en: 'Forest green' },
   { color: '#cf0b2d', zh: '红色', en: 'Red' },
@@ -8,7 +8,12 @@ export const themeColorPresets = [
 
 export const defaultThemeColor = themeColorPresets[0].color;
 
+export function isNeutralThemeColor(color: string) {
+  return color.trim().toLowerCase() === 'neutral';
+}
+
 export function normalizeThemeColor(color: string) {
+  if (isNeutralThemeColor(color)) return 'neutral';
   const values = color.match(/[\d.]+/g)?.map(Number);
   if (!values || values.length < 3) return color;
   let channels: number[];

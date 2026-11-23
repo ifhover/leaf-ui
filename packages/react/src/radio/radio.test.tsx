@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
-import { RadioGroup } from './radio';
+import { Radio, RadioGroup } from './radio';
 
 const options = [
   { label: '浅色', value: 'light' },
@@ -98,4 +98,33 @@ describe('RadioGroup', () => {
       expect(dark).toBeChecked();
     },
   );
+
+  it('supports description on standalone Radio and plain RadioGroup options', async () => {
+    render(
+      <>
+        <Radio name="single" value="email" description="Receive status digest">
+          Email alerts
+        </Radio>
+        <RadioGroup
+          label="Delivery"
+          defaultValue="fast"
+          options={[
+            { label: 'Instant', value: 'fast', description: 'Send immediately' },
+            { label: 'Digest', value: 'digest', description: 'Batch once per day' },
+          ]}
+        />
+      </>,
+    );
+    const single = screen.getByRole('radio', { name: 'Email alerts' });
+    expect(single).toHaveAccessibleDescription('Receive status digest');
+    expect(single.closest('label')).toHaveClass('leaf-radio--described');
+    await userEvent.click(screen.getByText('Receive status digest'));
+    expect(single).toBeChecked();
+
+    const digest = screen.getByRole('radio', { name: 'Digest' });
+    expect(digest).toHaveAccessibleDescription('Batch once per day');
+    expect(digest.closest('label')).toHaveClass('leaf-radio--described', 'leaf-radio--plain');
+    await userEvent.click(screen.getByText('Batch once per day'));
+    expect(digest).toBeChecked();
+  });
 });

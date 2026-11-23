@@ -4,17 +4,17 @@ import { ThemeColors } from '../../src/examples/theming/colors';
 
 # 颜色
 
-五个语义色各生成 7 档派生色，中性色保留 9 档色阶，浅色与深色模式共用。
+五种语义基色在 JS 中派生出 7 档明暗色，中性基色则由固定 OKLCH 序列生成 9 档色阶；全局 CSS 仅导出基于它们映射出的活跃用途角色，并在浅色与深色模式间自动切换对应角色取值。`theme.primaryColor` 还支持传入 `'neutral'`，实现随外观反转的高对比黑白单色主色。
 
-## 全局颜色变量
+## 派生色带与色阶
 
-每组展示独立保留的基色及其派生色带。五个语义色共 35 个派生色块，加上中性色的 9 档共 44 个。点击色块查看色值与 CSS 变量。
+每组展示独立保留的基色及其在 JS 中计算出的参考色带。五个语义色共 35 个派生色块，加上中性色的 9 档共 44 个。点击色块可查看阶梯名称与计算色值（可通过 `generateColorShades` 与 `generateColorScale` 获取）。
 
 <ColorPalette />
 
 ## 修改基色
 
-通过 ConfigProvider 的 `theme.primaryColor` 修改主题基色，其他五组通过 `theme.tokens` 修改。更新这些 JS 配置即可重新生成色阶；修改 DOM 样式不会触发 JS 主题重算。
+通过 ConfigProvider 的 `theme.primaryColor` 修改主题基色（支持色值或 `'neutral'`），其他五组通过 `theme.tokens` 修改。更新这些 JS 配置即可重新生成颜色；修改 DOM 样式不会触发 JS 主题重算。
 
 示例固定为浅色外观，并把 `tokens.mutedSurfaceColor` 设为 `rgb(244,243,239)`。分层 Card 的外层画布使用这份底板，卡片内部内容与净白控件仍使用内容表面；组件显式覆盖优先。
 

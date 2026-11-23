@@ -6,6 +6,7 @@ import { ComponentFilter, matchesComponentQuery } from './component-filter';
 import { componentThumbnails } from './component-thumbnails';
 import { useDocsTheme } from './docs-theme';
 import { useDocsLocale } from './i18n';
+import { isNeutralThemeColor } from './theme-colors';
 
 export function ComponentOverview() {
   const { english, t, url } = useDocsLocale();
@@ -52,7 +53,7 @@ export function ComponentOverview() {
                     dangerouslySetInnerHTML={{
                       __html: (componentThumbnails[component.slug] ?? '').replace(
                         '>#1e964f<',
-                        `>${color.toUpperCase()}<`,
+                        `>${isNeutralThemeColor(color) ? 'neutral' : color.toUpperCase()}<`,
                       ),
                     }}
                   />

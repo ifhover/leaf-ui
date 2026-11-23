@@ -8,7 +8,6 @@ import { ButtonIcons } from '../../../src/examples/en/button/icons';
 import { ButtonFullWidth } from '../../../src/examples/en/button/full-width';
 import { ButtonLoading } from '../../../src/examples/en/button/loading';
 import { ButtonGroupDemo } from '../../../src/examples/en/button/button-group';
-import { SplitButtonDemo } from '../../../src/examples/en/button/split-button';
 
 export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 
@@ -25,6 +24,7 @@ Use button text that clearly describes the action and handle clicks through `onC
 <ComponentExample exampleId="basic" preview={<ButtonBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -37,11 +37,12 @@ Use button text that clearly describes the action and handle clicks through `onC
 
 ### Appearance
 
-Use `variant` for outline (the default), solid, text or inline link appearance. Inline links use the theme color by default, brighten on hover and darken when pressed, with a default color transition of 200ms.
+Use `variant` for `outline` (the default), `solid`, `text`, `link` or `danger` appearance. Default `outline` renders a shadowless plain border with a neutral hover background while keeping its border unchanged when hovered or pressed and retaining the subtle press shift without extra color change; inline links use the theme color by default, brighten on hover and darken when pressed, with a default color transition of 200ms.
 
 <ComponentExample exampleId="variants" preview={<ButtonVariants />} fileName="variants.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/variants.tsx"
+
 ```
 
 </ComponentExample>
@@ -53,17 +54,19 @@ Set the size with `size`; the default is `md`.
 <ComponentExample exampleId="sizes" preview={<ButtonSizes />} fileName="sizes.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/sizes.tsx"
+
 ```
 
 </ComponentExample>
 
 ### Danger actions
 
-Set `danger` for destructive actions such as deleting or clearing. It works with every appearance.
+Set `variant="danger"` for destructive actions such as deleting or clearing. It uses a single soft danger fill and danger color appearance. The `danger` prop is deprecated; use `variant="danger"`.
 
 <ComponentExample exampleId="danger" preview={<ButtonDanger />} fileName="danger.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/danger.tsx"
+
 ```
 
 </ComponentExample>
@@ -75,17 +78,19 @@ Set `danger` for destructive actions such as deleting or clearing. It works with
 <ComponentExample exampleId="states" preview={<ButtonStates />} fileName="states.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/states.tsx"
+
 ```
 
 </ComponentExample>
 
 ### Icons
 
-Add icons with `startIcon` and `endIcon`. An icon-only button needs an `aria-label`.
+Pass icons directly as children so icon sizes (`14px` / `16px` / `18px`), gaps and reduced padding on the icon side adjust cleanly with `size`. For wrapped icons or custom `.leaf-button` elements, you can also mark them with `data-icon="inline-start"` or `data-icon="inline-end"`. For icon-only buttons, use `size="icon"`, `"icon-sm"` or `"icon-lg"` together with an `aria-label`.
 
 <ComponentExample exampleId="icons" preview={<ButtonIcons />} fileName="icons.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/icons.tsx"
+
 ```
 
 </ComponentExample>
@@ -97,6 +102,7 @@ Set `fullWidth` to fill the parent container.
 <ComponentExample exampleId="full-width" preview={<ButtonFullWidth />} fileName="full-width.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/full-width.tsx"
+
 ```
 
 </ComponentExample>
@@ -110,28 +116,19 @@ Control `loading` with application state. The timer simulates a request; replace
 <ComponentExample exampleId="loading" preview={<ButtonLoading />} fileName="loading.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/loading.tsx"
+
 ```
 
 </ComponentExample>
 
 ### Button group
 
-Use `ButtonGroup` to join adjacent actions and share a size or disabled state.
+Use `ButtonGroup` to join adjacent actions and share a size, variant or disabled state; compose with `Dropdown` and an icon `Button` (`size="icon"`) for a primary action with a related menu.
 
 <ComponentExample exampleId="button-group" preview={<ButtonGroupDemo />} fileName="button-group.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/button/button-group.tsx"
-```
 
-</ComponentExample>
-
-### Split button
-
-`SplitButton` pairs a primary action with related menu actions. Use `onClick` for the primary button and an action for each menu item.
-
-<ComponentExample exampleId="split-button" preview={<SplitButtonDemo />} fileName="split-button.tsx" width="fit-content">
-
-```tsx lineNumbers file="../../../src/examples/en/button/split-button.tsx"
 ```
 
 </ComponentExample>
@@ -146,13 +143,11 @@ Supports native `button` attributes such as `onClick`, `name`, `form`, `aria-*` 
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | Visual style |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
-| `danger` | `boolean` | `false` | Danger colors; works with every variant |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link' \| 'danger'` | `'outline'` | Visual style |
+| `size` | `'sm' \| 'md' \| 'lg' \| 'icon' \| 'icon-sm' \| 'icon-lg'` | `'md'` | Button size or square icon-only size |
+| `danger` | `boolean` | `false` | Deprecated; use `variant="danger"`. Falls back to the danger variant when set |
 | `loading` | `boolean` | `false` | Show loading and disable interaction |
 | `fullWidth` | `boolean` | `false` | Fill the parent width |
-| `startIcon` | `ReactNode` | — | Leading icon; replaced by the spinner during loading |
-| `endIcon` | `ReactNode` | — | Trailing icon |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | Native button type |
 | `ref` | `Ref<HTMLButtonElement>` | — | DOM reference |
@@ -163,23 +158,7 @@ Props for grouping related buttons.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | Button size. |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | Button size; also adapts `size="icon"` buttons inside the group |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link' \| 'danger'` | — | Default visual style for buttons in the group |
 | `disabled` | `boolean` | — | Disable interaction. |
 | `attached` | `boolean` | `true` | Join adjacent buttons |
-
-### SplitButtonProps API
-
-Props for a button combining a primary action with dropdown actions.
-
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | Button appearance |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Button size. |
-| `danger` | `boolean` | `false` | Danger colors |
-| `loading` | `boolean` | `false` | Loading state |
-| `fullWidth` | `boolean` | `false` | Fill available width |
-| `startIcon` | `ReactNode` | — | Leading icon |
-| `endIcon` | `ReactNode` | — | Trailing icon |
-| `items` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | Required | Items; keep keys unique and stable |
-| `menuLabel` | `string` | — | Accessible menu button label |
-| `dropdownProps` | `Omit<`[`DropdownProps`](dropdown#dropdown-api)`, 'items' \| 'children' \| 'disabled'>` | — | Action menu props |

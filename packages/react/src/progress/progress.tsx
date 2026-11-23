@@ -66,7 +66,13 @@ export function Progress(rawProps: ProgressProps) {
   const circumference = 2 * Math.PI * radius;
   const sweep = dashboard ? circumference * 0.75 : circumference;
   const stepCount =
-    steps && Number.isFinite(steps) ? Math.max(1, Math.min(1000, Math.trunc(steps))) : 0;
+    type === 'line' && steps && Number.isFinite(steps)
+      ? Math.max(1, Math.min(1000, Math.trunc(steps)))
+      : 0;
+  const successValue =
+    successPercent !== undefined && Number.isFinite(successPercent)
+      ? Math.max(0, Math.min(value, successPercent))
+      : undefined;
   let remaining = 100;
   const sections = segments?.map((segment) => {
     const percent = Math.max(
@@ -103,8 +109,8 @@ export function Progress(rawProps: ProgressProps) {
       className={classes(
         'leaf-progress',
         `leaf-progress--${type}`,
-        dashboard && 'leaf-progress--dashboard',
-        Boolean(steps) && 'leaf-progress--steps',
+        type === 'circle' && dashboard && 'leaf-progress--dashboard',
+        Boolean(stepCount) && 'leaf-progress--steps',
         className,
       )}
       style={{
@@ -144,7 +150,15 @@ export function Progress(rawProps: ProgressProps) {
               />
             ))
           ) : (
-            <div className="leaf-progress__fill" style={{ width: `${value}%` }} />
+            <>
+              <div className="leaf-progress__fill" style={{ width: `${value}%` }} />
+              {!indeterminate && successValue !== undefined && (
+                <div
+                  className="leaf-progress__fill leaf-progress__fill--success"
+                  style={{ width: `${successValue}%` }}
+                />
+              )}
+            </>
           )}
         </div>
       ) : (
@@ -172,14 +186,14 @@ export function Progress(rawProps: ProgressProps) {
             strokeDashoffset={0}
             transform={dashboard ? 'rotate(135 50 50)' : 'rotate(-90 50 50)'}
           />
-          {successPercent !== undefined && (
+          {successValue !== undefined && (
             <circle
               className="leaf-progress__arc leaf-progress__arc--success"
               cx="50"
               cy="50"
               r={radius}
               strokeWidth={width}
-              strokeDasharray={`${(sweep * Math.max(0, Math.min(value, successPercent))) / 100} ${circumference}`}
+              strokeDasharray={`${(sweep * successValue) / 100} ${circumference}`}
               transform={dashboard ? 'rotate(135 50 50)' : 'rotate(-90 50 50)'}
             />
           )}

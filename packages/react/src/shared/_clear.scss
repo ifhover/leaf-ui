@@ -1,0 +1,112 @@
+@use '../styles/mixins' as mixins;
+
+@mixin clear-fade-surface($radius-end: 0px, $end-offset: 0px, $edge-gap: 0px) {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: var(--leaf-clear-end, #{$end-offset});
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-inline: 16px #{$edge-gap};
+  border-start-end-radius: $radius-end;
+  border-end-end-radius: $radius-end;
+  // 左侧渐隐进入控件表面色，避免超长文本在清除按钮边界处被生硬截断。
+  background: linear-gradient(to right, transparent, var(--leaf-clear-surface) 16px);
+  pointer-events: none;
+
+  :where([dir='rtl']) &,
+  [data-direction='rtl'] & {
+    background: linear-gradient(to left, transparent, var(--leaf-clear-surface) 16px);
+  }
+}
+
+@layer leaf-ui {
+  $inner-radius: max(
+    0px,
+    calc(
+      var(--leaf-current-radius, var(--leaf-radius)) - var(
+          --leaf-field-border-width,
+          var(--leaf-border-width, 1px)
+        )
+    )
+  );
+
+  .leaf-clear {
+    --leaf-clear-surface: var(--leaf-field-background, var(--leaf-color-surface));
+    transition: opacity var(--leaf-motion-duration, 200ms) ease;
+
+    &:not(&--anchored):not(&--inline) {
+      @include clear-fade-surface($inner-radius, 0px, 3px);
+    }
+
+    &--before-arrow:not(&--anchored):not(&--inline) {
+      inset-inline-end: var(--leaf-clear-end, 29px);
+      padding-inline: 16px 0;
+      border-start-end-radius: 0;
+      border-end-end-radius: 0;
+    }
+
+    &--anchored {
+      position: relative;
+      align-self: stretch;
+      flex: 0 0 auto;
+      width: 0;
+      margin-inline-start: calc(-1 * var(--leaf-component-input-gap, 8px));
+      pointer-events: none;
+
+      > .leaf-clear__float {
+        @include clear-fade-surface(0px, 0px, 0px);
+      }
+    }
+
+    &--inline {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      margin-inline-end: 4px;
+    }
+
+    &__button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: 0;
+      // 使用较大但非圆形的圆角矩形，并保持圆角上限以防大圆角主题下退化为圆形。
+      border-radius: min(8px, max(0px, calc(var(--leaf-current-radius, var(--leaf-radius)) - 3px)));
+      pointer-events: auto;
+
+      @include mixins.text-action;
+
+      &:focus-visible {
+        outline-offset: -1px;
+      }
+    }
+  }
+
+  @media (hover: hover) {
+    .leaf-clear:not(.leaf-clear--always) {
+      opacity: 0;
+
+      .leaf-clear__button {
+        pointer-events: none;
+      }
+    }
+
+    :hover > .leaf-clear:not(.leaf-clear--always),
+    .leaf-clear:not(.leaf-clear--always):has(:focus-visible) {
+      opacity: 1;
+
+      .leaf-clear__button {
+        pointer-events: auto;
+      }
+
+      @starting-style {
+        opacity: 0;
+      }
+    }
+  }
+}

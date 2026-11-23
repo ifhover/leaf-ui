@@ -4,7 +4,6 @@ import { DrawerPlacement } from '../../../src/examples/en/drawer/placement';
 import { DrawerSections } from '../../../src/examples/en/drawer/sections';
 import { DrawerResize } from '../../../src/examples/en/drawer/resize';
 import { DrawerNested } from '../../../src/examples/en/drawer/nested';
-import { DrawerTabs } from '../../../src/examples/en/drawer/tabs';
 
 export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 
@@ -16,11 +15,12 @@ Open content from a page edge to view details or complete an action.
 
 ## Basic usage
 
-Handle `onClose` and update `open` in the application. Provide `aria-label` when omitting `title`.
+Use `title` and `description` for the heading and supporting subtitle, and handle `onClose` to update `open`. Provide `aria-label` when omitting `title`.
 
 <ComponentExample exampleId="basic" preview={<DrawerBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/drawer/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -29,24 +29,26 @@ Handle `onClose` and update `open` in the application. Provide `aria-label` when
 
 ## Examples
 
-### Placement
+### Placement and swipe handle
 
-Use `width` for left and right drawers, and `height` for top and bottom drawers.
+Use `width` for left and right drawers, and `height` for top and bottom drawers. Every placement floats with inset spacing and rounded corners; `placement="bottom"` enables `showSwipeHandle` by default so dragging the handle downward closes the drawer, and you can override `showSwipeHandle` on any edge.
 
 <ComponentExample exampleId="placement" preview={<DrawerPlacement />} fileName="placement.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/drawer/placement.tsx"
+
 ```
 
 </ComponentExample>
 
 ### Footer submission
 
-Associate the footer submit button with the form using its `form` attribute to retain native validation. Submission and closing are handled by the application.
+Associate the footer submit button with the form using its `form` attribute to retain native validation. Submission and closing are handled by the application. The `footer` area already includes spacing between action buttons; use `divided` to add a divider above the footer bar, and `padding` to override drawer or section (`header` / `body` / `footer`) padding.
 
 <ComponentExample exampleId="sections" preview={<DrawerSections />} fileName="sections.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/drawer/sections.tsx"
+
 ```
 
 </ComponentExample>
@@ -60,6 +62,7 @@ Enable `resizable` to drag the edge or focus the separator and use arrow keys. `
 <ComponentExample exampleId="resize" preview={<DrawerResize />} fileName="resize.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/drawer/resize.tsx"
+
 ```
 
 </ComponentExample>
@@ -71,17 +74,7 @@ Set `push` on the child drawer to shift its nearest parent overlay. `true` means
 <ComponentExample exampleId="nested" preview={<DrawerNested />} fileName="nested.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/drawer/nested.tsx"
-```
 
-</ComponentExample>
-
-### Tabbed drawer
-
-Use `tabs` to embed line tabs beneath the heading or in place of it when untitled. The tab bar stays fixed above the scrolling body and always keeps its bottom divider even when `divided={false}` (the default). Omit item `children` when using the tabs solely to switch state for Drawer's `children`.
-
-<ComponentExample exampleId="tabs" preview={<DrawerTabs />} fileName="tabs.tsx" width="fit-content">
-
-```tsx lineNumbers file="../../../src/examples/en/drawer/tabs.tsx"
 ```
 
 </ComponentExample>
@@ -101,7 +94,6 @@ Configuration for controlled visibility, placement, content regions and dismissa
 | `open` | `boolean` | Required | Controlled open state, updated by the application. |
 | `title` | `ReactNode` | — | Drawer title. |
 | `description` | `ReactNode` | — | Additional description. |
-| `tabs` | [`DrawerTabsProps`](#drawertabs-api) | — | Embedded tabs; replace the heading when untitled or sit beneath it, retaining the tab bar bottom divider. |
 | `onClose` | `() => void` | — | Close request; update open in application state |
 | `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | Opening edge |
 | `width` | `number \| string` | `380` | Width for left and right drawers |
@@ -109,12 +101,14 @@ Configuration for controlled visibility, placement, content regions and dismissa
 | `footer` | `ReactNode` | — | Footer content |
 | `extra` | `ReactNode` | — | Actions beside the title |
 | `icon` | `ReactNode` | — | Decorative icon to the left of the heading. |
-| `divided` | `boolean` | `false` | Separate the heading, content and footer with subtle borders. |
+| `divided` | `boolean` | `false` | Show a subtle divider above the footer action bar. |
+| `padding` | `number \| string \| 'none' \| { header?: number \| string \| 'none'; body?: number \| string \| 'none'; footer?: number \| string \| 'none' }` | — | Override drawer or section (`header`, `body`, `footer`) padding; numbers use pixels and `'none'` sets 0. |
 | `closable` | `boolean` | `true` | Show the close button. |
 | `maskClosable` | `boolean` | `true` | Request closing when the mask is clicked. |
 | `keyboard` | `boolean` | `true` | Allow Escape to request closing. |
 | `initialFocus` | `RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Specify initial focus after opening. |
 | `returnFocus` | `boolean \| RefObject<HTMLElement \| null> \| (() => HTMLElement \| null)` | — | Restore focus on close; specify a destination or use false. |
+| `showSwipeHandle` | `boolean` | true for bottom, false otherwise | Show a swipe handle bar along the leading edge to close by dragging; enabled by default for bottom drawers. |
 | `resizable` | `boolean` | `false` | Allow resizing by dragging or arrow keys. |
 | `minSize` | `number` | `240` | Minimum size in pixels. |
 | `maxSize` | `number` | `900` | Maximum size in pixels. |
@@ -125,11 +119,3 @@ Configuration for controlled visibility, placement, content regions and dismissa
 | `preserve` | `boolean` | — | Control content preservation, taking precedence over destroyOnClose; does not reset external controlled state. |
 | `forceRender` | `boolean` | `false` | Mount before opening and keep hidden while closed. |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Portal mount target; may also return a ShadowRoot. |
-
-### DrawerTabs API
-
-See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Drawer fixes `type="line"` and `placement="top"`, keeps the tab bar fixed above the scrollable body with its bottom divider always visible regardless of `divided={false}`, and restores an ordinary drawer when `items` is empty.
-
-```ts
-type DrawerTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
-```

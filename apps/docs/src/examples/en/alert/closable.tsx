@@ -6,7 +6,12 @@ export function AlertClosable() {
 
   return (
     <Flex direction="column" gap="md">
-      <Alert key={version} title="Your draft is saved" closable />
+      <Alert
+        key={version}
+        title="Your draft is saved"
+        description="Your current draft remains saved even after closing this notice."
+        closable
+      />
       <Flex>
         <Button onClick={() => setVersion((value) => value + 1)}>Show again</Button>
       </Flex>

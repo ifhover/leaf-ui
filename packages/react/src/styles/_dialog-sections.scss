@@ -1,30 +1,85 @@
 @use './mixins';
 
 @mixin sections($component, $inline-padding: var(--leaf-density-dialog-inline)) {
-  --leaf-dialog-heading-gap: var(--leaf-component-#{$component}-gap, 12px);
+  --leaf-dialog-heading-gap: var(--leaf-component-#{$component}-gap, var(--leaf-dialog-gap));
   --leaf-dialog-icon-size: calc(var(--leaf-control-height) + 6px);
-  --leaf-dialog-padding-start: var(--leaf-component-#{$component}-padding-left, #{$inline-padding});
-  --leaf-dialog-padding-end: var(--leaf-component-#{$component}-padding-right, #{$inline-padding});
+  --leaf-dialog-padding-left: var(
+    --leaf-#{$component}-shell-padding-left,
+    var(--leaf-component-#{$component}-padding-left, #{$inline-padding})
+  );
+  --leaf-dialog-padding-right: var(
+    --leaf-#{$component}-shell-padding-right,
+    var(--leaf-component-#{$component}-padding-right, #{$inline-padding})
+  );
+  --leaf-dialog-padding-start: var(--leaf-dialog-padding-left);
+  --leaf-dialog-padding-end: var(--leaf-dialog-padding-right);
   --leaf-dialog-padding-block: var(
-    --leaf-component-#{$component}-padding-top,
-    var(--leaf-density-dialog-block)
+    --leaf-#{$component}-shell-padding-top,
+    var(--leaf-component-#{$component}-padding-top, var(--leaf-density-dialog-block))
+  );
+  --leaf-dialog-padding-bottom: var(
+    --leaf-#{$component}-shell-padding-bottom,
+    var(--leaf-component-#{$component}-padding-bottom, var(--leaf-density-dialog-block))
+  );
+  --leaf-dialog-gap: var(--leaf-density-dialog-gap);
+  --leaf-dialog-close-block: var(
+    --leaf-#{$component}-close-inset-top,
+    var(--leaf-dialog-padding-block)
+  );
+  --leaf-dialog-close-inline: var(
+    --leaf-#{$component}-close-inset-right,
+    var(--leaf-dialog-padding-end)
+  );
+  // 预留关闭按钮及其内部 8px 留白所需的标题右侧避让宽度，防止长标题与右上角按钮重叠。
+  --leaf-dialog-close-clearance: max(
+    0px,
+    calc(
+      max(4px, calc(var(--leaf-dialog-close-inline) - 8px)) + 32px +
+        var(--leaf-spacing-sm) - var(--leaf-dialog-close-inline)
+    )
   );
   --leaf-dialog-divider: var(
     --leaf-component-#{$component}-border-color,
     var(--leaf-color-divider)
   );
+  --leaf-dialog-footer-padding-top: var(
+    --leaf-#{$component}-shell-padding-top,
+    var(--leaf-component-#{$component}-padding-top, var(--leaf-spacing-md))
+  );
+  --leaf-dialog-footer-padding-bottom: var(
+    --leaf-#{$component}-shell-padding-bottom,
+    var(--leaf-component-#{$component}-padding-bottom, var(--leaf-spacing-md))
+  );
+  padding: var(--leaf-dialog-padding-block) var(--leaf-dialog-padding-right)
+    var(--leaf-dialog-padding-bottom) var(--leaf-dialog-padding-left);
+  gap: var(--leaf-dialog-gap);
+  &:where(:dir(rtl)) {
+    --leaf-dialog-padding-start: var(--leaf-dialog-padding-right);
+    --leaf-dialog-padding-end: var(--leaf-dialog-padding-left);
+    --leaf-dialog-close-inline: var(
+      --leaf-#{$component}-close-inset-left,
+      var(--leaf-dialog-padding-end)
+    );
+  }
 
   &__header {
     display: flex;
     flex-shrink: 0;
     align-items: flex-start;
     gap: var(--leaf-dialog-heading-gap);
-    padding: var(
-      --leaf-component-#{$component}-padding,
-      var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
-    );
-    padding-block-end: 0;
+    padding: 0;
     background: var(--leaf-component-#{$component}-header-background, transparent);
+  }
+  &[data-header-surface] > &__header,
+  &[data-header-padding] > &__header {
+    margin-block-start: calc(-1 * var(--leaf-dialog-padding-block));
+    margin-inline: calc(-1 * var(--leaf-dialog-padding-start))
+      calc(-1 * var(--leaf-dialog-padding-end));
+    padding: var(
+      --leaf-#{$component}-header-padding,
+      var(--leaf-dialog-padding-block) var(--leaf-dialog-padding-end) 0
+        var(--leaf-dialog-padding-start)
+    );
     border-start-start-radius: inherit;
     border-start-end-radius: inherit;
   }
@@ -33,19 +88,21 @@
     min-width: 0;
     align-self: center;
     overflow-wrap: anywhere;
-    h2 {
-      margin: 0;
-      font-size: calc(var(--leaf-font-size) + 3px);
-      font-weight: var(--leaf-font-weight);
-      line-height: var(--leaf-line-height-lg);
-      letter-spacing: -0.01em;
-    }
   }
-  &__description {
-    margin-block-start: 4px;
+  &__heading h2,
+  & > &__header > &__heading h2 {
+    margin: 0;
+    font-size: var(--leaf-component-#{$component}-font-size, var(--leaf-font-size-lg));
+    font-weight: var(--leaf-font-weight, 500);
+    line-height: var(--leaf-line-height-lg);
+    letter-spacing: -0.01em;
+  }
+  &__description,
+  & > &__header > &__heading > &__description {
+    margin-block-start: var(--leaf-spacing-sm);
     color: var(--leaf-color-text-muted);
-    font-size: var(--leaf-font-size);
-    line-height: var(--leaf-line-height);
+    font-size: var(--leaf-font-size-sm);
+    line-height: var(--leaf-line-height-sm);
   }
   &__icon {
     box-sizing: border-box;
@@ -65,17 +122,53 @@
     }
   }
   &__body {
+    flex: 1 1 auto;
     min-height: 0;
-    overflow: auto;
-    padding: var(
-      --leaf-component-#{$component}-padding,
-      var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
-    );
+    // 解除 .leaf-scrollbar 的 100% 宽度限制，避免叠加负外边距后整体向左偏移且右侧留空。
+    width: auto;
+    max-width: none;
+    margin-inline: calc(-1 * var(--leaf-dialog-padding-start))
+      calc(-1 * var(--leaf-dialog-padding-end));
+    padding: 0;
+    overflow: hidden;
+    border-radius: 0;
+  }
+  // 提高层叠优先级，防止全量样式表中后引入的 .leaf-scrollbar 覆盖对齐与滚动边界。
+  & > &__body.leaf-scrollbar {
+    width: auto;
+    max-width: none;
+    border-radius: 0;
+  }
+  &__viewport,
+  & > &__body > &__viewport {
     overscroll-behavior: contain;
   }
   &__content {
+    box-sizing: border-box;
     display: flow-root;
     min-width: 0;
+    padding: 0 var(--leaf-dialog-padding-end) 0 var(--leaf-dialog-padding-start);
+    > :first-child {
+      margin-block-start: 0;
+    }
+    > :last-child {
+      margin-block-end: 0;
+    }
+  }
+  &[data-body-padding] > &__body {
+    &:not(.leaf-#{$component}__header ~ &) {
+      margin-block-start: calc(-1 * var(--leaf-dialog-padding-block));
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
+    }
+    &:not(:has(~ .leaf-#{$component}__footer)) {
+      margin-block-end: calc(-1 * var(--leaf-dialog-padding-bottom));
+      border-end-start-radius: inherit;
+      border-end-end-radius: inherit;
+    }
+    > .leaf-#{$component}__viewport > .leaf-#{$component}__content {
+      padding: var(--leaf-#{$component}-body-padding);
+    }
   }
   &__footer {
     display: flex;
@@ -83,71 +176,68 @@
     align-items: center;
     justify-content: flex-end;
     flex-wrap: wrap;
-    padding: var(
-      --leaf-component-#{$component}-padding,
-      var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
-    );
-    @include mixins.action-footer-padding($component);
-    padding-block-start: 0;
+    gap: 8px;
+    padding: 0;
+    background: var(--leaf-component-#{$component}-footer-background, transparent);
+  }
+  // divided 仅控制操作底栏顶部细分隔线，头部不再附加底边框。
+  &--divided > &__footer {
+    margin-inline: calc(-1 * var(--leaf-dialog-padding-start))
+      calc(-1 * var(--leaf-dialog-padding-end));
+    margin-block-end: calc(-1 * var(--leaf-dialog-padding-bottom));
+    padding: var(--leaf-dialog-footer-padding-top) var(--leaf-dialog-padding-end)
+      var(--leaf-dialog-footer-padding-bottom) var(--leaf-dialog-padding-start);
+    border-block-start: 1px solid var(--leaf-dialog-divider);
     border-end-start-radius: inherit;
     border-end-end-radius: inherit;
-    background: var(--leaf-component-#{$component}-footer-background, transparent);
   }
-  &--divided > &__header:not(.leaf-#{$component}__header--compact) {
-    padding-block-end: var(--leaf-dialog-padding-block);
-    border-block-end: 1px solid var(--leaf-dialog-divider);
+  &[data-footer-surface]:not(&--divided) > &__footer,
+  &[data-footer-padding] > &__footer {
+    margin-inline: calc(-1 * var(--leaf-dialog-padding-start))
+      calc(-1 * var(--leaf-dialog-padding-end));
+    margin-block-end: calc(-1 * var(--leaf-dialog-padding-bottom));
+    padding: var(
+      --leaf-#{$component}-footer-padding,
+      var(--leaf-spacing-md) var(--leaf-dialog-padding-end) var(--leaf-dialog-padding-bottom)
+        var(--leaf-dialog-padding-start)
+    );
+    border-end-start-radius: inherit;
+    border-end-end-radius: inherit;
   }
-  &--divided > &__footer {
-    @include mixins.action-footer-padding($component);
-    border-block-start: 1px solid var(--leaf-dialog-divider);
-    background: var(--leaf-component-#{$component}-footer-background, transparent);
+  &__close {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    padding: 8px;
+    border: 0;
+    border-radius: var(--leaf-radius);
+
+    @include mixins.text-action;
+
+    > svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  // 浮层关闭按钮绝对定位于右上角，从外边距减去按钮自身 8px 内边距以对齐标题及内容边界。
+  & > &__close {
+    position: absolute;
+    inset-block-start: max(
+      4px,
+      calc(var(--leaf-dialog-close-block) + (var(--leaf-line-height-lg) - 32px) / 2)
+    );
+    inset-inline-end: max(4px, calc(var(--leaf-dialog-close-inline) - 8px));
+    z-index: 1;
+  }
+  &--closable > &__header > &__heading:last-child {
+    padding-inline-end: var(--leaf-dialog-close-clearance);
   }
   @media (max-width: 480px) {
-    --leaf-dialog-heading-gap: var(--leaf-component-#{$component}-gap, 10px);
+    --leaf-dialog-heading-gap: var(--leaf-component-#{$component}-gap, 12px);
     --leaf-dialog-icon-size: var(--leaf-control-height);
-  }
-}
-
-@layer leaf-ui {
-  .leaf-dialog-tabs {
-    flex-shrink: 0;
-    border-start-start-radius: inherit;
-    border-start-end-radius: inherit;
-    > .leaf-tabs__header {
-      padding-inline: var(--leaf-dialog-padding-start) var(--leaf-dialog-padding-end);
-      border-start-start-radius: inherit;
-      border-start-end-radius: inherit;
-    }
-    &--headed > .leaf-tabs__header {
-      border-start-start-radius: 0;
-      border-start-end-radius: 0;
-    }
-    // 使用内嵌标签栏时，即使 divided={false} 也始终保留标签栏底部分割线。
-    &.leaf-tabs--line > .leaf-tabs__header::before {
-      border-block-end-color: var(--leaf-dialog-divider);
-    }
-  }
-  .leaf-dialog-tab-extra {
-    display: flex;
-    align-items: center;
-    gap: var(--leaf-dialog-heading-gap);
-  }
-  .leaf-dialog-panels {
-    > .leaf-tabs__panel {
-      padding-block: 0;
-    }
-    &:has(> .leaf-tabs__panel:not([hidden])) + * {
-      margin-block-start: var(--leaf-dialog-padding-block);
-    }
-  }
-}
-
-@mixin tabs($component) {
-  &--tabbed > &__header:not(.leaf-#{$component}__header--compact) {
-    padding-block-end: 0;
-    border-block-end: 0;
-  }
-  > .leaf-dialog-tabs > .leaf-tabs__header {
-    background: var(--leaf-component-#{$component}-header-background, transparent);
   }
 }

@@ -86,11 +86,12 @@
     "nextPage": "다음 페이지",
     "page": "페이지",
     "pageSize": "페이지당 항목 수",
+    "pageSizeOption": "{count} / 페이지",
     "jumpTo": "이동할 페이지",
     "pageBack": "5페이지 이전으로 이동",
     "pageForward": "5페이지 다음으로 이동",
     "pageLabel": "{page}페이지",
-    "pageSizeOption": "페이지당 {count}개",
+    "rowsPerPage": "페이지당 행",
     "total": "총 {total}개"
   },
   "input": {
@@ -251,7 +252,8 @@
   },
   "qrCode": {
     "qrCode": "QR 코드",
-    "refreshCode": "코드 새로 고침"
+    "refreshCode": "코드 새로 고침",
+    "expired": "QR 코드가 만료되었습니다"
   },
   "scrollbar": {
     "verticalScrollbar": "세로 스크롤바",
@@ -274,8 +276,6 @@
     "collapseRow": "{label} 행 접기",
     "expandRow": "{label} 행 펼치기",
     "expandRows": "행 펼치기",
-    "expandDetails": "상세 펼치기",
-    "collapseDetails": "상세 접기",
     "sortAscending": "오름차순 정렬",
     "sortDescending": "내림차순 정렬",
     "clearSorting": "정렬 해제"
@@ -334,5 +334,8 @@
     "dropped": "{label} 놓음",
     "cancelled": "순서 변경이 취소되었습니다",
     "outside": "놓을 위치 없음"
+  },
+  "drawer": {
+    "resize": "드로어 크기 조절"
   }
 }

@@ -1,3 +1,4 @@
+import { CircleX } from 'lucide-react';
 import {
   type ReactNode,
   useContext,
@@ -10,9 +11,10 @@ import {
 } from 'react';
 import {
   ComponentDefaultsContext,
+  type LeafComponentDefaults,
   mergeComponentProps,
 } from '../config-provider/component-defaults';
-import { ConfigContext, useLeafConfig } from '../config-provider/context';
+import { ConfigContext, type LeafConfig, useLeafConfig } from '../config-provider/context';
 import { leafThemeVariables } from '../theme';
 import type { ConfirmOptions } from './confirm';
 import { ConfirmDialog } from './confirm';
@@ -23,6 +25,27 @@ import {
   createConfirmStore,
   emptyConfirmations,
 } from './store';
+
+function createFailureConfirmOptions(
+  reason: unknown,
+  request: { config: LeafConfig; components?: LeafComponentDefaults },
+): ConfirmOptions {
+  const detail = reason instanceof Error ? reason.message : reason != null ? String(reason) : '';
+  const message = detail.trim();
+  const defaults = request.components?.Confirm;
+  return {
+    className: defaults?.className,
+    style: defaults?.style,
+    width: defaults?.width,
+    initialFocus: defaults?.initialFocus,
+    returnFocus: defaults?.returnFocus,
+    type: 'danger',
+    icon: <CircleX aria-hidden="true" />,
+    title: request.config.messages.result.error,
+    children: message || undefined,
+    showCancel: false,
+  };
+}
 
 export interface ConfirmProviderProps {
   children?: ReactNode;
@@ -64,6 +87,9 @@ function ConfirmHost({ store }: { store: ConfirmStore }) {
               await request.options.onConfirm?.();
               store.close(request.id, true);
             }}
+            onConfirmError={(reason) =>
+              store.fail(request.id, createFailureConfirmOptions(reason, request))
+            }
             onClose={() => store.close(request.id, false)}
             afterClose={() => store.remove(request.id)}
           />

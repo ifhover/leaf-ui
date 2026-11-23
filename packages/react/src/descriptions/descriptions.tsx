@@ -52,9 +52,9 @@ export function Descriptions(rawProps: DescriptionsProps) {
       )}
       style={variables}
     >
-      {(title || extra) && (
+      {((title != null && title !== false) || (extra != null && extra !== false)) && (
         <div className="leaf-descriptions__header">
-          <h3>{title}</h3>
+          {title != null && title !== false && <h3>{title}</h3>}
           {extra}
         </div>
       )}

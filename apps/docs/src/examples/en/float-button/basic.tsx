@@ -10,9 +10,10 @@ export function FloatButtonBasic() {
         <FloatButton
           aria-label="Create"
           tooltip="Create"
-          startIcon={<Plus />}
           onClick={() => setCount((value) => value + 1)}
-        />
+        >
+          <Plus />
+        </FloatButton>
       </div>
       <Text tone="muted" role="status">
         Created: {count}

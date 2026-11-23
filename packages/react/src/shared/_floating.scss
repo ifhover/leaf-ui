@@ -89,13 +89,6 @@ $include-field-styles: true !default;
     &:focus {
       outline: none;
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      &,
-      &[data-state='closing'] {
-        transition: none;
-      }
-    }
   }
 
   .leaf-floating.leaf-scrollbar {
@@ -130,11 +123,8 @@ $include-field-styles: true !default;
     min-height: var(--leaf-density-option-height);
     align-items: center;
     gap: 8px;
-    padding: var(--leaf-density-option-padding) var(--leaf-density-field-padding);
-    padding-block: min(
-      var(--leaf-density-option-padding),
-      max(0px, calc((var(--leaf-density-option-height) - var(--leaf-line-height-sm)) / 2))
-    );
+    padding: max(2px, calc(var(--leaf-density-option-padding) - 2px))
+      var(--leaf-density-field-padding);
     border: 0;
     border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
     color: inherit;
@@ -143,39 +133,34 @@ $include-field-styles: true !default;
     line-height: var(--leaf-line-height-sm);
     text-align: start;
     cursor: pointer;
-    transition:
-      color var(--leaf-motion-color) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-color) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-color) var(--leaf-motion-easing);
+    transition: var(--leaf-action-transition);
 
     & + & {
       margin-top: 2px;
     }
 
     @if $include-field-styles {
-      &:hover:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']):not(
-          [aria-checked='true']
-        ),
-      &:focus-visible:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']):not(
-          [aria-checked='true']
-        ),
-      &[data-highlighted='true']:not([aria-disabled='true']):not([aria-selected='true']):not(
+      &:is(:hover, :focus-visible, [data-highlighted='true'], :active):not(
+          :disabled,
+          [aria-disabled='true'],
+          [aria-selected='true'],
           [aria-checked='true']
         ) {
         background: var(--leaf-color-option-hover);
       }
-    }
 
-    &:active:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']):not(
-        [aria-checked='true']
-      ) {
-      background: var(--leaf-color-option-hover);
-    }
-
-    @if $include-field-styles {
       &[aria-selected='true'] {
         color: var(--leaf-color-text);
         font-weight: var(--leaf-font-weight);
+        background: var(--leaf-color-option-hover);
+      }
+    } @else {
+      &:active:not(
+          :disabled,
+          [aria-disabled='true'],
+          [aria-selected='true'],
+          [aria-checked='true']
+        ) {
         background: var(--leaf-color-option-hover);
       }
     }
@@ -204,12 +189,6 @@ $include-field-styles: true !default;
     gap: 2px;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-floating__option {
-      transition: none;
-    }
-  }
-
   .leaf-floating__highlight {
     position: absolute;
     top: 0;
@@ -223,11 +202,10 @@ $include-field-styles: true !default;
     background: var(--leaf-color-option-hover);
     pointer-events: none;
     transition:
+      var(--leaf-field-transition),
       translate var(--leaf-motion-duration) var(--leaf-motion-easing),
       height var(--leaf-motion-fast) var(--leaf-motion-easing),
-      width var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-color) var(--leaf-motion-easing),
-      border-color var(--leaf-motion-color) var(--leaf-motion-easing);
+      width var(--leaf-motion-fast) var(--leaf-motion-easing);
     &[data-ready='false'],
     &[data-hidden] {
       visibility: hidden;
@@ -240,16 +218,12 @@ $include-field-styles: true !default;
   .leaf-floating[data-hover-motion] .leaf-floating__option {
     position: relative;
     z-index: 1;
-    &:hover:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']),
-    &:focus-visible:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']),
-    &[data-highlighted]:not([aria-disabled='true']):not([aria-selected='true']),
-    &:active:not(:disabled):not([aria-disabled='true']):not([aria-selected='true']) {
+    &:is(:hover, :focus-visible, [data-highlighted], :active):not(
+        :disabled,
+        [aria-disabled='true'],
+        [aria-selected='true']
+      ) {
       background: transparent;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-floating__highlight {
-      transition: none;
     }
   }
 
@@ -279,24 +253,12 @@ $include-field-styles: true !default;
       }
     }
     .leaf-floating__loading-icon {
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-text-muted);
       animation: var(
         --leaf-motion-animation,
-        leaf-floating-spin calc(var(--leaf-motion-duration) * 4) linear infinite
+        leaf-spin calc(var(--leaf-motion-duration) * 4) linear infinite
       );
-      animation-play-state: var(--leaf-motion-play-state, running);
-    }
-
-    @keyframes leaf-floating-spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .leaf-floating__loading-icon {
-        animation: none;
-      }
+      animation-play-state: var(--leaf-motion-play-state);
     }
   }
 }

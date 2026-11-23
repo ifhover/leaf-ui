@@ -19,9 +19,16 @@
     #{inner-radius($radius, $bottom, $border)} #{inner-radius($radius, $bottom, $border)};
 }
 
-// Emit the solver once, including in standalone component styles.
-%nested-surface {
+// Each surface defines its own local inset solver without cross-module @extend reordering.
+@mixin nested-surface($name, $radius, $padding, $border: var(--leaf-border-width, 1px)) {
+  --leaf-surface-radius: #{$radius};
+  --leaf-surface-padding: #{$padding};
+  --leaf-surface-border: #{$border};
   @each $side in top, right, bottom, left {
+    --leaf-surface-padding-#{$side}: var(
+      --leaf-component-#{$name}-padding-#{$side},
+      var(--leaf-surface-padding)
+    );
     --leaf-surface-inner-#{$side}: #{inner-radius(
         var(--leaf-surface-radius),
         var(--leaf-surface-padding-#{$side}),
@@ -34,18 +41,4 @@
   padding: var(--leaf-surface-padding-top) var(--leaf-surface-padding-right)
     var(--leaf-surface-padding-bottom) var(--leaf-surface-padding-left);
   border-radius: var(--leaf-surface-radius);
-}
-
-// Each surface sets its own inputs, preventing inherited curves from leaking in.
-@mixin nested-surface($name, $radius, $padding, $border: var(--leaf-border-width, 1px)) {
-  @extend %nested-surface;
-  --leaf-surface-radius: #{$radius};
-  --leaf-surface-padding: #{$padding};
-  --leaf-surface-border: #{$border};
-  @each $side in top, right, bottom, left {
-    --leaf-surface-padding-#{$side}: var(
-      --leaf-component-#{$name}-padding-#{$side},
-      var(--leaf-surface-padding)
-    );
-  }
 }

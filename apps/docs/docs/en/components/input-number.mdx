@@ -1,6 +1,7 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { InputNumberBasic } from '../../../src/examples/en/input-number/basic';
 import { InputNumberUnits } from '../../../src/examples/en/input-number/units';
+import { InputNumberSplit } from '../../../src/examples/en/input-number/split';
 import { InputNumberStates } from '../../../src/examples/en/input-number/states';
 import { InputNumberFormatting } from '../../../src/examples/en/input-number/formatting';
 import { InputNumberExact } from '../../../src/examples/en/input-number/exact';
@@ -20,6 +21,7 @@ Set bounds with `min` and `max`. `onChange` returns a number, or `null` when cle
 <ComponentExample exampleId="basic" preview={<InputNumberBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input-number/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -35,6 +37,19 @@ Display units with `prefix` and `suffix`, and set the step and decimal places wi
 <ComponentExample exampleId="units" preview={<InputNumberUnits />} fileName="units.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input-number/units.tsx"
+
+```
+
+</ComponentExample>
+
+### Split controls
+
+Set `variant="split"` to place decrease and increase buttons outside both sides of the centered numeric field.
+
+<ComponentExample exampleId="split" preview={<InputNumberSplit />} fileName="split.tsx" width={360}>
+
+```tsx lineNumbers file="../../../src/examples/en/input-number/split.tsx"
+
 ```
 
 </ComponentExample>
@@ -46,6 +61,7 @@ Read-only fields retain their value without allowing edits; disabled fields cann
 <ComponentExample exampleId="states" preview={<InputNumberStates />} fileName="states.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input-number/states.tsx"
+
 ```
 
 </ComponentExample>
@@ -59,6 +75,7 @@ Use `grouping` for localized digit grouping. For custom formats, `formatter` con
 <ComponentExample exampleId="formatting" preview={<InputNumberFormatting />} fileName="formatting.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input-number/formatting.tsx"
+
 ```
 
 </ComponentExample>
@@ -70,6 +87,7 @@ Use `stringMode` for values beyond JavaScript Number precision. Pass strings for
 <ComponentExample exampleId="exact" preview={<InputNumberExact />} fileName="exact.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/input-number/exact.tsx"
+
 ```
 
 </ComponentExample>
@@ -94,6 +112,7 @@ Set `name` to submit the canonical value through FormData. Uncontrolled fields s
 | `step` | `number \| string` | `1` | Increment and decrement step |
 | `precision` | `number` | — | Decimal precision, from 0 to 15 |
 | `controls` | `boolean` | `true` | Show increment and decrement buttons |
+| `variant` | `'default' \| 'split'` | `'default'` | Step control layout; split places standalone decrease and increase buttons outside both sides of the input. |
 | `keyboard` | `boolean` | `true` | Support arrow key increments |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Control size |
 | `status` | `'error' \| 'warning'` | — | Validation status |

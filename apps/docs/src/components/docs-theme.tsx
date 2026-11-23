@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react';
 import { useDocsLocale } from './i18n';
-import { defaultThemeColor, normalizeThemeColor } from './theme-colors';
+import { defaultThemeColor, isNeutralThemeColor, normalizeThemeColor } from './theme-colors';
 
 const storageKey = 'leaf-ui-docs-primary-color';
 const brandVariables = [
@@ -42,8 +42,11 @@ export function DocsThemeProvider({ children }: { children: ReactNode }) {
     const restore = () => {
       try {
         const saved = localStorage.getItem(storageKey);
+        const normalized = saved?.trim().toLowerCase();
         setCurrentColor(
-          saved && /^#[\da-f]{6}$/i.test(saved) ? saved.toLowerCase() : defaultThemeColor,
+          normalized && (isNeutralThemeColor(normalized) || /^#[\da-f]{6}$/i.test(normalized))
+            ? normalized
+            : defaultThemeColor,
         );
       } catch {
         // The picker still works when browser storage is unavailable.
@@ -59,7 +62,7 @@ export function DocsThemeProvider({ children }: { children: ReactNode }) {
 
   const setColor = useCallback((value: string) => {
     const normalized = normalizeThemeColor(value).toLowerCase();
-    if (!/^#[\da-f]{6}$/.test(normalized)) return;
+    if (!isNeutralThemeColor(normalized) && !/^#[\da-f]{6}$/.test(normalized)) return;
     setCurrentColor(normalized);
     try {
       localStorage.setItem(storageKey, normalized);

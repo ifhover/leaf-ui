@@ -27,9 +27,12 @@
     &__cells {
       display: grid;
       grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+    &__weekdays {
       gap: 0;
     }
     &__cells {
+      gap: 4px 0;
       margin: 0;
       padding: 0;
       border: 0;
@@ -44,32 +47,22 @@
     &__cell {
       min-width: 0;
       padding: 0;
-      transition: background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
     }
     &__cell--range {
       background: var(--leaf-calendar-range-background);
     }
     // Range ends share the date cell curve so the band and the selected cell line up.
     &__cell--start {
-      border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm)) 0 0
-        var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+      border-start-start-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+      border-end-start-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
     }
     &__cell--end {
-      border-radius: 0 var(--leaf-floating-option-radius, var(--leaf-radius-sm))
-        var(--leaf-floating-option-radius, var(--leaf-radius-sm)) 0;
+      border-start-end-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
+      border-end-end-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm));
     }
-    &:dir(rtl) {
-      .leaf-calendar__cell--start {
-        border-radius: 0 var(--leaf-floating-option-radius, var(--leaf-radius-sm))
-          var(--leaf-floating-option-radius, var(--leaf-radius-sm)) 0;
-      }
-      .leaf-calendar__cell--end {
-        border-radius: var(--leaf-floating-option-radius, var(--leaf-radius-sm)) 0 0
-          var(--leaf-floating-option-radius, var(--leaf-radius-sm));
-      }
-      .leaf-date-picker__nav > svg {
-        rotate: 180deg;
-      }
+    &:dir(rtl) .leaf-date-picker__nav > svg {
+      rotate: 180deg;
     }
     &__cells--coarse {
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -84,7 +77,6 @@
   }
   // Time-enabled pickers share one calendar/time composition and a flush footer.
   .leaf-picker-panel {
-    @include mixins.softened-frame-color(picker-divider, var(--leaf-color-surface), 75%);
     // An enclosing content card replaces the date-only calendar's own border.
     --leaf-picker-calendar-width: calc(
       292px - var(--leaf-surface-border) *
@@ -119,7 +111,7 @@
   .leaf-datetime-panel__time,
   .leaf-range-panel__time {
     min-width: 0;
-    border-inline-start: 1px solid var(--leaf-picker-divider-frame-color, var(--leaf-color-divider));
+    border-inline-start: 1px solid var(--leaf-color-divider);
     .leaf-time-picker__columns {
       height: 100%;
       padding: 8px 4px;
@@ -153,7 +145,7 @@
     gap: 8px;
     padding: 10px 12px;
     margin: 0;
-    border-block-start: 1px solid var(--leaf-picker-divider-frame-color, var(--leaf-color-divider));
+    border-block-start: 1px solid var(--leaf-color-divider);
     background: var(--leaf-color-surface);
     border-end-start-radius: inherit;
     border-end-end-radius: inherit;
@@ -290,8 +282,6 @@
       margin-inline-end: 6px;
       margin-bottom: 0;
     }
-  }
-  @media (max-width: 620px) {
     .leaf-floating.leaf-datetime-panel,
     .leaf-floating.leaf-range-panel--datetime {
       width: min(292px, calc(100vw - 24px));

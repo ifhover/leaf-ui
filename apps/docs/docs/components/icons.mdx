@@ -16,7 +16,7 @@ pnpm add lucide-react
 
 ## 按钮图标
 
-使用 `startIcon` 或 `endIcon` 放置文字前后的图标。仅图标按钮必须通过 `aria-label` 提供操作名称，例如“添加项目”。
+直接把图标组件放在 `<Button>` 子元素位置即可放置文字前后的图标。仅图标按钮使用 `size="icon"`（或 `icon-sm` / `icon-lg`），并通过 `aria-label` 提供操作名称，例如“添加项目”。
 
 <ComponentExample title="按钮图标" preview={<IconButtons />} fileName="buttons.tsx" width="fit-content">
 

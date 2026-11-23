@@ -1,11 +1,11 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { ModalBasic } from '../../src/examples/modal/basic';
 import { ModalDescription } from '../../src/examples/modal/description';
+import { ModalMini } from '../../src/examples/modal/mini';
 import { ModalFooter } from '../../src/examples/modal/footer';
 import { ModalDestroy } from '../../src/examples/modal/destroy';
 import { ModalFocus } from '../../src/examples/modal/focus';
 import { ModalAsync } from '../../src/examples/modal/async';
-import { ModalTabs } from '../../src/examples/modal/tabs';
 
 export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
@@ -36,7 +36,7 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
 ### 图标与说明
 
-通过 `icon` 和 `description` 为弹窗补充图标与说明。标题和底部默认显示分隔线，通过 `divided={false}` 关闭。
+通过 `icon` 和 `description` 为弹窗补充图标与说明。底部操作栏上方默认显示分隔线，通过 `divided={false}` 关闭；也可通过 `padding` 自定义整体或分区内边距。
 
 <ComponentExample exampleId="description" preview={<ModalDescription />} fileName="description.tsx" width="fit-content">
 
@@ -45,9 +45,20 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
 </ComponentExample>
 
+### 紧凑确认与危险操作
+
+设置 `size="mini"` 可切换为居中图标与标题的窄宽确认布局（未指定 `width` 时默认 `340`），并让底部按钮等分区域；配合 `danger` 可将主操作与图标底座切为危险样式。当需要以受控组件嵌入自定义内容、表单或完全管理打开状态与插槽时使用此写法；若只需内置状态图标与更便捷的 `Promise<boolean>` 命令式确认流程，推荐直接使用 [Confirm](/components/confirm)。
+
+<ComponentExample exampleId="mini" preview={<ModalMini />} fileName="mini.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/modal/mini.tsx"
+```
+
+</ComponentExample>
+
 ### 自定义底部
 
-函数形式的 `footer` 接收默认按钮，可保留其确认与取消逻辑并增加操作。自定义按钮间距由 `Space` 管理；`footer={null}` 隐藏底部。
+页脚已内置操作按钮间距，函数形式的 `footer` 可直接返回按钮节点（无需额外包一层 `Space`）并保留默认确认与取消逻辑；`footer={null}` 隐藏底部。
 
 <ComponentExample exampleId="footer" preview={<ModalFooter />} fileName="footer.tsx" width="fit-content">
 
@@ -82,22 +93,11 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
 ### 异步提交
 
-返回 Promise 可显示加载状态并阻止重复操作；等待期间，默认取消、关闭按钮、遮罩与 Escape 均不能关闭弹窗。`onConfirm` 成功后仍需应用更新 `open`，抛出错误则保留弹窗并显示错误信息。
+返回 Promise 可显示加载状态并阻止重复操作；等待期间，默认取消、关闭按钮、遮罩与 Escape 均不能关闭弹窗。无论 `onConfirm` 成功或失败，受控弹窗均需由应用自行处理异常与更新 `open`。
 
 <ComponentExample exampleId="async" preview={<ModalAsync />} fileName="async.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/modal/async.tsx"
-```
-
-</ComponentExample>
-
-### 标签页弹窗
-
-通过 `tabs` 在标题下方或顶部嵌入线形标签页。标签栏固定在正文滚动区上方，即使设置 `divided={false}` 也会保留标签栏底部分割线；若仅将标签栏用于切换状态并把内容写在 Modal 的 `children` 中，可省略各项的 `children`。
-
-<ComponentExample exampleId="tabs" preview={<ModalTabs />} fileName="tabs.tsx" width="fit-content">
-
-```tsx lineNumbers file="../../src/examples/modal/tabs.tsx"
 ```
 
 </ComponentExample>
@@ -117,7 +117,6 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 | `open` | `boolean` | 必填 | 受控的打开状态，应用负责更新。 |
 | `title` | `ReactNode` | — | 弹窗标题。 |
 | `description` | `ReactNode` | — | 补充说明。 |
-| `tabs` | [`ModalTabsProps`](#modaltabs-api) | — | 内嵌标签页；无标题时替代标题栏，有标题时位于其下方；底部分割线始终保留。 |
 | `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
 | `onConfirm` | `() => void \| Promise<void>` | — | 默认确认按钮的操作，可返回 Promise；等待期间阻止重复确认和默认关闭。成功后应用仍须更新 open。 |
 | `onCancel` | `() => void` | — | 取消按钮、关闭按钮、遮罩或 Escape 请求关闭时调用；省略时调用 onClose。 |
@@ -127,9 +126,12 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 | `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | 定制默认按钮属性 |
 | `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | 定制默认按钮属性 |
 | `footer` | `ReactNode \| ((actions: `[`ModalFooterActions`](#modalfooteractions)`) => ReactNode)` | 取消 + 确定 | 自定义底部；null 隐藏；函数接收默认按钮 |
-| `icon` | `ReactNode` | — | 标题左侧的装饰图标。 |
-| `divided` | `boolean` | `true` | 用浅分隔线划分标题、内容和底部操作区。 |
-| `width` | `number \| string` | `480` | 弹窗宽度，数字为像素 |
+| `icon` | `ReactNode` | — | 标题装饰图标；md 位于标题左侧，mini 位于标题上方居中底座。 |
+| `size` | `'md' \| 'mini'` | `'md'` | 弹窗尺寸；'mini' 切换为居中图标标题、窄宽及底栏按钮等分的确认布局。 |
+| `danger` | `boolean` | `false` | 使用危险样式高亮确认按钮及标题图标底座。 |
+| `divided` | `boolean` | `true` | 在底部操作栏顶部显示细分隔线。 |
+| `padding` | `number \| string \| 'none' \| { header?: number \| string \| 'none'; body?: number \| string \| 'none'; footer?: number \| string \| 'none' }` | — | 整体或按 header / body / footer 分区覆盖弹窗内边距；数字按 px，'none' 为 0（Confirm 不继承）。 |
+| `width` | `number \| string` | 480（mini 为 340） | 弹窗宽度，数字为像素；size="mini" 时默认 340。 |
 | `closable` | `boolean` | `true` | 显示右上角关闭按钮。 |
 | `maskClosable` | `boolean` | `true` | 点击遮罩时请求关闭。 |
 | `keyboard` | `boolean` | `true` | 允许按 Escape 请求关闭。 |
@@ -140,14 +142,6 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 | `preserve` | `boolean` | — | 指定是否保留内容，优先于 destroyOnClose；不重置组件外的受控状态。 |
 | `forceRender` | `boolean` | `false` | 打开前也挂载内容，关闭时保持隐藏。 |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | 指定 Portal 挂载目标，也可返回 ShadowRoot。 |
-
-### ModalTabs API
-
-内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Modal 固定使用 `type="line"` 与 `placement="top"`，标签栏固定在正文滚动区上方，底部分割线不受 `divided={false}` 影响；`items` 为空时恢复普通弹窗。
-
-```ts
-type ModalTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
-```
 
 ### ModalFooterActions
 

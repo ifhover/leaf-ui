@@ -8,28 +8,28 @@
   --rp-font-family-mono:
     ui-monospace, 'SF Mono', 'Cascadia Code', 'JetBrains Mono', Menlo, Consolas, monospace;
   --rp-code-font-size: 13px;
-  --rp-code-block-bg: #f6f6f7;
-  --rp-code-title-bg: #efeff1;
+  --rp-code-block-bg: #f5f5f5;
+  --rp-code-title-bg: #eaeaea;
   --rp-code-block-border: 1px solid var(--leaf-site-border);
   --rp-c-brand: #007aff;
-  --rp-c-brand-light: #3395ff;
-  --rp-c-brand-lighter: #cce4ff;
-  --rp-c-brand-dark: #0066d6;
-  --rp-c-brand-darker: #0052ad;
-  --rp-c-brand-tint: #007aff14;
+  --rp-c-brand-light: #2997ff;
+  --rp-c-brand-lighter: #e6f2ff;
+  --rp-c-brand-dark: #006ee6;
+  --rp-c-brand-darker: #0055b3;
+  --rp-c-brand-tint: rgba(13, 13, 13, 0.05);
   --rp-c-bg: #ffffff;
-  --rp-c-bg-soft: #f6f6f7;
-  --rp-c-text-1: #202024;
-  --rp-c-text-2: #5c5c64;
-  --rp-c-divider-light: #ececef;
+  --rp-c-bg-soft: #f5f5f5;
+  --rp-c-text-1: #0d0d0d;
+  --rp-c-text-2: #6c6c6c;
+  --rp-c-divider-light: #eaeaea;
   --leaf-site-bg: #ffffff;
-  --leaf-site-text: #202024;
-  --leaf-site-muted: #68686f;
-  --leaf-site-nav-text: #45454c;
+  --leaf-site-text: #0d0d0d;
+  --leaf-site-muted: #6c6c6c;
+  --leaf-site-nav-text: #525252;
   --leaf-site-panel: #ffffff;
-  --leaf-site-soft: #f6f6f7;
-  --leaf-site-border: #e5e5e8;
-  --leaf-site-divider: #ececef;
+  --leaf-site-soft: #f5f5f5;
+  --leaf-site-border: #e5e5e5;
+  --leaf-site-divider: #eaeaea;
   --leaf-site-accent: #007aff;
   --leaf-font-family: var(--rp-font-family-base);
 }
@@ -41,38 +41,26 @@ body {
 }
 html.rp-dark {
   @include palette.dark;
-  --leaf-color-danger: #ef8585;
-  --leaf-color-on-danger: #381818;
-  --leaf-color-warning: #e0b76e;
-  --leaf-color-success: #83cf9e;
-  --leaf-color-info: #69b1ff;
-  --leaf-color-primary: #007aff;
-  --leaf-color-on-primary: #ffffff;
-  --leaf-color-text: #ededf0;
-  --leaf-color-text-muted: #a5a5ae;
-  --leaf-color-surface: #1c1c20;
-  --leaf-color-surface-muted: #25252b;
-  --leaf-color-border: #38383f;
-  --rp-code-block-bg: #25252b;
-  --rp-code-title-bg: #2a2a30;
-  --rp-c-brand: #4da2ff;
-  --rp-c-brand-light: #80bdff;
-  --rp-c-brand-dark: #4da2ff;
-  --rp-c-brand-tint: #4da2ff1f;
-  --rp-c-bg: #161619;
-  --rp-c-bg-soft: #25252b;
-  --rp-c-text-1: #ededf0;
-  --rp-c-text-2: #b7b7c0;
-  --rp-c-divider-light: #38383f;
-  --leaf-site-bg: #161619;
-  --leaf-site-text: #ededf0;
-  --leaf-site-muted: #b7b7c0;
-  --leaf-site-nav-text: #d4d4dc;
-  --leaf-site-panel: #1c1c20;
-  --leaf-site-soft: #25252b;
-  --leaf-site-border: #38383f;
-  --leaf-site-divider: #2e2e34;
-  --leaf-site-accent: #4da2ff;
+  --rp-code-block-bg: #181818;
+  --rp-code-title-bg: #212121;
+  --rp-c-brand: #007aff;
+  --rp-c-brand-light: #2997ff;
+  --rp-c-brand-dark: #006ee6;
+  --rp-c-brand-tint: rgba(245, 245, 245, 0.08);
+  --rp-c-bg: #0d0d0d;
+  --rp-c-bg-soft: #262626;
+  --rp-c-text-1: #f5f5f5;
+  --rp-c-text-2: #a1a1a1;
+  --rp-c-divider-light: #262626;
+  --leaf-site-bg: #0d0d0d;
+  --leaf-site-text: #f5f5f5;
+  --leaf-site-muted: #a1a1a1;
+  --leaf-site-nav-text: #d4d4d4;
+  --leaf-site-panel: #0d0d0d;
+  --leaf-site-soft: #181818;
+  --leaf-site-border: #262626;
+  --leaf-site-divider: #212121;
+  --leaf-site-accent: #007aff;
 }
 .leaf-docs-theme {
   --leaf-site-accent: var(--leaf-color-primary);
@@ -81,7 +69,7 @@ html.rp-dark {
   --rp-c-brand-lighter: var(--leaf-color-primary-soft);
   --rp-c-brand-dark: var(--leaf-color-primary);
   --rp-c-brand-darker: var(--leaf-color-primary);
-  --rp-c-brand-tint: color-mix(in srgb, var(--leaf-color-primary) 8%, transparent);
+  --rp-c-brand-tint: var(--leaf-color-surface-muted);
 }
 .rp-codeblock__content:has(> .leaf-docs-code-actions) {
   display: flex;
@@ -101,6 +89,12 @@ html.rp-dark {
     margin-block: calc(1rem + (var(--rp-code-font-size) * 1.7 - var(--leaf-control-height-sm)) / 2)
       12px;
     margin-inline: 0 12px;
+
+    button[aria-pressed='true'] {
+      color: var(--leaf-color-text);
+      background: var(--leaf-color-surface-muted);
+      border-color: var(--leaf-color-border-hover);
+    }
   }
 }
 .rp-doc td > a.rp-link {
@@ -114,7 +108,7 @@ html.rp-dark {
 }
 .rp-outline .rp-toc-item:is(:hover, .rp-toc-item--active) .rp-toc-item__text,
 .rp-outline .rp-toc-item:is(:hover, .rp-toc-item--active) .rp-toc-item__text code {
-  color: var(--leaf-site-accent);
+  color: var(--leaf-site-text);
 }
 .rp-outline .rp-toc-item--active .rp-toc-item__text {
   font-weight: 500;
@@ -195,7 +189,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
         text-underline-offset: 3px;
       }
       &:focus-visible {
-        outline: 2px solid var(--leaf-site-accent);
+        outline: 2px solid var(--leaf-site-text);
         outline-offset: 2px;
         border-radius: 2px;
       }
@@ -264,7 +258,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
     }
   }
   th#{$prose} {
-    color: var(--leaf-site-muted);
+    color: var(--leaf-site-text);
     background: var(--leaf-site-soft);
     font-size: 13px;
     font-weight: 500;
@@ -334,7 +328,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
   line-height: 1.2;
 }
 .leaf-hero__brand {
-  color: var(--leaf-site-accent);
+  color: var(--leaf-site-text);
   font-size: clamp(52px, 6vw, 72px);
   letter-spacing: -0.055em;
 }
@@ -355,7 +349,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
   margin: 26px 0 20px;
 }
 .leaf-home a:not(.leaf-button):focus-visible {
-  outline: 3px solid var(--leaf-site-accent);
+  outline: 2px solid var(--leaf-site-text);
   outline-offset: 4px;
 }
 .leaf-hero__note {
@@ -396,7 +390,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
   }
 }
 .leaf-eyebrow {
-  color: var(--leaf-site-accent);
+  color: var(--leaf-site-muted);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -514,13 +508,14 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
   line-height: 24px;
 
   &:hover {
-    color: var(--leaf-site-accent);
+    color: var(--leaf-site-text);
+    background: color-mix(in srgb, var(--leaf-site-text) 4%, transparent);
   }
 
   &--active,
   &--active:hover {
-    color: var(--leaf-site-accent);
-    background: var(--rp-c-brand-tint);
+    color: var(--leaf-site-text);
+    background: var(--leaf-color-surface-muted);
     font-weight: 500;
   }
 }
@@ -543,7 +538,7 @@ $prose: ':not(:where(.rp-not-doc, .rp-not-doc *))';
   box-shadow: 0 calc(-1 * var(--rp-sidebar-padding)) 0 var(--rp-c-bg);
 
   &:hover {
-    color: var(--leaf-site-accent);
+    color: var(--leaf-site-text);
   }
 }
 .rp-doc-layout__sidebar .rp-sidebar-section-header {

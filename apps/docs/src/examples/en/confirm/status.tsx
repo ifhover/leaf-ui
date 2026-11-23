@@ -1,4 +1,5 @@
 import { Button, Space, useConfirm } from '@ifhover/leaf-ui';
+import { CircleX } from 'lucide-react';
 
 export function ConfirmStatus() {
   const { confirm } = useConfirm();
@@ -7,13 +8,12 @@ export function ConfirmStatus() {
       <Button
         onClick={() =>
           confirm({
-            type: 'info',
-            title: 'Share this link?',
-            children: 'Anyone with the link can view this page.',
+            title: 'Publish this article?',
+            children: 'All workspace members will be able to read it.',
           })
         }
       >
-        Information
+        Default
       </Button>
       <Button
         onClick={() =>
@@ -36,6 +36,31 @@ export function ConfirmStatus() {
         }
       >
         Warning
+      </Button>
+      <Button
+        onClick={() =>
+          confirm({
+            type: 'danger',
+            title: 'Delete project?',
+            children: 'Related resources will be permanently removed.',
+            confirmText: 'Delete',
+          })
+        }
+      >
+        Danger
+      </Button>
+      <Button
+        onClick={() =>
+          confirm({
+            type: 'danger',
+            icon: <CircleX />,
+            showCancel: false,
+            title: 'Import failed',
+            children: 'Unsupported file format. Check the file and try again.',
+          })
+        }
+      >
+        Failure notice
       </Button>
     </Space>
   );

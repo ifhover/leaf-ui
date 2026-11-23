@@ -2,7 +2,6 @@
 
 @layer leaf-ui {
   .leaf-tree {
-    @include mixins.accent-soft-feedback-family;
     min-width: 0;
     color: var(--leaf-component-tree-color, var(--leaf-color-text));
     font: var(--leaf-component-tree-font-size, var(--leaf-font-size))/var(--leaf-line-height)
@@ -111,51 +110,51 @@
       min-width: 0;
       overflow-wrap: anywhere;
       &[data-match] {
-        font-weight: 700;
-        color: var(--leaf-color-primary);
+        font-weight: 600;
+        color: var(--leaf-color-text);
       }
     }
     &__selection-mark {
       flex: 0 0 auto;
       opacity: 0;
-      transform: scale(0.6) rotate(-12deg);
-      transition:
-        opacity var(--leaf-motion-color) var(--leaf-motion-easing),
-        transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
+      path,
+      polyline {
+        stroke-dasharray: 24;
+        stroke-dashoffset: 24;
+        transition: stroke-dashoffset var(--leaf-motion-duration) var(--leaf-motion-easing);
+      }
     }
     &__row[data-selected] &__selection-mark {
       opacity: 1;
-      transform: scale(1) rotate(0);
+      path,
+      polyline {
+        stroke-dashoffset: 0;
+      }
     }
-    &--lines .leaf-tree__group {
-      position: relative;
-      &::before {
-        content: '';
+    &--lines {
+      .leaf-tree__group,
+      .leaf-tree__row {
+        position: relative;
+      }
+      .leaf-tree__group::before,
+      .leaf-tree__indent-line {
         position: absolute;
         inset-block: 0;
         inset-inline-start: var(--leaf-tree-line-left, 14px);
         border-inline-start: 1px dashed var(--leaf-color-border);
         pointer-events: none;
       }
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-tree__row,
-    .leaf-tree__selection-mark,
-    .leaf-tree__group,
-    .leaf-tree__group-content,
-    .leaf-tree__toggle svg {
-      transition: none;
-    }
-    .leaf-tree__spinner {
-      animation: none;
+      .leaf-tree__group::before {
+        content: '';
+      }
     }
   }
 
   .leaf-tree__spinner {
     animation: var(
       --leaf-motion-animation,
-      leaf-feedback-spin calc(var(--leaf-motion-duration) * 5) linear infinite
+      leaf-spin calc(var(--leaf-motion-duration) * 5) linear infinite
     );
   }
   .leaf-tree__drag-row {
@@ -170,7 +169,7 @@
       opacity: 0.4;
     }
     &[data-drop='inside'] {
-      background: var(--leaf-accent-soft-background);
+      background: var(--leaf-color-surface-muted);
       border-radius: var(--leaf-radius-sm);
     }
     &[data-drop='before']::before,
@@ -180,7 +179,7 @@
       left: 0;
       right: 0;
       height: 2px;
-      background: var(--leaf-color-primary);
+      background: var(--leaf-color-text);
     }
     &[data-drop='before']::before {
       top: 0;
@@ -194,11 +193,8 @@
     cursor: grab;
     flex: none;
   }
-  :dir(rtl) .leaf-tree__toggle > svg:not(.leaf-tree__spinner) {
+  :where(:dir(rtl)) .leaf-tree__toggle > svg:not(.leaf-tree__spinner) {
     transform: rotate(180deg);
-  }
-  :dir(rtl) .leaf-tree__toggle[data-open] > svg:not(.leaf-tree__spinner) {
-    transform: rotate(90deg);
   }
   @media (forced-colors: active) {
     .leaf-tree__row[data-selected] {

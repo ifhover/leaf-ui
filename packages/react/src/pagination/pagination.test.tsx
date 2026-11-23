@@ -15,13 +15,21 @@ describe('Pagination', () => {
         <Pagination total={100} onChange={change} />
       </ConfigProvider>,
     );
-    const next = screen.getByRole('button', { name: 'Next page' });
-    expect(next).toHaveClass('leaf-button', 'leaf-button--outline');
+    const prev = screen.getByRole('button', { name: 'Previous' });
+    const next = screen.getByRole('button', { name: 'Next' });
+    expect(prev).toHaveAttribute('data-trailing-text', '');
+    expect(prev).not.toHaveAttribute('data-leading-text');
+    expect(next).toHaveClass('leaf-button', 'leaf-button--text');
+    expect(next).toHaveTextContent('Next');
+    expect(next).toHaveAttribute('data-leading-text', '');
+    expect(next).not.toHaveAttribute('data-trailing-text');
     expect(next).toHaveAttribute('type', 'button');
     expect(next).toBeEnabled();
     expect(next).not.toHaveAttribute('data-loading');
     await userEvent.click(next);
     expect(change).toHaveBeenLastCalledWith(2, 10);
+    expect(screen.getByRole('button', { name: 'Page 2' })).toHaveClass('leaf-button--outline');
+    expect(document.querySelector('.leaf-pagination__indicator')).toBeNull();
   });
   it('jumps across omitted pages using accessible ellipsis controls', async () => {
     const change = vi.fn();
@@ -43,7 +51,7 @@ describe('Pagination', () => {
       </ConfigProvider>,
     );
     expect(screen.getAllByRole('button').length).toBeLessThanOrEqual(9);
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(change).toHaveBeenLastCalledWith(51, 10);
     rerender(
       <ConfigProvider locale="en-US">
@@ -51,7 +59,7 @@ describe('Pagination', () => {
       </ConfigProvider>,
     );
     expect(screen.getByRole('button', { name: 'Page 2' })).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
   });
   it('changes page size while preserving item position and supports bounded jumps', async () => {
     const change = vi.fn();
@@ -66,10 +74,15 @@ describe('Pagination', () => {
         />
       </ConfigProvider>,
     );
-    await userEvent.click(screen.getByRole('combobox', { name: 'Page size' }));
+    expect(screen.queryByText('Rows per page')).not.toBeInTheDocument();
+    const sizeSelect = screen.getByRole('combobox', { name: 'Page size' });
+    expect(sizeSelect).toHaveAttribute('readonly');
+    expect(sizeSelect).toHaveValue('10 / page');
+    await userEvent.click(sizeSelect);
     await userEvent.click(screen.getByRole('option', { name: '20 / page' }));
     expect(change).toHaveBeenLastCalledWith(2, 20);
     const jump = screen.getByRole('spinbutton', { name: 'Go to' });
+    expect(jump.closest('.leaf-pagination__jumper')).toHaveTextContent('Go topage');
     fireEvent.change(jump, { target: { value: '999' } });
     fireEvent.keyDown(jump, { key: 'Enter' });
     expect(change).toHaveBeenLastCalledWith(6, 20);
@@ -85,7 +98,7 @@ describe('Pagination', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: 'Page 3' }));
     expect(change).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(change).toHaveBeenCalledExactlyOnceWith(4, 20);
     expect(screen.getByRole('button', { name: 'Page 3' })).toHaveAttribute('aria-current', 'page');
     rerender(
@@ -219,6 +232,90 @@ describe('Pagination', () => {
     ]);
   });
 
+  it('retains initial out-of-list defaultPageSize after switching sizes', async () => {
+    const change = vi.fn();
+    render(
+      <ConfigProvider locale="en-US">
+        <Pagination total={120} defaultPageSize={5} showSizeChanger onChange={change} />
+      </ConfigProvider>,
+    );
+    const sizeSelect = screen.getByRole('combobox', { name: 'Page size' });
+    expect(sizeSelect).toHaveValue('5 / page');
+    await userEvent.click(sizeSelect);
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
+      '5 / page',
+      '10 / page',
+      '20 / page',
+      '50 / page',
+      '100 / page',
+    ]);
+    await userEvent.click(screen.getByRole('option', { name: '20 / page' }));
+    expect(change).toHaveBeenLastCalledWith(1, 20);
+    await userEvent.click(sizeSelect);
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
+      '5 / page',
+      '10 / page',
+      '20 / page',
+      '50 / page',
+      '100 / page',
+    ]);
+    await userEvent.click(screen.getByRole('option', { name: '5 / page' }));
+    expect(sizeSelect).toHaveValue('5 / page');
+    expect(change).toHaveBeenLastCalledWith(1, 5);
+  });
+
+  it('retains controlled out-of-list pageSize values after prop updates', async () => {
+    const { rerender } = render(
+      <ConfigProvider locale="en-US">
+        <Pagination total={120} pageSize={5} showSizeChanger />
+      </ConfigProvider>,
+    );
+    rerender(
+      <ConfigProvider locale="en-US">
+        <Pagination total={120} pageSize={10} showSizeChanger />
+      </ConfigProvider>,
+    );
+    rerender(
+      <ConfigProvider locale="en-US">
+        <Pagination total={120} pageSize={15} showSizeChanger />
+      </ConfigProvider>,
+    );
+    rerender(
+      <ConfigProvider locale="en-US">
+        <Pagination total={120} pageSize={20} showSizeChanger />
+      </ConfigProvider>,
+    );
+    await userEvent.click(screen.getByRole('combobox', { name: 'Page size' }));
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
+      '5 / page',
+      '10 / page',
+      '15 / page',
+      '20 / page',
+      '50 / page',
+      '100 / page',
+    ]);
+  });
+
+  it('formats zh-CN size options inside Select and appends the page unit to quick jumper', async () => {
+    render(
+      <ConfigProvider locale="zh-CN">
+        <Pagination total={120} showSizeChanger showQuickJumper />
+      </ConfigProvider>,
+    );
+    expect(screen.queryByText('每页显示')).not.toBeInTheDocument();
+    const sizeSelect = screen.getByRole('combobox', { name: '每页条数' });
+    expect(sizeSelect).toHaveValue('10 条/页');
+    await userEvent.click(sizeSelect);
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
+      '10 条/页',
+      '20 条/页',
+      '50 条/页',
+      '100 条/页',
+    ]);
+    const jump = screen.getByRole('spinbutton', { name: '跳至' });
+    expect(jump.closest('.leaf-pagination__jumper')).toHaveTextContent('跳至页');
+  });
+
   it('disables every control and hides a single-page region when requested', async () => {
     const change = vi.fn();
     const { rerender } = render(
@@ -236,21 +333,29 @@ describe('Pagination', () => {
     for (const button of screen.getAllByRole('button')) expect(button).toBeDisabled();
     expect(screen.getByRole('combobox')).toBeDisabled();
     expect(screen.getByRole('spinbutton')).toBeDisabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(change).not.toHaveBeenCalled();
     rerender(<Pagination total={10} hideOnSinglePage />);
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 
-  it('marks step buttons as square icon-only controls across sizes including sm', () => {
+  it('renders labeled previous/next buttons and unclickable current page in outline variant', async () => {
+    const change = vi.fn();
     render(
       <ConfigProvider locale="en-US">
-        <Pagination total={100} size="sm" />
+        <Pagination total={100} defaultCurrent={2} size="sm" variant="outline" onChange={change} />
       </ConfigProvider>,
     );
-    expect(screen.getByRole('button', { name: 'Previous page' })).toHaveClass(
-      'leaf-button--icon-only',
-    );
-    expect(screen.getByRole('button', { name: 'Next page' })).toHaveClass('leaf-button--icon-only');
+    const prev = screen.getByRole('button', { name: 'Previous' });
+    const next = screen.getByRole('button', { name: 'Next' });
+    const active = screen.getByRole('button', { name: 'Page 2' });
+    expect(prev).toHaveClass('leaf-button--sm', 'leaf-button--outline');
+    expect(prev).toHaveTextContent('Previous');
+    expect(next).toHaveClass('leaf-button--sm', 'leaf-button--outline');
+    expect(next).toHaveTextContent('Next');
+    expect(active).toHaveAttribute('aria-current', 'page');
+    expect(active).toBeDisabled();
+    await userEvent.click(active);
+    expect(change).not.toHaveBeenCalled();
   });
 });

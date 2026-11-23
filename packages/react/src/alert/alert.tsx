@@ -8,31 +8,42 @@ import { inertProps } from '../shared/inert';
 import { useContentTransition, usePresence } from '../shared/presence';
 
 export type { FeedbackType, FeedbackTypeInput } from '../shared/feedback';
+export type AlertType = 'default' | 'success' | 'warning' | 'danger';
+export type AlertTypeInput = AlertType | 'error';
+
 export interface AlertProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title: ReactNode;
   description?: ReactNode;
   /** Trailing content, displayed before the close button. */
   extra?: ReactNode;
-  type?: FeedbackTypeInput;
+  type?: AlertTypeInput;
   icon?: ReactNode;
   showIcon?: boolean;
   closable?: boolean;
   onClose?: () => void;
 }
-export function FeedbackIcon({ type: rawType }: { type: FeedbackTypeInput | 'loading' }) {
-  const type = rawType === 'loading' ? rawType : normalizeFeedbackType(rawType);
+export function FeedbackIcon({
+  type: rawType,
+  size = 18,
+}: {
+  type: FeedbackTypeInput | AlertTypeInput | 'loading';
+  size?: number;
+}) {
+  const normalized =
+    rawType === 'loading' || rawType === 'default' ? rawType : normalizeFeedbackType(rawType);
   const Icon = {
+    default: Info,
     success: CheckCircle2,
     info: Info,
     warning: TriangleAlert,
     danger: CircleX,
     loading: LoaderCircle,
-  }[type];
+  }[normalized];
   return (
     <Icon
-      size={18}
+      size={size}
       aria-hidden="true"
-      className={type === 'loading' ? 'leaf-feedback-spinner' : undefined}
+      className={normalized === 'loading' ? 'leaf-feedback-spinner' : undefined}
     />
   );
 }
@@ -41,7 +52,7 @@ export function Alert(rawProps: AlertProps) {
     title,
     description,
     extra,
-    type = 'info',
+    type = 'default',
     icon,
     showIcon = true,
     closable,
@@ -49,7 +60,7 @@ export function Alert(rawProps: AlertProps) {
     className,
     ...props
   } = useComponentProps('Alert', rawProps);
-  const normalizedType = normalizeFeedbackType(type);
+  const normalizedType: AlertType = type === 'error' ? 'danger' : type;
   const { messages } = useLeafConfig();
   const [closed, setClosed] = useState(false);
   const root = useRef<HTMLDivElement>(null);
@@ -73,7 +84,7 @@ export function Alert(rawProps: AlertProps) {
     >
       {showIcon && (
         <span className="leaf-alert__icon" aria-hidden="true">
-          {icon ?? <FeedbackIcon type={normalizedType} />}
+          {icon ?? <FeedbackIcon type={normalizedType} size={16} />}
         </span>
       )}
       <div className="leaf-alert__content" ref={content}>
@@ -99,7 +110,7 @@ export function Alert(rawProps: AlertProps) {
             onClose?.();
           }}
         >
-          <X size={16} aria-hidden="true" />
+          <X size={14} aria-hidden="true" />
         </button>
       )}
     </div>

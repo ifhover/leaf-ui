@@ -6,11 +6,21 @@ export function AlertIcons() {
     <Flex direction="column" gap="lg">
       <Flex direction="column" gap="sm">
         <Text tone="muted">Custom icon</Text>
-        <Alert type="success" title="Access permissions updated" icon={<ShieldCheck size={20} />} />
+        <Alert
+          type="success"
+          title="Access permissions updated"
+          description="Team members will see the updated permissions within seconds."
+          icon={<ShieldCheck size={16} />}
+        />
       </Flex>
       <Flex direction="column" gap="sm">
         <Text tone="muted">Hidden icon</Text>
-        <Alert type="success" title="Access permissions updated" showIcon={false} />
+        <Alert
+          type="success"
+          title="Access permissions updated"
+          description="Displayed without an icon for tighter layouts."
+          showIcon={false}
+        />
       </Flex>
     </Flex>
   );

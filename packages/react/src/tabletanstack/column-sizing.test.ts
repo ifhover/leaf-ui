@@ -137,4 +137,14 @@ describe('DataTable column layout', () => {
       layout([{ accessorKey: 'name' }], 1000, { defaultColumn: { size: 120 } }).widths.get('name'),
     ).toBe(120);
   });
+
+  it('activates fixed layout when a column enables ellipsis truncation without explicit sizes', () => {
+    const result = layout([
+      { accessorKey: 'name', meta: { ellipsis: true } },
+      { accessorKey: 'description' },
+    ]);
+    expect(result.fixed).toBe(true);
+    expect([...result.widths.values()]).toEqual([500, 500]);
+    expect(result.totalWidth).toBe(1000);
+  });
 });

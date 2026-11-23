@@ -16,13 +16,14 @@ export function CodeButtonGroup({
     <div className="rp-code-button-group leaf-docs-code-actions">
       {showWrapCodeButton && (
         <Button
-          size="sm"
+          size="icon-sm"
           aria-label={t('切换代码换行', 'Toggle line wrapping')}
           title={t('切换代码换行', 'Toggle line wrapping')}
           aria-pressed={wrapCode}
           onClick={toggleWrapCode}
-          startIcon={<Icon name="wrap" />}
-        />
+        >
+          <Icon name="wrap" />
+        </Button>
       )}
       {showCopyButton && (
         <CopyButton

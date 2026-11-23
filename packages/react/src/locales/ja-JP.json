@@ -86,11 +86,12 @@
     "nextPage": "次のページ",
     "page": "ページ",
     "pageSize": "表示件数",
+    "pageSizeOption": "{count} 件/ページ",
     "jumpTo": "移動先",
     "pageBack": "5ページ前に移動",
     "pageForward": "5ページ先に移動",
     "pageLabel": "ページ {page}",
-    "pageSizeOption": "{count}件 / ページ",
+    "rowsPerPage": "表示件数",
     "total": "全 {total} 件"
   },
   "input": {
@@ -251,7 +252,8 @@
   },
   "qrCode": {
     "qrCode": "QRコード",
-    "refreshCode": "コードを更新"
+    "refreshCode": "コードを更新",
+    "expired": "QRコードの有効期限が切れました"
   },
   "scrollbar": {
     "verticalScrollbar": "縦スクロールバー",
@@ -274,8 +276,6 @@
     "collapseRow": "行「{label}」を折りたたむ",
     "expandRow": "行「{label}」を展開",
     "expandRows": "行を展開",
-    "expandDetails": "詳細を展開",
-    "collapseDetails": "詳細を折りたたむ",
     "sortAscending": "昇順に並べ替え",
     "sortDescending": "降順に並べ替え",
     "clearSorting": "並べ替えを解除"
@@ -334,5 +334,8 @@
     "dropped": "{label}を配置しました",
     "cancelled": "並べ替えをキャンセルしました",
     "outside": "移動先がありません"
+  },
+  "drawer": {
+    "resize": "ドロワーのサイズを変更"
   }
 }

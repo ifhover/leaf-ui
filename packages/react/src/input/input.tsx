@@ -1,4 +1,4 @@
-import { Eye, EyeOff, X } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import {
   forwardRef,
   type InputHTMLAttributes,
@@ -11,6 +11,7 @@ import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
+import { ClearButton } from '../shared/clear-button';
 import { useFieldValue, useMergedRef } from '../shared/field';
 import type { ControlSize, ControlStatus } from '../shared/types';
 
@@ -125,12 +126,10 @@ export const InputControl = forwardRef<HTMLInputElement, InputProps>(function In
         }}
       />
       {allowClear && current && !disabled && !props.readOnly && (
-        <button
-          type="button"
-          className="leaf-input__clear"
-          aria-label={messages.input.clear}
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={() => {
+        <ClearButton
+          anchored={Boolean(showCount || suffix || (password && visibilityToggle))}
+          label={messages.input.clear}
+          onClear={() => {
             const node = input.current;
             if (!node) return;
             Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set?.call(
@@ -141,9 +140,7 @@ export const InputControl = forwardRef<HTMLInputElement, InputProps>(function In
             node.focus();
             onClear?.();
           }}
-        >
-          <X size={14} aria-hidden="true" />
-        </button>
+        />
       )}
       {showCount && (
         <span className="leaf-input__count">

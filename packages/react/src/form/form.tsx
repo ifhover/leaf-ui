@@ -242,7 +242,11 @@ export function FormField(rawProps: FormFieldProps) {
           event.preventDefault();
           const target = event.target as HTMLInputElement;
           setValidationError(
-            target.validity?.valueMissing ? messages.form.required : messages.form.invalid,
+            target.validity?.valueMissing
+              ? messages.form.required
+              : target.validity?.customError && target.validationMessage
+                ? target.validationMessage
+                : messages.form.invalid,
           );
           document.getElementById(inputId)?.focus();
         }}

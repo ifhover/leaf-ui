@@ -351,6 +351,7 @@ export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function D
       />
       {allowClear && (formValue || text) && !disabled && !props.readOnly && (
         <ClearButton
+          beforeArrow
           tabIndex={segments ? -1 : undefined}
           label={clearLabel ?? messages.datePicker.clear}
           onClear={() => {

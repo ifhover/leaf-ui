@@ -40,7 +40,7 @@ describe('Input', () => {
       );
       const count = container.querySelector('.leaf-input__count');
       const clear = screen.getByRole('button', { name: '清除输入' });
-      expect(clear.nextElementSibling).toBe(count);
+      expect(clear.closest('.leaf-clear')?.nextElementSibling).toBe(count);
       expect(count?.nextElementSibling).toHaveTextContent('kg');
     },
   );
@@ -167,5 +167,19 @@ describe('Input', () => {
     expect(input).toHaveValue('Leaf');
     rerender(<Input aria-label="名称" disabled />);
     expect(input).toBeDisabled();
+  });
+
+  it('uses floating or zero-width anchored clear buttons based on trailing affixes', () => {
+    const { container, rerender } = render(
+      <Input aria-label="纯输入" defaultValue="Leaf" allowClear />,
+    );
+    const plainClear = container.querySelector('.leaf-clear');
+    expect(plainClear).not.toBeNull();
+    expect(plainClear).not.toHaveClass('leaf-clear--anchored');
+
+    rerender(<Input aria-label="带后缀输入" defaultValue="Leaf" allowClear suffix="kg" />);
+    const anchoredClear = container.querySelector('.leaf-clear');
+    expect(anchoredClear).toHaveClass('leaf-clear--anchored');
+    expect(anchoredClear?.querySelector('.leaf-clear__float')).not.toBeNull();
   });
 });

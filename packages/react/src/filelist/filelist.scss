@@ -4,11 +4,6 @@
   // Calm ledger rows for lists and framed contact-sheet cards for media galleries.
   // Icons rest in neutral ink; semantic color appears only on active upload or error states.
   .leaf-file-list {
-    @include mixins.softened-frame-color(
-      file-list,
-      var(--leaf-component-file-list-background, var(--leaf-color-surface))
-    );
-
     --leaf-file-radius: var(--leaf-component-file-list-radius, var(--leaf-radius-md));
     --leaf-file-border: var(--leaf-component-file-list-border-width, var(--leaf-border-width, 1px));
     --leaf-file-inner-radius: max(0px, calc(var(--leaf-file-radius) - var(--leaf-file-border)));
@@ -52,9 +47,7 @@
         --leaf-component-file-list-padding,
         var(--leaf-file-row-block) var(--leaf-file-row-inline)
       );
-      transition:
-        background-color var(--leaf-motion-color) var(--leaf-motion-easing),
-        border-color var(--leaf-motion-color) var(--leaf-motion-easing);
+      transition: var(--leaf-field-transition);
       &:first-child {
         border-start-start-radius: var(--leaf-file-inner-radius);
         border-start-end-radius: var(--leaf-file-inner-radius);
@@ -73,9 +66,9 @@
         );
         inset-inline-end: 0;
         height: 1px;
-        background: var(--leaf-file-list-frame-color);
+        background: var(--leaf-color-divider);
         pointer-events: none;
-        transition: opacity var(--leaf-motion-color) var(--leaf-motion-easing);
+        transition: var(--leaf-action-transition);
       }
     }
     &:not([data-disabled]) &__item {
@@ -97,7 +90,7 @@
       justify-content: center;
       inline-size: var(--leaf-file-visual-size);
       block-size: var(--leaf-file-visual-size);
-      border: 1px solid var(--leaf-file-list-frame-color);
+      border: 1px solid var(--leaf-color-border);
       border-radius: var(--leaf-file-visual-radius);
       background: var(--leaf-color-surface-muted);
       color: var(--leaf-file-accent);
@@ -117,18 +110,20 @@
         content: '';
         position: absolute;
         inset: 0;
-        border: 1px solid var(--leaf-file-list-frame-color);
+        border: 1px solid var(--leaf-color-border);
         border-radius: inherit;
         pointer-events: none;
       }
     }
+    &__item[data-status='uploading'] &__icon:not([data-thumbnail]),
+    &__item[data-error] &__icon:not([data-thumbnail]) {
+      --leaf-file-accent: var(--leaf-status-ink);
+    }
     &__item[data-status='uploading'] &__icon:not([data-thumbnail]) {
       @include mixins.status-ink-family(primary);
-      --leaf-file-accent: var(--leaf-status-ink);
     }
     &__item[data-error] &__icon:not([data-thumbnail]) {
       @include mixins.status-label-family(danger);
-      --leaf-file-accent: var(--leaf-status-ink);
       background: var(--leaf-status-label-background);
       border-color: var(--leaf-color-danger-border);
     }
@@ -210,17 +205,19 @@
       > svg {
         flex: none;
       }
+      &[data-status='done'],
+      &[data-status='error'],
+      &[data-status='uploading'] {
+        color: var(--leaf-status-ink);
+      }
       &[data-status='done'] {
         @include mixins.status-ink-family(success);
-        color: var(--leaf-status-ink);
       }
       &[data-status='error'] {
         @include mixins.status-ink-family(danger);
-        color: var(--leaf-status-ink);
       }
       &[data-status='uploading'] {
         @include mixins.status-ink-family(primary);
-        color: var(--leaf-status-ink);
       }
     }
     &__actions {
@@ -235,9 +232,10 @@
       }
     }
     &__action,
-    &__actions > .leaf-button--icon-only {
+    &__actions > .leaf-button {
       --leaf-button-height: var(--leaf-file-action-size);
       --leaf-button-radius: var(--leaf-radius-sm);
+      --leaf-button-icon-size: 15px;
       box-sizing: border-box;
       display: inline-flex;
       align-items: center;
@@ -251,11 +249,6 @@
       border-radius: var(--leaf-radius-sm);
       text-decoration: none;
       vertical-align: middle;
-      .leaf-button__icon,
-      .leaf-button__spinner {
-        width: 15px;
-        height: 15px;
-      }
       &[aria-disabled='true'] {
         opacity: 0.45;
         cursor: not-allowed;
@@ -333,7 +326,7 @@
       justify-content: center;
       width: 36px;
       height: 36px;
-      border: 1px solid var(--leaf-file-list-frame-color);
+      border: 1px solid var(--leaf-color-border);
       border-radius: var(--leaf-radius);
       background: var(--leaf-color-surface-muted);
     }
@@ -431,8 +424,8 @@
         box-sizing: border-box;
         width: 40px;
         height: 44px;
-        border: 1px solid var(--leaf-file-list-frame-color);
-        border-radius: max(0px, calc(var(--leaf-radius) - 2px));
+        border: 1px solid var(--leaf-color-border);
+        border-radius: var(--leaf-control-radius-sm);
         background: var(--leaf-file-surface);
         box-shadow: var(--leaf-shadow-xs);
       }
@@ -492,21 +485,8 @@
     .leaf-file-list--picture {
       --leaf-file-visual-size: 40px;
     }
-    .leaf-file-list--picture-card {
-      --leaf-file-action-size: max(30px, var(--leaf-control-height-sm));
-      .leaf-file-list__icon {
-        aspect-ratio: 16 / 9;
-      }
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-file-list__item,
-    .leaf-file-list__item::before,
-    .leaf-file-list__action,
-    .leaf-file-list__actions > .leaf-button--icon-only,
-    .leaf-file-list__progress > span {
-      transition: none;
+    .leaf-file-list--picture-card .leaf-file-list__icon {
+      aspect-ratio: 16 / 9;
     }
   }
 

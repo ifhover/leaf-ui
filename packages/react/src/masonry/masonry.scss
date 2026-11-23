@@ -4,19 +4,26 @@
     column-gap: var(--leaf-masonry-gap);
     &__item {
       break-inside: avoid;
-      margin-bottom: var(--leaf-masonry-gap);
+      margin-block-end: var(--leaf-masonry-gap);
     }
   }
-  @each $point, $width in (sm: 576px, md: 768px, lg: 992px, xl: 1200px) {
+  $masonry-sm-fallback: var(
+    --leaf-masonry-columns-sm,
+    var(--leaf-masonry-columns-xs, var(--leaf-masonry-columns, 1))
+  );
+  $masonry-md-fallback: var(--leaf-masonry-columns-md, #{$masonry-sm-fallback});
+  $masonry-lg-fallback: var(--leaf-masonry-columns-lg, #{$masonry-md-fallback});
+  $masonry-xl-fallback: var(--leaf-masonry-columns-xl, #{$masonry-lg-fallback});
+  $masonry-breakpoints: (
+    (sm, 576px, $masonry-sm-fallback),
+    (md, 768px, $masonry-md-fallback),
+    (lg, 992px, $masonry-lg-fallback),
+    (xl, 1200px, $masonry-xl-fallback)
+  );
+  @each $point, $width, $fallback in $masonry-breakpoints {
     @media (min-width: $width) {
       .leaf-masonry {
-        column-count: var(
-          --leaf-masonry-columns-#{$point},
-          var(
-            --leaf-masonry-columns-sm,
-            var(--leaf-masonry-columns-xs, var(--leaf-masonry-columns, 1))
-          )
-        );
+        column-count: $fallback;
       }
     }
   }

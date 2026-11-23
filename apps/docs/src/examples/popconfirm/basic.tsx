@@ -10,7 +10,7 @@ export function PopconfirmBasic() {
         description="移除后仍可在回收站中恢复。"
         onConfirm={() => setRemoved(true)}
       >
-        <Button variant="outline" danger disabled={removed}>
+        <Button variant="danger" disabled={removed}>
           移除项目
         </Button>
       </Popconfirm>

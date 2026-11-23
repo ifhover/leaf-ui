@@ -1,3 +1,5 @@
+@use '../styles/mixins' as mixins;
+
 @layer leaf-ui {
   .leaf-avatar {
     box-sizing: border-box;
@@ -29,19 +31,16 @@
       border-radius: 50%;
     }
     &--square {
-      border-radius: var(
-        --leaf-avatar-square-radius,
-        var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2))
-      );
+      border-radius: var(--leaf-avatar-square-radius, var(--leaf-control-radius-lg));
     }
     &--sm {
-      --leaf-avatar-square-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
+      --leaf-avatar-square-radius: var(--leaf-control-radius-sm);
       width: 28px;
       height: 28px;
       font-size: 12px;
     }
     &--lg {
-      --leaf-avatar-square-radius: var(--leaf-radius-lg, calc(var(--leaf-radius) * 1.6));
+      --leaf-avatar-square-radius: var(--leaf-radius-lg);
       width: 56px;
       height: 56px;
       font-size: 22px;
@@ -53,7 +52,7 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
     }
     > span {
       display: flex;
@@ -95,16 +94,22 @@
       background: none;
       cursor: pointer;
       position: relative;
-      transition: transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+      .leaf-avatar {
+        transition: var(--leaf-action-transition);
+      }
       &:hover,
       &:focus-visible {
         z-index: 1;
       }
-      &:active {
-        transform: scale(0.96);
+      &:hover .leaf-avatar {
+        color: var(--leaf-component-avatar-color, var(--leaf-color-text));
+      }
+      &:active .leaf-avatar {
+        color: var(--leaf-component-avatar-color, var(--leaf-color-text));
+        background: var(--leaf-component-avatar-background, var(--leaf-color-option-hover));
       }
       &:focus-visible {
-        outline: 2px solid var(--leaf-color-primary);
+        @include mixins.focus-ring;
         outline-offset: 3px;
       }
     }
@@ -112,13 +117,6 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-avatar > img,
-    .leaf-avatar > span,
-    .leaf-avatar-group__more {
-      transition: none;
     }
   }
 }

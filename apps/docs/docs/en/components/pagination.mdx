@@ -18,7 +18,7 @@ Browse large datasets one page at a time.
 
 Set `total` to the full result count, not the number of items on the current page. Pages start at 1; uncontrolled pagination manages the current page internally.
 
-<ComponentExample exampleId="basic" preview={<PaginationBasic />} width={600} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<PaginationBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/pagination/basic.tsx"
 ```
@@ -35,7 +35,7 @@ Out-of-range pages are clamped. With `total={0}`, page 1 is still displayed and 
 
 Use `variant` to choose outlined or borderless pagination buttons.
 
-<ComponentExample exampleId="variants" preview={<PaginationVariants />} width={600} fileName="variants.tsx">
+<ComponentExample exampleId="variants" preview={<PaginationVariants />} width="fit-content" fileName="variants.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/pagination/variants.tsx"
 ```
@@ -46,7 +46,7 @@ Use `variant` to choose outlined or borderless pagination buttons.
 
 Use `size` to set the pagination button size.
 
-<ComponentExample exampleId="sizes" preview={<PaginationSizes />} width={600} fileName="sizes.tsx">
+<ComponentExample exampleId="sizes" preview={<PaginationSizes />} width="fit-content" fileName="sizes.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/pagination/sizes.tsx"
 ```
@@ -57,7 +57,7 @@ Use `size` to set the pagination button size.
 
 For remote data, control `current` and `pageSize` together and update both in `onChange`. The application sends the data request; this example displays the current page and item range as feedback.
 
-<ComponentExample exampleId="controlled" preview={<PaginationControlled />} width={600} fileName="controlled.tsx">
+<ComponentExample exampleId="controlled" preview={<PaginationControlled />} width="fit-content" fileName="controlled.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/pagination/controlled.tsx"
 ```
@@ -70,7 +70,7 @@ Changing page size preserves the current item position where possible: page 3 at
 
 Set `simple` to show the current page and previous/next controls.
 
-<ComponentExample exampleId="simple" preview={<PaginationSimple />} width={600} fileName="simple.tsx">
+<ComponentExample exampleId="simple" preview={<PaginationSimple />} width="fit-content" fileName="simple.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/pagination/simple.tsx"
 ```
@@ -81,7 +81,7 @@ Set `simple` to show the current page and previous/next controls.
 
 Use `disabled` to prevent page changes.
 
-<ComponentExample exampleId="states" preview={<PaginationStates />} width={600} fileName="states.tsx">
+<ComponentExample exampleId="states" preview={<PaginationStates />} width="fit-content" fileName="states.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/pagination/states.tsx"
 ```
@@ -105,13 +105,13 @@ Configure the total item count, current page, page size and pagination interacti
 | `defaultPageSize` | `number` | `10` | Initial page size in uncontrolled mode. |
 | `onChange` | `(page: number, pageSize: number) => void` | — | Called once when the page or size actually changes, with both values. |
 | `showSizeChanger` | `boolean` | `false` | Show the page size selector. |
-| `pageSizeOptions` | `readonly number[]` | `[10, 20, 50, 100]` | Available sizes; includes the current size, removes duplicates and ignores invalid values. |
+| `pageSizeOptions` | `readonly number[]` | `[10, 20, 50, 100]` | Available sizes; includes and retains out-of-list page sizes, removes duplicates and ignores invalid values. |
 | `showQuickJumper` | `boolean` | `false` | Commit on Enter or when leaving the pagination region; other pagination controls take precedence. |
 | `showTotal` | `boolean \| ((total: number, range: readonly [number, number]) => ReactNode)` | `false` | true shows a localized total; pass a function for a custom total and visible item range. |
 | `simple` | `boolean` | `false` | Show only previous/next controls and the current / total page count. |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `hideOnSinglePage` | `boolean` | `false` | Hide when there are fewer than two pages. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size of page buttons, size selector and jump input. |
-| `variant` | `'outline' \| 'ghost'` | `'outline'` | Button appearance: outlined or borderless. |
+| `variant` | `'outline' \| 'ghost'` | `'ghost'` | Button appearance: borderless by default (active page uses an outlined box) or outlined (active page renders as unclickable plain text). |
 
 The component also accepts native `<nav>` attributes such as `aria-label`, `className` and `style`.

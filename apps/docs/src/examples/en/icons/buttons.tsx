@@ -4,9 +4,17 @@ import { ArrowRight, Plus } from 'lucide-react';
 export function IconButtons() {
   return (
     <Space wrap>
-      <Button startIcon={<Plus />}>New project</Button>
-      <Button endIcon={<ArrowRight />}>Continue</Button>
-      <Button aria-label="Add project" startIcon={<Plus />} />
+      <Button>
+        <Plus />
+        New project
+      </Button>
+      <Button>
+        Continue
+        <ArrowRight />
+      </Button>
+      <Button size="icon" aria-label="Add project">
+        <Plus />
+      </Button>
     </Space>
   );
 }

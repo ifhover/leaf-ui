@@ -128,7 +128,9 @@ export function useDialog(
     stack.push(node);
     const resolve = (target?: FocusTarget) =>
       typeof target === 'function' ? target() : target?.current;
-    (resolve(focusOptions.current.initialFocus) ?? focusable()[0] ?? node).focus();
+    (resolve(focusOptions.current.initialFocus) ?? focusable()[0] ?? node).focus({
+      preventScroll: true,
+    });
     const key = (event: KeyboardEvent) => {
       if (stack.at(-1) !== node || event.defaultPrevented) return;
       if (event.key === 'Escape' && keyboardRef.current) {
@@ -180,7 +182,7 @@ export function useDialog(
           typeof focusOptions.current.returnFocus === 'function'
             ? resolve(focusOptions.current.returnFocus)
             : previous;
-        if (destination?.isConnected) destination.focus();
+        if (destination?.isConnected) destination.focus({ preventScroll: true });
       }
     };
   }, [open, panel, owner, ready, modal]);

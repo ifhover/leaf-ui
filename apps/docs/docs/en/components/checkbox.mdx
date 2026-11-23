@@ -1,6 +1,7 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { CheckboxBasic } from '../../../src/examples/en/checkbox/basic';
 import { CheckboxGroupDemo } from '../../../src/examples/en/checkbox/group';
+import { CheckboxDescriptions } from '../../../src/examples/en/checkbox/description';
 import { CheckboxDisabled } from '../../../src/examples/en/checkbox/disabled';
 import { CheckboxCheckAll } from '../../../src/examples/en/checkbox/check-all';
 import { CheckboxCards } from '../../../src/examples/en/checkbox/surfaces';
@@ -21,6 +22,7 @@ Provide the option label as content; users can toggle its checked state independ
 <ComponentExample exampleId="basic" preview={<CheckboxBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -38,6 +40,19 @@ Use `CheckboxGroup` for multiple choices. Unlike a single checkbox, its `value` 
 <ComponentExample exampleId="group" preview={<CheckboxGroupDemo />} fileName="group.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/group.tsx"
+
+```
+
+</ComponentExample>
+
+### Option descriptions
+
+Use `description` on `CheckboxGroup.options` or an individual `Checkbox` to display supporting text below an option.
+
+<ComponentExample exampleId="description" preview={<CheckboxDescriptions />} fileName="description.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/checkbox/description.tsx"
+
 ```
 
 </ComponentExample>
@@ -49,6 +64,7 @@ With `disabled`, the checked state remains visible but cannot be changed by the 
 <ComponentExample exampleId="disabled" preview={<CheckboxDisabled />} fileName="disabled.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/disabled.tsx"
+
 ```
 
 </ComponentExample>
@@ -60,6 +76,7 @@ With `disabled`, the checked state remains visible but cannot be changed by the 
 <ComponentExample exampleId="check-all" preview={<CheckboxCheckAll />} fileName="check-all.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/check-all.tsx"
+
 ```
 
 </ComponentExample>
@@ -68,11 +85,12 @@ With `disabled`, the checked state remains visible but cannot be changed by the 
 
 <a id="advanced-usage"></a>
 
-Set `variant="card"` for choices with icons and descriptions.
+Set `variant="card"` to render choices as clickable cards, optionally with icons and descriptions.
 
 <ComponentExample exampleId="surfaces" preview={<CheckboxCards />} fileName="surfaces.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/surfaces.tsx"
+
 ```
 
 </ComponentExample>
@@ -84,6 +102,7 @@ Use `CheckboxGroup variant="list"` for a shared list. Keep `extra` to non-intera
 <ComponentExample exampleId="list" preview={<CheckboxList />} fileName="list.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/checkbox/list.tsx"
+
 ```
 
 </ComponentExample>

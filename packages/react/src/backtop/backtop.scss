@@ -9,13 +9,14 @@
     height: 44px;
     padding: 0;
     border-radius: 50%;
-    &:has(.leaf-button__label) {
+    &--labeled {
+      width: auto;
       padding-inline: 16px;
       border-radius: 999px;
     }
     opacity: 0;
     visibility: hidden;
-    transform: translateY(12px) scale(0.94);
+    transform: translateY(12px);
     box-shadow: var(--leaf-shadow-md);
     transition:
       opacity var(--leaf-motion-duration) var(--leaf-motion-easing),
@@ -28,13 +29,8 @@
       transform: none;
     }
     &[data-visible]:active:not(:disabled) {
-      transform: scale(0.96);
+      translate: none;
       box-shadow: var(--leaf-shadow-sm);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-back-top {
-      transition: none;
     }
   }
 }

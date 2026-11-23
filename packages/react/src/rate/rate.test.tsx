@@ -1,6 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { ConfigProvider } from '../config-provider';
 import { Rate } from './rate';
 
 describe('Rate', () => {
@@ -29,5 +30,21 @@ describe('Rate', () => {
     await userEvent.keyboard('{End}');
     await userEvent.click(screen.getByRole('radio', { name: '5 / 5' }));
     expect(change).not.toHaveBeenCalled();
+  });
+  it('mirrors horizontal arrow navigation in rtl direction and moves focus cleanly', async () => {
+    const change = vi.fn();
+    render(
+      <ConfigProvider direction="rtl">
+        <Rate defaultValue={3} onChange={change} />
+      </ConfigProvider>,
+    );
+    const three = screen.getByRole('radio', { name: '3 / 5' });
+    three.focus();
+    await userEvent.keyboard('{ArrowLeft}');
+    expect(change).toHaveBeenLastCalledWith(4);
+    expect(screen.getByRole('radio', { name: '4 / 5' })).toHaveFocus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(change).toHaveBeenLastCalledWith(3);
+    expect(screen.getByRole('radio', { name: '3 / 5' })).toHaveFocus();
   });
 });

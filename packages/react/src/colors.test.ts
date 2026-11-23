@@ -2,7 +2,7 @@ import { readability, TinyColor } from '@ctrl/tinycolor';
 import { describe, expect, it } from 'vitest';
 import { colorRecipes } from './color-recipes';
 import { colorScaleSteps, generateColorScale } from './color-scale';
-import { type ColorShadeStep, semanticColorShadeSteps } from './color-shades';
+import { semanticColorShadeSteps } from './color-shades';
 import {
   defaultColors,
   deriveColors,
@@ -22,14 +22,6 @@ const semanticSeeds = {
   info: '#1677ff',
 } as const;
 const neutralSteps = colorScaleSteps;
-function roleShades(
-  values: ReturnType<typeof resolveColorRoles>['values'],
-  family: (typeof semanticColorFamilies)[number],
-) {
-  return Object.fromEntries(
-    semanticColorShadeSteps.map((step) => [step, values[`--leaf-color-${family}-${step}`]]),
-  ) as Record<ColorShadeStep, string>;
-}
 
 describe('theme color derivation', () => {
   it('resolves a single family without rebuilding unrelated status colors', () => {
@@ -49,11 +41,9 @@ describe('theme color derivation', () => {
     const color = 'hwb(146 12% 21%)';
     const values = deriveColors('dark', { primary: color });
     expect(values['--leaf-color-primary']).toBe(color);
-    expect(values['--leaf-color-primary-light-9']).toBe(
-      `color-mix(in srgb, ${color} 10%, #ffffff)`,
-    );
-    expect(values['--leaf-color-primary-alpha-12']).toBe(
-      `color-mix(in srgb, ${color} 12%, transparent)`,
+    expect(values['--leaf-color-primary-soft']).toBe(`color-mix(in srgb, ${color} 10%, #000000)`);
+    expect(values['--leaf-color-primary-alpha-20']).toBe(
+      `color-mix(in srgb, ${color} 20%, transparent)`,
     );
     expect(values['--leaf-color-on-primary']).toBe('#ffffff');
   });
@@ -90,37 +80,12 @@ describe('theme color derivation', () => {
       }
     }
   });
-  it('keeps custom brand fills and derives readable ink and indicators from the same scale', () => {
+  it('derives readable status ink internally from semantic shades while preserving explicit primary seeds', () => {
     for (const primaryColor of ['#18181b', '#000000', '#102c42']) {
       const theme = Object.freeze({ primaryColor, appearance: 'dark' as const });
       const variables = leafThemeVariables(theme);
-      const roles = resolveColorRoles('dark', { primary: primaryColor });
       expect(variables['--leaf-color-primary']).toBe(primaryColor);
-      expect(variables['--leaf-color-on-primary']).toBe(
-        readability(primaryColor, '#000000') >= readability(primaryColor, '#ffffff')
-          ? '#000000'
-          : '#ffffff',
-      );
-      const ink = String(variables['--leaf-color-primary-ink']);
-      const indicator = String(variables['--leaf-color-primary-indicator']);
-      for (const surface of [defaultColors.dark.surface, defaultColors.dark['surface-muted']]) {
-        expect(readability(ink, surface)).toBeGreaterThanOrEqual(4.5);
-        expect(readability(indicator, surface)).toBeGreaterThanOrEqual(3);
-      }
-      const soft = String(variables['--leaf-color-primary-soft']);
-      expect(readability(ink, soft)).toBeGreaterThanOrEqual(4.5);
-      const inkSource = String(roles.sources['--leaf-color-primary-ink']);
-      const indicatorSource = String(roles.sources['--leaf-color-primary-indicator']);
-      expect(inkSource).toMatch(/^--leaf-color-primary(?:-(?:light|dark)-[1379])?$/u);
-      expect(roles.values[inkSource as keyof typeof roles.values]).toBe(ink);
-      expect(indicatorSource).toMatch(/^--leaf-color-primary(?:-(?:light|dark)-[1379])?$/u);
-      if (indicatorSource !== '--leaf-color-primary')
-        expect(roles.values[indicatorSource as keyof typeof roles.values]).toBe(indicator);
-      expect(variables['--leaf-color-primary-fill-border']).not.toBe('transparent');
-      expect(variables['--leaf-color-primary-focus']).toBe(indicator);
-      const before = new TinyColor(primaryColor).toHsl();
-      const after = new TinyColor(ink).toHsl();
-      expect(after.l).toBeGreaterThan(before.l);
+      expect(variables['--leaf-color-on-primary']).toBe('#ffffff');
       const palette = deriveColors('dark', { primary: primaryColor });
       expect(variables).toEqual(palette);
       expect(theme.primaryColor).toBe(primaryColor);
@@ -128,25 +93,15 @@ describe('theme color derivation', () => {
         primaryColor,
       );
     }
-    for (const primaryColor of ['#1d9bf0', '#ff6900']) {
-      const variables = leafThemeVariables({ primaryColor, appearance: 'dark' });
-      const roles = resolveColorRoles('dark', { primary: primaryColor });
-      expect(variables['--leaf-color-primary']).toBe(primaryColor);
-      expect(variables['--leaf-color-on-primary']).toBe('#ffffff');
-      const inkSource = String(roles.sources['--leaf-color-primary-ink']);
-      expect(inkSource).toMatch(/^--leaf-color-primary(?:-(?:light|dark)-[1379])?$/u);
-      expect(variables['--leaf-color-primary-ink']).toBe(
-        roles.values[inkSource as keyof typeof roles.values],
-      );
-      if (
-        [
-          roles.values['--leaf-color-surface'],
-          roles.values['--leaf-color-surface-muted'],
-          roles.values['--leaf-color-primary-soft'],
-        ].every((bg) => readability(primaryColor, bg ?? '') >= 4.5)
-      )
-        expect(variables['--leaf-color-primary-ink']).toBe(primaryColor);
-      expect(variables['--leaf-color-primary-fill-border']).toBe('transparent');
+    for (const family of ['success', 'danger', 'warning', 'info'] as const) {
+      const roles = resolveColorRoles('dark', { [family]: '#102c42' });
+      const ink = String(roles.values[`--leaf-color-${family}-ink`]);
+      for (const surface of [
+        defaultColors.dark.surface,
+        defaultColors.dark['surface-muted'],
+        String(roles.values[`--leaf-color-${family}-soft`]),
+      ])
+        expect(readability(ink, surface)).toBeGreaterThanOrEqual(4.5);
     }
   });
   it('adapts against custom surfaces while retaining explicit foreground and interaction paint', () => {
@@ -163,9 +118,6 @@ describe('theme color derivation', () => {
     );
     const variables = leafThemeVariables(theme);
     expect(variables['--leaf-color-primary']).toBe('#18181b');
-    expect(
-      readability(String(variables['--leaf-color-primary-ink']), '#383838'),
-    ).toBeGreaterThanOrEqual(4.5);
     expect(variables['--leaf-color-on-primary']).toBe('#123456');
     expect(variables['--leaf-color-primary-hover']).toBe('#abcdef');
     expect(
@@ -212,25 +164,25 @@ describe('theme color derivation', () => {
       }
     }
   });
-  it('shares 35 semantic shades and nine neutral steps without numeric semantic aliases', () => {
+  it('keeps semantic shades and neutral scales in JS without emitting zero-consumer CSS variables', () => {
     const light = resolveColorRoles('light');
     const dark = resolveColorRoles('dark');
-    const keys = [
+    const omittedKeys = [
       ...semanticColorFamilies.flatMap((family) =>
         semanticColorShadeSteps.map((step) => `--leaf-color-${family}-${step}`),
       ),
       ...colorScaleSteps.map((step) => `--leaf-color-neutral-${step}`),
     ];
-    expect(keys).toHaveLength(44);
-    for (const key of keys) {
-      expect(light.values[key as keyof typeof light.values]).toBe(
-        dark.values[key as keyof typeof dark.values],
-      );
-      expect(new TinyColor(light.values[key as keyof typeof light.values]).isValid).toBe(true);
+    expect(omittedKeys).toHaveLength(44);
+    for (const key of omittedKeys) {
+      expect(light.values[key as keyof typeof light.values]).toBeUndefined();
+      expect(dark.values[key as keyof typeof dark.values]).toBeUndefined();
     }
     for (const family of semanticColorFamilies) {
       expect(light.values[`--leaf-color-${family}`]).toBe(semanticSeeds[family]);
-      expect(roleShades(light.values, family)).toEqual(generateColorShades(semanticSeeds[family]));
+      expect(Object.keys(generateColorShades(semanticSeeds[family]))).toEqual([
+        ...semanticColorShadeSteps,
+      ]);
       for (const step of colorScaleSteps)
         expect(light.values[`--leaf-color-${family}-${step}`]).toBeUndefined();
     }
@@ -250,8 +202,8 @@ describe('theme color derivation', () => {
       }
     }
   });
-  it('keeps readable original ink and indicator colors instead of forcing a palette step', () => {
-    for (const family of semanticColorFamilies) {
+  it('keeps readable original ink colors instead of forcing a palette step', () => {
+    for (const family of ['success', 'danger', 'warning', 'info'] as const) {
       for (const [mode, seed] of [
         ['light', '#004488'],
         ['dark', '#88ccff'],
@@ -259,20 +211,18 @@ describe('theme color derivation', () => {
         const roles = resolveColorRoles(mode, { [family]: seed });
         expect(roles.values[`--leaf-color-${family}-ink`]).toBe(seed);
         expect(roles.sources[`--leaf-color-${family}-ink`]).toBe(`--leaf-color-${family}`);
-        if (family === 'primary') expect(roles.values['--leaf-color-primary-indicator']).toBe(seed);
       }
     }
-    const roles = resolveColorRoles('light', { primary: '#ffffff' });
-    expect(roles.values['--leaf-color-primary']).toBe('#ffffff');
+    const roles = resolveColorRoles('light', { success: '#ffffff' });
+    expect(roles.values['--leaf-color-success']).toBe('#ffffff');
     expect(
-      readability(roles.values['--leaf-color-primary-ink'] ?? '', '#ffffff'),
+      readability(roles.values['--leaf-color-success-ink'] ?? '', '#ffffff'),
     ).toBeGreaterThanOrEqual(4.5);
   });
   it('updates neutral seeds and adapts neutral roles to explicit surfaces', () => {
     const values = resolveColorRoles('dark', { neutral: '#64748b', surface: '#ffffff' }).values;
     const scale = generateColorScale('#64748b');
     expect(values['--leaf-color-neutral']).toBe('#64748b');
-    expect(values['--leaf-color-neutral-600']).toBe(scale?.[600]);
     expect(values['--leaf-color-text']).toBe(scale?.[900]);
     expect(readability(values['--leaf-color-text'] ?? '', '#ffffff')).toBeGreaterThanOrEqual(4.5);
     expect(resolveColorRoles('light', { primary: '#123456' }).sources['--leaf-color-primary']).toBe(
@@ -299,47 +249,54 @@ describe('theme color derivation', () => {
       ).toBe('#123456');
     }
   });
-  it('maps neutral defaults and mode roles to the generated scale or softened surface mixes', () => {
+  it('maps neutral defaults and mode roles to the generated scale and surface mixes', () => {
     const expectations = {
       light: {
-        text: { value: neutralColorScale[900], source: '--leaf-color-neutral-900' },
-        'text-muted': { value: neutralColorScale[600], source: '--leaf-color-neutral-600' },
-        'surface-muted': { value: neutralColorScale[100], source: '--leaf-color-neutral-100' },
+        text: { value: neutralColorScale[900], source: 'neutral-900' },
+        'text-muted': { value: neutralColorScale[600], source: 'neutral-600' },
+        'text-subtle': {
+          value: mixColors(neutralColorScale[500], neutralColorScale[600], 45),
+          source: 'mix(neutral-500, neutral-600, 45%)',
+        },
+        'surface-muted': { value: neutralColorScale[100], source: 'neutral-100' },
         'surface-raised': { value: '#ffffff', source: 'white' },
-        border: {
-          value: mixColors(neutralColorScale[200], '#ffffff', 82),
-          source: 'mix(--leaf-color-neutral-200, --leaf-color-surface, 82%)',
-        },
-        'border-hover': {
-          value: mixColors(neutralColorScale[300], '#ffffff', 82),
-          source: 'mix(--leaf-color-neutral-300, --leaf-color-surface, 82%)',
-        },
+        border: { value: neutralColorScale[200], source: 'neutral-200' },
+        'border-hover': { value: neutralColorScale[300], source: 'neutral-300' },
         divider: {
-          value: mixColors(neutralColorScale[200], '#ffffff', 68),
-          source: 'mix(--leaf-color-neutral-200, --leaf-color-surface, 68%)',
+          value: mixColors(neutralColorScale[200], '#ffffff', 80),
+          source: 'mix(neutral-200, --leaf-color-surface, 80%)',
         },
-        'option-hover': { value: neutralColorScale[200], source: '--leaf-color-neutral-200' },
+        'option-hover': { value: neutralColorScale[200], source: 'neutral-200' },
         surface: { value: '#ffffff', source: 'white' },
       },
       dark: {
-        text: { value: neutralColorScale[100], source: '--leaf-color-neutral-100' },
-        'text-muted': { value: neutralColorScale[400], source: '--leaf-color-neutral-400' },
-        'surface-muted': { value: neutralColorScale[800], source: '--leaf-color-neutral-800' },
-        'surface-raised': { value: neutralColorScale[800], source: '--leaf-color-neutral-800' },
-        border: { value: neutralColorScale[800], source: '--leaf-color-neutral-800' },
-        'border-hover': { value: neutralColorScale[700], source: '--leaf-color-neutral-700' },
-        divider: {
-          value: mixColors(neutralColorScale[800], neutralColorScale[900], 70),
-          source: 'mix(--leaf-color-neutral-800, --leaf-color-surface, 70%)',
+        text: { value: neutralColorScale[100], source: 'neutral-100' },
+        'text-muted': { value: neutralColorScale[400], source: 'neutral-400' },
+        'text-subtle': { value: neutralColorScale[500], source: 'neutral-500' },
+        'surface-muted': { value: neutralColorScale[800], source: 'neutral-800' },
+        'surface-raised': {
+          value: mixColors(neutralColorScale[800], neutralColorScale[900], 45),
+          source: 'mix(neutral-800, --leaf-color-surface, 45%)',
         },
-        'option-hover': { value: neutralColorScale[700], source: '--leaf-color-neutral-700' },
-        surface: { value: neutralColorScale[900], source: '--leaf-color-neutral-900' },
+        border: { value: neutralColorScale[800], source: 'neutral-800' },
+        'border-hover': { value: neutralColorScale[700], source: 'neutral-700' },
+        divider: {
+          value: mixColors(neutralColorScale[800], neutralColorScale[900], 78),
+          source: 'mix(neutral-800, --leaf-color-surface, 78%)',
+        },
+        'option-hover': {
+          value: mixColors(neutralColorScale[700], neutralColorScale[800], 45),
+          source: 'mix(neutral-700, neutral-800, 45%)',
+        },
+        surface: { value: neutralColorScale[900], source: 'neutral-900' },
       },
     } as const;
     for (const mode of ['light', 'dark'] as const) {
       const roles = resolveColorRoles(mode);
       for (const step of neutralSteps)
-        expect(roles.values[`--leaf-color-neutral-${step}`]).toBe(neutralColorScale[step]);
+        expect(
+          roles.values[`--leaf-color-neutral-${step}` as keyof typeof roles.values],
+        ).toBeUndefined();
       for (const [name, expected] of Object.entries(expectations[mode])) {
         const key = `--leaf-color-${name}` as const;
         expect(roles.values[key], `${mode} ${name}`).toBe(expected.value);
@@ -347,30 +304,45 @@ describe('theme color derivation', () => {
       }
       for (const name of ['text', 'text-muted', 'surface', 'surface-muted', 'border'] as const)
         expect(roles.values[`--leaf-color-${name}`]).toBe(defaultColors[mode][name]);
+      expect(
+        readability(
+          roles.values['--leaf-color-text-muted'] ?? '',
+          roles.values['--leaf-color-surface'] ?? '',
+        ),
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
+        readability(
+          roles.values['--leaf-color-text-subtle'] ?? '',
+          roles.values['--leaf-color-surface'] ?? '',
+        ),
+      ).toBeGreaterThanOrEqual(4.5);
     }
   });
   it('maps soft and border roles to named shades and keeps ink sources traceable', () => {
+    const borderFamilies = new Set(['primary', 'danger', 'warning']);
     for (const mode of ['light', 'dark'] as const) {
       const roles = resolveColorRoles(mode);
       const softStep = mode === 'light' ? 'light-9' : 'dark-9';
       const borderStep = mode === 'light' ? 'light-7' : 'dark-7';
       for (const family of semanticColorFamilies) {
-        const shades = roleShades(roles.values, family);
+        const shades = generateColorShades(semanticSeeds[family]);
         expect(roles.values[`--leaf-color-${family}-soft`]).toBe(shades[softStep]);
-        expect(roles.sources[`--leaf-color-${family}-soft`]).toBe(
-          `--leaf-color-${family}-${softStep}`,
-        );
-        expect(roles.values[`--leaf-color-${family}-border`]).toBe(shades[borderStep]);
-        const inkKey = `--leaf-color-${family}-ink` as const;
-        const ink = roles.values[inkKey];
-        const source = roles.sources[inkKey] ?? '';
-        expect(roles.values[source as keyof typeof roles.values]).toBe(ink);
-        for (const bg of [
-          roles.values['--leaf-color-surface'],
-          roles.values['--leaf-color-surface-muted'],
-          roles.values[`--leaf-color-${family}-soft`],
-        ])
-          expect(readability(ink ?? '', bg ?? '')).toBeGreaterThanOrEqual(4.5);
+        expect(roles.sources[`--leaf-color-${family}-soft`]).toBe(`${family}-${softStep}`);
+        expect(roles.values[`--leaf-color-${family}-soft-hover`]).toBe(shades[borderStep]);
+        if (borderFamilies.has(family))
+          expect(roles.values[`--leaf-color-${family}-border`]).toBe(shades[borderStep]);
+        else expect(roles.values[`--leaf-color-${family}-border`]).toBeUndefined();
+        if (family !== 'primary') {
+          const inkKey = `--leaf-color-${family}-ink` as const;
+          const ink = roles.values[inkKey];
+          expect(roles.sources[inkKey]).toBeTruthy();
+          for (const bg of [
+            roles.values['--leaf-color-surface'],
+            roles.values['--leaf-color-surface-muted'],
+            roles.values[`--leaf-color-${family}-soft`],
+          ])
+            expect(readability(ink ?? '', bg ?? '')).toBeGreaterThanOrEqual(4.5);
+        }
       }
     }
   });
@@ -381,32 +353,24 @@ describe('theme color derivation', () => {
     ] as const) {
       const roles = resolveColorRoles(mode, { surface, 'surface-muted': muted });
       for (const family of semanticColorFamilies) {
-        expect(roles.sources[`--leaf-color-${family}-soft`]).toBe(
-          `--leaf-color-${family}-${softStep}`,
-        );
-        expect(roles.sources[`--leaf-color-${family}-border`]).toBe(
-          `--leaf-color-${family}-${borderStep}`,
-        );
-        for (const background of [surface, muted, roles.values[`--leaf-color-${family}-soft`]])
-          expect(
-            readability(roles.values[`--leaf-color-${family}-ink`] ?? '', background ?? ''),
-          ).toBeGreaterThanOrEqual(4.5);
+        expect(roles.sources[`--leaf-color-${family}-soft`]).toBe(`${family}-${softStep}`);
+        if (family === 'primary' || family === 'danger' || family === 'warning')
+          expect(roles.sources[`--leaf-color-${family}-border`]).toBe(`${family}-${borderStep}`);
+        if (family !== 'primary')
+          for (const background of [surface, muted, roles.values[`--leaf-color-${family}-soft`]])
+            expect(
+              readability(roles.values[`--leaf-color-${family}-ink`] ?? '', background ?? ''),
+            ).toBeGreaterThanOrEqual(4.5);
       }
     }
     const overridden = resolveColorRoles('dark', {
       primary: '#18181b',
       'primary-soft': '#112233',
-      'primary-ink': '#445566',
       'on-primary': '#778899',
-      'primary-indicator': '#aabbcc',
     });
     expect(overridden.values['--leaf-color-primary-soft']).toBe('#112233');
-    expect(overridden.values['--leaf-color-primary-ink']).toBe('#445566');
     expect(overridden.values['--leaf-color-on-primary']).toBe('#778899');
-    expect(overridden.values['--leaf-color-primary-indicator']).toBe('#aabbcc');
-    expect(overridden.values['--leaf-color-primary-focus']).toBe('#aabbcc');
-    expect(overridden.values['--leaf-color-primary-fill-border']).toBe('#aabbcc');
-    for (const name of ['primary-soft', 'primary-ink', 'on-primary', 'primary-indicator'])
+    for (const name of ['primary-soft', 'on-primary'])
       expect(overridden.sources[`--leaf-color-${name}`]).toBe('override');
   });
   it('supports explicit black foregrounds for every semantic family', () => {
@@ -434,7 +398,7 @@ describe('theme color derivation', () => {
   it('keeps readable soft ink independently from the fixed solid foreground', () => {
     for (const appearance of ['light', 'dark'] as const) {
       const values = deriveColors(appearance);
-      for (const family of semanticColorFamilies) {
+      for (const family of ['success', 'danger', 'warning', 'info'] as const) {
         for (const background of [
           values['--leaf-color-surface'],
           values['--leaf-color-surface-muted'],
@@ -445,6 +409,7 @@ describe('theme color derivation', () => {
           ).toBeGreaterThanOrEqual(4.5);
         expect(values[`--leaf-color-on-${family}`]).toBe('#ffffff');
       }
+      expect(values['--leaf-color-on-primary']).toBe('#ffffff');
     }
   });
   it('keeps semantic shade expressions deterministic in SSR without numeric aliases', () => {
@@ -457,20 +422,19 @@ describe('theme color derivation', () => {
       for (const family of ['primary', 'success'] as const) {
         const seed = `var(--brand-${family})`;
         const shades = generateColorShades(seed);
-        for (const step of semanticColorShadeSteps)
-          expect(values[`--leaf-color-${family}-${step}`]).toBe(shades[step]);
-        expect(values[`--leaf-color-${family}-ink`]).toBe(seed);
         expect(values[`--leaf-color-${family}-soft`]).toBe(
           shades[appearance === 'light' ? 'light-9' : 'dark-9'],
         );
+        expect(values[`--leaf-color-${family}-light-9`]).toBeUndefined();
         expect(values[`--leaf-color-${family}-500`]).toBeUndefined();
       }
+      expect(values['--leaf-color-success-ink']).toBe('var(--brand-success)');
     }
   });
   it('emits only optical percentage recipes with consumers instead of a legacy matrix', () => {
     for (const appearance of ['light', 'dark'] as const) {
       const values = deriveColors(appearance);
-      expect(Object.keys(colorRecipes)).toHaveLength(10);
+      expect(Object.keys(colorRecipes)).toHaveLength(6);
       for (const [key, [first, second, ratio]] of Object.entries(colorRecipes)) {
         expect(values[key as keyof typeof values]).toBe(
           mixColors(
@@ -485,32 +449,40 @@ describe('theme color derivation', () => {
       expect(values['--leaf-color-warning-text-80']).toBeUndefined();
     }
   });
-  it('keeps the primary indicator visible without moving the brand seed into a scale step', () => {
-    const light = resolveColorRoles('light');
-    expect(light.values['--leaf-color-primary']).toBe(semanticSeeds.primary);
-    expect(light.values['--leaf-color-primary-indicator']).toBe(semanticSeeds.primary);
-    expect(light.sources['--leaf-color-primary-indicator']).toBe('--leaf-color-primary');
+  it('supports neutral adaptive monochrome primary across light and dark modes', () => {
+    const light = leafThemeVariables({ appearance: 'light', primaryColor: 'neutral' });
+    expect(light['--leaf-color-primary']).toBe(neutralColorScale[900]);
+    expect(light['--leaf-color-on-primary']).toBe('#ffffff');
+    expect(light['--leaf-color-primary-soft']).toBe(neutralColorScale[100]);
+    expect(light['--leaf-color-primary-soft-hover']).toBe(neutralColorScale[200]);
+    expect(light['--leaf-color-primary-border']).toBe(neutralColorScale[300]);
+    expect(
+      readability(light['--leaf-color-on-primary'] ?? '', light['--leaf-color-primary'] ?? ''),
+    ).toBeGreaterThanOrEqual(4.5);
 
-    const black = resolveColorRoles('dark', { primary: '#18181b' });
-    const indicator = black.values['--leaf-color-primary-indicator'];
-    expect(indicator).not.toBe('#18181b');
-    expect(black.sources['--leaf-color-primary-indicator']).toBe('--leaf-color-primary-light-7');
-    expect(black.values['--leaf-color-primary-light-7']).toBe(indicator);
-    for (const background of [
-      black.values['--leaf-color-surface'],
-      black.values['--leaf-color-surface-muted'],
-    ])
-      expect(readability(indicator ?? '', background ?? '')).toBeGreaterThanOrEqual(3);
-    expect(black.values['--leaf-color-on-primary']).toBe('#ffffff');
-    expect(black.values['--leaf-color-primary-fill-border']).toBe(indicator);
+    const dark = leafThemeVariables({ appearance: 'dark', primaryColor: 'neutral' });
+    expect(dark['--leaf-color-primary']).toBe(neutralColorScale[100]);
+    expect(dark['--leaf-color-on-primary']).toBe(neutralColorScale[900]);
+    expect(dark['--leaf-color-primary-soft']).toBe(neutralColorScale[800]);
+    expect(dark['--leaf-color-primary-soft-hover']).toBe(neutralColorScale[700]);
+    expect(dark['--leaf-color-primary-border']).toBe(neutralColorScale[700]);
+    expect(dark['--leaf-color-primary-alpha-20']).toBe(
+      mixColors(neutralColorScale[100], 'transparent', 20),
+    );
+    expect(
+      readability(dark['--leaf-color-on-primary'] ?? '', dark['--leaf-color-primary'] ?? ''),
+    ).toBeGreaterThanOrEqual(4.5);
 
-    const yellow = resolveColorRoles('light', { primary: '#ffff00' });
-    expect(yellow.values['--leaf-color-primary-indicator']).not.toBe(
-      yellow.values['--leaf-color-primary'],
-    );
-    expect(yellow.sources['--leaf-color-primary-indicator']).toMatch(
-      /^--leaf-color-primary(?:-(?:light|dark)-[1379])?$/u,
-    );
+    const customOnPrimary = leafThemeVariables({
+      appearance: 'dark',
+      primaryColor: 'neutral',
+      tokens: { onPrimaryColor: '#222222' },
+    });
+    expect(customOnPrimary['--leaf-color-on-primary']).toBe('#222222');
+
+    const coloredDark = leafThemeVariables({ appearance: 'dark', primaryColor: '#007aff' });
+    expect(coloredDark['--leaf-color-primary']).toBe('#007aff');
+    expect(coloredDark['--leaf-color-on-primary']).toBe('#ffffff');
   });
   it('deepens solid press colors directly instead of quantizing them to a lighter scale step', () => {
     for (const appearance of ['light', 'dark'] as const) {
@@ -544,8 +516,6 @@ describe('theme color derivation', () => {
         expect(values['--leaf-color-primary-link-hover']).toBe(linkHover);
         expect(values['--leaf-color-primary-hover']).toBe(tabHover);
         expect(values['--leaf-color-primary-link-active']).toBe(active);
-        expect(values['--leaf-color-danger-link-hover']).toBe(tabHover);
-        expect(values['--leaf-color-danger-link-active']).toBe(active);
       }
     }
   });
@@ -577,18 +547,14 @@ describe('theme color derivation', () => {
       tokens: {
         primaryHoverColor: '#7c3aed',
         primaryActiveColor: '#4c1d95',
-        dangerHoverColor: '#e11d48',
         dangerActiveColor: '#9f1239',
       },
     });
     expect(overridden['--leaf-color-primary-hover']).toBe('#7c3aed');
     expect(overridden['--leaf-color-primary-active']).toBe('#4c1d95');
-    expect(overridden['--leaf-color-danger-hover']).toBe('#e11d48');
     expect(overridden['--leaf-color-danger-active']).toBe('#9f1239');
     expect(overridden['--leaf-color-primary-link-hover']).toBe('#7c3aed');
     expect(overridden['--leaf-color-primary-link-active']).toBe('#4c1d95');
-    expect(overridden['--leaf-color-danger-link-hover']).toBe('#e11d48');
-    expect(overridden['--leaf-color-danger-link-active']).toBe('#9f1239');
     const resolved = deriveColors('dark', {
       primary: 'rgb(37, 99, 235)',
       'on-primary': 'rgb(255, 255, 255)',
@@ -604,8 +570,8 @@ describe('theme color derivation', () => {
       { tokens: { surfaceColor: '#000', primarySoftColor: '#123456' } },
     );
     const values = leafThemeVariables(theme);
-    expect(values['--leaf-color-primary-alpha-12']).toBe(
-      mixColors(String(values['--leaf-color-primary']), 'transparent', 12),
+    expect(values['--leaf-color-primary-alpha-20']).toBe(
+      mixColors(String(values['--leaf-color-primary']), 'transparent', 20),
     );
     expect(values['--leaf-color-danger']).toBe('#0000ff');
     expect(values['--leaf-color-surface']).toBe('#000');

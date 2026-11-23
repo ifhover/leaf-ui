@@ -1,13 +1,5 @@
 import { X } from 'lucide-react';
-import {
-  type ComponentType,
-  type ReactNode,
-  type Ref,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from 'react';
+import { type ReactNode, type Ref, useEffect, useId, useRef, useState } from 'react';
 import { ButtonControl } from '../button/button';
 import { useLeafConfig } from '../config-provider/context';
 import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
@@ -15,29 +7,50 @@ import { classes } from '../shared/classes';
 import { useDialog, useOverlayLayer } from '../shared/dialog';
 import { inertProps } from '../shared/inert';
 import { OverlayOwner } from '../shared/overlay-owner';
-import { useNaturalHeightTransition, usePresence } from '../shared/presence';
+import { resolveDialogPaddingFlags, resolvePaddingVars } from '../shared/padding';
+import { usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
-import type { ModalFooterActions, ModalProps, ModalTabsProps } from './modal';
+import type { ModalFooterActions, ModalProps } from './modal';
 
-export interface ModalTabsRenderProps {
-  open: boolean;
-  tabs: ModalTabsProps;
-  title?: ReactNode;
-  titleId: string;
-  hasHeading: boolean;
-  closeButton: ReactNode;
+export interface ModalBaseProps extends ModalProps {
+  /** 仅供内部确认服务在异步 onConfirm 完成后自动关闭弹窗。 */
+  closeOnConfirm?: boolean;
+  /** 仅供内部确认服务在异步 onConfirm 失败后关闭当前框并弹出失败提示。 */
+  onConfirmError?: (reason: unknown) => void;
+}
+
+export interface ModalBodyProps {
   contentRef: Ref<HTMLDivElement>;
-  snapHeight: () => void;
-  ariaLabel?: string;
-  ariaLabelledBy?: string;
   scrollbarLabel?: string;
   scrollbarLabelledBy?: string;
-  error?: string;
   children?: ReactNode;
 }
 
-export interface ModalBaseProps extends ModalProps {
-  renderTabsLayout?: ComponentType<ModalTabsRenderProps>;
+/** 排除 null / undefined / 布尔占位节点，避免渲染空壳区域或分隔线。 */
+export function hasRenderableNode(value: ReactNode): boolean {
+  return value != null && typeof value !== 'boolean';
+}
+
+/** 共用的弹窗滚动正文容器，供 Modal、Confirm 等复用。 */
+export function ModalBody({
+  contentRef,
+  scrollbarLabel,
+  scrollbarLabelledBy,
+  children,
+}: ModalBodyProps) {
+  return (
+    <Scrollbar
+      className="leaf-modal__body"
+      viewportClassName="leaf-modal__viewport"
+      orientation="vertical"
+      aria-labelledby={scrollbarLabelledBy}
+      aria-label={scrollbarLabel}
+    >
+      <div ref={contentRef} className="leaf-modal__content">
+        {children}
+      </div>
+    </Scrollbar>
+  );
 }
 
 function ModalSurface({
@@ -45,8 +58,10 @@ function ModalSurface({
   title,
   description,
   icon,
+  size = 'md',
+  danger = false,
   divided = true,
-  tabs,
+  padding,
   footer,
   confirmText,
   cancelText,
@@ -55,7 +70,7 @@ function ModalSurface({
   cancelButtonProps,
   onConfirm,
   onCancel,
-  width = 480,
+  width,
   closable = true,
   maskClosable = true,
   keyboard = true,
@@ -67,15 +82,15 @@ function ModalSurface({
   initialFocus,
   returnFocus,
   container: _container,
-  renderTabsLayout: RenderTabsLayout,
+  closeOnConfirm = false,
+  onConfirmError,
   children,
   className,
   style,
   ...props
 }: ModalBaseProps) {
-  const { messages, maskBlur } = useLeafConfig();
+  const { messages, maskBlur, theme } = useLeafConfig();
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string>();
   const mounted = useRef(true);
   const accepting = useRef(false);
   const generation = useRef(0);
@@ -86,10 +101,11 @@ function ModalSurface({
     };
   }, []);
   useEffect(() => {
+    // 开关状态切换时推进提交代次，屏蔽关闭并重开前的旧异步结果。
+    void open;
     generation.current++;
     accepting.current = false;
     setPending(false);
-    if (open) setError(undefined);
   }, [open]);
   const busy = pending || confirmLoading;
   async function accept() {
@@ -101,12 +117,11 @@ function ModalSurface({
     accepting.current = true;
     const request = generation.current;
     setPending(true);
-    setError(undefined);
     try {
       await onConfirm();
+      if (closeOnConfirm && mounted.current && generation.current === request) onClose?.();
     } catch (reason) {
-      if (mounted.current && generation.current === request)
-        setError(reason instanceof Error ? reason.message : String(reason));
+      if (mounted.current && generation.current === request) onConfirmError?.(reason);
     } finally {
       if (generation.current === request) {
         accepting.current = false;
@@ -135,7 +150,7 @@ function ModalSurface({
     confirmButton: (
       <ButtonControl
         type="button"
-        variant="solid"
+        variant={danger ? 'danger' : 'solid'}
         {...confirmButtonProps}
         loading={busy || confirmButtonProps?.loading}
         onClick={(event) => {
@@ -151,10 +166,10 @@ function ModalSurface({
     typeof footer === 'function' ? (
       footer(actions)
     ) : footer === undefined ? (
-      <div className="leaf-modal__actions">
+      <>
         {actions.cancelButton}
         {actions.confirmButton}
-      </div>
+      </>
     ) : (
       footer
     );
@@ -163,12 +178,10 @@ function ModalSurface({
   const backdrop = useRef<HTMLButtonElement>(null);
   const present = usePresence(open, backdrop);
   const layer = useOverlayLayer(present, open);
-  const snapHeight = useNaturalHeightTransition(panel, content, open);
-  const titleId = `${useId()}-title`;
-  const descriptionId = `${useId()}-description`;
-  const modalId = `${useId()}-dialog`;
-  const close = useRef(cancel);
-  close.current = cancel;
+  const baseId = useId();
+  const titleId = `${baseId}-title`;
+  const descriptionId = `${baseId}-description`;
+  const modalId = `${baseId}-dialog`;
   const wasPresent = useRef(false);
   useEffect(() => {
     if (wasPresent.current && !present) afterClose?.();
@@ -184,23 +197,33 @@ function ModalSurface({
   )
     return null;
 
-  const hasTabs = Boolean(tabs?.items?.length);
-  const hasHeading = title != null || description != null || icon != null;
+  const hasTitle = hasRenderableNode(title);
+  const hasDescription = hasRenderableNode(description);
+  const hasIcon = hasRenderableNode(icon);
+  const hasHeading = hasTitle || hasDescription || hasIcon;
+  const hasFooter = hasRenderableNode(renderedFooter);
+  const hasBody = hasRenderableNode(children);
+  const paddingStyle = resolvePaddingVars('modal', padding);
+  const paddingFlags = resolveDialogPaddingFlags(padding);
+  const modalTheme = theme.components?.Modal;
+  const surfaceFlags = {
+    ...(modalTheme?.headerBackground !== undefined ? { 'data-header-surface': '' } : {}),
+    ...(modalTheme?.footerBackground !== undefined ? { 'data-footer-surface': '' } : {}),
+  };
   const closeButton = closable ? (
     <button
       type="button"
       className="leaf-modal__close"
       aria-label={messages.common.close}
-      onClick={() => close.current?.()}
+      onClick={cancel}
     >
-      <X size={18} aria-hidden="true" />
+      <X size={16} aria-hidden="true" />
     </button>
   ) : null;
+  const resolvedWidth = width ?? (size === 'mini' ? 340 : 480);
+  const scrollbarLabelledBy = hasTitle ? titleId : props['aria-labelledby'];
   const scrollbarLabel =
-    title == null
-      ? (props['aria-label'] ?? tabs?.['aria-label'] ?? messages.common.confirm)
-      : undefined;
-  const scrollbarLabelledBy = title != null ? titleId : undefined;
+    scrollbarLabelledBy == null ? (props['aria-label'] ?? messages.common.confirm) : undefined;
 
   return (
     <div
@@ -219,7 +242,7 @@ function ModalSurface({
         tabIndex={-1}
         aria-label={messages.common.close}
         onClick={() => {
-          if (maskClosable) close.current?.();
+          if (maskClosable) cancel();
         }}
       />
       {/* biome-ignore lint/a11y/useAriaPropsSupportedByRole: dialog and alertdialog both support aria-modal. */}
@@ -229,96 +252,63 @@ function ModalSurface({
         id={props.id ?? modalId}
         role={props.role ?? 'dialog'}
         aria-modal="true"
-        aria-labelledby={title != null ? titleId : props['aria-labelledby']}
+        aria-labelledby={hasTitle ? titleId : props['aria-labelledby']}
         aria-describedby={
-          [props['aria-describedby'], description != null && descriptionId]
-            .filter(Boolean)
-            .join(' ') || undefined
+          [props['aria-describedby'], hasDescription && descriptionId].filter(Boolean).join(' ') ||
+          undefined
         }
         tabIndex={-1}
         className={classes(
           'leaf-modal',
+          size === 'mini' && 'leaf-modal--mini',
+          danger && 'leaf-modal--danger',
           divided && 'leaf-modal--divided',
-          hasTabs && 'leaf-modal--tabbed',
           hasHeading && 'leaf-modal--headed',
+          closable && 'leaf-modal--closable',
           className,
         )}
-        style={{ width, ...layer.popupStyle, ...style }}
+        {...paddingFlags}
+        {...surfaceFlags}
+        style={{ width: resolvedWidth, ...layer.popupStyle, ...paddingStyle, ...style }}
       >
         <OverlayOwner.Provider value={modalId}>
-          {(hasHeading || (!hasTabs && closable)) && (
-            <div
-              className={classes(
-                'leaf-modal__header',
-                description == null && 'leaf-modal__header--simple',
-                icon != null && 'leaf-modal__header--icon',
-                !hasHeading && 'leaf-modal__header--compact',
-              )}
-            >
-              {icon != null && (
+          {hasHeading && (
+            <div className={classes('leaf-modal__header', hasIcon && 'leaf-modal__header--icon')}>
+              {hasIcon && (
                 <span className="leaf-modal__icon" aria-hidden="true">
                   {icon}
                 </span>
               )}
-              {(title != null || description != null) && (
+              {(hasTitle || hasDescription) && (
                 <div className="leaf-modal__heading">
-                  {title != null && <h2 id={titleId}>{title}</h2>}
-                  {description != null && (
+                  {hasTitle && <h2 id={titleId}>{title}</h2>}
+                  {hasDescription && (
                     <div id={descriptionId} className="leaf-modal__description">
                       {description}
                     </div>
                   )}
                 </div>
               )}
-              {closeButton}
             </div>
           )}
-          {hasTabs && tabs && RenderTabsLayout ? (
-            <RenderTabsLayout
-              open={open}
-              tabs={tabs}
-              title={title}
-              titleId={titleId}
-              hasHeading={hasHeading}
-              closeButton={!hasHeading ? closeButton : null}
+          {closeButton}
+          {hasBody && (
+            <ModalBody
               contentRef={content}
-              snapHeight={snapHeight}
-              ariaLabel={props['aria-label']}
-              ariaLabelledBy={props['aria-labelledby']}
               scrollbarLabel={scrollbarLabel}
               scrollbarLabelledBy={scrollbarLabelledBy}
-              error={error}
             >
               {children}
-            </RenderTabsLayout>
-          ) : (
-            ((children != null && children !== false) || error != null) && (
-              <Scrollbar
-                className="leaf-modal__body"
-                viewportClassName="leaf-modal__viewport"
-                orientation="vertical"
-                aria-labelledby={scrollbarLabelledBy}
-                aria-label={scrollbarLabel}
-              >
-                <div ref={content} className="leaf-modal__content">
-                  {children}
-                  {error && (
-                    <p role="alert" className="leaf-confirm-error">
-                      {error}
-                    </p>
-                  )}
-                </div>
-              </Scrollbar>
-            )
+            </ModalBody>
           )}
-          {renderedFooter != null && <div className="leaf-modal__footer">{renderedFooter}</div>}
+          {hasFooter && <div className="leaf-modal__footer">{renderedFooter}</div>}
         </OverlayOwner.Provider>
       </div>
     </div>
   );
 }
 
-// 内部复用的对话框基础容器，避免 Confirm / FileList 继承公开 Modal 默认配置或引入 Tabs。
+// 内部复用的对话框基础容器，避免 Confirm / FileList 继承公开 Modal 默认配置。
 export function ModalBase(props: ModalBaseProps) {
   const visited = useRef(false);
   // 首次打开或显式 forceRender 前保留行内锚点并延迟挂载 ScopedPortal，避免提前在 body 占位。

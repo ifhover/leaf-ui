@@ -94,13 +94,12 @@
           width var(--leaf-motion-slow) var(--leaf-motion-easing),
           height var(--leaf-motion-slow) var(--leaf-motion-easing);
       }
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-tour-root,
-    .leaf-tour--center,
-    .leaf-tour__mask > div {
-      transition: none;
+      > .leaf-tour__spotlight {
+        background: transparent;
+        pointer-events: none;
+        border-radius: var(--leaf-radius);
+        box-shadow: 0 0 0 2px var(--leaf-color-primary);
+      }
     }
   }
 }

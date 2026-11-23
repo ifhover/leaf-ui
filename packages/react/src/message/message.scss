@@ -109,11 +109,4 @@
       transition-timing-function: var(--leaf-motion-easing);
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-message-slot,
-    .leaf-message,
-    .leaf-message[data-state='closing'] {
-      transition: none;
-    }
-  }
 }

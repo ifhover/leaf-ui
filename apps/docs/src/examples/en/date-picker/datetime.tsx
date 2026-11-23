@@ -1,11 +1,11 @@
-import { DatePicker, Form, FormField } from '@ifhover/leaf-ui';
+import { DatePicker } from '@ifhover/leaf-ui';
 
 export function DatePickerDateTime() {
   return (
-    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
-      <FormField label="Appointment">
-        <DatePicker picker="datetime" defaultValue={new Date(2026, 9, 3, 14, 30)} />
-      </FormField>
-    </Form>
+    <DatePicker
+      aria-label="Appointment"
+      picker="datetime"
+      defaultValue={new Date(2026, 9, 3, 14, 30)}
+    />
   );
 }

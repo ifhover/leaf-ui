@@ -41,10 +41,9 @@
     @include backdrop.blur('.leaf-modal-mask');
   }
   .leaf-modal {
-    @include dialog-sections.sections(modal, var(--leaf-density-dialog-block));
-    // Three compact layers retain depth without the large shadow's broad footprint.
-    --leaf-modal-default-shadow:
-      var(--leaf-shadow-md), var(--leaf-shadow-md), var(--leaf-shadow-md);
+    @include dialog-sections.sections(modal);
+    --leaf-dialog-icon-size: var(--leaf-control-height-lg);
+    --leaf-z-index-popup: calc(var(--leaf-z-index-modal, 1100) + 1);
     position: relative;
     box-sizing: border-box;
     max-width: 100%;
@@ -55,16 +54,16 @@
     border: var(--leaf-component-modal-border-width, var(--leaf-border-width, 1px)) solid
       var(
         --leaf-component-modal-border-color,
-        var(--leaf-frame-border-color, var(--leaf-color-divider))
+        var(--leaf-frame-border-color, var(--leaf-color-border))
       );
-    border-radius: var(--leaf-component-modal-radius, var(--leaf-radius-lg));
+    border-radius: var(--leaf-component-modal-radius, var(--leaf-radius-md));
     background: var(--leaf-component-modal-background, var(--leaf-color-surface));
     color: var(--leaf-component-modal-color, var(--leaf-color-text));
     font: var(--leaf-component-modal-font-size, var(--leaf-font-size)) / var(--leaf-line-height)
       var(--leaf-font-family);
     box-shadow: var(
       --leaf-component-modal-shadow,
-      var(--leaf-surface-shadow, var(--leaf-modal-default-shadow))
+      var(--leaf-surface-shadow, var(--leaf-shadow-md))
     );
     outline: none;
     transform: translateY(0) scale(1);
@@ -77,127 +76,115 @@
       transform: translateY(18px) scale(0.96);
     }
     > .leaf-modal__header {
-      padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
-      padding-block-end: 0;
-    }
-    &__header--simple {
-      --leaf-dialog-padding-block: var(--leaf-component-modal-padding-top, var(--leaf-spacing-md));
-      padding-block-start: var(--leaf-dialog-padding-block);
-    }
-    &__body {
-      flex: 1 1 auto;
-      padding: 0;
-      overflow: hidden;
-      border-radius: 0;
-    }
-    &__viewport {
-      overscroll-behavior: contain;
-    }
-    &__content {
-      box-sizing: border-box;
-      padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
-    }
-    &__actions {
-      display: flex;
-      min-width: 0;
-      align-items: center;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    > .leaf-modal__footer {
-      padding: var(--leaf-component-modal-padding, var(--leaf-density-dialog-block));
-      padding-block-start: 0;
-    }
-    &--divided > .leaf-modal__header {
-      padding-block-end: var(--leaf-dialog-padding-block);
-    }
-    &--divided > .leaf-modal__footer {
-      padding-block-start: var(--leaf-dialog-padding-block);
-    }
-    &__close {
-      margin-inline-start: auto;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      width: 30px;
-      height: 30px;
-      padding: 4px;
-      border: 0;
-      border-radius: var(--leaf-radius);
-
-      @include mixins.text-action;
-    }
-    // Confirm shares the dialog shell but retains its original spacing and typography.
-    &:not(.leaf-confirm) {
-      @include mixins.softened-frame-color(
-        modal,
-        var(--leaf-component-modal-background, var(--leaf-color-surface))
-      );
-      --leaf-dialog-divider: var(
-        --leaf-component-modal-border-color,
-        var(--leaf-modal-frame-color)
-      );
-      --leaf-dialog-icon-size: var(--leaf-control-height-lg);
-      border-radius: var(--leaf-component-modal-radius, var(--leaf-radius-md));
-      > .leaf-modal__header {
-        padding: var(--leaf-component-modal-padding, 10px var(--leaf-density-dialog-block));
-        &.leaf-modal__header--icon {
-          padding: var(
-            --leaf-component-modal-padding,
-            var(--leaf-spacing-md) var(--leaf-density-dialog-block)
-          );
-        }
-        > .leaf-modal__icon {
-          align-self: center;
-          border: 0;
-          border-radius: var(--leaf-radius-md);
-          > svg {
-            width: 20px;
-            height: 20px;
-          }
-        }
-        > .leaf-modal__heading h2 {
-          font-size: var(--leaf-component-modal-font-size, var(--leaf-font-size-lg));
-          font-weight: var(--leaf-heading-weight);
-        }
-        > .leaf-modal__heading > .leaf-modal__description {
-          font-size: var(--leaf-font-size-sm);
+      > .leaf-modal__icon {
+        align-self: flex-start;
+        border: 0;
+        border-radius: var(--leaf-radius);
+        color: var(--leaf-color-text);
+        > svg {
+          width: 20px;
+          height: 20px;
         }
       }
-      > .leaf-modal__header > .leaf-modal__close,
-      .leaf-modal__tab-extra > .leaf-modal__close {
-        box-sizing: border-box;
-        align-self: center;
-        margin-inline-end: -4px;
-        width: 32px;
-        height: 32px;
-        padding: 8px;
-        > svg {
-          width: 16px;
-          height: 16px;
+    }
+    > .leaf-modal__footer {
+      --leaf-modal-footer-radius: max(
+        0px,
+        calc(
+          var(--leaf-component-modal-radius, var(--leaf-radius-md)) - var(
+              --leaf-component-modal-border-width,
+              var(--leaf-border-width, 1px)
+            )
+        )
+      );
+      border-end-start-radius: var(--leaf-modal-footer-radius);
+      border-end-end-radius: var(--leaf-modal-footer-radius);
+      background: var(
+        --leaf-component-modal-footer-background,
+        #{mixins.subtle-action-background(
+            var(--leaf-component-modal-background, var(--leaf-color-surface))
+          )}
+      );
+    }
+    // 无分隔线时页脚同样贴边拉满全宽，避免默认背景色呈内缩色块。
+    &:not(.leaf-modal--divided) > .leaf-modal__footer {
+      margin-inline: calc(-1 * var(--leaf-dialog-padding-start))
+        calc(-1 * var(--leaf-dialog-padding-end));
+      margin-block-end: calc(-1 * var(--leaf-dialog-padding-bottom));
+      padding: var(
+        --leaf-modal-footer-padding,
+        var(--leaf-dialog-footer-padding-top) var(--leaf-dialog-padding-end)
+          var(--leaf-dialog-footer-padding-bottom) var(--leaf-dialog-padding-start)
+      );
+    }
+    &--danger > .leaf-modal__header > .leaf-modal__icon {
+      @include mixins.status-label-family(danger);
+      background: var(--leaf-status-label-background);
+      color: var(--leaf-status-label-base);
+    }
+    &--mini {
+      --leaf-dialog-icon-size: calc(var(--leaf-control-height-lg) + 2px);
+      > .leaf-modal__header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: var(--leaf-dialog-gap);
+        > .leaf-modal__icon {
+          align-self: center;
+          border-radius: var(--leaf-radius);
+        }
+        > .leaf-modal__heading {
+          flex: 0 0 auto;
+          width: 100%;
+          box-sizing: border-box;
+          > .leaf-modal__description {
+            font-size: var(--leaf-font-size);
+            line-height: var(--leaf-line-height);
+            text-wrap: balance;
+          }
+        }
+      }
+      // 存在居中图标时标题位于关闭按钮下方，无图标时左右对称留白保持视觉居中。
+      &.leaf-modal--closable > .leaf-modal__header {
+        &.leaf-modal__header--icon > .leaf-modal__heading:last-child {
+          padding-inline-end: 0;
+        }
+        &:not(.leaf-modal__header--icon) > .leaf-modal__heading:last-child {
+          padding-inline: var(--leaf-dialog-close-clearance);
+        }
+      }
+      // 无 description 时将仅含说明正文的 body 拉近至标题下方，保持与 description 一致的间距比例。
+      > .leaf-modal__header:has(> .leaf-modal__heading):not(
+          :has(> .leaf-modal__heading > .leaf-modal__description)
+        )
+        + .leaf-modal__body {
+        margin-block-start: calc(var(--leaf-spacing-sm) - var(--leaf-dialog-gap));
+      }
+      > .leaf-modal__body .leaf-modal__content {
+        color: var(--leaf-color-text-muted);
+        text-align: center;
+        text-wrap: balance;
+        > .leaf-form,
+        > .leaf-form-field,
+        > .leaf-input,
+        > .leaf-textarea,
+        > .leaf-select {
+          color: var(--leaf-color-text);
+          text-align: start;
         }
       }
       > .leaf-modal__footer {
-        padding: var(
-          --leaf-component-modal-padding,
-          calc(var(--leaf-spacing) * 1.5) var(--leaf-density-dialog-block)
-        );
-        background: var(--leaf-component-modal-footer-background, transparent);
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+        > .leaf-button {
+          width: 100%;
+        }
+        @media (max-width: 320px) {
+          grid-auto-flow: row;
+          grid-auto-columns: auto;
+        }
       }
-    }
-    @include dialog-sections.tabs(modal);
-    &.leaf-modal--tabbed > .leaf-modal__header.leaf-modal__header--icon {
-      padding-block-end: 4px;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-modal {
-      transition: none;
-    }
-    .leaf-modal__close {
-      transition: none;
     }
   }
   .leaf-modal-mask[data-state='closing'] .leaf-modal {
@@ -205,9 +192,6 @@
     transform: translateY(10px) scale(0.98);
     transition-duration: var(--leaf-motion-duration);
     transition-timing-function: var(--leaf-motion-easing);
-  }
-  .leaf-modal {
-    --leaf-z-index-popup: calc(var(--leaf-z-index-modal, 1100) + 1);
   }
 
   .leaf-modal-mask[hidden] {

@@ -14,7 +14,7 @@
     background: var(--leaf-preview-overlay);
     font: var(--leaf-font-size-sm) / var(--leaf-line-height-sm) var(--leaf-font-family);
     outline: 0;
-    animation: leaf-preview-in 300ms ease;
+    animation: leaf-fade-in 300ms ease;
     transition: opacity 300ms ease;
     -webkit-tap-highlight-color: transparent;
     &,
@@ -89,10 +89,33 @@
   .leaf-image-viewer[data-moving] .leaf-image-viewer__stage {
     cursor: grabbing;
   }
-  .leaf-image-viewer__image {
+  .leaf-image-viewer__image,
+  .leaf-image-viewer__tooltip,
+  .leaf-image-viewer__loading {
     position: absolute;
     left: 50%;
     top: 50%;
+  }
+  .leaf-image-viewer__tool,
+  .leaf-image-viewer__navigation,
+  .leaf-image-viewer__close {
+    border-radius: 50%;
+    background: var(--leaf-preview-overlay);
+    transition: background-color 150ms;
+  }
+  .leaf-image-viewer__tool,
+  .leaf-image-viewer__navigation {
+    display: grid;
+    place-items: center;
+  }
+  .leaf-image-viewer__tool:hover:not(:disabled),
+  .leaf-image-viewer__tool:focus-visible,
+  .leaf-image-viewer__navigation:hover,
+  .leaf-image-viewer__navigation:focus-visible,
+  .leaf-image-viewer__close:hover {
+    background: var(--leaf-preview-hover);
+  }
+  .leaf-image-viewer__image {
     max-width: none !important;
     max-height: none !important;
     opacity: 0;
@@ -127,34 +150,16 @@
     min-height: 44px;
   }
   .leaf-image-viewer__tool {
-    display: grid;
-    place-items: center;
     width: 28px;
     height: 28px;
     flex: 0 0 28px;
-    border-radius: 50%;
-    background: var(--leaf-preview-overlay);
-    transition: background-color 150ms;
-    &:hover:not(:disabled),
-    &:focus-visible {
-      background: var(--leaf-preview-hover);
-    }
   }
   .leaf-image-viewer__navigation {
     position: absolute;
     top: 50%;
     translate: 0 -50%;
-    display: grid;
-    place-items: center;
     width: 44px;
     height: 44px;
-    border-radius: 50%;
-    background: var(--leaf-preview-overlay);
-    transition: background-color 150ms;
-    &:hover,
-    &:focus-visible {
-      background: var(--leaf-preview-hover);
-    }
     &--previous {
       left: max(12px, env(safe-area-inset-left, 0px));
     }
@@ -210,9 +215,6 @@
     right: -40px;
     width: 80px;
     height: 80px;
-    border-radius: 50%;
-    background: var(--leaf-preview-overlay);
-    transition: background-color 150ms;
   }
   .leaf-image-viewer__close svg {
     position: absolute;
@@ -221,13 +223,7 @@
     width: 18px;
     height: 18px;
   }
-  .leaf-image-viewer__close:hover {
-    background: var(--leaf-preview-hover);
-  }
   .leaf-image-viewer__tooltip {
-    position: absolute;
-    left: 50%;
-    top: 50%;
     translate: -50% -50%;
     padding: 5px 10px;
     border-radius: 10px;
@@ -240,9 +236,6 @@
     }
   }
   .leaf-image-viewer__loading {
-    position: absolute;
-    left: 50%;
-    top: 50%;
     width: 24px;
     height: 24px;
     margin: -12px;
@@ -250,7 +243,7 @@
     border-right-color: transparent;
     border-radius: 50%;
     opacity: 0.7;
-    animation: leaf-preview-spin 1s linear infinite;
+    animation: leaf-spin 1s linear infinite;
   }
   .leaf-image-viewer__error {
     position: absolute;
@@ -274,14 +267,6 @@
     clip-path: inset(50%);
     white-space: nowrap;
   }
-  @keyframes leaf-preview-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
   @keyframes leaf-preview-image-in {
     from {
       opacity: 0;
@@ -292,21 +277,9 @@
       scale: 1;
     }
   }
-  @keyframes leaf-preview-spin {
-    to {
-      rotate: 360deg;
-    }
-  }
   @media (max-width: 350px) {
     .leaf-image-viewer__toolbar {
       gap: 0;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-image-viewer,
-    .leaf-image-viewer * {
-      animation: none !important;
-      transition: none !important;
     }
   }
 }

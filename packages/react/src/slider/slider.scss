@@ -58,10 +58,7 @@
         background: var(--leaf-color-surface);
         cursor: grab;
         box-shadow: var(--leaf-shadow-xs);
-        transition:
-          border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-          box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-          transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+        transition: var(--leaf-field-transition);
       }
       &::-moz-range-track {
         background: transparent;
@@ -76,10 +73,7 @@
         background: var(--leaf-color-surface);
         cursor: grab;
         box-shadow: var(--leaf-shadow-xs);
-        transition:
-          border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-          box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-          transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+        transition: var(--leaf-field-transition);
       }
       &:hover:not(:disabled)::-webkit-slider-thumb {
         border-color: var(--leaf-color-primary-hover, var(--leaf-color-primary));
@@ -90,12 +84,12 @@
         box-shadow: var(--leaf-shadow-sm);
       }
       &:active:not(:disabled)::-webkit-slider-thumb {
-        transform: scale(0.96);
+        border-color: var(--leaf-color-primary-active, var(--leaf-color-primary));
         cursor: grabbing;
         box-shadow: var(--leaf-shadow-xs);
       }
       &:active:not(:disabled)::-moz-range-thumb {
-        transform: scale(0.96);
+        border-color: var(--leaf-color-primary-active, var(--leaf-color-primary));
         cursor: grabbing;
         box-shadow: var(--leaf-shadow-xs);
       }
@@ -165,7 +159,7 @@
       border: 2px solid var(--leaf-color-border);
       border-radius: 50%;
       background: var(--leaf-color-surface);
-      transition: border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-field-transition);
     }
     &--vertical {
       width: 34px;
@@ -230,19 +224,6 @@
       }
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-slider__value,
-    .leaf-slider__dot,
-    .leaf-slider__mark {
-      transition: none;
-    }
-    .leaf-slider__input::-webkit-slider-thumb {
-      transition: none;
-    }
-    .leaf-slider__input::-moz-range-thumb {
-      transition: none;
-    }
-  }
 
   .leaf-slider:not(.leaf-slider--vertical):dir(rtl) .leaf-slider__mark {
     transform: translateX(50%);
@@ -261,5 +242,13 @@
   }
   .leaf-slider__fill {
     inset-inline-start: var(--leaf-slider-start);
+  }
+  .leaf-slider__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }

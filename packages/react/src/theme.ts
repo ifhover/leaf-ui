@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { deriveColors } from './colors';
+import { paddingSides } from './shared/padding';
 
 /** Shared CSS variables; configure component themes through ConfigProvider. */
 export type LeafThemeStyle = CSSProperties & {
@@ -8,6 +9,7 @@ export type LeafThemeStyle = CSSProperties & {
 
 /** Common settings. Other sizes and interaction colors are derived automatically. */
 export interface LeafTheme {
+  /** 主题主色；传入 `'neutral'` 时启用随明暗外观反转的黑白灰单色主色。 */
   primaryColor?: string;
   borderRadius?: number | string;
   controlHeight?: number | string;
@@ -96,9 +98,7 @@ export interface LeafThemeTokens {
   primaryActiveColor?: string;
   primarySoftColor?: string;
   primarySoftHoverColor?: string;
-  primarySoftActiveColor?: string;
   primaryBorderColor?: string;
-  dangerHoverColor?: string;
   dangerActiveColor?: string;
   spacingSm?: number | string;
   spacingLg?: number | string;
@@ -192,9 +192,7 @@ const tokenVariables = {
   primaryActiveColor: 'color-primary-active',
   primarySoftColor: 'color-primary-soft',
   primarySoftHoverColor: 'color-primary-soft-hover',
-  primarySoftActiveColor: 'color-primary-soft-active',
   primaryBorderColor: 'color-primary-border',
-  dangerHoverColor: 'color-danger-hover',
   dangerActiveColor: 'color-danger-active',
   spacingSm: 'spacing-sm',
   spacingLg: 'spacing-lg',
@@ -228,26 +226,6 @@ function lineHeightVariables(value: number | string): LeafThemeStyle {
     '--leaf-line-height-sm': 'calc(var(--leaf-line-height) - 2px)',
     '--leaf-line-height-lg': 'calc(var(--leaf-line-height) + 2px)',
   };
-}
-
-/** Expand CSS padding without splitting whitespace inside calc()/var(). */
-function paddingSides(value: string) {
-  const parts: string[] = [];
-  let depth = 0;
-  let start = 0;
-  for (let index = 0; index <= value.length; index++) {
-    const character = value[index];
-    if (character === '(') depth++;
-    else if (character === ')') depth--;
-    if (index === value.length || (depth === 0 && /\s/.test(character ?? ''))) {
-      const part = value.slice(start, index).trim();
-      if (part) parts.push(part);
-      start = index + 1;
-    }
-  }
-  if (!parts.length || parts.length > 4) return [];
-  const [top, right = top, bottom = top, left = right] = parts;
-  return [top, right, bottom, left];
 }
 
 /** Explicit JS inputs, excluding the generated palette. */
@@ -343,12 +321,13 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
   }
   if (theme.borderRadius !== undefined) {
     variables['--leaf-radius'] = length(theme.borderRadius);
-    variables['--leaf-radius-sm'] = 'calc(var(--leaf-radius) * 0.5)';
-    variables['--leaf-control-radius-sm'] = 'calc(var(--leaf-radius) * 0.8)';
-    variables['--leaf-control-radius-lg'] = 'calc(var(--leaf-radius) * 1.2)';
-    variables['--leaf-radius-md'] = 'calc(var(--leaf-radius) * 1.4)';
-    variables['--leaf-radius-lg'] = 'calc(var(--leaf-radius) * 1.6)';
-    variables['--leaf-choice-radius'] = 'calc(var(--leaf-radius) * 0.5)';
+    variables['--leaf-radius-sm'] = 'max(0px, calc(var(--leaf-radius) - 5px))';
+    variables['--leaf-control-radius-sm'] = 'max(0px, calc(var(--leaf-radius) - 2px))';
+    variables['--leaf-control-radius-lg'] =
+      'calc(var(--leaf-radius) + min(var(--leaf-radius), 2px))';
+    variables['--leaf-radius-md'] = 'calc(var(--leaf-radius) + min(var(--leaf-radius), 4px))';
+    variables['--leaf-radius-lg'] = 'calc(var(--leaf-radius) + min(var(--leaf-radius), 6px))';
+    variables['--leaf-choice-radius'] = 'max(0px, calc(var(--leaf-radius) - 5px))';
   }
   if (theme.controlHeight !== undefined) {
     variables['--leaf-control-height'] = length(theme.controlHeight);

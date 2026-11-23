@@ -2,42 +2,15 @@
 
 @layer leaf-ui {
   .leaf-pagination {
-    @include mixins.control-size;
-    @include mixins.accent-soft-feedback-family;
-    position: relative;
-    isolation: isolate;
+    @include mixins.control-size(pagination);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--leaf-component-pagination-gap, 6px);
+    row-gap: 10px;
     color: var(--leaf-component-pagination-color, var(--leaf-color-text));
     font: var(--leaf-component-pagination-font-size, var(--leaf-current-font-size)) /
       var(--leaf-line-height) var(--leaf-font-family);
-    &__indicator {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: -1;
-      pointer-events: none;
-      width: var(--leaf-indicator-width, 0px);
-      height: var(--leaf-indicator-height, 0px);
-      transform: translate(var(--leaf-indicator-x, 0px), var(--leaf-indicator-y, 0px));
-      box-sizing: border-box;
-      border: var(--leaf-border-width, 1px) solid
-        var(--leaf-frame-border-color, var(--leaf-accent-soft-border));
-      border-radius: var(--leaf-current-radius, var(--leaf-radius));
-      background: var(--leaf-accent-soft-background);
-      opacity: 0;
-      &[data-visible='true'] {
-        opacity: 1;
-      }
-      &[data-animate='true'] {
-        transition:
-          transform var(--leaf-motion-slow) var(--leaf-motion-spring),
-          width var(--leaf-motion-slow) var(--leaf-motion-spring),
-          height var(--leaf-motion-slow) var(--leaf-motion-spring);
-      }
-    }
     & > .leaf-button,
     &__entry > .leaf-button {
       --leaf-current-control-height: inherit;
@@ -46,36 +19,52 @@
       --leaf-button-rest-color: var(--leaf-component-pagination-color, var(--leaf-color-text));
       min-width: var(--leaf-current-control-height);
       height: var(--leaf-current-control-height);
-      padding: 0 8px;
       font-size: inherit;
       font-variant-numeric: tabular-nums;
-      &.leaf-button--icon-only {
-        width: var(--leaf-current-control-height);
-        padding: 0;
+      &:not(.leaf-pagination__nav):not(.leaf-pagination__jump) {
+        padding: 0 8px;
       }
-      // Only the current page delegates its paint to the moving indicator.
-      &[aria-current='page'] {
-        &,
-        &:hover:not([data-loading]),
-        &:active:not([data-loading]),
-        &:focus-visible:not([data-loading]),
-        &:disabled {
-          color: var(--leaf-color-primary);
-          background: transparent;
-          border-color: transparent;
-          box-shadow: none;
-          @media (forced-colors: active) {
-            color: HighlightText;
-            forced-color-adjust: none;
-          }
-        }
+      // 保留 Button 组件图标侧自动收窄内边距的行为，不硬编码覆盖 padding。
+      &.leaf-pagination__nav {
+        gap: 4px;
       }
     }
-    &--outline .leaf-pagination__indicator {
-      border-color: var(--leaf-frame-border-color, var(--leaf-accent-soft-border));
+    // 无边框样式直接切换当前页为纯边框方框（去除阴影并略微加深中性边框），不使用滑动指示器动画。
+    &--ghost > .leaf-pagination__entry > .leaf-button[aria-current='page'] {
+      --leaf-button-rest-color: var(--leaf-component-pagination-color, var(--leaf-color-text));
+      --leaf-button-rest-background: var(--leaf-color-surface);
+      --leaf-button-rest-border: var(--leaf-frame-border-color, var(--leaf-color-border-hover));
+      --leaf-button-rest-shadow: none;
+      --leaf-button-hover-background: var(--leaf-color-surface);
+      --leaf-button-hover-border: var(--leaf-frame-border-color, var(--leaf-color-border-hover));
+      --leaf-button-active-color: var(--leaf-button-base-color);
+      --leaf-button-active-background: var(--leaf-button-base-background);
+      --leaf-button-active-border: var(--leaf-button-base-border);
+      &:active:not(:disabled):not([data-loading]) {
+        translate: none;
+      }
     }
-    &[data-disabled] &__indicator[data-visible='true'] {
+    // 有边框样式下，当前选中页保持相同占位于不可点击的纯文本状态。
+    &--outline > .leaf-pagination__entry > .leaf-button[aria-current='page'] {
+      &,
+      &:disabled,
+      &:hover,
+      &:active,
+      &:focus-visible {
+        color: var(--leaf-component-pagination-color, var(--leaf-color-text));
+        background: transparent;
+        border-color: transparent;
+        box-shadow: none;
+        opacity: 1;
+        cursor: default;
+        translate: none;
+      }
+    }
+    &--outline[data-disabled]
+      > .leaf-pagination__entry
+      > .leaf-button[aria-current='page']:disabled {
       opacity: 0.45;
+      cursor: not-allowed;
     }
     &__entry {
       display: inline-flex;
@@ -85,89 +74,71 @@
     &__ellipsis {
       min-width: var(--leaf-current-control-height);
       text-align: center;
-      color: var(--leaf-color-text-muted);
+      color: inherit;
     }
     &__jump {
       width: var(--leaf-current-control-height);
       padding: 0;
-      .leaf-button__label > svg {
+      > svg {
         display: none;
       }
       &:hover:not(:disabled),
       &:focus-visible {
-        .leaf-button__label > span {
+        > span {
           display: none;
         }
-        .leaf-button__label > svg {
+        > svg {
           display: block;
         }
       }
     }
     &__size {
-      width: 110px;
-      flex: 0 0 110px;
+      display: inline-flex;
+      align-items: center;
       margin-inline-start: 6px;
+      color: inherit;
+      white-space: nowrap;
+      .leaf-pagination__size-select {
+        --leaf-select-end-padding: 26px;
+        --leaf-field-width: 7.8em;
+        flex: 0 0 auto;
+      }
     }
     &__jumper {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       margin-inline-start: 6px;
+      color: inherit;
+      white-space: nowrap;
       .leaf-input-number {
-        width: 58px;
+        --leaf-field-width: 48px;
+      }
+      .leaf-input-number__field {
+        padding-inline: 6px;
+      }
+      .leaf-input-number__input {
+        text-align: center;
       }
     }
     &__total {
       margin-inline-end: 8px;
-      color: var(--leaf-color-text-muted);
+      color: inherit;
     }
     &__simple {
       padding-inline: 8px;
       font-variant-numeric: tabular-nums;
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-pagination > button,
-    .leaf-pagination__entry > button {
-      transition: none;
-    }
-    .leaf-pagination__indicator[data-animate='true'] {
-      transition: none;
-    }
-  }
-  .leaf-pagination[dir='rtl'] > button svg,
-  .leaf-pagination[dir='rtl'] .leaf-pagination__jump .leaf-button__label > svg {
+  .leaf-pagination[dir='rtl'] .leaf-pagination__nav > svg,
+  .leaf-pagination[dir='rtl'] .leaf-pagination__jump > svg {
     transform: rotate(180deg);
   }
 
-  .leaf-pagination {
-    --leaf-current-control-height: var(
-      --leaf-component-pagination-height,
-      var(--leaf-control-height)
-    );
-    --leaf-current-font-size: var(--leaf-component-pagination-font-size, var(--leaf-font-size));
-    --leaf-current-radius: var(--leaf-radius);
-  }
-  .leaf-pagination--sm {
-    --leaf-current-control-height: var(
-      --leaf-component-pagination-height-sm,
-      var(--leaf-control-height-sm)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-sm);
-    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
-  }
-  .leaf-pagination--lg {
-    --leaf-current-control-height: var(
-      --leaf-component-pagination-height-lg,
-      var(--leaf-control-height-lg)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-lg);
-    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
-  }
   @media (forced-colors: active) {
-    .leaf-pagination__indicator {
-      background: Highlight;
+    .leaf-pagination__entry > .leaf-button[aria-current='page'] {
       border-color: Highlight;
+      color: HighlightText;
       forced-color-adjust: none;
     }
   }

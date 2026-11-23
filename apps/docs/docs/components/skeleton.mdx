@@ -3,6 +3,7 @@ import { SkeletonBasic } from '../../src/examples/skeleton/basic';
 import { SkeletonContent } from '../../src/examples/skeleton/content';
 import { SkeletonShapes } from '../../src/examples/skeleton/shapes';
 import { SkeletonRows } from '../../src/examples/skeleton/rows';
+import { SkeletonElements } from '../../src/examples/skeleton/elements';
 
 export const leafDoc = { component: 'Skeleton', primaryApi: 'SkeletonProps' };
 
@@ -60,6 +61,17 @@ export const leafDoc = { component: 'Skeleton', primaryApi: 'SkeletonProps' };
 
 </ComponentExample>
 
+### 独立占位元素
+
+使用 `Skeleton.Avatar`、`Skeleton.Button`、`Skeleton.Input` 和 `Skeleton.Image` 组合单个控件或工具栏的骨架结构。
+
+<ComponentExample exampleId="elements" preview={<SkeletonElements />} fileName="elements.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/skeleton/elements.tsx"
+```
+
+</ComponentExample>
+
 {/* leaf:section api */}
 
 ## API
@@ -79,3 +91,43 @@ export const leafDoc = { component: 'Skeleton', primaryApi: 'SkeletonProps' };
 | `rowWidths` | `readonly (number \| string)[]` | — | 各行宽度 |
 | `round` | `boolean` | `false` | 标题和正文占位使用胶囊圆角，不影响头像。 |
 | `children` | `ReactNode` | — | 加载完成后展示的内容。 |
+
+### SkeletonAvatar API
+
+单独展示头像占位块。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg' \| number` | `'md'` | 头像占位尺寸，支持预设尺寸或像素值。 |
+| `shape` | `'circle' \| 'square'` | `'circle'` | 头像占位形状。 |
+| `active` | `boolean` | `true` | 启用占位动画。 |
+
+### SkeletonButton API
+
+单独展示按钮占位块。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮占位高度尺寸。 |
+| `shape` | `'default' \| 'circle' \| 'round'` | `'default'` | 按钮占位轮廓形状。 |
+| `block` | `boolean` | `false` | 是否撑满父容器宽度。 |
+| `active` | `boolean` | `true` | 启用占位动画。 |
+
+### SkeletonInput API
+
+单独展示输入框占位块。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 输入框占位高度尺寸。 |
+| `block` | `boolean` | `false` | 是否撑满父容器宽度。 |
+| `active` | `boolean` | `true` | 启用占位动画。 |
+
+### SkeletonImage API
+
+单独展示图片占位块。
+
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `size` | `number` | — | 图片占位宽高像素尺寸。 |
+| `active` | `boolean` | `true` | 启用占位动画。 |

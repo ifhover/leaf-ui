@@ -1,6 +1,5 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { CardBasic } from '../../../src/examples/en/card/basic';
-import { CardSelected } from '../../../src/examples/en/card/selected';
 import { CardSizes } from '../../../src/examples/en/card/sizes';
 import { CardLayered } from '../../../src/examples/en/card/layered';
 import { CardStandaloneTitle } from '../../../src/examples/en/card/standalone-title';
@@ -24,6 +23,7 @@ Supply the card title through `title` and its content through `children`.
 <ComponentExample exampleId="basic" preview={<CardBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -32,17 +32,6 @@ Supply the card title through `title` and its content through `children`.
 
 ## Examples
 
-### Selected state
-
-`selected` is visual only. Use a button or selection control to make a card selectable.
-
-<ComponentExample exampleId="selected" preview={<CardSelected />} fileName="selected.tsx">
-
-```tsx lineNumbers file="../../../src/examples/en/card/selected.tsx"
-```
-
-</ComponentExample>
-
 ### Sizes
 
 Embedded tabs follow the card's `size` unless overridden with `tabs.size`, and have the same height as standalone line Tabs of that size. Buttons and inputs inside the card use their own `size`.
@@ -50,6 +39,7 @@ Embedded tabs follow the card's `size` unless overridden with `tabs.size`, and h
 <ComponentExample exampleId="sizes" preview={<CardSizes />} fileName="sizes.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/sizes.tsx"
+
 ```
 
 </ComponentExample>
@@ -61,6 +51,7 @@ Set `variant="layered"` to separate the heading from the content card. This appe
 <ComponentExample exampleId="layered" preview={<CardLayered />} fileName="layered.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/layered.tsx"
+
 ```
 
 </ComponentExample>
@@ -72,17 +63,19 @@ Set `variant="layered"` to separate the heading from the content card. This appe
 <ComponentExample exampleId="standalone-title" preview={<CardStandaloneTitle />} fileName="standalone-title.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/standalone-title.tsx"
+
 ```
 
 </ComponentExample>
 
 ### Heading and footer actions
 
-Place actions beside the title with `extra`, or below the content with `footer`.
+Place actions beside the title with `extra`, or at the bottom with `footer` (which defaults to right-aligned buttons, built-in gap, subtle surface tint and a top divider; set `divided={false}` to remove the border). Use `padding` to override container or `header` / `body` / `footer` padding when needed.
 
 <ComponentExample exampleId="actions" preview={<CardActions />} fileName="actions.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/actions.tsx"
+
 ```
 
 </ComponentExample>
@@ -94,6 +87,7 @@ Use `tabs.items` for tab pages. Provide `tabs['aria-label']` when the card has n
 <ComponentExample exampleId="tabs" preview={<CardTabs />} fileName="tabs.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/tabs.tsx"
+
 ```
 
 </ComponentExample>
@@ -105,6 +99,7 @@ Control the active tab with `tabs.activeKey` and `tabs.onChange`. Visited pages 
 <ComponentExample exampleId="tabs-with-title" preview={<CardTabsWithTitle />} fileName="tabs-with-title.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/tabs-with-title.tsx"
+
 ```
 
 </ComponentExample>
@@ -116,6 +111,7 @@ Control the active tab with `tabs.activeKey` and `tabs.onChange`. Visited pages 
 <ComponentExample exampleId="loading" preview={<CardLoading />} fileName="loading.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/card/loading.tsx"
+
 ```
 
 </ComponentExample>
@@ -135,13 +131,14 @@ Configuration for card headings, content regions, embedded tabs and loading stat
 | `extra` | `ReactNode` | — | Heading actions; shown at the trailing edge of tabs without a heading. |
 | `tabs` | [`CardTabsProps`](#cardtabs-api) | — | Embedded tabs; replace the heading without a title or sit beneath it. |
 | `cover` | `ReactNode` | — | Top cover. |
-| `footer` | `ReactNode` | — | Footer content or actions; layered places them on the canvas below the content card. |
+| `footer` | `ReactNode` | — | Footer content or actions; uses a right-aligned flex row with subtle background and top divider by default (`divided={false}` hides the divider), while layered places it on the outer canvas below the content card. |
 | `loading` | `boolean` | `false` | Replace body and tab-page content with skeletons; headings, tabs and actions remain enabled. |
 | `bordered` | `boolean` | `true` | Show the outer border; set to `false` to remove it. |
 | `shadow` | `boolean` | `true` | Show the card's resting shadow; layered cards apply it to the inner content surface. |
-| `selected` | `boolean` | `false` | Mark the card as selected; use a button or selection control to manage selection. |
+| `divided` | `boolean` | `true` | Show a subtle divider above the footer action bar; omitted on layered cards. |
 | `variant` | `'default' \| 'layered'` | `'default'` | Card appearance; layered separates the content surface from the heading and footer on a muted canvas. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Card size; embedded tabs follow it by default, while other children use their own sizes. |
+| `padding` | `number \| string \| 'none' \| { header?: number \| string \| 'none'; body?: number \| string \| 'none'; footer?: number \| string \| 'none' }` | — | Override card or section (`header`, `body`, `footer`) padding; numbers use pixels and `'none'` sets 0. |
 
 ### CardTabs API
 

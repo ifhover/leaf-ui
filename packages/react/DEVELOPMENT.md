@@ -26,7 +26,7 @@ pnpm dev
 
 ## 尺寸与样式约定
 
-**默认单行控件高度是 34px**。Button、Input、Select 及后续表单组件必须共用 --leaf-control-height；小、大尺寸共用 --leaf-control-height-sm / --leaf-control-height-lg（默认 28 / 40px）。不要在每个组件中重复建立不同的尺寸基准。
+**默认单行控件高度是 32px**。Button、Input、Select 及后续表单组件必须共用 --leaf-control-height；小、大尺寸共用 --leaf-control-height-sm / --leaf-control-height-lg（默认 26 / 38px）。不要在每个组件中重复建立不同的尺寸基准。
 
 公共 SCSS mixin 位于 src/styles/_mixins.scss，提供 control-size、field、choice 和 focus-ring。主题色、危险色、圆角、尺寸及动效使用 --leaf-* CSS 变量，SCSS 负责样式复用与组织。颜色遵守 [颜色系统规范](../../COLOR-SYSTEM.md)：组件优先使用共享用途角色，家族 recipe 只负责复用实现；派生公式集中维护并保证局部主题继承，不为组件自行增加近似比例色或颜色层。
 
@@ -66,7 +66,7 @@ pnpm --dir packages/react pack
 
 Rslib 与 Rspress 均通过 @rsbuild/plugin-sass 编译 SCSS。构建输出 ESM、CommonJS、独立 CSS 和类型声明。浏览器组件入口自动加载样式，显式 CSS 入口继续保留。
 
-check:package 确认每个组件的两种模块导出和服务端渲染、声明入口、34px 公共 token、编译后的样式及 React / Lucide 外部依赖。
+check:package 确认每个组件的两种模块导出和服务端渲染、声明入口、32px 公共 token、编译后的样式及 React / Lucide 外部依赖。
 
 ## 自定义浮层与表单
 
@@ -94,7 +94,7 @@ DatePicker 与 DateRangePicker 通过 `picker` 统一日期、时间和日期时
 
 每次升版发布必须同步更新中英文更新记录。检查、发布和文档部署步骤见 [RELEASING.md](RELEASING.md)；`prepublishOnly` 会检查当前版本记录后再构建并验证包产物。尚未发布的兼容性变化写入 [待发布迁移](../../MIGRATION-PENDING.md)，不要散落在规范文件中。
 
-Button 外观为 `solid`、`outline`、`text`、`link`（默认 `outline`），SplitButton、FloatButton 与按钮属性插槽使用相同公共类型。复合组件内部的无边框功能控件使用 `text` 外观；原生紧凑动作复用共享 text-action 配方，仅保留所属组件的尺寸与定位。
+Button 外观为 `solid`、`outline`、`text`、`link`、`danger`（默认 `outline`），ButtonGroup、FloatButton 与按钮属性插槽使用相同公共类型。复合组件内部的无边框功能控件使用 `text` 外观；原生紧凑动作复用共享 text-action 配方，仅保留所属组件的尺寸与定位。
 
 ## 扩展组件的实现
 
@@ -160,11 +160,11 @@ ConfigProvider 的 `components` 支持全部公开 UI 组件、公开的复合�
 - 子路径入口优先使用显式导出；拆出内部控件时检查原有 `export *`，不能只检查根入口。Card 内嵌 Tabs、选项组内的勾选控件等都由所属组件显式传递参数，不自动继承独立 Tabs、Checkbox 或 Radio 的默认参数。
 - 泛型内部组件同样需要隔离，例如 Transfer 内部的 VirtualList 不读取公开列表的方向、样式和估算配置。为此拆分内部控件时，公开和内部入口都保留泛型推断及 ref 契约，不能退化为宽泛的公共类型。
 - InputSearch 的优先级为实例、自身 InputSearch 配置、共享 Input 配置、内置值。在外层完成这两类配置解析，统一拥有输入值、reset、搜索回调、按钮尺寸、禁用和 loading 约束；不能在内部 Input 再独立解析配置。
-- SplitButton 在外层依次解析共享 Button、自身 SplitButton 与实例参数，两侧共享尺寸、variant、danger 与交互锁定状态。菜单按钮固定 `type="button"`，不复制主按钮的 `id`、`name`、`value`、提交属性和主操作回调；实例显式覆盖 loading 或 disabled 后，两侧必须保持一致。
+- ButtonGroup 通过共享 Context 向内部 Button 与 Dropdown 传递 `size`、`variant` 与 `disabled`，并将组内 `size="icon"` 自动适配为对应尺寸的图标方按钮；各子按钮的 `type`、表单提交语义、文案与回调仍由组合方显式声明，组禁用时整组与 Dropdown 菜单同步禁止交互。
 - 上传操作、清除、搜索、翻页及弹窗操作等内部功能按钮默认使用 `type="button"`，不能被区域 `Button.type="submit"` 意外改为提交。定制内部操作通过所属组件公开参数完成，例如 Modal 的 `confirmButtonProps`；明确支持的 action props 仍可显式指定 submit。
 - 解析默认参数后仍执行组件约束：Form 强制禁用不能被 `disabled={false}` 解除，loading 阻止重复操作，readOnly 锁定业务值。复合字段按需用 `FieldScope` 隔离内部搜索和操作控件，避免误用父字段的 id、required 或 FormData 名称。
 
-公开入口与内部控件的分层可参考 [Button](src/button/button.tsx)，共享默认参数和状态归属可参考 [InputSearch](src/input/group.tsx) 与 [SplitButton](src/button/group.tsx)。不要让内部实现重新调用公开入口而隐式接入配置，也不要为了这项能力给全库增加 HOC、深合并或另一套状态管理。
+公开入口与内部控件的分层可参考 [Button](src/button/button.tsx)，共享默认参数和状态归属可参考 [InputSearch](src/input/group.tsx) 与 [ButtonGroup](src/button/group.tsx)。不要让内部实现重新调用公开入口而隐式接入配置，也不要为了这项能力给全库增加 HOC、深合并或另一套状态管理。
 
 ### Context 与生命周期
 

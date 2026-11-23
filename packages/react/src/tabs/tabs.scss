@@ -3,7 +3,7 @@
 
 @layer leaf-ui {
   .leaf-tabs {
-    @include mixins.control-size;
+    @include mixins.control-size(tabs);
     @include mixins.segmented-surface-family;
     --leaf-tabs-item-padding: initial;
     --leaf-tabs-item-gap: initial;
@@ -66,7 +66,7 @@
         inset-inline: 0;
         bottom: 0;
         height: 2px;
-        background: var(--leaf-component-tabs-indicator-color, var(--leaf-color-primary));
+        background: var(--leaf-component-tabs-indicator-color, var(--leaf-color-text));
       }
     }
     &__tab {
@@ -85,12 +85,7 @@
       font: inherit;
       font-weight: var(--leaf-font-weight);
       cursor: pointer;
-      transition:
-        color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        scale var(--leaf-motion-fast) var(--leaf-motion-easing);
-      &:active:not(:disabled) {
-        scale: 0.97;
-      }
+      transition: color var(--leaf-motion-fast) var(--leaf-motion-easing);
       &[aria-selected='true'] {
         color: var(
           --leaf-tabs-tab-active-color,
@@ -102,7 +97,7 @@
         cursor: not-allowed;
       }
       &:focus-visible {
-        outline: 2px solid var(--leaf-color-primary);
+        @include mixins.focus-ring;
         outline-offset: -3px;
       }
       svg {
@@ -207,16 +202,11 @@
         display: none;
       }
     }
-    &--card &__viewport {
-      flex: 0 1 auto;
-    }
+    &--card &__viewport,
     &--segmented &__viewport {
       flex: 0 1 auto;
     }
-    &--card &__scroll {
-      flex: 0 1 auto;
-      width: auto;
-    }
+    &--card &__scroll,
     &--segmented &__scroll {
       flex: 0 1 auto;
       width: auto;
@@ -225,26 +215,20 @@
       gap: var(--leaf-component-tabs-gap, var(--leaf-tabs-item-gap, 4px));
     }
     &--card &__indicator {
-      border-radius: var(
-        --leaf-component-tabs-radius,
-        var(--leaf-current-radius, var(--leaf-radius))
-      );
-      background: var(--leaf-component-tabs-indicator-background, var(--leaf-color-primary-soft));
+      border-radius: var(--leaf-component-tabs-radius, var(--leaf-current-radius));
+      background: var(--leaf-component-tabs-indicator-background, var(--leaf-color-surface-muted));
       &::after {
         display: none;
       }
     }
     &--card &__entry {
       height: var(--leaf-current-control-height);
-      border-radius: var(
-        --leaf-component-tabs-radius,
-        var(--leaf-current-radius, var(--leaf-radius))
-      );
+      border-radius: var(--leaf-component-tabs-radius, var(--leaf-current-radius));
     }
     &--segmented &__list {
       @include geometry.nested-surface(
         tabs,
-        var(--leaf-component-tabs-radius, var(--leaf-current-radius, var(--leaf-radius))),
+        var(--leaf-component-tabs-radius, var(--leaf-current-radius)),
         var(--leaf-component-tabs-padding, var(--leaf-tabs-track-padding, 3px)),
         var(--leaf-component-tabs-border-width, var(--leaf-border-width, 1px))
       );
@@ -275,13 +259,12 @@
           var(--leaf-frame-border-color, var(--leaf-segmented-border))
         );
       background: var(--leaf-component-tabs-background, var(--leaf-segmented-background));
-      box-shadow: var(
-        --leaf-component-tabs-shadow,
-        var(--leaf-control-shadow, var(--leaf-shadow-xs))
-      );
+      box-shadow: var(--leaf-component-tabs-shadow, none);
     }
     &--segmented &__track {
       gap: var(--leaf-component-tabs-gap, var(--leaf-tabs-item-gap, 3px));
+      overflow-x: clip;
+      overflow-y: visible;
       box-sizing: border-box;
       min-width: calc(100% + var(--leaf-surface-padding-left) + var(--leaf-surface-padding-right));
       padding: var(--leaf-surface-padding-top) var(--leaf-surface-padding-right)
@@ -296,32 +279,10 @@
         --leaf-component-tabs-indicator-background,
         var(--leaf-segmented-selected-background)
       );
-      box-shadow: var(--leaf-component-tabs-indicator-shadow, none);
-      &[data-animate='true'] {
-        transition:
-          transform var(--leaf-motion-slow) var(--leaf-motion-spring),
-          width var(--leaf-motion-slow) var(--leaf-motion-spring),
-          height var(--leaf-motion-slow) var(--leaf-motion-spring);
-      }
+      box-shadow: var(--leaf-component-tabs-indicator-shadow, var(--leaf-shadow-sm));
       &::after {
         display: none;
       }
-    }
-    &--pill#{&}--segmented &__list {
-      border-radius: 999px;
-      --leaf-surface-inner-radius: 999px;
-    }
-    &--pill#{&}--card &__indicator,
-    &--pill#{&}--card &__entry,
-    &--pill#{&}--card &__tab,
-    &--pill#{&}--segmented &__indicator,
-    &--pill#{&}--segmented &__entry,
-    &--pill#{&}--segmented &__tab {
-      border-radius: 999px;
-    }
-    &--solid#{&}--card &__indicator,
-    &--solid#{&}--segmented &__indicator {
-      background: var(--leaf-component-tabs-indicator-background, var(--leaf-color-primary));
     }
     &--segmented &__entry {
       height: var(--leaf-tabs-segmented-tab-height);
@@ -334,40 +295,31 @@
         order: 2;
       }
     }
-    &--line > &__header {
+    &--line > &__header &__indicator {
+      display: none;
+    }
+    &--line > &__header &__tab {
       position: relative;
-      &::before {
+      min-height: var(--leaf-current-control-height);
+      padding-block: 4px;
+      padding-inline: var(--leaf-tabs-item-padding, 10px);
+      line-height: var(--leaf-tabs-line-height);
+      &::after {
+        content: '';
         position: absolute;
         inset-inline: 0;
         bottom: 0;
-        border-block-end: 1px solid
-          var(--leaf-component-tabs-border-color, var(--leaf-color-divider));
-        content: '';
+        height: 2px;
+        background: var(--leaf-component-tabs-indicator-color, var(--leaf-color-text));
+        opacity: 0;
         pointer-events: none;
+        transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+      }
+      &[aria-selected='true']::after {
+        opacity: 1;
       }
     }
-    &--line > &__header &__indicator[data-animate='true'] {
-      transition:
-        transform calc(var(--leaf-motion-color) * 1.5) ease,
-        width calc(var(--leaf-motion-color) * 1.5) ease,
-        height calc(var(--leaf-motion-color) * 1.5) ease;
-    }
-    &--line > &__header &__tab {
-      min-height: var(--leaf-current-control-height);
-      padding-block: max(
-        0px,
-        calc((var(--leaf-current-control-height) - var(--leaf-tabs-line-height)) / 2)
-      );
-      padding-inline: 0;
-      border-radius: 0;
-      line-height: var(--leaf-tabs-line-height);
-      transition: color calc(var(--leaf-motion-color) * 1.5) ease;
-      &[aria-selected='true'] {
-        text-shadow: 0 0 0.25px currentColor;
-      }
-    }
-    &--line.leaf-tabs--bottom > &__header::before,
-    &--line.leaf-tabs--bottom > &__header &__indicator::after {
+    &--line.leaf-tabs--bottom > &__header &__tab::after {
       top: 0;
       bottom: auto;
     }
@@ -375,10 +327,7 @@
       gap: 6px;
       height: var(--leaf-current-control-height);
       min-height: var(--leaf-current-control-height);
-      border-radius: var(
-        --leaf-component-tabs-radius,
-        var(--leaf-current-radius, var(--leaf-radius))
-      );
+      border-radius: var(--leaf-component-tabs-radius, var(--leaf-current-radius));
       padding: 0 var(--leaf-tabs-item-padding, 12px);
       line-height: var(--leaf-line-height);
     }
@@ -390,84 +339,52 @@
       padding: 0 var(--leaf-tabs-item-padding, 14px);
       line-height: var(--leaf-line-height);
     }
-    &--block &__viewport {
-      flex: 1;
+    &--block {
+      & .leaf-tabs__viewport,
+      & .leaf-tabs__list,
+      & .leaf-tabs__scroll,
+      & .leaf-tabs__entry,
+      & .leaf-tabs__tab {
+        flex: 1;
+      }
+      & .leaf-tabs__track {
+        width: auto;
+      }
     }
-    &--block &__list {
-      flex: 1;
-    }
-    &--block &__scroll {
-      flex: 1;
-    }
-    &--block &__track {
-      width: auto;
-    }
-    &--block &__entry {
-      flex: 1;
-    }
-    &--block &__tab {
-      flex: 1;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab,
-    .leaf-tabs__tab,
-    .leaf-tabs__close,
-    .leaf-tabs__scroll-action,
-    .leaf-tabs--line > .leaf-tabs__header .leaf-tabs__indicator[data-animate='true'],
-    .leaf-tabs__indicator[data-animate='true'] {
-      transition: none;
-    }
-  }
-  .leaf-tabs {
-    --leaf-current-control-height: var(--leaf-component-tabs-height, var(--leaf-control-height));
-    --leaf-current-font-size: var(--leaf-component-tabs-font-size, var(--leaf-font-size));
-    --leaf-current-radius: var(--leaf-radius);
   }
   .leaf-tabs--sm {
     --leaf-tabs-track-padding-block: 2px;
-    --leaf-current-control-height: var(
-      --leaf-component-tabs-height-sm,
-      var(--leaf-control-height-sm)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-sm);
-    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
   }
   .leaf-tabs--lg {
     --leaf-tabs-item-padding: 18px;
     --leaf-tabs-item-gap: 8px;
     --leaf-tabs-track-padding: 4px;
-    --leaf-current-control-height: var(
-      --leaf-component-tabs-height-lg,
-      var(--leaf-control-height-lg)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-lg);
-    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
   }
 
   .leaf-tabs--line {
-    --leaf-tabs-item-gap: 32px;
-    --leaf-tabs-line-padding-block: 12px;
-    --leaf-tabs-line-height: calc(
-      var(--leaf-component-tabs-font-size, var(--leaf-current-font-size)) + 8px
-    );
+    --leaf-tabs-item-gap: 4px;
+    --leaf-tabs-item-padding: 10px;
+    --leaf-tabs-line-height: var(--leaf-line-height);
     --leaf-current-control-height: var(
       --leaf-component-tabs-height,
-      calc(var(--leaf-tabs-line-height) + var(--leaf-tabs-line-padding-block) * 2)
+      calc(var(--leaf-control-height) + 2px)
     );
     &.leaf-tabs--sm {
-      --leaf-tabs-line-padding-block: 8px;
-      --leaf-current-font-size: var(--leaf-font-size);
+      --leaf-tabs-item-gap: 2px;
+      --leaf-tabs-item-padding: 8px;
+      --leaf-tabs-line-height: var(--leaf-line-height-sm);
       --leaf-current-control-height: var(
         --leaf-component-tabs-height-sm,
-        calc(var(--leaf-tabs-line-height) + var(--leaf-tabs-line-padding-block) * 2)
+        calc(var(--leaf-control-height-sm) + 2px)
       );
     }
     &.leaf-tabs--lg {
-      --leaf-tabs-line-padding-block: 16px;
+      --leaf-tabs-item-gap: 6px;
+      --leaf-tabs-item-padding: 14px;
+      --leaf-tabs-line-height: var(--leaf-line-height-lg);
       --leaf-current-control-height: var(
         --leaf-component-tabs-height-lg,
-        calc(var(--leaf-tabs-line-height) + var(--leaf-tabs-line-padding-block) * 2)
+        calc(var(--leaf-control-height-lg) + 2px)
       );
     }
   }
@@ -479,8 +396,8 @@
       --leaf-tabs-tab-active-color: var(--leaf-color-text);
       &[aria-selected='true'] {
         --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
-        --leaf-tabs-tab-hover-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
-        --leaf-tabs-tab-active-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+        --leaf-tabs-tab-hover-color: var(--leaf-tabs-tab-color);
+        --leaf-tabs-tab-active-color: var(--leaf-tabs-tab-color);
       }
       &:focus-visible:not(:disabled) {
         @include mixins.state-paint(
@@ -524,63 +441,29 @@
       }
     }
     &--line > &__header &__tab {
-      --leaf-tabs-tab-color: var(
-        --leaf-component-tabs-muted-color,
-        var(--leaf-component-tabs-color, var(--leaf-color-text))
-      );
-      --leaf-tabs-tab-hover-color: var(
-        --leaf-component-tabs-color,
-        var(--leaf-color-primary-hover)
-      );
-      --leaf-tabs-tab-active-color: var(
-        --leaf-component-tabs-color,
-        var(--leaf-color-primary-link-active)
-      );
-      &[aria-selected='true'] {
-        --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-primary));
-        --leaf-tabs-tab-hover-color: var(--leaf-tabs-tab-color);
-        --leaf-tabs-tab-active-color: var(--leaf-tabs-tab-color);
-      }
+      --leaf-tabs-tab-color: var(--leaf-component-tabs-muted-color, var(--leaf-color-text-muted));
+      --leaf-tabs-tab-hover-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+      --leaf-tabs-tab-active-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
     }
-    &--card &__tab {
-      --leaf-tabs-tab-color: var(
-        --leaf-component-tabs-muted-color,
-        var(--leaf-segmented-muted-color)
-      );
-      --leaf-tabs-tab-hover-color: var(--leaf-color-text);
-      --leaf-tabs-tab-active-color: var(--leaf-color-text);
-      &[aria-selected='true'] {
-        --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-primary));
-        --leaf-tabs-tab-hover-color: var(--leaf-tabs-tab-color);
-        --leaf-tabs-tab-active-color: var(--leaf-tabs-tab-color);
-      }
-    }
+    &--card &__tab,
     &--segmented &__tab {
       --leaf-tabs-tab-color: var(
         --leaf-component-tabs-muted-color,
         var(--leaf-segmented-muted-color)
       );
-      --leaf-tabs-tab-hover-color: var(--leaf-color-text);
-      --leaf-tabs-tab-active-color: var(--leaf-color-text);
-      &[aria-selected='true'] {
-        --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-primary));
-        --leaf-tabs-tab-hover-color: var(--leaf-tabs-tab-color);
-        --leaf-tabs-tab-active-color: var(--leaf-tabs-tab-color);
-      }
     }
-    &--solid#{&}--card &__tab[aria-selected='true'],
-    &--solid#{&}--segmented &__tab[aria-selected='true'] {
-      --leaf-tabs-tab-color: var(--leaf-color-on-primary);
-      --leaf-tabs-tab-hover-color: var(--leaf-color-on-primary);
-      --leaf-tabs-tab-active-color: var(--leaf-color-on-primary);
+    &--line > &__header &__tab[aria-selected='true'],
+    &--card &__tab[aria-selected='true'],
+    &--segmented &__tab[aria-selected='true'] {
+      --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+      --leaf-tabs-tab-hover-color: var(--leaf-tabs-tab-color);
+      --leaf-tabs-tab-active-color: var(--leaf-tabs-tab-color);
     }
   }
 
   @media (forced-colors: active) {
-    .leaf-tabs__indicator::after {
-      background: Highlight;
-      forced-color-adjust: none;
-    }
+    .leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab::after,
+    .leaf-tabs__indicator::after,
     .leaf-tabs--card .leaf-tabs__indicator,
     .leaf-tabs--segmented .leaf-tabs__indicator {
       background: Highlight;

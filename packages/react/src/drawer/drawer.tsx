@@ -16,14 +16,10 @@ import { classes } from '../shared/classes';
 import { type DialogFocusOptions, useDialog, useOverlayLayer } from '../shared/dialog';
 import { inertProps } from '../shared/inert';
 import { OverlayOwner } from '../shared/overlay-owner';
+import { resolveDialogPaddingFlags, resolvePaddingVars } from '../shared/padding';
 import { useContentTransition, usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
-import { type TabItem, type TabsProps, useTabsParts } from '../tabs/tabs';
-
-const emptyTabItems: readonly TabItem[] = [];
-
-/** Tabs controls integrated with the drawer; Drawer fixes the line type and top placement. */
-export interface DrawerTabsProps extends Omit<TabsProps, 'type' | 'placement' | 'children'> {}
+import type { ContainerPadding } from '../shared/types';
 
 export interface DrawerProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'onResize'>,
@@ -32,9 +28,10 @@ export interface DrawerProps
   title?: ReactNode;
   description?: ReactNode;
   icon?: ReactNode;
+  /** Separate the footer action bar with a top border. */
   divided?: boolean;
-  /** Embedded tabs placed below the heading, or replacing it when no title is supplied. */
-  tabs?: DrawerTabsProps;
+  /** Customize inner padding for the drawer or individual header/body/footer regions. */
+  padding?: ContainerPadding;
   footer?: ReactNode;
   extra?: ReactNode;
   placement?: 'left' | 'right' | 'top' | 'bottom';
@@ -50,6 +47,8 @@ export interface DrawerProps
   preserve?: boolean;
   container?: Element | DocumentFragment | (() => Element | DocumentFragment);
   push?: boolean | number;
+  /** Show a swipe handle bar along the leading edge and allow pointer dragging to close. Defaults to `true` when `placement="bottom"`. */
+  showSwipeHandle?: boolean;
   resizable?: boolean;
   minSize?: number;
   maxSize?: number;
@@ -58,39 +57,32 @@ export interface DrawerProps
 
 interface DrawerInnerProps {
   id: string;
-  open: boolean;
   title?: ReactNode;
   description?: ReactNode;
   icon?: ReactNode;
-  tabs?: DrawerTabsProps;
   extra?: ReactNode;
   footer?: ReactNode;
   closable: boolean;
   onClose?: () => void;
   contentRef: Ref<HTMLDivElement>;
   ariaLabel?: string;
-  ariaLabelledBy?: string;
   children?: ReactNode;
 }
 
 function DrawerInner({
   id,
-  open,
   title,
   description,
   icon,
-  tabs,
   extra,
   footer,
   closable,
   onClose,
   contentRef,
   ariaLabel,
-  ariaLabelledBy,
   children,
 }: DrawerInnerProps) {
   const { messages } = useLeafConfig();
-  const hasTabs = Boolean(tabs?.items?.length);
   const hasHeading = title != null || description != null || icon != null;
   const closeButton = closable ? (
     <button
@@ -103,46 +95,10 @@ function DrawerInner({
     </button>
   ) : null;
   const extraNode = extra != null ? <div className="leaf-drawer__extra">{extra}</div> : null;
-  const tabExtra =
-    !hasHeading && (extra != null || closable) ? (
-      <div className="leaf-dialog-tab-extra leaf-drawer__tab-extra">
-        {tabs?.extra}
-        {extraNode}
-        {closeButton}
-      </div>
-    ) : (
-      tabs?.extra
-    );
-  const tabLabel = tabs?.['aria-label'] ?? (typeof title === 'string' ? title : ariaLabel);
-  const tabLabelledBy =
-    tabs?.['aria-labelledby'] ??
-    (tabs?.['aria-label'] == null && title != null
-      ? `${id}-title`
-      : tabs?.['aria-label'] == null
-        ? ariaLabelledBy
-        : undefined);
-  const parts = useTabsParts({
-    ...tabs,
-    items: tabs?.items ?? emptyTabItems,
-    type: 'line',
-    placement: 'top',
-    size: tabs?.size ?? 'md',
-    'aria-label': tabLabel,
-    'aria-labelledby': tabLabelledBy,
-    extra: tabExtra,
-    className: classes(
-      'leaf-dialog-tabs',
-      hasHeading && 'leaf-dialog-tabs--headed',
-      'leaf-drawer__tabs',
-      tabs?.className,
-    ),
-    panelsClassName: 'leaf-dialog-panels',
-    visibilityKey: open,
-  });
 
   return (
     <>
-      {(hasHeading || (!hasTabs && (extra != null || closable))) && (
+      {(hasHeading || extra != null) && (
         <div
           className={classes('leaf-drawer__header', !hasHeading && 'leaf-drawer__header--compact')}
         >
@@ -162,20 +118,18 @@ function DrawerInner({
             </div>
           )}
           {extraNode}
-          {closeButton}
         </div>
       )}
-      {parts && <div {...parts.rootProps}>{parts.header}</div>}
+      {closeButton}
       <ScrollbarControl
         className="leaf-drawer__body"
         viewportClassName="leaf-drawer__viewport"
         orientation="vertical"
         role={title != null || ariaLabel ? 'region' : 'presentation'}
         aria-labelledby={title != null ? `${id}-title` : undefined}
-        aria-label={title == null ? (ariaLabel ?? tabs?.['aria-label']) : undefined}
+        aria-label={title == null ? ariaLabel : undefined}
       >
         <div ref={contentRef} className="leaf-drawer__content">
-          {parts?.panels}
           {children}
         </div>
       </ScrollbarControl>
@@ -190,7 +144,7 @@ function DrawerSurface({
   description,
   icon,
   divided = false,
-  tabs,
+  padding,
   footer,
   extra,
   placement = 'right',
@@ -208,6 +162,7 @@ function DrawerSurface({
   returnFocus,
   container: _container,
   push = false,
+  showSwipeHandle,
   resizable = false,
   minSize = 240,
   maxSize = 900,
@@ -217,28 +172,44 @@ function DrawerSurface({
   style,
   ...props
 }: DrawerProps) {
-  const { messages, maskBlur } = useLeafConfig();
+  const { messages, maskBlur, theme } = useLeafConfig();
   const id = useId();
   const panel = useRef<HTMLDivElement>(null);
   const backdrop = useRef<HTMLButtonElement>(null);
   const content = useRef<HTMLDivElement>(null);
   const present = usePresence(open, backdrop);
   const layer = useOverlayLayer(present, open);
-  const hasTabs = Boolean(tabs?.items?.length);
   const hasHeading = title != null || description != null || icon != null;
+  const swipeHandleVisible = showSwipeHandle ?? placement === 'bottom';
+  const paddingStyle = resolvePaddingVars('drawer', padding);
+  const paddingFlags = resolveDialogPaddingFlags(padding);
+  const drawerTheme = theme.components?.Drawer;
+  const surfaceFlags = {
+    ...(drawerTheme?.headerBackground !== undefined ? { 'data-header-surface': '' } : {}),
+    ...(drawerTheme?.footerBackground !== undefined ? { 'data-footer-surface': '' } : {}),
+  };
   const contentRevision = useRef({ children, revision: 0 });
   if (children !== contentRevision.current.children)
     contentRevision.current = { children, revision: contentRevision.current.revision + 1 };
-  useContentTransition(
-    content,
-    hasTabs ? String(open) : `${open}:${contentRevision.current.revision}`,
-    0,
-    true,
-  );
+  useContentTransition(content, `${open}:${contentRevision.current.revision}`, 0, true);
   const owner = useContext(OverlayOwner);
   const [resized, setResized] = useState<number>();
   const stopDragging = useRef<(() => void) | undefined>(undefined);
-  useEffect(() => () => stopDragging.current?.(), []);
+  const stopSwiping = useRef<(() => void) | undefined>(undefined);
+  useEffect(
+    () => () => {
+      stopDragging.current?.();
+      stopSwiping.current?.();
+    },
+    [],
+  );
+  useEffect(() => {
+    if (!open) stopSwiping.current?.();
+    else {
+      panel.current?.removeAttribute('data-swiping');
+      panel.current?.style.removeProperty('--leaf-drawer-swipe-transform');
+    }
+  }, [open]);
   const horizontal = placement === 'left' || placement === 'right';
   // biome-ignore lint/correctness/useExhaustiveDependencies: Resizing resets when the configured dimensions change.
   useEffect(() => {
@@ -304,16 +275,21 @@ function DrawerSurface({
         tabIndex={-1}
         className={classes(
           'leaf-drawer',
+          `leaf-drawer--placement-${placement}`,
+          swipeHandleVisible && 'leaf-drawer--swipeable',
           divided && 'leaf-drawer--divided',
-          hasTabs && 'leaf-drawer--tabbed',
           hasHeading && 'leaf-drawer--headed',
+          closable && 'leaf-drawer--closable',
           className,
         )}
+        {...paddingFlags}
+        {...surfaceFlags}
         style={{
           ...(horizontal
             ? { width: resized ?? width, height: '100%' }
             : { height: resized ?? height, width: '100%' }),
           ...layer.popupStyle,
+          ...paddingStyle,
           ...style,
         }}
       >
@@ -322,7 +298,7 @@ function DrawerSurface({
           <div
             role="separator"
             tabIndex={0}
-            aria-label={messages.tree.expand}
+            aria-label={messages.drawer.resize}
             aria-orientation={horizontal ? 'vertical' : 'horizontal'}
             aria-valuemin={minSize}
             aria-valuemax={maxSize}
@@ -337,7 +313,7 @@ function DrawerSurface({
               if (!panel.current) return;
               stopDragging.current?.();
               event.preventDefault();
-              event.currentTarget.setPointerCapture(event.pointerId);
+              event.currentTarget.setPointerCapture?.(event.pointerId);
               const start = horizontal ? event.clientX : event.clientY;
               const bounds = panel.current.getBoundingClientRect();
               const size = horizontal ? bounds.width : bounds.height;
@@ -358,6 +334,7 @@ function DrawerSurface({
                 window.removeEventListener('pointermove', update);
                 window.removeEventListener('pointerup', end);
                 window.removeEventListener('pointercancel', end);
+                stopDragging.current = undefined;
               };
               stopDragging.current = end;
               window.addEventListener('pointermove', update);
@@ -384,21 +361,107 @@ function DrawerSurface({
             }}
           />
         )}
+        {swipeHandleVisible && (
+          <div
+            className={classes(
+              'leaf-drawer__swipe-handle',
+              `leaf-drawer__swipe-handle--${placement}`,
+            )}
+            data-swipe-handle=""
+            aria-hidden="true"
+            onPointerDown={(event) => {
+              if (!panel.current || (event.button !== 0 && event.pointerType === 'mouse')) return;
+              stopSwiping.current?.();
+              event.preventDefault();
+              event.currentTarget.setPointerCapture?.(event.pointerId);
+              const node = panel.current;
+              const startX = event.clientX;
+              const startY = event.clientY;
+              const startTime = Date.now();
+              const bounds = node.getBoundingClientRect();
+              const panelSize = horizontal ? bounds.width : bounds.height;
+              let latestOffset = 0;
+              const getOffset = (pointerEvent: PointerEvent) => {
+                const raw =
+                  placement === 'bottom'
+                    ? pointerEvent.clientY - startY
+                    : placement === 'top'
+                      ? startY - pointerEvent.clientY
+                      : placement === 'right'
+                        ? pointerEvent.clientX - startX
+                        : startX - pointerEvent.clientX;
+                return Math.max(0, raw);
+              };
+              const formatTransform = (offset: number) =>
+                placement === 'bottom'
+                  ? `translateY(${offset}px)`
+                  : placement === 'top'
+                    ? `translateY(${-offset}px)`
+                    : placement === 'right'
+                      ? `translateX(${offset}px)`
+                      : `translateX(${-offset}px)`;
+              node.setAttribute('data-swiping', 'true');
+              const update = (moveEvent: PointerEvent) => {
+                latestOffset = getOffset(moveEvent);
+                node.style.setProperty(
+                  '--leaf-drawer-swipe-transform',
+                  formatTransform(latestOffset),
+                );
+              };
+              const cleanup = () => {
+                window.removeEventListener('pointermove', update);
+                window.removeEventListener('pointerup', finish);
+                window.removeEventListener('pointercancel', finish);
+                stopSwiping.current = undefined;
+              };
+              const finish = (endEvent?: PointerEvent) => {
+                cleanup();
+                const finalOffset = endEvent ? getOffset(endEvent) : latestOffset;
+                const elapsed = Math.max(1, Date.now() - startTime);
+                const threshold = Math.min(120, Math.max(48, panelSize * 0.3));
+                const velocity = finalOffset / elapsed;
+                const shouldClose =
+                  endEvent?.type === 'pointerup' &&
+                  (finalOffset >= threshold || (finalOffset > 24 && velocity > 0.4));
+                node.removeAttribute('data-swiping');
+                if (shouldClose) {
+                  onClose?.();
+                  if (typeof requestAnimationFrame === 'function') {
+                    requestAnimationFrame(() =>
+                      node.style.removeProperty('--leaf-drawer-swipe-transform'),
+                    );
+                  } else {
+                    node.style.removeProperty('--leaf-drawer-swipe-transform');
+                  }
+                  return;
+                }
+                node.style.removeProperty('--leaf-drawer-swipe-transform');
+              };
+              stopSwiping.current = () => {
+                cleanup();
+                node.removeAttribute('data-swiping');
+                node.style.removeProperty('--leaf-drawer-swipe-transform');
+              };
+              window.addEventListener('pointermove', update);
+              window.addEventListener('pointerup', finish, { once: true });
+              window.addEventListener('pointercancel', finish, { once: true });
+            }}
+          >
+            <span className="leaf-drawer__swipe-bar" />
+          </div>
+        )}
         <OverlayOwner.Provider value={id}>
           <DrawerInner
             id={id}
-            open={open}
             title={title}
             description={description}
             icon={icon}
-            tabs={tabs}
             extra={extra}
             footer={footer}
             closable={closable}
             onClose={onClose}
             contentRef={content}
             ariaLabel={props['aria-label']}
-            ariaLabelledBy={props['aria-labelledby']}
           >
             {children}
           </DrawerInner>

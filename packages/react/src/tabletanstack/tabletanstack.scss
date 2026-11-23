@@ -11,9 +11,7 @@
       align-items: center;
       gap: 6px;
       min-width: 0;
-      .leaf-table__column-header[data-leaf-header-group] & {
-        justify-content: center;
-      }
+      .leaf-table__column-header[data-leaf-header-group] &,
       &[data-align='center'] {
         justify-content: center;
       }
@@ -45,10 +43,9 @@
       margin-block-start: 16px;
     }
     &__sort {
-      display: flex;
-      width: 100%;
+      display: inline-flex;
+      max-width: 100%;
       align-items: center;
-      justify-content: space-between;
       gap: 4px;
       padding: 0;
       border: 0;
@@ -70,7 +67,6 @@
         flex-shrink: 0;
       }
       > span:first-child {
-        flex: 1;
         min-width: 0;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -80,38 +76,31 @@
     &__sort-icons {
       display: inline-flex;
       flex: none;
-      flex-direction: column;
       align-items: center;
-      gap: 2px;
       color: var(--leaf-color-text-subtle);
       line-height: 0;
-      svg {
-        display: block;
-        fill: currentColor;
-        stroke: none;
-        opacity: 0.6;
-        transition:
-          color var(--leaf-motion-fast) var(--leaf-motion-easing),
-          opacity var(--leaf-motion-fast) var(--leaf-motion-easing);
-        &[data-active] {
-          color: var(--leaf-color-primary);
-          opacity: 1;
-        }
+    }
+    &__sort-arrow {
+      opacity: 0.75;
+      transition:
+        var(--leaf-action-transition),
+        rotate var(--leaf-motion-fast) var(--leaf-motion-easing);
+      &[data-direction] {
+        color: var(--leaf-color-text);
+        opacity: 1;
+      }
+      &[data-direction='asc'] {
+        rotate: 180deg;
       }
     }
-    &__sort:hover &__sort-icons svg:not([data-active]) {
-      opacity: 0.9;
-    }
-    &__sort[data-sorted] &__sort-icons svg:not([data-active]) {
-      opacity: 0.35;
-    }
-    &__sort-down {
-      rotate: 180deg;
+    &__sort:hover &__sort-arrow:not([data-direction]) {
+      color: var(--leaf-color-text-muted);
+      opacity: 1;
     }
     &__utility {
-      padding-inline: 8px;
       text-align: center;
-      @at-root .leaf-table__cell#{&} {
+      @at-root .leaf-table__cell#{&},
+        #{&} {
         padding-inline: 8px;
       }
       .leaf-checkbox,
@@ -122,9 +111,6 @@
     }
     &__selection {
       width: 34px;
-    }
-    .leaf-table--bordered &__selection {
-      width: calc(34px + var(--leaf-table-border-width));
     }
     &__expansion {
       width: 48px;
@@ -138,30 +124,18 @@
     &__detail {
       --leaf-table-row-base: var(--leaf-color-surface-muted);
     }
-    &__record-cell {
-      padding-block: 6px;
-      @at-root .leaf-table__cell#{&} {
-        padding-block: 6px;
-      }
-    }
-    &__record-heading {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px 12px;
-      min-height: var(--leaf-control-height-sm);
-      .leaf-data-table__expand {
-        margin-inline-start: auto;
-        flex-shrink: 0;
-      }
-    }
-    &__record-summary {
-      flex: 1 1 auto;
-      min-width: 0;
-    }
     &__row-content {
       display: flow-root;
       min-width: 0;
+    }
+    .leaf-table__cell[data-ellipsis],
+    .leaf-table__cell[data-ellipsis] > .leaf-data-table__row-content {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .leaf-table__cell[data-ellipsis] > .leaf-data-table__row-content {
+      display: block;
     }
     &__resize {
       display: block;
@@ -186,12 +160,12 @@
         border-radius: 1px;
         background: var(--leaf-color-border);
         content: '';
-        transition: background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
+        transition: var(--leaf-action-transition);
       }
       &:hover::after,
       &:focus-visible::after,
       &[data-resizing]::after {
-        background: var(--leaf-color-primary);
+        background: var(--leaf-color-text-muted);
       }
       &:focus-visible {
         @include focus-ring;
@@ -214,14 +188,6 @@
   }
   [dir='rtl'] .leaf-data-table__expand[aria-expanded='true'] .leaf-data-table__expand-icon {
     rotate: -90deg;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-data-table__sort,
-    .leaf-data-table__sort-icons svg,
-    .leaf-data-table__expand-icon,
-    .leaf-data-table__resize::after {
-      transition: none;
-    }
   }
   @media (forced-colors: active) {
     .leaf-data-table__resize::after {

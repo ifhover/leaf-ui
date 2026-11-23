@@ -91,4 +91,31 @@ describe('Textarea', () => {
     await userEvent.type(textarea, 'edit');
     expect(textarea).toHaveValue('Locked');
   });
+  it('places layout styles on the outer wrapper when showCount is enabled', () => {
+    render(
+      <Textarea
+        aria-label="备注"
+        showCount
+        maxLength={20}
+        defaultValue="Hi"
+        style={{ width: '50%', maxWidth: '80%', minWidth: '120px', flexGrow: 1, flexShrink: 1 }}
+      />,
+    );
+    const native = screen.getByRole('textbox', { name: '备注' });
+    const scrollbar = native.parentElement as HTMLElement;
+    const wrapper = scrollbar.parentElement as HTMLElement;
+    expect(wrapper).toHaveClass('leaf-textarea-wrap');
+    expect(wrapper).toHaveStyle({
+      width: '50%',
+      maxWidth: '80%',
+      minWidth: '120px',
+      flexGrow: '1',
+      flexShrink: '1',
+    });
+    expect(scrollbar).toHaveStyle({ width: '100%' });
+    expect(scrollbar.style.maxWidth).toBe('');
+    expect(scrollbar.style.minWidth).toBe('');
+    expect(native).toHaveStyle({ width: '100%' });
+    expect(wrapper.querySelector('.leaf-textarea__count')).toHaveTextContent('2 / 20');
+  });
 });

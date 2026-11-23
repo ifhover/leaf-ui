@@ -1,24 +1,32 @@
-import { Button, Result, Space, Text } from '@ifhover/leaf-ui';
+import { Button, Flex, Link, Result, Space, Text } from '@ifhover/leaf-ui';
+import { ArrowUpRight } from 'lucide-react';
 import { useState } from 'react';
 
 export function ResultBasic() {
   const [feedback, setFeedback] = useState('');
   return (
-    <Space direction="vertical" align="stretch">
+    <Flex direction="column" gap="sm" align="center">
       <Result
-        status="success"
-        title="Project created"
-        description="You can now add content to the project."
+        title="No projects yet"
+        description="You haven't created any projects yet. Get started by creating your first project."
         extra={
-          <Space wrap>
-            <Button variant="outline" onClick={() => setFeedback('Returned to project list')}>
-              Back to list
-            </Button>
-            <Button onClick={() => setFeedback('Project opened')}>Open project</Button>
-          </Space>
+          <Flex direction="column" align="center" gap="md">
+            <Space wrap>
+              <Button variant="solid" onClick={() => setFeedback('Create project triggered')}>
+                Create project
+              </Button>
+              <Button variant="outline" onClick={() => setFeedback('Import project triggered')}>
+                Import project
+              </Button>
+            </Space>
+            <Link href="#result-api">
+              Learn more
+              <ArrowUpRight size={14} aria-hidden="true" />
+            </Link>
+          </Flex>
         }
       />
       {feedback && <Text role="status">{feedback}</Text>}
-    </Space>
+    </Flex>
   );
 }

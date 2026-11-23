@@ -1,4 +1,4 @@
-import { Button, Modal, Paragraph, Space } from '@ifhover/leaf-ui';
+import { Button, Modal, Paragraph } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function ModalFooter() {
@@ -12,13 +12,13 @@ export function ModalFooter() {
         title="草稿说明"
         onClose={() => setOpen(false)}
         footer={({ cancelButton, confirmButton }) => (
-          <Space size="sm" wrap>
+          <>
             <Button variant="text" onClick={() => setDetails(!details)}>
               {details ? '收起详情' : '查看详情'}
             </Button>
             {cancelButton}
             {confirmButton}
-          </Space>
+          </>
         )}
       >
         <Paragraph>新文档会保存为草稿，之后仍可修改内容。</Paragraph>

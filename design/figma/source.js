@@ -173,7 +173,7 @@ async function importLeafResources() {
       component.cornerRadius = 8;
       component.fills = [paint('surface')];
       component.strokes = [
-        paint(state === 'error' ? 'danger' : state === 'focus' ? 'primary' : 'border'),
+        paint(state === 'error' ? 'danger' : state === 'focus' ? 'text-muted' : 'border'),
       ];
       component.appendChild(
         label('Field value', state === 'disabled' ? 'text-muted' : 'text', 400),

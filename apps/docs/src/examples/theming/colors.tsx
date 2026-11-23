@@ -91,12 +91,12 @@ export function ThemeColors() {
               {
                 key: 'surface',
                 label: '内容表面',
-                children: '选中的高亮与内嵌内容仍基于内容表面。',
+                children: '选中的标签滑块与内嵌内容仍基于内容表面。',
               },
               {
                 key: 'muted',
                 label: '共享底板',
-                children: '外层分层画布使用 mutedSurfaceColor，不覆盖净白轨道。',
+                children: '外层分层画布与分段轨道共用 mutedSurfaceColor，不覆盖纯白滑块。',
               },
             ]}
           />

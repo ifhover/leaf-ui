@@ -2,8 +2,6 @@
 
 @layer leaf-ui {
   .leaf-anchor {
-    @include mixins.accent-soft-feedback-family;
-
     position: relative;
     isolation: isolate;
     font: var(--leaf-component-anchor-font-size, var(--leaf-font-size)) var(--leaf-font-family);
@@ -11,7 +9,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      z-index: -1;
+      z-index: 1;
       pointer-events: none;
       width: var(--leaf-indicator-width, 0px);
       height: var(--leaf-indicator-height, 0px);
@@ -33,7 +31,7 @@
         inset-inline-start: 0;
         width: 2px;
         border-radius: 2px;
-        background: var(--leaf-color-primary);
+        background: var(--leaf-color-text);
       }
     }
     ul {
@@ -41,26 +39,20 @@
       padding: 0;
       list-style: none;
     }
-    ul ul {
-      padding-inline-start: 14px;
-    }
     a {
       display: block;
       padding: 7px 12px;
       color: var(--leaf-color-text-muted);
       text-decoration: none;
       border-inline-start: 1px solid var(--leaf-color-border);
-      transition:
-        color var(--leaf-motion-duration) var(--leaf-motion-easing),
-        background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
       &:hover:not([aria-current]) {
-        color: var(--leaf-color-primary);
+        color: var(--leaf-color-text);
         background: #{mixins.choice-option-background()};
       }
       &[aria-current] {
-        color: var(--leaf-color-primary);
-        border-inline-start-color: var(--leaf-accent-soft-border);
-        background: var(--leaf-accent-soft-background);
+        color: var(--leaf-color-text);
+        background: var(--leaf-color-surface-muted);
       }
       &:focus-visible {
         @include mixins.focus-ring;
@@ -68,11 +60,14 @@
         border-radius: var(--leaf-radius-sm);
       }
     }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-anchor a,
-    .leaf-anchor__indicator[data-animate='true'] {
-      transition: none;
+    &:not(:has(> .leaf-anchor__indicator[data-visible='true'])) a[aria-current] {
+      border-inline-start-color: var(--leaf-color-text);
+    }
+    ul ul a {
+      padding-inline-start: 26px;
+    }
+    ul ul ul a {
+      padding-inline-start: 40px;
     }
   }
   @media (forced-colors: active) {

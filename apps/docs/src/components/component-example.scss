@@ -109,8 +109,9 @@
 }
 
 .leaf-component-example__wrap[aria-pressed='true'] {
-  color: var(--leaf-color-primary);
-  background: var(--leaf-color-primary-soft);
+  color: var(--leaf-color-text);
+  background: var(--leaf-color-surface-muted);
+  border-color: var(--leaf-color-border-hover);
 }
 
 .leaf-component-example__code-viewport {

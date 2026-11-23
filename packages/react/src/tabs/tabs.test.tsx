@@ -133,12 +133,10 @@ describe('Tabs', () => {
     expect(screen.queryByRole('textbox', { hidden: true })).toBeNull();
   });
 
-  it('supports solid tone and pill shape modifiers on segmented and card appearances', () => {
-    render(
+  it('applies appearance modifier classes for line, card and segmented tabs', () => {
+    const { rerender } = render(
       <Tabs
         type="segmented"
-        tone="solid"
-        shape="pill"
         aria-label="Map scope"
         items={[
           { key: 'global', label: 'Global' },
@@ -147,6 +145,17 @@ describe('Tabs', () => {
       />,
     );
     const root = screen.getByRole('tablist').closest('.leaf-tabs');
-    expect(root).toHaveClass('leaf-tabs--segmented', 'leaf-tabs--solid', 'leaf-tabs--pill');
+    expect(root).toHaveClass('leaf-tabs--segmented');
+    rerender(
+      <Tabs
+        type="card"
+        aria-label="Map scope"
+        items={[
+          { key: 'global', label: 'Global' },
+          { key: 'province', label: 'Province' },
+        ]}
+      />,
+    );
+    expect(root).toHaveClass('leaf-tabs--card');
   });
 });

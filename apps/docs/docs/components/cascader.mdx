@@ -27,6 +27,7 @@ export const leafDoc = { component: 'Cascader', primaryApi: 'CascaderProps' };
 <ComponentExample exampleId="basic" preview={<CascaderBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -42,6 +43,7 @@ export const leafDoc = { component: 'Cascader', primaryApi: 'CascaderProps' };
 <ComponentExample exampleId="controlled" preview={<CascaderControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/controlled.tsx"
+
 ```
 
 </ComponentExample>
@@ -53,6 +55,7 @@ export const leafDoc = { component: 'Cascader', primaryApi: 'CascaderProps' };
 <ComponentExample exampleId="search" preview={<CascaderSearch />} fileName="search.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/search.tsx"
+
 ```
 
 </ComponentExample>
@@ -64,6 +67,7 @@ export const leafDoc = { component: 'Cascader', primaryApi: 'CascaderProps' };
 <ComponentExample exampleId="multiple" preview={<CascaderMultiple />} fileName="multiple.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/multiple.tsx"
+
 ```
 
 </ComponentExample>
@@ -75,6 +79,7 @@ export const leafDoc = { component: 'Cascader', primaryApi: 'CascaderProps' };
 <ComponentExample exampleId="single-line" preview={<CascaderSingleLine />} fileName="single-line.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/single-line.tsx"
+
 ```
 
 </ComponentExample>
@@ -86,6 +91,7 @@ export const leafDoc = { component: 'Cascader', primaryApi: 'CascaderProps' };
 <ComponentExample exampleId="states" preview={<CascaderStates />} fileName="states.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/states.tsx"
+
 ```
 
 </ComponentExample>
@@ -99,6 +105,7 @@ export const leafDoc = { component: 'Cascader', primaryApi: 'CascaderProps' };
 <ComponentExample exampleId="intermediate" preview={<CascaderIntermediate />} fileName="intermediate.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/intermediate.tsx"
+
 ```
 
 </ComponentExample>
@@ -112,6 +119,7 @@ export const leafDoc = { component: 'Cascader', primaryApi: 'CascaderProps' };
 <ComponentExample exampleId="lazy" preview={<CascaderLazy />} fileName="lazy.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/lazy.tsx"
+
 ```
 
 </ComponentExample>
@@ -123,17 +131,19 @@ export const leafDoc = { component: 'Cascader', primaryApi: 'CascaderProps' };
 <ComponentExample exampleId="cache" preview={<CascaderCache />} fileName="cache.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/cache.tsx"
+
 ```
 
 </ComponentExample>
 
 ### 浮层宽度
 
-`popupWidth="auto"` 按内容定宽，`popupMaxWidth` 限制最大宽度；省略时默认与触发控件等宽。其他浮层配置见[共享浮层参数](/api/popup-options)。
+浮层默认按展开层级与内容自然增宽（`popupWidth="auto"`）。可通过 `popupWidth="trigger"` 与触发控件等宽，或用 `popupMaxWidth` 限制最大宽度并由横向滚动条承载超出列。其他浮层配置见[共享浮层参数](/api/popup-options)。
 
 <ComponentExample exampleId="popup" preview={<CascaderPopup />} fileName="popup.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/cascader/popup.tsx"
+
 ```
 
 </ComponentExample>
@@ -173,7 +183,7 @@ export const leafDoc = { component: 'Cascader', primaryApi: 'CascaderProps' };
 | `open` | `boolean` | — | 受控的展开状态。 |
 | `defaultOpen` | `boolean` | `false` | 非受控模式的初始展开状态。 |
 | `onOpenChange` | `(open: boolean) => void` | — | 面板展开或收起 |
-| `popupWidth` | `number \| string` | `'trigger'` | 浮层宽度；trigger 与触发控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度。 |
+| `popupWidth` | `number \| string` | `'auto'` | 浮层宽度；trigger 与触发控件等宽，auto 按内容定宽（可比控件窄），数字为固定像素值，也支持 CSS 长度。 |
 | `popupMaxWidth` | `number \| string` | — | 可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。 |
 | `name` | `string` | — | 原生 FormData 的字段名；非空值提交 JSON 路径，空值提交空字符串。 |
 | `form` | `string` | — | 关联的原生表单 ID。 |

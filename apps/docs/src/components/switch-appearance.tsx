@@ -11,16 +11,17 @@ export function SwitchAppearance({ onClick }: { onClick?: () => void }) {
   return (
     <Button
       className="leaf-docs-theme-button"
-      size="sm"
+      size="icon"
       aria-label={t(
         dark ? '切换到浅色主题' : '切换到深色主题',
         dark ? 'Switch to light theme' : 'Switch to dark theme',
       )}
-      startIcon={dark ? <Moon /> : <Sun />}
       onClick={() => {
         setTheme?.(dark ? 'light' : 'dark');
         onClick?.();
       }}
-    />
+    >
+      {dark ? <Moon aria-hidden="true" /> : <Sun aria-hidden="true" />}
+    </Button>
   );
 }

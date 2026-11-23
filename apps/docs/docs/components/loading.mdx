@@ -1,5 +1,7 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { LoadingBasic } from '../../src/examples/loading/basic';
+import { LoadingVariants } from '../../src/examples/loading/variants';
+import { LoadingDefaultVariant } from '../../src/examples/loading/default-variant';
 import { LoadingSizes } from '../../src/examples/loading/sizes';
 import { LoadingOverlay } from '../../src/examples/loading/overlay';
 import { LoadingDelay } from '../../src/examples/loading/delay';
@@ -31,9 +33,31 @@ export const leafDoc = { component: 'Loading', primaryApi: 'LoadingProps' };
 
 通过 `size` 选择加载指示器的尺寸。
 
-<ComponentExample exampleId="sizes" preview={<LoadingSizes />} width="fit-content" fileName="sizes.tsx">
+<ComponentExample exampleId="sizes" preview={<LoadingSizes />} width={480} fileName="sizes.tsx">
 
 ```tsx lineNumbers file="../../src/examples/loading/sizes.tsx"
+```
+
+</ComponentExample>
+
+### 动画样式
+
+通过 `variant` 选择加载指示器的动画样式（默认为 `spinner`），也可通过 `ConfigProvider` 的 `components.Loading` 统一设置。
+
+<ComponentExample exampleId="variants" preview={<LoadingVariants />} width={600} fileName="variants.tsx">
+
+```tsx lineNumbers file="../../src/examples/loading/variants.tsx"
+```
+
+</ComponentExample>
+
+### 全局默认样式
+
+在应用或局部区域外层使用 [ConfigProvider](/components/config-provider) 的 `components.Loading`，为内部未传入 `variant` 的 `Loading` 统一设置默认动画样式；单个实例仍可通过 `variant` 覆盖。
+
+<ComponentExample exampleId="default-variant" preview={<LoadingDefaultVariant />} width={480} fileName="default-variant.tsx">
+
+```tsx lineNumbers file="../../src/examples/loading/default-variant.tsx"
 ```
 
 </ComponentExample>
@@ -74,6 +98,7 @@ export const leafDoc = { component: 'Loading', primaryApi: 'LoadingProps' };
 | --- | --- | --- | --- |
 | `spinning` | `boolean` | `true` | 是否加载中 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 图标尺寸 |
+| `variant` | `'spinner' \| 'ring' \| 'dual' \| 'orbit' \| 'chase' \| 'dots' \| 'wave' \| 'bars' \| 'pulse' \| 'grid' \| 'blocks' \| 'flip'` | `'spinner'` | 指示器动画样式。 |
 | `tip` | `ReactNode` | — | 提示文字 |
 | `delay` | `number` | `0` | 延迟显示，单位毫秒 |
 | `children` | `ReactNode` | — | 被加载遮罩覆盖的内容。 |

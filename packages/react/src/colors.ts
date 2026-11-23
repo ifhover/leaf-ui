@@ -64,7 +64,7 @@ export const defaultColors = {
     'text-muted': neutralColorScale[600],
     surface: solidForeground.white,
     'surface-muted': neutralColorScale[100],
-    border: mixColors(neutralColorScale[200], solidForeground.white, 82) ?? neutralColorScale[200],
+    border: neutralColorScale[200],
   },
   dark: {
     ...semanticSeeds,
@@ -171,7 +171,6 @@ export function resolveColorRoles(
   };
   const neutral = overrides.neutral ? scaleForColor(overrides.neutral) : neutralColorScale;
   assign('neutral', colors.neutral ?? colorSeeds.neutral, 'seed');
-  for (const step of colorScaleSteps) values[colorVariable(`neutral-${step}`)] = neutral[step];
   const surfaceOverride = overrides.surface;
   const darkSurface =
     surfaceOverride && concreteOpaque(surfaceOverride)
@@ -180,7 +179,7 @@ export function resolveColorRoles(
   const neutralRoleSteps: Record<string, ColorScaleStep | 'white'> = {
     text: darkSurface ? 100 : 900,
     'text-muted': darkSurface ? 400 : 600,
-    'text-subtle': darkSurface ? 400 : 600,
+    'text-subtle': darkSurface ? 500 : 600,
     surface: dark ? 900 : 'white',
     'surface-muted': darkSurface ? 800 : 100,
     'surface-raised': darkSurface ? 800 : 'white',
@@ -193,30 +192,35 @@ export function resolveColorRoles(
     assign(
       name,
       step === 'white' ? solidForeground.white : neutral[step],
-      step === 'white' ? 'white' : colorVariable(`neutral-${step}`),
+      step === 'white' ? 'white' : `neutral-${step}`,
     );
   const surfaceValue = values['--leaf-color-surface'] ?? colors.surface ?? solidForeground.white;
   if (!darkSurface) {
     assign(
-      'border',
-      mixColors(neutral[200], surfaceValue, 82) ?? neutral[200],
-      'mix(--leaf-color-neutral-200, --leaf-color-surface, 82%)',
-    );
-    assign(
-      'border-hover',
-      mixColors(neutral[300], surfaceValue, 82) ?? neutral[300],
-      'mix(--leaf-color-neutral-300, --leaf-color-surface, 82%)',
+      'text-subtle',
+      mixColors(neutral[500], neutral[600], 45) ?? neutral[600],
+      'mix(neutral-500, neutral-600, 45%)',
     );
     assign(
       'divider',
-      mixColors(neutral[200], surfaceValue, 68) ?? neutral[200],
-      'mix(--leaf-color-neutral-200, --leaf-color-surface, 68%)',
+      mixColors(neutral[200], surfaceValue, 80) ?? neutral[200],
+      'mix(neutral-200, --leaf-color-surface, 80%)',
     );
   } else {
     assign(
+      'surface-raised',
+      mixColors(neutral[800], surfaceValue, 45) ?? neutral[800],
+      'mix(neutral-800, --leaf-color-surface, 45%)',
+    );
+    assign(
       'divider',
-      mixColors(neutral[800], surfaceValue, 70) ?? neutral[800],
-      'mix(--leaf-color-neutral-800, --leaf-color-surface, 70%)',
+      mixColors(neutral[800], surfaceValue, 78) ?? neutral[800],
+      'mix(neutral-800, --leaf-color-surface, 78%)',
+    );
+    assign(
+      'option-hover',
+      mixColors(neutral[700], neutral[800], 45) ?? neutral[700],
+      'mix(neutral-700, neutral-800, 45%)',
     );
   }
 
@@ -224,62 +228,87 @@ export function resolveColorRoles(
   const muted = values['--leaf-color-surface-muted'] ?? colors['surface-muted'] ?? '';
   const softStep = darkSurface ? 'dark-9' : 'light-9';
   const softHoverStep = darkSurface ? 'dark-7' : 'light-7';
+  const borderFamilies = new Set(['primary', 'danger', 'warning']);
 
   for (const family of families) {
-    const seed = colors[family] ?? semanticSeeds[family];
+    const rawSeed = colors[family] ?? semanticSeeds[family];
+    // primaryColor: 'neutral' 随明暗外观自动切换黑白高对比角色，深色模式反转填充与图标色。
+    const isNeutralPrimary = family === 'primary' && rawSeed.trim().toLowerCase() === 'neutral';
+    if (isNeutralPrimary) {
+      const neutralPrimary = darkSurface ? neutral[100] : neutral[900];
+      const neutralOnPrimary = darkSurface ? neutral[900] : solidForeground.white;
+      const key = colorVariable('primary');
+      values[key] = neutralPrimary;
+      sources[key] = darkSurface ? 'neutral-100' : 'neutral-900';
+      assign('on-primary', neutralOnPrimary, darkSurface ? 'neutral-900' : 'white');
+      assign(
+        'primary-hover',
+        darkSurface
+          ? (mixColors(neutralPrimary, solidForeground.black, 88) ?? neutral[200])
+          : (mixColors(neutralPrimary, solidForeground.white, 86) ?? neutral[800]),
+        darkSurface ? 'mix(primary, black, 88%)' : 'mix(primary, white, 86%)',
+      );
+      assign(
+        'primary-active',
+        darkSurface
+          ? (mixColors(neutralPrimary, solidForeground.black, 78) ?? neutral[300])
+          : (mixColors(neutralPrimary, solidForeground.white, 76) ?? neutral[700]),
+        darkSurface ? 'mix(primary, black, 78%)' : 'mix(primary, white, 76%)',
+      );
+      assign(
+        'primary-soft',
+        darkSurface ? neutral[800] : neutral[100],
+        darkSurface ? 'neutral-800' : 'neutral-100',
+      );
+      assign(
+        'primary-soft-hover',
+        darkSurface ? neutral[700] : neutral[200],
+        darkSurface ? 'neutral-700' : 'neutral-200',
+      );
+      assign(
+        'primary-border',
+        darkSurface ? neutral[700] : neutral[300],
+        darkSurface ? 'neutral-700' : 'neutral-300',
+      );
+      assign(
+        'primary-link-hover',
+        darkSurface ? neutral[400] : neutral[600],
+        darkSurface ? 'neutral-400' : 'neutral-600',
+      );
+      assign(
+        'primary-link-active',
+        darkSurface ? neutral[100] : neutral[900],
+        darkSurface ? 'neutral-100' : 'neutral-900',
+      );
+      continue;
+    }
+
+    const seed = rawSeed;
     const shades = generateColorShades(seed);
     assign(family, seed, 'seed');
-    for (const step of semanticColorShadeSteps)
-      values[colorVariable(`${family}-${step}`)] = shades[step];
-    assign(`${family}-soft`, shades[softStep], colorVariable(`${family}-${softStep}`));
-    assign(
-      `${family}-soft-hover`,
-      shades[softHoverStep],
-      colorVariable(`${family}-${softHoverStep}`),
-    );
-    assign(
-      `${family}-soft-active`,
-      shades[softHoverStep],
-      colorVariable(`${family}-${softHoverStep}`),
-    );
-    assign(`${family}-border`, shades[softHoverStep], colorVariable(`${family}-${softHoverStep}`));
-    const ink = chooseReadableColor(
-      family,
-      shades,
-      seed,
-      colorVariable(family),
-      darkSurface,
-      [surface, muted, values[colorVariable(`${family}-soft`)] ?? surface],
-      4.5,
-    );
-    assign(`${family}-ink`, ink.value, ink.source);
-    // Solid labels default to white; on*Color tokens are the only way to switch them.
-    assign(`on-${family}`, solidForeground.white, 'white');
-
-    if (family === 'primary') {
-      const indicator = chooseReadableColor(
+    assign(`${family}-soft`, shades[softStep], `${family}-${softStep}`);
+    assign(`${family}-soft-hover`, shades[softHoverStep], `${family}-${softHoverStep}`);
+    if (borderFamilies.has(family))
+      assign(`${family}-border`, shades[softHoverStep], `${family}-${softHoverStep}`);
+    if (family !== 'primary') {
+      const ink = chooseReadableColor(
         family,
         shades,
         seed,
         colorVariable(family),
         darkSurface,
-        [surface, muted],
-        3,
+        [surface, muted, values[colorVariable(`${family}-soft`)] ?? surface],
+        4.5,
       );
-      assign('primary-indicator', indicator.value, indicator.source);
-      const indicatorValue = values[colorVariable('primary-indicator')] ?? indicator.value;
-      assign('primary-focus', indicatorValue, colorVariable('primary-indicator'));
-      assign(
-        'primary-fill-border',
-        indicatorValue === seed ? 'transparent' : indicatorValue,
-        indicatorValue === seed ? 'transparent' : colorVariable('primary-indicator'),
-      );
+      assign(`${family}-ink`, ink.value, ink.source);
     }
+    // Solid labels default to white; on*Color tokens are the only way to switch them.
+    assign(`on-${family}`, solidForeground.white, 'white');
 
-    if (family === 'primary' || family === 'danger') {
+    if (family === 'primary') {
       for (const state of ['active', 'hover'] as const) {
-        // Link feedback is separate from solid press and readability-adjusted ink.
-        const linkOffset = state === 'active' ? 1 : family === 'primary' ? -2 : -1;
+        // 链接交互与实底按压及可读前景色相互独立。
+        const linkOffset = state === 'active' ? 1 : -2;
         const linkValue = concreteOpaque(seed)
           ? actionColor(seed, linkOffset)
           : (mixColors(
@@ -288,53 +317,32 @@ export function resolveColorRoles(
               90,
             ) ?? seed);
         assign(
-          `${family}-link-${state}`,
-          overrides[`${family}-${state}`] ?? linkValue,
-          overrides[`${family}-${state}`] !== undefined
-            ? colorVariable(`${family}-${state}`)
+          `primary-link-${state}`,
+          overrides[`primary-${state}`] ?? linkValue,
+          overrides[`primary-${state}`] !== undefined
+            ? colorVariable(`primary-${state}`)
             : concreteOpaque(seed)
-              ? `antd-palette(${family}, ${6 + linkOffset})`
-              : `mix(${family}, ${state === 'active' ? 'black' : 'white'}, 90%)`,
+              ? `antd-palette(primary, ${6 + linkOffset})`
+              : `mix(primary, ${state === 'active' ? 'black' : 'white'}, 90%)`,
         );
         const value =
           state === 'active'
             ? shades['dark-1']
-            : family === 'primary' && concreteOpaque(seed)
+            : concreteOpaque(seed)
               ? actionColor(seed, -1)
               : (mixColors(seed, solidForeground.white, 90) ?? seed);
         assign(
-          `${family}-${state}`,
+          `primary-${state}`,
           value,
           state === 'active'
-            ? colorVariable(`${family}-dark-1`)
-            : family === 'primary' && concreteOpaque(seed)
+            ? 'primary-dark-1'
+            : concreteOpaque(seed)
               ? 'antd-palette(primary, 5)'
-              : `mix(${family}, white, 90%)`,
+              : 'mix(primary, white, 90%)',
         );
-        if (family === 'primary') {
-          const inkValue = values[colorVariable('primary-ink')] ?? ink.value;
-          const stateBase =
-            state === 'active'
-              ? (mixColors(
-                  inkValue,
-                  darkSurface ? solidForeground.white : solidForeground.black,
-                  90,
-                ) ?? inkValue)
-              : inkValue;
-          const stateInk = chooseReadableColor(
-            family,
-            shades,
-            stateBase,
-            state === 'active'
-              ? `mix(primary-ink, ${darkSurface ? 'white' : 'black'}, 90%)`
-              : colorVariable('primary-ink'),
-            darkSurface,
-            [surface, muted],
-            4.5,
-          );
-          assign(`primary-ink-${state}`, stateInk.value, stateInk.source);
-        }
       }
+    } else if (family === 'danger') {
+      assign('danger-active', shades['dark-1'], 'danger-dark-1');
     }
   }
   return { values, sources };

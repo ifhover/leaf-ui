@@ -7,7 +7,6 @@
       --leaf-component-transfer-border-width,
       var(--leaf-border-width, 1px)
     );
-    @include mixins.accent-soft-feedback-family;
     display: inline-flex;
     flex-wrap: wrap;
     container: leaf-transfer / inline-size;
@@ -118,22 +117,19 @@
     box-sizing: border-box;
     padding: 6px 10px;
     border-radius: var(--leaf-radius);
-    transition:
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+    transition: var(--leaf-action-transition);
 
     &:hover:not([data-selected]):has(.leaf-checkbox:not([data-disabled])) {
       background: #{mixins.choice-option-background()};
     }
 
-    &:active:has(.leaf-checkbox:not([data-disabled])) {
-      scale: 0.985;
+    &:active:not([data-selected]):has(.leaf-checkbox:not([data-disabled])) {
+      background: var(--leaf-color-option-hover);
     }
 
     &[data-selected] {
-      color: var(--leaf-color-primary);
-      background: var(--leaf-accent-soft-background);
+      color: var(--leaf-color-text);
+      background: var(--leaf-color-surface-muted);
 
       .leaf-checkbox__description {
         color: var(--leaf-color-text-muted);
@@ -149,12 +145,6 @@
       &__copy {
         min-width: 0;
       }
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-transfer__item {
-      transition: none;
     }
   }
 

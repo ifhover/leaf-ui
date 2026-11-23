@@ -64,6 +64,7 @@ describe('Navigation motion contracts', () => {
     const { container } = render(
       <ConfigProvider direction="rtl">
         <Tabs
+          type="card"
           overflow={false}
           items={[
             { key: 'first', label: 'First', children: <input aria-label="Draft" /> },
@@ -277,6 +278,7 @@ describe('Navigation motion contracts', () => {
     try {
       const tabs = (
         <Tabs
+          type="segmented"
           items={[
             { key: 'first', label: 'First' },
             { key: 'second', label: 'Second' },
@@ -332,5 +334,21 @@ describe('Navigation motion contracts', () => {
       heightSpy.mockRestore();
       rectSpy.mockRestore();
     }
+  });
+
+  it('skips moving indicator measurement for line tabs in favor of per-tab crossfade', () => {
+    const { container } = render(
+      <Tabs
+        items={[
+          { key: 'first', label: 'First' },
+          { key: 'second', label: 'Second' },
+        ]}
+      />,
+    );
+    const marker = container.querySelector<HTMLElement>('.leaf-tabs__indicator');
+    expect(marker?.dataset.visible).toBeUndefined();
+    expect(marker?.dataset.animate).toBeUndefined();
+    fireEvent.click(screen.getByRole('tab', { name: 'Second' }));
+    expect(marker?.dataset.animate).toBeUndefined();
   });
 });

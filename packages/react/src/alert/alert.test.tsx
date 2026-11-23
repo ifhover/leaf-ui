@@ -3,10 +3,10 @@ import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { Button } from '../button/button';
 import { ConfigProvider } from '../config-provider/config-provider';
-import { Alert } from './alert';
+import { Alert, FeedbackIcon } from './alert';
 
 describe('neutral alerts', () => {
-  it.each(['success', 'info', 'warning', 'danger'] as const)(
+  it.each(['default', 'success', 'warning', 'danger'] as const)(
     'retains %s semantics independently of its surface',
     (type) => {
       render(
@@ -108,5 +108,26 @@ describe('neutral alerts', () => {
     expect(screen.getByRole('status').querySelector('.leaf-alert__extra')).toHaveTextContent('0');
     rerender(<Alert title="Status" />);
     expect(screen.getByRole('status').querySelector('.leaf-alert__extra')).toBeNull();
+  });
+
+  it('defaults to the neutral default alert style and keeps compact 16px icon size', () => {
+    const { container } = render(
+      <>
+        <Alert title="Status" closable />
+        <FeedbackIcon type="info" />
+      </>,
+    );
+    const alert = container.querySelector('.leaf-alert');
+    const alertIcon = container.querySelector('.leaf-alert__icon svg');
+    const closeIcon = container.querySelector('.leaf-alert__close svg');
+    const standaloneIcon = container.lastElementChild;
+    expect(alert).toHaveClass('leaf-alert--default');
+    expect(alert).toHaveAttribute('role', 'status');
+    expect(alertIcon).toHaveAttribute('width', '16');
+    expect(alertIcon).toHaveAttribute('height', '16');
+    expect(closeIcon).toHaveAttribute('width', '14');
+    expect(closeIcon).toHaveAttribute('height', '14');
+    expect(standaloneIcon).toHaveAttribute('width', '18');
+    expect(standaloneIcon).toHaveAttribute('height', '18');
   });
 });

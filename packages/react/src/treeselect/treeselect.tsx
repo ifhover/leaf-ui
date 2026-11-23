@@ -1,4 +1,4 @@
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import {
   forwardRef,
   type InputHTMLAttributes,
@@ -15,6 +15,7 @@ import { useLeafConfig } from '../config-provider/context';
 import { estimateControlHeight } from '../density';
 import { FieldScope, useFormField } from '../form/form';
 import { classes } from '../shared/classes';
+import { ClearButton } from '../shared/clear-button';
 import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
 import {
   FloatingPanel,
@@ -430,18 +431,14 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
             </span>
           </SelectionContent>
           {clearable && (
-            <button
-              type="button"
-              className="leaf-tree-select__clear"
-              aria-label={messages.treeSelect.clear}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => {
+            <ClearButton
+              beforeArrow
+              label={messages.treeSelect.clear}
+              onClear={() => {
                 commit(selected.filter((key) => !canRemove(key)));
                 trigger.current?.focus();
               }}
-            >
-              <X size={14} aria-hidden="true" />
-            </button>
+            />
           )}
           <button
             type="button"

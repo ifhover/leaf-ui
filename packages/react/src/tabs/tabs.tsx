@@ -24,7 +24,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { ButtonControl } from '../button/button';
+import { ButtonControl, toIconButtonSize } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { ScrollbarControl } from '../scrollbar/scrollbar';
@@ -50,8 +50,6 @@ export interface TabsProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChang
   defaultActiveKey?: string;
   onChange?: (key: string) => void;
   type?: 'line' | 'card' | 'segmented';
-  tone?: 'soft' | 'solid';
-  shape?: 'default' | 'pill';
   placement?: 'top' | 'bottom';
   size?: ControlSize;
   /** Fill the available width with equally sized tabs. */
@@ -82,8 +80,6 @@ export function useTabsParts({
   defaultActiveKey,
   onChange,
   type = 'line',
-  tone = 'soft',
-  shape = 'default',
   placement = 'top',
   size = 'md',
   block = false,
@@ -123,8 +119,8 @@ export function useTabsParts({
     track,
     indicator,
     '[data-leaf-indicator-item][data-active="true"]',
-    `${selected}-${placement}-${type}-${tone}-${shape}-${direction}-${visibilityKey ?? ''}`,
-    items.length > 0,
+    `${selected}-${placement}-${type}-${direction}-${visibilityKey ?? ''}`,
+    items.length > 0 && type !== 'line',
   );
   const [scrollSides, setScrollSides] = useState({ start: false, end: false });
   const sorting = sortable && Boolean(onReorder);
@@ -197,8 +193,6 @@ export function useTabsParts({
       className: classes(
         'leaf-tabs',
         `leaf-tabs--${type}`,
-        tone !== 'soft' && `leaf-tabs--${tone}`,
-        shape !== 'default' && `leaf-tabs--${shape}`,
         `leaf-tabs--${placement}`,
         `leaf-tabs--${size}`,
         block && 'leaf-tabs--block',
@@ -312,44 +306,43 @@ export function useTabsParts({
               <ButtonControl
                 className="leaf-tabs__scroll-action leaf-tabs__scroll-action--start"
                 variant="outline"
-                size={size}
-                startIcon={
-                  direction === 'rtl' ? (
-                    <ChevronRight size={16} aria-hidden="true" />
-                  ) : (
-                    <ChevronLeft size={16} aria-hidden="true" />
-                  )
-                }
+                size={toIconButtonSize(size)}
                 aria-label={t(direction === 'rtl' ? 'tabs.scrollRight' : 'tabs.scrollLeft')}
                 onClick={() => scrollTabs('start')}
-              />
+              >
+                {direction === 'rtl' ? (
+                  <ChevronRight aria-hidden="true" />
+                ) : (
+                  <ChevronLeft aria-hidden="true" />
+                )}
+              </ButtonControl>
             )}
             {scrollSides.end && (
               <ButtonControl
                 className="leaf-tabs__scroll-action leaf-tabs__scroll-action--end"
                 variant="outline"
-                size={size}
-                startIcon={
-                  direction === 'rtl' ? (
-                    <ChevronLeft size={16} aria-hidden="true" />
-                  ) : (
-                    <ChevronRight size={16} aria-hidden="true" />
-                  )
-                }
+                size={toIconButtonSize(size)}
                 aria-label={t(direction === 'rtl' ? 'tabs.scrollLeft' : 'tabs.scrollRight')}
                 onClick={() => scrollTabs('end')}
-              />
+              >
+                {direction === 'rtl' ? (
+                  <ChevronLeft aria-hidden="true" />
+                ) : (
+                  <ChevronRight aria-hidden="true" />
+                )}
+              </ButtonControl>
             )}
           </div>
           {onAdd && (
             <ButtonControl
               className="leaf-tabs__action"
               variant="text"
-              size={size}
-              startIcon={<Plus size={16} />}
+              size={toIconButtonSize(size)}
               aria-label={addLabel ?? t('tabs.addTab')}
               onClick={onAdd}
-            />
+            >
+              <Plus aria-hidden="true" />
+            </ButtonControl>
           )}
           {extra && <div className="leaf-tabs__extra">{extra}</div>}
         </div>

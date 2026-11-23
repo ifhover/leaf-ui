@@ -86,14 +86,15 @@ export function ComponentExample({
           </span>
           <div>
             <Button
-              size="sm"
+              size="icon-sm"
               className="leaf-component-example__wrap"
               aria-label={t('切换代码换行', 'Toggle line wrapping')}
               title={t('切换代码换行', 'Toggle line wrapping')}
               aria-pressed={wrapCode}
               onClick={() => setWrapCode(!wrapCode)}
-              startIcon={<Icon name="wrap" />}
-            />
+            >
+              <Icon name="wrap" />
+            </Button>
             <CopyButton text={copySource} label={t('复制代码', 'Copy code')} />
           </div>
         </div>
@@ -114,9 +115,9 @@ export function ComponentExample({
               aria-expanded={expanded}
               aria-controls={codeId}
               onClick={toggleExpanded}
-              endIcon={<Icon name="chevron" />}
             >
               {expanded ? t('收起代码', 'Collapse code') : t('展开代码', 'Expand code')}
+              <Icon name="chevron" />
             </Button>
           </div>
         )}

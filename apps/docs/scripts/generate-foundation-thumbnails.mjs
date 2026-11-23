@@ -42,11 +42,16 @@ const images = {
     })
     .join(''),
   card:
-    rect(25, 15, 190, 98) +
-    text(39, 37, 'Leaf Garden', '#202024', 11) +
-    text(39, 70, 'Projects, people and plans', '#68686f', 9) +
-    rect(39, 88, 52, 16, '#eaf4ed', 'none', 4) +
-    text(49, 100, 'Details', '#1e964f', 8),
+    rect(24, 14, 192, 100, '#fff', '#e5e5e5', 10) +
+    text(38, 34, 'Project updates', '#0d0d0d', 10, 500) +
+    text(38, 48, 'Keep everyone on the same page.', '#6c6c6c', 8) +
+    rect(38, 60, 118, 5, '#eaeaea', 'none', 2) +
+    rect(38, 70, 92, 5, '#eaeaea', 'none', 2) +
+    '<path d="M24 85h192" stroke="#eaeaea"/>' +
+    rect(128, 91, 36, 16, '#fff', '#e5e5e5', 4) +
+    text(136, 102, 'Cancel', '#0d0d0d', 7.5) +
+    rect(169, 91, 34, 16, '#1e964f', 'none', 4) +
+    text(177, 102, 'Save', '#fff', 7.5),
   divider:
     text(38, 30, 'Project details', '#68686f', 10) +
     '<path d="M25 58h52m84 0h54M25 95h190" stroke="#e5e5e8"/>' +
@@ -58,22 +63,23 @@ const images = {
     rect(83, 86, 76, 24, '#1e964f', 'none', 5) +
     text(92, 102, 'Open project', '#fff', 9),
   skeleton:
-    circle(43, 39, 17, '#e5e5e8') +
-    rect(73, 26, 93, 12, '#e1e9e3', 'none', 5) +
-    [60, 78, 96].map((y, i) => rect(73, y, 143 - i * 21, 9, '#e7ece8', 'none', 4)).join(''),
+    circle(43, 39, 17, '#e5e5e5') +
+    rect(73, 26, 93, 12, '#eaeaea', 'none', 5) +
+    [60, 78, 96].map((y, i) => rect(73, y, 143 - i * 21, 9, '#f5f5f5', 'none', 4)).join(''),
   collapse:
-    rect(25, 15, 190, 98) +
-    icon(ChevronDown, 37, 25, '#1e964f') +
-    text(60, 36, 'About this project', '#202024', 10) +
-    text(60, 59, 'Keep your plans together.', '#68686f', 9) +
-    icon(ChevronRight, 37, 87, '#68686f') +
-    text(60, 98, 'Settings', '#202024', 10),
+    rect(25, 15, 190, 98, '#fff', '#e5e5e5', 8) +
+    icon(ChevronDown, 37, 25, '#0d0d0d') +
+    text(60, 36, 'About this project', '#0d0d0d', 10, 500) +
+    text(60, 57, 'Keep your plans together.', '#6c6c6c', 9) +
+    '<path d="M25 76h190" stroke="#eaeaea"/>' +
+    icon(ChevronRight, 37, 88, '#6c6c6c') +
+    text(60, 99, 'Settings', '#0d0d0d', 10, 500),
   popover:
-    rect(45, 14, 150, 71) +
-    text(60, 36, 'Project details', '#202024', 10) +
-    text(60, 58, 'Edit and save your changes.', '#68686f', 8) +
-    rect(90, 94, 60, 23, '#eaf4ed', '#bddcc7', 5) +
-    text(104, 110, 'Open', '#1e964f', 9),
+    rect(45, 14, 150, 71, '#fff', '#e5e5e5', 8) +
+    text(60, 36, 'Project details', '#0d0d0d', 10, 500) +
+    text(60, 58, 'Edit and save your changes.', '#6c6c6c', 8) +
+    rect(90, 94, 60, 23, '#fff', '#e5e5e5', 5) +
+    text(107, 109, 'Open', '#0d0d0d', 9),
   slider:
     '<path d="M28 58h184" stroke="#e5e5e8" stroke-width="4" stroke-linecap="round"/><path d="M28 58h106" stroke="#1e964f" stroke-width="4" stroke-linecap="round"/>' +
     circle(134, 58, 7, '#1e964f') +
@@ -86,18 +92,17 @@ const images = {
       .map((i) => icon(Star, 32 + i * 37, 44, i < 4 ? '#ffc53d' : '#e5e5e8', 28))
       .join('') + text(89, 96, '4 / 5 rating', '#68686f', 10),
   steps:
-    '<path d="M40 43h164" stroke="#e5e5e8"/>' +
-    '<path d="M40 43h81" stroke="#1e964f"/>' +
-    circle(36, 43, 14, '#eaf4ed') +
-    icon(Check, 29, 36) +
-    circle(120, 43, 14, '#1e964f') +
-    text(116, 47, '2', '#fff', 11) +
-    circle(204, 43, 14, '#f6f6f7') +
-    text(200, 47, '3', '#68686f', 11) +
-    text(16, 78, 'Create') +
-    text(101, 78, 'Review', '#1e964f') +
-    text(190, 78, 'Done', '#68686f') +
-    text(82, 100, 'Your next step', '#68686f', 9),
+    '<path d="M40 43h164" stroke="#e5e5e5"/><path d="M40 43h81" stroke="#0d0d0d"/>' +
+    circle(36, 43, 14, '#f5f5f5') +
+    icon(Check, 29, 36, '#0d0d0d') +
+    circle(120, 43, 14, '#0d0d0d') +
+    text(116, 47, '2', '#fafafa', 11) +
+    circle(204, 43, 14, '#f5f5f5') +
+    text(200, 47, '3', '#6c6c6c', 11) +
+    text(16, 78, 'Create', '#0d0d0d') +
+    text(101, 78, 'Review', '#0d0d0d', 10, 500) +
+    text(190, 78, 'Done', '#6c6c6c') +
+    text(82, 100, 'Your next step', '#6c6c6c', 9),
   breadcrumb:
     text(22, 53, 'Home', '#68686f') +
     icon(ChevronRight, 61, 43, '#68686f') +
@@ -107,24 +112,16 @@ const images = {
     rect(22, 72, 196, 26, '#f6f6f7', 'none') +
     text(33, 89, 'Home / Projects / Leaf Garden', '#68686f', 9),
   pagination:
-    rect(12, 40, 28, 28, '#fff', '#e5e5e8') +
-    icon(ChevronLeft, 20, 48, '#68686f') +
+    icon(ChevronLeft, 20, 48, '#6c6c6c') +
     [1, 2, 3, 4, 5]
       .map(
         (n, i) =>
-          rect(
-            43 + i * 31,
-            40,
-            26,
-            28,
-            n === 2 ? '#eaf4ed' : '#fff',
-            n === 2 ? '#1e964f' : '#e5e5e8',
-          ) + text(53 + i * 31, 58, n, n === 2 ? '#1e964f' : '#202024'),
+          (n === 2 ? rect(43 + i * 31, 40, 26, 28, '#fff', '#e5e5e5', 6) : '') +
+          text(53 + i * 31, 58, n, '#0d0d0d', 10, n === 2 ? 500 : undefined),
       )
       .join('') +
-    rect(200, 40, 28, 28, '#fff', '#e5e5e8') +
-    icon(ChevronRight, 208, 48, '#68686f') +
-    text(73, 92, '11–20 / 50 items', '#68686f', 9),
+    icon(ChevronRight, 208, 48, '#0d0d0d') +
+    text(73, 92, '11–20 / 50 items', '#6c6c6c', 9),
   tag:
     rect(18, 34, 52, 25, '#f6f6f7', 'none', 5) +
     text(29, 51, 'Default', '#202024', 10, 500) +
@@ -153,19 +150,19 @@ const images = {
     text(88, 104, 'Running', '#68686f'),
   drawer:
     rect(21, 12, 198, 105, '#00000040', 'none', 9) +
-    rect(98, 12, 121, 105) +
-    text(110, 33, 'Settings', '#202024', 11) +
-    icon(X, 196, 22, '#68686f') +
-    text(110, 54, 'Project name', '#68686f', 9) +
-    rect(110, 61, 97, 23) +
-    text(118, 77, 'Leaf Garden', '#202024', 9) +
-    rect(164, 92, 43, 17, '#1e964f', 'none', 4) +
-    text(175, 104, 'Save', '#fff', 8),
+    rect(103, 18, 109, 93, '#fff', '#e5e5e5', 8) +
+    text(114, 36, 'Settings', '#0d0d0d', 10, 500) +
+    icon(X, 192, 24, '#6c6c6c', 12) +
+    text(114, 54, 'Project name', '#6c6c6c', 8.5) +
+    rect(114, 60, 87, 21, '#fff', '#e5e5e5', 5) +
+    text(121, 74, 'Leaf Garden', '#0d0d0d', 8.5) +
+    rect(161, 88, 40, 16, '#1e964f', 'none', 4) +
+    text(171, 99, 'Save', '#fff', 7.5),
   loading:
-    rect(24, 19, 192, 91, '#f6f6f7') +
-    rect(39, 35, 120, 7, '#e5e5e8', 'none', 3) +
-    rect(39, 53, 160, 6, '#e7ece8', 'none', 3) +
-    rect(39, 70, 140, 6, '#e7ece8', 'none', 3) +
+    rect(24, 19, 192, 91, '#f5f5f5', '#e5e5e5', 8) +
+    rect(39, 35, 120, 7, '#eaeaea', 'none', 3) +
+    rect(39, 53, 160, 6, '#eaeaea', 'none', 3) +
+    rect(39, 70, 140, 6, '#eaeaea', 'none', 3) +
     icon(LoaderCircle, 103, 41, '#1e964f', 30) +
     text(95, 92, 'Loading…', '#1e964f', 10),
   progress:
@@ -195,13 +192,13 @@ const images = {
     }).join('') +
     rect(135, 76, 40, 5, '#c5dfce', 'none', 2),
   tabs:
-    rect(22, 22, 196, 85) +
-    text(34, 45, 'Overview', '#1e964f') +
-    text(104, 45, 'Settings', '#68686f') +
-    text(166, 45, 'History', '#9cab9f') +
-    '<path d="M32 55h52" stroke="#1e964f" stroke-width="2"/>' +
-    text(34, 77, 'Your project at a glance.', '#68686f', 9) +
-    rect(34, 88, 112, 5, '#e7ece8', 'none', 2),
+    rect(22, 22, 196, 85, '#fff', '#e5e5e5', 8) +
+    text(36, 46, 'Overview', '#0d0d0d', 10, 500) +
+    text(102, 46, 'Settings', '#6c6c6c') +
+    text(162, 46, 'History', '#6c6c6c') +
+    '<path d="M36 55h46" stroke="#0d0d0d" stroke-width="2" stroke-linecap="round"/>' +
+    text(36, 77, 'Your project at a glance.', '#6c6c6c', 9) +
+    rect(36, 88, 112, 5, '#eaeaea', 'none', 2),
   'input-number':
     text(43, 32, 'Quantity', '#68686f', 9) +
     rect(42, 41, 156, 34) +
@@ -211,28 +208,28 @@ const images = {
     icon(ChevronDown, 181, 61, '#68686f', 11) +
     text(59, 98, 'Range 0–20 · Step 1', '#68686f', 9),
   tree:
-    icon(ChevronDown, 28, 19, '#68686f', 12) +
-    icon(Folder, 45, 18) +
-    text(66, 29, 'Design resources') +
-    icon(File, 65, 44, '#68686f') +
-    text(86, 55, 'Components', '#68686f') +
-    rect(51, 66, 166, 24, '#eaf4ed', 'none', 5) +
-    icon(File, 65, 72) +
-    text(86, 83, 'Brand colors', '#1e964f') +
-    icon(ChevronRight, 28, 101, '#68686f', 12) +
-    icon(Folder, 45, 100) +
-    text(66, 111, 'Engineering'),
+    icon(ChevronDown, 28, 19, '#6c6c6c', 12) +
+    icon(Folder, 45, 18, '#6c6c6c') +
+    text(66, 29, 'Design resources', '#0d0d0d') +
+    icon(File, 65, 44, '#6c6c6c') +
+    text(86, 55, 'Components', '#6c6c6c') +
+    rect(51, 66, 166, 24, '#f5f5f5', 'none', 5) +
+    icon(File, 65, 72, '#0d0d0d') +
+    text(86, 83, 'Brand colors', '#0d0d0d', 10, 500) +
+    icon(ChevronRight, 28, 101, '#6c6c6c', 12) +
+    icon(Folder, 45, 100, '#6c6c6c') +
+    text(66, 111, 'Engineering', '#0d0d0d'),
   'tree-select':
-    rect(27, 9, 186, 28) +
-    text(39, 27, 'Visual design') +
-    icon(ChevronDown, 191, 17, '#68686f', 12) +
-    rect(27, 43, 186, 76) +
-    icon(ChevronDown, 35, 50, '#68686f', 12) +
-    text(55, 60, 'Design') +
-    rect(36, 69, 168, 22, '#eaf4ed', 'none', 4) +
-    text(66, 84, 'Visual design', '#1e964f') +
-    icon(Check, 184, 74, '#1e964f', 12) +
-    text(66, 108, 'Product design', '#68686f'),
+    rect(27, 9, 186, 28, '#fff', '#0d0d0d', 6) +
+    text(39, 27, 'Visual design', '#0d0d0d') +
+    icon(ChevronDown, 191, 17, '#0d0d0d', 12) +
+    rect(27, 43, 186, 76, '#fff', '#e5e5e5', 6) +
+    icon(ChevronDown, 35, 50, '#6c6c6c', 12) +
+    text(55, 60, 'Design', '#0d0d0d') +
+    rect(36, 69, 168, 22, '#f5f5f5', 'none', 4) +
+    text(66, 84, 'Visual design', '#0d0d0d', 10, 500) +
+    icon(Check, 184, 74, '#0d0d0d', 12) +
+    text(66, 108, 'Product design', '#6c6c6c'),
   'color-picker':
     '<defs><linearGradient id="c" x2="1" y2="1"><stop stop-color="#fff"/><stop offset=".55" stop-color="#1e964f"/><stop offset="1" stop-color="#000"/></linearGradient><linearGradient id="h"><stop stop-color="#f00"/><stop offset=".2" stop-color="#ff0"/><stop offset=".4" stop-color="#0f0"/><stop offset=".6" stop-color="#0ff"/><stop offset=".8" stop-color="#00f"/><stop offset="1" stop-color="#f00"/></linearGradient></defs>' +
     rect(54, 8, 132, 111) +

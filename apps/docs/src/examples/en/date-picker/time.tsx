@@ -1,11 +1,5 @@
-import { DatePicker, Form, FormField } from '@ifhover/leaf-ui';
+import { DatePicker } from '@ifhover/leaf-ui';
 
 export function DatePickerTime() {
-  return (
-    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
-      <FormField label="Default time">
-        <DatePicker picker="time" defaultValue="09:30" />
-      </FormField>
-    </Form>
-  );
+  return <DatePicker aria-label="Default time" picker="time" defaultValue="09:30" />;
 }

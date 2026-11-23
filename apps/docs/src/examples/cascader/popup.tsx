@@ -5,7 +5,14 @@ const regions: CascaderOption[] = [
     value: 'zhejiang',
     label: '浙江',
     children: [
-      { value: 'hangzhou', label: '杭州' },
+      {
+        value: 'hangzhou',
+        label: '杭州',
+        children: [
+          { value: 'xihu', label: '西湖' },
+          { value: 'yuhang', label: '余杭' },
+        ],
+      },
       { value: 'ningbo', label: '宁波' },
     ],
   },
@@ -22,8 +29,11 @@ const regions: CascaderOption[] = [
 export function CascaderPopup() {
   return (
     <Form layout="vertical">
-      <FormField label="地区">
-        <Cascader options={regions} placeholder="选择地区" popupWidth="auto" popupMaxWidth={320} />
+      <FormField label="限制最大宽度">
+        <Cascader options={regions} placeholder="选择地区" popupMaxWidth={280} />
+      </FormField>
+      <FormField label="与控件等宽">
+        <Cascader options={regions} placeholder="选择地区" popupWidth="trigger" />
       </FormField>
     </Form>
   );

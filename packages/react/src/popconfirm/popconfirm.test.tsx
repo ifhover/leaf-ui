@@ -28,3 +28,17 @@ it('ignores an async completion from a previous controlled open cycle', async ()
   expect(screen.getByRole('dialog', { name: 'Delete item?' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'OK' })).toBeEnabled();
 });
+
+it('forwards placement and arrow options to the underlying Popover', () => {
+  render(
+    <ConfigProvider locale="en-US">
+      <Popconfirm open placement="bottom-end" arrow={false} title="Confirm?">
+        <Button>Action</Button>
+      </Popconfirm>
+    </ConfigProvider>,
+  );
+  const panel = document.querySelector('.leaf-popconfirm');
+  expect(panel).toHaveAttribute('data-side', 'bottom');
+  expect(panel).toHaveAttribute('data-align', 'end');
+  expect(panel).toHaveAttribute('data-arrow', 'false');
+});

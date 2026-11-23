@@ -1,20 +1,21 @@
-import { DateRangePicker, Form, FormField } from '@ifhover/leaf-ui';
+import { DateRangePicker, Flex, Text } from '@ifhover/leaf-ui';
+
+const labels = {
+  year: 'Year range',
+  quarter: 'Quarter range',
+  month: 'Month range',
+  week: 'Week range',
+} as const;
 
 export function DateRangePickerModes() {
   return (
-    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
-      <FormField label="Year range">
-        <DateRangePicker picker="year" />
-      </FormField>
-      <FormField label="Quarter range">
-        <DateRangePicker picker="quarter" />
-      </FormField>
-      <FormField label="Month range">
-        <DateRangePicker picker="month" />
-      </FormField>
-      <FormField label="Week range">
-        <DateRangePicker picker="week" />
-      </FormField>
-    </Form>
+    <Flex direction="column" gap="md">
+      {(['year', 'quarter', 'month', 'week'] as const).map((picker) => (
+        <Flex key={picker} direction="column" gap="sm" align="start">
+          <Text tone="muted">{labels[picker]}</Text>
+          <DateRangePicker aria-label={labels[picker]} picker={picker} />
+        </Flex>
+      ))}
+    </Flex>
   );
 }

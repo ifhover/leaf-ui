@@ -6,6 +6,8 @@ import { renderToString } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import {
   Button,
+  ButtonGroup,
+  Dropdown,
   Form,
   FormField,
   Input,
@@ -13,7 +15,6 @@ import {
   Modal,
   Pagination,
   Select,
-  SplitButton,
   Upload,
   useConfirm,
 } from '../index';
@@ -168,26 +169,24 @@ describe('ConfigProvider component defaults', () => {
     expect(screen.getByRole('textbox', { name: 'Built in search' })).toHaveValue('');
   });
 
-  it('resolves SplitButton defaults once and shares disabled and loading across both controls', async () => {
+  it('resolves ButtonGroup and Dropdown defaults and inherits group size, variant and disabled across controls', async () => {
     const select = vi.fn();
     const click = vi.fn();
     const submit = vi.fn((event) => event.preventDefault());
-    const example = (loading?: boolean, disabled?: boolean) => (
+    const example = (disabled?: boolean) => (
       <ConfigProvider
         components={{
-          Button: { loading: true, disabled: true, type: 'submit', size: 'sm', variant: 'outline' },
+          Button: { type: 'submit', size: 'sm', variant: 'outline' },
+          ButtonGroup: { variant: 'solid', disabled: true },
         }}
       >
         <form onSubmit={submit}>
-          <SplitButton
-            items={[{ key: 'copy', label: 'Copy', onClick: select }]}
-            menuLabel="More"
-            loading={loading}
-            disabled={disabled}
-            onClick={click}
-          >
-            Save
-          </SplitButton>
+          <ButtonGroup disabled={disabled}>
+            <Button onClick={click}>Save</Button>
+            <Dropdown items={[{ key: 'copy', label: 'Copy', onClick: select }]}>
+              <Button type="button" size="icon" aria-label="More" />
+            </Dropdown>
+          </ButtonGroup>
         </form>
       </ConfigProvider>
     );
@@ -196,9 +195,9 @@ describe('ConfigProvider component defaults', () => {
     const more = screen.getByRole('button', { name: 'More' });
     expect(main).toBeDisabled();
     expect(more).toBeDisabled();
-    for (const button of [main, more])
-      expect(button).toHaveClass('leaf-button--sm', 'leaf-button--outline');
-    rerender(example(false, false));
+    expect(main).toHaveClass('leaf-button--sm', 'leaf-button--solid');
+    expect(more).toHaveClass('leaf-button--icon-sm', 'leaf-button--solid');
+    rerender(example(false));
     expect(main).toBeEnabled();
     expect(more).toBeEnabled();
     expect(more).toHaveAttribute('type', 'button');
@@ -210,9 +209,6 @@ describe('ConfigProvider component defaults', () => {
     await userEvent.click(main);
     expect(click).toHaveBeenCalledOnce();
     expect(submit).toHaveBeenCalledOnce();
-    rerender(example(true, false));
-    expect(main).toBeDisabled();
-    expect(more).toBeDisabled();
   });
 
   it('keeps internal Upload and pagination controls independent of public control defaults', async () => {
@@ -271,10 +267,10 @@ describe('ConfigProvider component defaults', () => {
       'leaf-button--md',
     );
     expect(screen.getByRole('button', { name: 'Outer' })).toHaveClass(
-      'leaf-button--outline',
-      'leaf-button--sm',
       'leaf-button--danger',
+      'leaf-button--sm',
     );
+    expect(screen.getByRole('button', { name: 'Outer' })).not.toHaveClass('leaf-button--outline');
     expect(screen.getByRole('button', { name: 'Inner' })).toHaveClass(
       'leaf-button--outline',
       'leaf-button--lg',
@@ -575,7 +571,7 @@ describe('ConfigProvider component defaults', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: 'Request' }));
     const dialog = screen.getByRole('alertdialog', { name: 'Delete item' });
-    expect(dialog).toHaveStyle({ width: '420px' });
+    expect(dialog).toHaveStyle({ width: '340px' });
     expect(screen.queryByText('Modal only')).toBeNull();
     expect(within(dialog).getByRole('button', { name: '确定' })).toBeEnabled();
     await userEvent.click(within(dialog).getByRole('button', { name: '确定' }));

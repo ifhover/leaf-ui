@@ -183,13 +183,14 @@ function FileRow({
         <ButtonControl
           className="leaf-file-list__action"
           variant="text"
-          size="sm"
+          size="icon-sm"
           disabled={disabled}
-          startIcon={<Eye size={15} strokeWidth={1.75} />}
           aria-label={format('fileList.preview', { name })}
           title={t('common.preview')}
           onClick={() => onPreview(file)}
-        />
+        >
+          <Eye strokeWidth={1.75} aria-hidden="true" />
+        </ButtonControl>
       )}
       {canDownload &&
         url &&
@@ -197,13 +198,14 @@ function FileRow({
           <ButtonControl
             className="leaf-file-list__action"
             variant="text"
-            size="sm"
+            size="icon-sm"
             disabled={disabled}
-            startIcon={<Download size={15} strokeWidth={1.75} />}
             aria-label={format('fileList.download', { name })}
             title={t('common.download')}
             onClick={() => onDownload(file)}
-          />
+          >
+            <Download strokeWidth={1.75} aria-hidden="true" />
+          </ButtonControl>
         ) : (
           <a
             className="leaf-file-list__action"
@@ -223,12 +225,10 @@ function FileRow({
       {canRemove && onRemove && (
         <ButtonControl
           className="leaf-file-list__action leaf-file-list__remove"
-          danger
           variant="text"
-          size="sm"
+          size="icon-sm"
           disabled={disabled}
           loading={removing}
-          startIcon={<Trash2 size={15} strokeWidth={1.75} />}
           aria-label={format('fileList.remove', { name })}
           title={t('common.remove')}
           onClick={async () => {
@@ -246,7 +246,9 @@ function FileRow({
               if (mounted.current) setRemoving(false);
             }
           }}
-        />
+        >
+          <Trash2 strokeWidth={1.75} aria-hidden="true" />
+        </ButtonControl>
       )}
     </>
   );

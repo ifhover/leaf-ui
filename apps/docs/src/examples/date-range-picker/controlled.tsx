@@ -1,4 +1,4 @@
-import { Button, type DateRange, DateRangePicker, Form, FormField, Text } from '@ifhover/leaf-ui';
+import { Button, type DateRange, DateRangePicker, Flex, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const initialRange: DateRange = [new Date(2026, 9, 5), new Date(2026, 9, 9)];
@@ -16,34 +16,33 @@ export function DateRangePickerControlled() {
   const [draft, setDraft] = useState('尚未调整');
 
   return (
-    <Form
-      layout="vertical"
-      onSubmit={(event) => event.preventDefault()}
-      onReset={() => {
-        setValue(initialRange);
-        setCommitted('2026-10-05 ~ 2026-10-09');
-        setDraft('尚未调整');
-      }}
-    >
-      <FormField label="受控日期区间">
-        <DateRangePicker
-          value={value}
-          onChange={(next: DateRange | null, texts: readonly [string, string]) => {
-            setValue(next);
-            setCommitted(next ? texts.join(' ~ ') : '空值');
-          }}
-          onCalendarChange={(next, { position }) => {
-            setDraft(`${position}: ${next.map(formatDate).join(' ~ ')}`);
-          }}
-        />
-      </FormField>
+    <Flex direction="column" gap="sm" align="start">
+      <DateRangePicker
+        aria-label="受控日期区间"
+        value={value}
+        onChange={(next: DateRange | null, texts: readonly [string, string]) => {
+          setValue(next);
+          setCommitted(next ? texts.join(' ~ ') : '空值');
+        }}
+        onCalendarChange={(next, { position }) => {
+          setDraft(`${position}: ${next.map(formatDate).join(' ~ ')}`);
+        }}
+      />
       <Text tone="muted" role="status">
         已提交：{committed}
       </Text>
       <Text tone="muted" role="status">
         最近面板操作：{draft}
       </Text>
-      <Button type="reset">重置</Button>
-    </Form>
+      <Button
+        onClick={() => {
+          setValue(initialRange);
+          setCommitted('2026-10-05 ~ 2026-10-09');
+          setDraft('尚未调整');
+        }}
+      >
+        重置
+      </Button>
+    </Flex>
   );
 }

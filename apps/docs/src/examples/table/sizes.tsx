@@ -17,9 +17,9 @@ const columns = [
 ];
 
 const sizeOptions = [
-  { key: 'lg', label: '大 (lg)' },
-  { key: 'md', label: '中 (md)' },
   { key: 'sm', label: '小 (sm)' },
+  { key: 'md', label: '中 (md)' },
+  { key: 'lg', label: '大 (lg)' },
 ] as const;
 
 export function TableSizes() {
@@ -27,7 +27,7 @@ export function TableSizes() {
     <Tabs
       type="segmented"
       size="sm"
-      defaultActiveKey="lg"
+      defaultActiveKey="md"
       aria-label="表格尺寸"
       items={sizeOptions.map(({ key, label }) => ({
         key,

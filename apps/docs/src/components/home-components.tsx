@@ -107,8 +107,9 @@ export function ComponentShowcase() {
                   {t('忘记密码？', 'Forgot password?')}
                 </Button>
               </div>
-              <Button type="button" variant="solid" fullWidth endIcon={<ArrowRight size={16} />}>
+              <Button type="button" variant="solid" fullWidth>
                 {t('登录', 'Sign in')}
+                <ArrowRight aria-hidden="true" />
               </Button>
             </Form>
             <p className="leaf-component-scene__sign-in-note">
@@ -126,16 +127,22 @@ export function ComponentShowcase() {
         >
           <div className="leaf-component-scene__action-groups">
             <div className="leaf-component-scene__action-row">
-              <Button variant="solid" startIcon={<Plus size={16} />}>
+              <Button variant="solid">
+                <Plus aria-hidden="true" />
                 {t('新建', 'New')}
               </Button>
-              <Button startIcon={<Download size={16} />}>{t('导出', 'Export')}</Button>
+              <Button>
+                <Download aria-hidden="true" />
+                {t('导出', 'Export')}
+              </Button>
             </div>
             <div className="leaf-component-scene__action-row">
-              <Button variant="text" size="sm" startIcon={<Link size={15} />}>
+              <Button variant="text" size="sm">
+                <Link aria-hidden="true" />
                 {t('复制链接', 'Copy link')}
               </Button>
-              <Button variant="text" size="sm" danger startIcon={<Trash2 size={15} />}>
+              <Button variant="danger" size="sm">
+                <Trash2 aria-hidden="true" />
                 {t('删除', 'Delete')}
               </Button>
             </div>
@@ -272,7 +279,8 @@ export function ComponentShowcase() {
                   placeholder="name@example.com"
                   readOnly
                 />
-                <Button type="button" variant="solid" startIcon={<Send size={15} />}>
+                <Button type="button" variant="solid">
+                  <Send aria-hidden="true" />
                   {t('邀请', 'Invite')}
                 </Button>
               </div>

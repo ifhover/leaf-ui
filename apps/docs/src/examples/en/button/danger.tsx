@@ -1,26 +1,27 @@
-import { Button, Flex, Grid, Text } from '@ifhover/leaf-ui';
-import { Fragment } from 'react';
+import { Button, ButtonGroup, Dropdown, Flex } from '@ifhover/leaf-ui';
+import { ChevronDown, Trash2 } from 'lucide-react';
 
-const options = [
-  { value: 'outline', label: 'Outline' },
-  { value: 'solid', label: 'Solid' },
-  { value: 'text', label: 'Text' },
-  { value: 'link', label: 'Link' },
-] as const;
+const items = [
+  { key: 'trash', label: 'Move to trash' },
+  { key: 'purge', label: 'Delete permanently', danger: true },
+];
 
 export function ButtonDanger() {
   return (
-    <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
-      {options.map(({ value, label }) => (
-        <Fragment key={value}>
-          <Text tone="muted">{label}</Text>
-          <Flex align="center" wrap>
-            <Button danger variant={value}>
-              Delete
-            </Button>
-          </Flex>
-        </Fragment>
-      ))}
-    </Grid>
+    <Flex align="center" gap={12} wrap>
+      <Button variant="danger">Delete project</Button>
+      <Button variant="danger">
+        <Trash2 />
+        Delete
+      </Button>
+      <ButtonGroup variant="danger">
+        <Button>Delete</Button>
+        <Dropdown items={items}>
+          <Button size="icon" aria-label="More delete actions">
+            <ChevronDown />
+          </Button>
+        </Dropdown>
+      </ButtonGroup>
+    </Flex>
   );
 }

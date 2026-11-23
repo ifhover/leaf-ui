@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react';
 import { type FieldsetHTMLAttributes, forwardRef, type ReactNode, useRef } from 'react';
-import { ButtonControl } from '../button/button';
+import { ButtonControl, toIconButtonSize } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useFormField } from '../form/form';
 import { classes } from '../shared/classes';
@@ -65,14 +65,13 @@ export const InputSearch = forwardRef<HTMLInputElement, InputSearchProps>(
         <ButtonControl
           type="button"
           variant="solid"
-          size={size}
+          size={enterButton ? size : toIconButtonSize(size)}
           loading={loading}
           disabled={disabled}
-          startIcon={enterButton ? undefined : <Search size={16} />}
           aria-label={enterButton ? undefined : t('common.searchAction')}
           onClick={() => onSearch?.(current)}
         >
-          {enterButton}
+          {enterButton || <Search aria-hidden="true" />}
         </ButtonControl>
       </div>
     );

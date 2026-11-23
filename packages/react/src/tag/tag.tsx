@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import {
+  forwardRef,
   type HTMLAttributes,
   type MouseEvent,
   type ReactNode,
@@ -11,6 +12,7 @@ import { resolveColorRoles } from '../colors';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
+import { useMergedRef } from '../shared/field';
 import { inertProps } from '../shared/inert';
 import { usePresence } from '../shared/presence';
 import type { ControlSize } from '../shared/types';
@@ -50,7 +52,10 @@ function tagVariables(
     '--leaf-tag-solid-foreground': 'var(--leaf-color-on-primary)',
   };
 }
-export function Tag(rawProps: TagProps) {
+export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
+  rawProps: TagProps,
+  forwardedRef,
+) {
   const {
     color = 'default',
     variant = 'soft',
@@ -66,6 +71,7 @@ export function Tag(rawProps: TagProps) {
   const { messages, theme } = useLeafConfig();
   const [closed, setClosed] = useState(false);
   const root = useRef<HTMLSpanElement>(null);
+  const ref = useMergedRef(root, forwardedRef);
   const present = usePresence(!closed, root);
   // Keep removed semantic aliases predictable while the public presets stay neutral plus four statuses.
   const normalizedColor = color === 'primary' ? 'default' : color === 'error' ? 'danger' : color;
@@ -84,7 +90,7 @@ export function Tag(rawProps: TagProps) {
     <span
       {...props}
       {...inertProps(closed)}
-      ref={root}
+      ref={ref}
       data-state={closed ? 'closing' : undefined}
       aria-hidden={closed || props['aria-hidden']}
       className={classes('leaf-tag', `leaf-tag--${variant}`, `leaf-tag--${size}`, className)}
@@ -130,4 +136,5 @@ export function Tag(rawProps: TagProps) {
       )}
     </span>
   );
-}
+});
+Tag.displayName = 'Tag';

@@ -20,6 +20,7 @@ Define choices with `RadioGroup.options`. Give the group a name with `label`, `a
 <ComponentExample exampleId="basic" preview={<RadioBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/radio/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -35,17 +36,19 @@ Control the selected string with `value`, and read `event.target.value` in `onCh
 <ComponentExample exampleId="controlled" preview={<RadioControlled />} fileName="controlled.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/radio/controlled.tsx"
+
 ```
 
 </ComponentExample>
 
 ### Vertical layout
 
-Set `direction="vertical"` for a vertical group.
+Set `direction="vertical"` for a vertical group. Plain options also support supporting text through `option.description` or `Radio.description`.
 
 <ComponentExample exampleId="vertical" preview={<RadioVertical />} fileName="vertical.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/radio/vertical.tsx"
+
 ```
 
 </ComponentExample>
@@ -54,11 +57,12 @@ Set `direction="vertical"` for a vertical group.
 
 ### Card choices
 
-Set `variant="card"` for choices with icons and descriptions.
+Set `variant="card"` to render choices as clickable cards, optionally with icons and descriptions.
 
 <ComponentExample exampleId="surfaces" preview={<RadioCards />} fileName="surfaces.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/radio/surfaces.tsx"
+
 ```
 
 </ComponentExample>
@@ -70,6 +74,7 @@ Use `variant="list"` for a shared list. Keep `extra` to non-interactive status, 
 <ComponentExample exampleId="list" preview={<RadioList />} fileName="list.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/radio/list.tsx"
+
 ```
 
 </ComponentExample>

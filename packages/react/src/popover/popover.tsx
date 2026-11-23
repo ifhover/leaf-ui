@@ -38,6 +38,7 @@ export interface PopoverProps extends PopupOptions {
     | 'right'
     | 'right-start'
     | 'right-end';
+  arrow?: boolean;
   open?: boolean;
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
@@ -57,6 +58,7 @@ export function PopoverControl({
   content,
   trigger: mode = 'click',
   placement = 'top',
+  arrow = true,
   open: controlled,
   defaultOpen = false,
   onOpenChange,
@@ -177,7 +179,7 @@ export function PopoverControl({
         id={id}
         role={mode === 'click' ? 'dialog' : 'tooltip'}
         tabIndex={-1}
-        data-arrow="true"
+        arrow={arrow}
         placement={popupPlacement ?? placement}
         width={width}
         maxWidth={maxWidth}

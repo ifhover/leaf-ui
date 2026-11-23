@@ -1,8 +1,10 @@
+import { Image as ImageIcon } from 'lucide-react';
 import { type HTMLAttributes, useEffect, useLayoutEffect, useRef } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { animateMotion, useMotionEnabled } from '../shared/motion';
+import type { ControlSize } from '../shared/types';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
@@ -103,7 +105,152 @@ export function SkeletonControl({
   );
 }
 
-export function Skeleton(rawProps: SkeletonProps) {
+export interface SkeletonAvatarProps extends HTMLAttributes<HTMLDivElement> {
+  size?: ControlSize | number;
+  shape?: 'circle' | 'square';
+  active?: boolean;
+}
+export function SkeletonAvatar(rawProps: SkeletonAvatarProps) {
+  const {
+    size = 'md',
+    shape = 'circle',
+    active = true,
+    className,
+    style,
+    ...props
+  } = useComponentProps('SkeletonAvatar', rawProps);
+  const { messages } = useLeafConfig();
+  const dimensions =
+    typeof size === 'number' && Number.isFinite(size) ? Math.max(8, size) : undefined;
+  return (
+    <div
+      {...props}
+      role="status"
+      aria-label={props['aria-label'] ?? messages.common.loading}
+      className={classes(
+        'leaf-skeleton-element',
+        'leaf-skeleton-element--avatar',
+        typeof size === 'string' && `leaf-skeleton-element--${size}`,
+        `leaf-skeleton-element--shape-${shape}`,
+        active && 'leaf-skeleton-element--active',
+        className,
+      )}
+      style={{
+        ...(dimensions ? { width: dimensions, height: dimensions } : {}),
+        ...style,
+      }}
+    />
+  );
+}
+
+export interface SkeletonButtonProps extends HTMLAttributes<HTMLDivElement> {
+  size?: ControlSize;
+  shape?: 'default' | 'circle' | 'round';
+  block?: boolean;
+  active?: boolean;
+}
+export function SkeletonButton(rawProps: SkeletonButtonProps) {
+  const {
+    size = 'md',
+    shape = 'default',
+    block = false,
+    active = true,
+    className,
+    ...props
+  } = useComponentProps('SkeletonButton', rawProps);
+  const { messages } = useLeafConfig();
+  return (
+    <div
+      {...props}
+      role="status"
+      aria-label={props['aria-label'] ?? messages.common.loading}
+      className={classes(
+        'leaf-skeleton-element',
+        'leaf-skeleton-element--button',
+        `leaf-skeleton-element--${size}`,
+        `leaf-skeleton-element--shape-${shape}`,
+        block && 'leaf-skeleton-element--block',
+        active && 'leaf-skeleton-element--active',
+        className,
+      )}
+    />
+  );
+}
+
+export interface SkeletonInputProps extends HTMLAttributes<HTMLDivElement> {
+  size?: ControlSize;
+  block?: boolean;
+  active?: boolean;
+}
+export function SkeletonInput(rawProps: SkeletonInputProps) {
+  const {
+    size = 'md',
+    block = false,
+    active = true,
+    className,
+    ...props
+  } = useComponentProps('SkeletonInput', rawProps);
+  const { messages } = useLeafConfig();
+  return (
+    <div
+      {...props}
+      role="status"
+      aria-label={props['aria-label'] ?? messages.common.loading}
+      className={classes(
+        'leaf-skeleton-element',
+        'leaf-skeleton-element--input',
+        `leaf-skeleton-element--${size}`,
+        block && 'leaf-skeleton-element--block',
+        active && 'leaf-skeleton-element--active',
+        className,
+      )}
+    />
+  );
+}
+
+export interface SkeletonImageProps extends HTMLAttributes<HTMLDivElement> {
+  size?: number;
+  active?: boolean;
+}
+export function SkeletonImage(rawProps: SkeletonImageProps) {
+  const {
+    size,
+    active = true,
+    className,
+    style,
+    ...props
+  } = useComponentProps('SkeletonImage', rawProps);
+  const { messages } = useLeafConfig();
+  const dimensions = size !== undefined && Number.isFinite(size) ? Math.max(24, size) : undefined;
+  return (
+    <div
+      {...props}
+      role="status"
+      aria-label={props['aria-label'] ?? messages.common.loading}
+      className={classes(
+        'leaf-skeleton-element',
+        'leaf-skeleton-element--image',
+        active && 'leaf-skeleton-element--active',
+        className,
+      )}
+      style={{
+        ...(dimensions ? { width: dimensions, height: dimensions } : {}),
+        ...style,
+      }}
+    >
+      <ImageIcon aria-hidden="true" />
+    </div>
+  );
+}
+
+function SkeletonRoot(rawProps: SkeletonProps) {
   const props = useComponentProps('Skeleton', rawProps);
   return <SkeletonControl {...props} />;
 }
+
+export const Skeleton = Object.assign(SkeletonRoot, {
+  Avatar: SkeletonAvatar,
+  Button: SkeletonButton,
+  Input: SkeletonInput,
+  Image: SkeletonImage,
+});

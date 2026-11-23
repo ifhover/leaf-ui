@@ -607,9 +607,9 @@ const UploadControl = forwardRef<UploadHandle, UploadControlProps>(function Uplo
             variant="outline"
             disabled={disabled}
             loading={validating}
-            startIcon={<UploadIcon size={16} />}
             onClick={() => input.current?.click()}
           >
+            <UploadIcon aria-hidden="true" />
             {children ?? t('upload.chooseFiles')}
           </ButtonControl>
           {hint && <span className="leaf-upload__hint">{hint}</span>}
@@ -650,9 +650,8 @@ const UploadControl = forwardRef<UploadHandle, UploadControlProps>(function Uplo
                 {file.status === 'uploading' && (
                   <ButtonControl
                     variant="text"
-                    size="sm"
+                    size="icon-sm"
                     disabled={disabled}
-                    startIcon={<X size={15} />}
                     aria-label={format('upload.cancelUpload', { name: fileName(file) })}
                     onClick={() => {
                       if (!file.uid) return;
@@ -660,19 +659,22 @@ const UploadControl = forwardRef<UploadHandle, UploadControlProps>(function Uplo
                       jobs.current.delete(file.uid);
                       update(file.uid, { status: 'cancelled' }, 'cancel');
                     }}
-                  />
+                  >
+                    <X aria-hidden="true" />
+                  </ButtonControl>
                 )}
                 {['error', 'cancelled', 'ready'].includes(file.status ?? '') &&
                   (action || customRequest) &&
                   file.originFile && (
                     <ButtonControl
                       variant="text"
-                      size="sm"
+                      size="icon-sm"
                       disabled={disabled}
-                      startIcon={<RotateCw size={15} />}
                       aria-label={format('upload.retryUpload', { name: fileName(file) })}
                       onClick={() => void start(file as UploadFile)}
-                    />
+                    >
+                      <RotateCw aria-hidden="true" />
+                    </ButtonControl>
                   )}
                 {actions}
               </>

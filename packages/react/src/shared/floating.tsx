@@ -1,6 +1,8 @@
 import {
   autoUpdate,
   flip,
+  type Middleware,
+  type OffsetOptions,
   offset,
   type Placement,
   shift,
@@ -19,6 +21,7 @@ import {
   useEffect,
   useId,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -27,7 +30,7 @@ import { tabbable } from 'tabbable';
 import { useLeafConfig } from '../config-provider/context';
 import { ScrollbarControl } from '../scrollbar/scrollbar';
 import type { LeafThemeStyle } from '../theme';
-import { composedEventTarget, composedParent, deepActiveElement } from './dom';
+import { composedEventTarget, composedParent, deepActiveElement, inheritedAttribute } from './dom';
 import { assignRef } from './field';
 import { inertProps } from './inert';
 import { OverlayOwner } from './overlay-owner';
@@ -92,12 +95,14 @@ interface FloatingPanelProps extends HTMLAttributes<HTMLDivElement> {
   open: boolean;
   triggerRef: RefObject<HTMLElement | null>;
   panelRef: RefObject<HTMLDivElement | null>;
+  arrow?: boolean;
   matchWidth?: boolean;
   width?: CSSProperties['width'];
   minWidth?: CSSProperties['minWidth'] | 'trigger';
   maxWidth?: CSSProperties['maxWidth'];
   maxHeight?: CSSProperties['maxHeight'];
   placement?: Placement;
+  popupOffset?: OffsetOptions;
   sideFallback?: boolean;
   resetSurfaceGeometry?: boolean;
   container?: Element | DocumentFragment | (() => Element | DocumentFragment);
@@ -105,17 +110,80 @@ interface FloatingPanelProps extends HTMLAttributes<HTMLDivElement> {
   position?: { x: number; y: number };
 }
 
+function createArrowMiddleware(enabled: boolean): Middleware {
+  return {
+    name: 'leafArrow',
+    fn({ x, y, placement, rects, elements }) {
+      if (!enabled) return {};
+      const side = placement.split('-')[0];
+      const horizontal = side === 'top' || side === 'bottom';
+      const floatSize = horizontal ? rects.floating.width : rects.floating.height;
+      if (floatSize <= 0) return {};
+
+      const computed =
+        typeof getComputedStyle === 'function' ? getComputedStyle(elements.floating) : null;
+      const borderStart =
+        Number.parseFloat(computed?.[horizontal ? 'borderLeftWidth' : 'borderTopWidth'] ?? '') || 0;
+      const borderEnd =
+        Number.parseFloat(
+          computed?.[horizontal ? 'borderRightWidth' : 'borderBottomWidth'] ?? '',
+        ) || 0;
+      const innerSize = floatSize - borderStart - borderEnd;
+      if (innerSize <= 0) return {};
+
+      const refStart = horizontal ? rects.reference.x : rects.reference.y;
+      const refSize = horizontal ? rects.reference.width : rects.reference.height;
+      const floatStart = horizontal ? x : y;
+      const overlapStart = Math.max(refStart, floatStart);
+      const overlapEnd = Math.min(refStart + refSize, floatStart + floatSize);
+      // 对齐触发元素与浮层重合区的中点；未重叠时按触发元素中心向靠近一侧夹紧。
+      const target =
+        overlapStart <= overlapEnd ? (overlapStart + overlapEnd) / 2 : refStart + refSize / 2;
+      const rawCenter = target - floatStart - borderStart;
+
+      // 依贴边两侧圆角与箭头半宽限定活动区间，避免箭头跨越面板圆角弧段。
+      const radiusStartKey =
+        side === 'top'
+          ? 'borderBottomLeftRadius'
+          : side === 'bottom'
+            ? 'borderTopLeftRadius'
+            : side === 'left'
+              ? 'borderTopRightRadius'
+              : 'borderTopLeftRadius';
+      const radiusEndKey =
+        side === 'top'
+          ? 'borderBottomRightRadius'
+          : side === 'bottom'
+            ? 'borderTopRightRadius'
+            : side === 'left'
+              ? 'borderBottomRightRadius'
+              : 'borderBottomLeftRadius';
+      const radiusStart = Number.parseFloat(computed?.[radiusStartKey] ?? '') || 0;
+      const radiusEnd = Number.parseFloat(computed?.[radiusEndKey] ?? '') || 0;
+      const arrowSize =
+        Number.parseFloat(computed?.getPropertyValue('--leaf-floating-arrow-size') ?? '') || 10;
+      const arrowHalf = Math.round(arrowSize * Math.SQRT1_2);
+      const min = Math.max(0, radiusStart - borderStart) + arrowHalf;
+      const max = innerSize - (Math.max(0, radiusEnd - borderEnd) + arrowHalf);
+      const clamped = min <= max ? Math.min(Math.max(rawCenter, min), max) : innerSize / 2;
+      return horizontal ? { data: { x: clamped } } : { data: { y: clamped } };
+    },
+  };
+}
+
 /** Position a lazily mounted portal, preserving the trigger's scoped theme. */
 export function FloatingPanel({
   open,
   triggerRef,
   panelRef,
+  arrow,
   matchWidth,
   width,
   minWidth,
   maxWidth,
   maxHeight,
   placement = 'bottom-start',
+  popupOffset = 6,
   sideFallback = false,
   resetSurfaceGeometry = false,
   container,
@@ -133,11 +201,15 @@ export function FloatingPanel({
   const present = usePresence(open, floatingRef);
   const [theme, setTheme] = useState<LeafThemeStyle>({});
   const [inheritedMotion, setInheritedMotion] = useState<string>();
+  const [inheritedTheme, setInheritedTheme] = useState<string>();
   const openRef = useRef(open);
   openRef.current = open;
   const previousPosition = useRef<CSSProperties>({});
+  const previousArrowStyle = useRef<LeafThemeStyle>({});
   const closingContent = useRef(children);
   const referenceElement = triggerRef.current;
+  const hasArrow = arrow ?? (props as { 'data-arrow'?: unknown })['data-arrow'] === 'true';
+  const arrowMiddleware = useMemo(() => createArrowMiddleware(hasArrow), [hasArrow]);
   if (open) closingContent.current = children;
   const {
     refs,
@@ -145,6 +217,7 @@ export function FloatingPanel({
     isPositioned,
     update,
     placement: resolvedPlacement,
+    middlewareData,
   } = useFloating({
     open,
     placement,
@@ -156,7 +229,7 @@ export function FloatingPanel({
         if (openRef.current) update();
       }),
     middleware: [
-      offset(6),
+      offset(popupOffset, [popupOffset]),
       flip({ padding: 12, fallbackAxisSideDirection: sideFallback ? 'end' : 'none' }),
       shift({ padding: 12 }),
       size(
@@ -202,9 +275,21 @@ export function FloatingPanel({
           style?.maxHeight,
         ],
       ),
+      arrowMiddleware,
     ],
   });
-  if (open) previousPosition.current = floatingStyles;
+  const arrowData = middlewareData.leafArrow as { x?: number; y?: number } | undefined;
+  const arrowStyle: LeafThemeStyle = {};
+  if (typeof arrowData?.x === 'number') {
+    arrowStyle['--leaf-floating-arrow-x'] = `${arrowData.x}px`;
+  }
+  if (typeof arrowData?.y === 'number') {
+    arrowStyle['--leaf-floating-arrow-y'] = `${arrowData.y}px`;
+  }
+  if (open) {
+    previousPosition.current = floatingStyles;
+    previousArrowStyle.current = arrowStyle;
+  }
   const setPanelRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (node) popupNodes.set(popupId, node);
@@ -239,10 +324,8 @@ export function FloatingPanel({
         : trigger,
     );
     const syncTheme = () => {
-      let motionAncestor: HTMLElement | null = trigger;
-      while (motionAncestor && !motionAncestor.hasAttribute('data-leaf-motion'))
-        motionAncestor = composedParent(motionAncestor);
-      setInheritedMotion(motionAncestor?.getAttribute('data-leaf-motion') ?? undefined);
+      setInheritedMotion(inheritedAttribute(trigger, 'data-leaf-motion'));
+      setInheritedTheme(inheritedAttribute(trigger, 'data-leaf-theme'));
       const variables = readThemeVariables(trigger);
       if (resetSurfaceGeometry) {
         // Popups solve their own corners, not the enclosing card/field's inset
@@ -299,16 +382,29 @@ export function FloatingPanel({
         data-leaf-owner={owner}
         data-leaf-popup={popupId}
         data-leaf-popup-parent={parentPopup}
+        data-leaf-theme={config.theme.appearance ?? inheritedTheme}
         data-leaf-motion={config.theme.motion === false ? 'off' : inheritedMotion}
         data-side={resolvedPlacement.split('-')[0]}
         data-align={resolvedPlacement.split('-')[1] ?? 'center'}
+        data-arrow={
+          arrow === undefined
+            ? (props as { 'data-arrow'?: string })['data-arrow']
+            : arrow
+              ? 'true'
+              : 'false'
+        }
         dir={props.dir ?? theme.direction ?? config.direction}
         lang={props.lang ?? config.locale}
         data-state={open ? 'open' : 'closing'}
         data-positioned={isPositioned || !open}
         aria-hidden={!open || undefined}
         {...inertProps(!open)}
-        style={{ ...theme, ...style, ...(open ? floatingStyles : previousPosition.current) }}
+        style={{
+          ...theme,
+          ...(open ? arrowStyle : previousArrowStyle.current),
+          ...style,
+          ...(open ? floatingStyles : previousPosition.current),
+        }}
       >
         {render
           ? render(open ? children : closingContent.current)

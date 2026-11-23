@@ -86,11 +86,12 @@
     "nextPage": "下一頁",
     "page": "頁",
     "pageSize": "每頁條數",
+    "pageSizeOption": "{count} 條/頁",
     "jumpTo": "跳至",
     "pageBack": "向前跳 5 頁",
     "pageForward": "向後跳 5 頁",
     "pageLabel": "頁 {page}",
-    "pageSizeOption": "{count} 條/頁",
+    "rowsPerPage": "每頁顯示",
     "total": "共 {total} 條"
   },
   "input": {
@@ -251,7 +252,8 @@
   },
   "qrCode": {
     "qrCode": "二維碼",
-    "refreshCode": "重新整理二維碼"
+    "refreshCode": "重新整理二維碼",
+    "expired": "二維碼已過期"
   },
   "scrollbar": {
     "verticalScrollbar": "縱向捲軸",
@@ -274,8 +276,6 @@
     "collapseRow": "收起行: {label}",
     "expandRow": "展開行: {label}",
     "expandRows": "展開行",
-    "expandDetails": "展開詳情",
-    "collapseDetails": "收起詳情",
     "sortAscending": "升序排序",
     "sortDescending": "降序排序",
     "clearSorting": "取消排序"
@@ -334,5 +334,8 @@
     "dropped": "已放置 {label}",
     "cancelled": "已取消排序",
     "outside": "沒有可放置的目標"
+  },
+  "drawer": {
+    "resize": "調整抽屜大小"
   }
 }

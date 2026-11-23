@@ -6,7 +6,6 @@ import { ResultControl as Result } from '../result/result';
 export interface EmptyProps extends HTMLAttributes<HTMLDivElement> {
   image?: ReactNode;
   description?: ReactNode;
-  size?: 'sm' | 'md';
 }
 /** @deprecated Use Result with status="empty" instead. */
 export function Empty(rawProps: EmptyProps) {

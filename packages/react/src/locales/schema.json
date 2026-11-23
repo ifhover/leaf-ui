@@ -324,19 +324,23 @@
         },
         "previousPage": {
           "type": "string",
-          "description": "English: Previous page"
+          "description": "English: Previous"
         },
         "nextPage": {
           "type": "string",
-          "description": "English: Next page"
+          "description": "English: Next"
         },
         "page": {
           "type": "string",
-          "description": "English: Page"
+          "description": "English: page"
         },
         "pageSize": {
           "type": "string",
           "description": "English: Page size"
+        },
+        "pageSizeOption": {
+          "type": "string",
+          "description": "English: {count} / page"
         },
         "jumpTo": {
           "type": "string",
@@ -354,9 +358,9 @@
           "type": "string",
           "description": "English: Page {page}"
         },
-        "pageSizeOption": {
+        "rowsPerPage": {
           "type": "string",
-          "description": "English: {count} / page"
+          "description": "English: Rows per page"
         },
         "total": {
           "type": "string",
@@ -951,6 +955,10 @@
         "refreshCode": {
           "type": "string",
           "description": "English: Refresh code"
+        },
+        "expired": {
+          "type": "string",
+          "description": "English: QR code expired"
         }
       }
     },
@@ -1031,14 +1039,6 @@
         "expandRows": {
           "type": "string",
           "description": "English: Expand rows"
-        },
-        "expandDetails": {
-          "type": "string",
-          "description": "English: Expand details"
-        },
-        "collapseDetails": {
-          "type": "string",
-          "description": "English: Collapse details"
         },
         "sortAscending": {
           "type": "string",
@@ -1257,6 +1257,16 @@
         "outside": {
           "type": "string",
           "description": "English: No drop target"
+        }
+      }
+    },
+    "drawer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "resize": {
+          "type": "string",
+          "description": "English: Resize drawer"
         }
       }
     }

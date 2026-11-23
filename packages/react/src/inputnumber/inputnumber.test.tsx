@@ -86,4 +86,78 @@ describe('InputNumber', () => {
     });
     expect(input).toHaveValue('2');
   });
+
+  it('renders external decrease and increase buttons around the field in split variant', async () => {
+    const { container, rerender } = render(
+      <ConfigProvider components={{ InputNumber: { variant: 'split' } }}>
+        <InputNumber aria-label="Split count" defaultValue={1} min={0} max={2} size="sm" />
+      </ConfigProvider>,
+    );
+    const root = container.querySelector('.leaf-input-number') as HTMLElement;
+    const field = container.querySelector('.leaf-input-number__field') as HTMLElement;
+    const decrease = screen.getByRole('button', { name: '减少数值' });
+    const increase = screen.getByRole('button', { name: '增加数值' });
+    const input = screen.getByRole('spinbutton', { name: 'Split count' });
+
+    expect(root).toHaveClass('leaf-input-number--split', 'leaf-input-number--sm');
+    expect(field).toHaveClass('leaf-input-number__field--sm');
+    expect(field).not.toContainElement(decrease);
+    expect(field).not.toContainElement(increase);
+    expect(container.querySelector('.leaf-input-number__controls')).toBeNull();
+    expect(decrease).toHaveClass('leaf-button', 'leaf-button--outline', 'leaf-button--icon-sm');
+    expect(increase).toHaveClass('leaf-button', 'leaf-button--outline', 'leaf-button--icon-sm');
+
+    await userEvent.click(increase);
+    expect(input).toHaveValue('2');
+    expect(input).toHaveFocus();
+    expect(increase).toBeDisabled();
+    expect(decrease).toBeEnabled();
+
+    await userEvent.click(decrease);
+    await userEvent.click(decrease);
+    expect(input).toHaveValue('0');
+    expect(decrease).toBeDisabled();
+
+    rerender(
+      <InputNumber
+        aria-label="Exact split"
+        variant="split"
+        stringMode
+        defaultValue="1.05"
+        step="0.05"
+        precision={2}
+      />,
+    );
+    await userEvent.click(screen.getByRole('button', { name: '增加数值' }));
+    expect(screen.getByRole('spinbutton', { name: 'Exact split' })).toHaveValue('1.10');
+
+    rerender(<InputNumber aria-label="Hidden controls" variant="split" controls={false} />);
+    expect(screen.queryByRole('button')).toBeNull();
+  });
+
+  it('exposes spinbutton numeric bounds in stringMode and clears form validation after stepping', async () => {
+    render(
+      <ConfigProvider locale="en-US">
+        <Form>
+          <FormField label="Exact quota">
+            <InputNumber stringMode min="1" max="10" defaultValue="15" />
+          </FormField>
+        </Form>
+      </ConfigProvider>,
+    );
+    const input = screen.getByRole('spinbutton', { name: 'Exact quota' });
+    expect(input).toHaveAttribute('aria-valuemin', '1');
+    expect(input).toHaveAttribute('aria-valuemax', '10');
+    expect(input).toHaveAttribute('aria-valuenow', '15');
+    expect(input).toHaveAttribute('aria-valuetext', '15');
+
+    fireEvent.invalid(input);
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Enter a valid number within the allowed range',
+    );
+    await userEvent.click(screen.getByRole('button', { name: 'Decrease value' }));
+    expect(input).toHaveValue('10');
+    expect(input).toHaveAttribute('aria-valuenow', '10');
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
 });

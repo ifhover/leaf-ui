@@ -1,6 +1,7 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { InputNumberBasic } from '../../src/examples/input-number/basic';
 import { InputNumberUnits } from '../../src/examples/input-number/units';
+import { InputNumberSplit } from '../../src/examples/input-number/split';
 import { InputNumberStates } from '../../src/examples/input-number/states';
 import { InputNumberFormatting } from '../../src/examples/input-number/formatting';
 import { InputNumberExact } from '../../src/examples/input-number/exact';
@@ -20,6 +21,7 @@ export const leafDoc = { component: 'InputNumber', primaryApi: 'InputNumberProps
 <ComponentExample exampleId="basic" preview={<InputNumberBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/input-number/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -35,6 +37,19 @@ export const leafDoc = { component: 'InputNumber', primaryApi: 'InputNumberProps
 <ComponentExample exampleId="units" preview={<InputNumberUnits />} fileName="units.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/input-number/units.tsx"
+
+```
+
+</ComponentExample>
+
+### 两侧按钮
+
+设置 `variant="split"` 时，减少、增加按钮独立展示在输入框左右两侧，输入值居中显示。
+
+<ComponentExample exampleId="split" preview={<InputNumberSplit />} fileName="split.tsx" width={360}>
+
+```tsx lineNumbers file="../../src/examples/input-number/split.tsx"
+
 ```
 
 </ComponentExample>
@@ -46,6 +61,7 @@ export const leafDoc = { component: 'InputNumber', primaryApi: 'InputNumberProps
 <ComponentExample exampleId="states" preview={<InputNumberStates />} fileName="states.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/input-number/states.tsx"
+
 ```
 
 </ComponentExample>
@@ -59,6 +75,7 @@ export const leafDoc = { component: 'InputNumber', primaryApi: 'InputNumberProps
 <ComponentExample exampleId="formatting" preview={<InputNumberFormatting />} fileName="formatting.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/input-number/formatting.tsx"
+
 ```
 
 </ComponentExample>
@@ -70,6 +87,7 @@ export const leafDoc = { component: 'InputNumber', primaryApi: 'InputNumberProps
 <ComponentExample exampleId="exact" preview={<InputNumberExact />} fileName="exact.tsx" width={360}>
 
 ```tsx lineNumbers file="../../src/examples/input-number/exact.tsx"
+
 ```
 
 </ComponentExample>
@@ -94,6 +112,7 @@ export const leafDoc = { component: 'InputNumber', primaryApi: 'InputNumberProps
 | `step` | `number \| string` | `1` | 增减步长 |
 | `precision` | `number` | — | 小数精度，范围 0–15 |
 | `controls` | `boolean` | `true` | 展示增减按钮 |
+| `variant` | `'default' \| 'split'` | `'default'` | 步进按钮布局样式；split 在输入框左右两侧分别展示减少、增加按钮。 |
 | `keyboard` | `boolean` | `true` | 支持上下方向键增减 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 控件尺寸 |
 | `status` | `'error' \| 'warning'` | — | 校验状态 |

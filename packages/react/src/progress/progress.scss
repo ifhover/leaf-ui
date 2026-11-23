@@ -1,6 +1,12 @@
 @layer leaf-ui {
   .leaf-progress {
     --leaf-progress-color: var(--leaf-color-primary);
+    --leaf-progress-travel-animation: leaf-progress-travel;
+    --leaf-progress-shimmer-animation: leaf-progress-shimmer;
+    &:dir(rtl) {
+      --leaf-progress-travel-animation: leaf-progress-travel-rtl;
+      --leaf-progress-shimmer-animation: leaf-progress-shimmer-rtl;
+    }
     &[data-status='success'] {
       --leaf-progress-color: var(--leaf-color-success);
     }
@@ -13,6 +19,7 @@
     color: var(--leaf-color-text);
     font: var(--leaf-font-size-sm)/var(--leaf-line-height-sm) var(--leaf-font-family);
     &__track {
+      position: relative;
       flex: 1;
       overflow: hidden;
       border-radius: 100px;
@@ -31,22 +38,29 @@
       transition:
         width var(--leaf-motion-slow) var(--leaf-motion-easing),
         background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      &--success {
+        position: absolute;
+        inset-block: 0;
+        inset-inline-start: 0;
+        background: var(--leaf-color-success);
+      }
     }
-    &[data-active] &__fill::after {
+    &[data-active] &__fill:not(&__fill--success)::after {
       // The light band is a motion/readability effect, not a theme color role.
       content: '';
       position: absolute;
       inset-block: 0;
-      left: 0;
+      inset-inline-start: 0;
       width: 65%;
       background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35), transparent);
       transform: translateX(-110%);
       pointer-events: none;
       animation: var(
         --leaf-motion-animation,
-        leaf-progress-shimmer calc(var(--leaf-motion-duration) * 12) linear infinite
+        var(--leaf-progress-shimmer-animation) calc(var(--leaf-motion-duration) * 12) linear
+          infinite
       );
-      animation-play-state: var(--leaf-motion-play-state, running);
+      animation-play-state: var(--leaf-motion-play-state);
     }
     &--dashboard {
       .leaf-progress__arc {
@@ -65,7 +79,7 @@
         flex: 1;
         background: var(--leaf-progress-trail, var(--leaf-color-surface-muted));
         border-radius: 100px;
-        transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+        transition: var(--leaf-action-transition);
         &[data-filled] {
           background: var(--leaf-progress-color);
         }
@@ -124,16 +138,17 @@
         width: 35% !important;
         animation: var(
           --leaf-motion-animation,
-          leaf-progress-travel calc(var(--leaf-motion-duration) * 7) ease-in-out infinite
+          var(--leaf-progress-travel-animation) calc(var(--leaf-motion-duration) * 7) ease-in-out
+            infinite
         );
-        animation-play-state: var(--leaf-motion-play-state, running);
+        animation-play-state: var(--leaf-motion-play-state);
       }
       &.leaf-progress--circle > svg {
         animation: var(
           --leaf-motion-animation,
-          leaf-progress-rotate calc(var(--leaf-motion-duration) * 5) linear infinite
+          leaf-spin calc(var(--leaf-motion-duration) * 5) linear infinite
         );
-        animation-play-state: var(--leaf-motion-play-state, running);
+        animation-play-state: var(--leaf-motion-play-state);
       }
     }
   }
@@ -145,9 +160,12 @@
       transform: translateX(390%);
     }
   }
-  @keyframes leaf-progress-rotate {
+  @keyframes leaf-progress-travel-rtl {
+    from {
+      transform: translateX(110%);
+    }
     to {
-      transform: rotate(360deg);
+      transform: translateX(-390%);
     }
   }
   @keyframes leaf-progress-shimmer {
@@ -155,25 +173,38 @@
       transform: translateX(265%);
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-progress__fill,
-    .leaf-progress__step,
-    .leaf-progress__arc {
-      transition: none;
+  @keyframes leaf-progress-shimmer-rtl {
+    from {
+      transform: translateX(110%);
     }
-    .leaf-progress[data-indeterminate='true'] {
-      .leaf-progress__fill,
-      &.leaf-progress--circle > svg {
-        animation: none;
-      }
-    }
-    .leaf-progress[data-active] .leaf-progress__fill::after {
-      animation: none;
+    to {
+      transform: translateX(-265%);
     }
   }
   @media (forced-colors: active) {
-    .leaf-progress__fill::after {
-      display: none;
+    .leaf-progress__track {
+      border: 1px solid CanvasText;
+      background: Canvas;
+    }
+    .leaf-progress__fill {
+      background: Highlight;
+      &::after {
+        display: none;
+      }
+    }
+    .leaf-progress__step {
+      border: 1px solid CanvasText;
+      background: Canvas;
+      &[data-filled] {
+        border-color: Highlight;
+        background: Highlight;
+      }
+    }
+    .leaf-progress__trail {
+      stroke: CanvasText;
+    }
+    .leaf-progress__arc {
+      stroke: Highlight;
     }
   }
 }

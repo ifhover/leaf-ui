@@ -56,6 +56,36 @@ describe('Extended inputs and form integration', () => {
     expect(screen.getByRole('textbox')).toHaveValue('12');
     expect(change).not.toHaveBeenCalled();
   });
+  it('keeps active slot at edited middle index, respects IME composition, and masks input type', () => {
+    const change = vi.fn();
+    const { container } = render(
+      <InputOTP length={6} mask defaultValue="1234" onChange={change} />,
+    );
+    const input = container.querySelector('.leaf-input-otp__input') as HTMLInputElement;
+    expect(input.type).toBe('password');
+    const slots = () => container.querySelectorAll('[data-otp-slot]');
+
+    // 在第 2 格编辑后，active 应顺移到第 3 格而不是跳至末尾已有长度处
+    fireEvent.focus(input);
+    input.setSelectionRange(1, 2);
+    fireEvent.change(input, { target: { value: '1934', selectionStart: 2 } });
+    expect(change).toHaveBeenLastCalledWith('1934');
+    expect(slots()[2]).toHaveAttribute('data-active');
+
+    // 全选区间应高亮对应槽位
+    input.setSelectionRange(0, 4);
+    fireEvent.select(input);
+    expect(slots()[0]).toHaveAttribute('data-selected');
+    expect(slots()[3]).toHaveAttribute('data-selected');
+
+    // IME 组字期间不提前提交半成品字符，组字结束后再规范化更新
+    change.mockClear();
+    fireEvent.compositionStart(input);
+    fireEvent.change(input, { target: { value: '1934ni', selectionStart: 6 } });
+    expect(change).not.toHaveBeenCalled();
+    fireEvent.compositionEnd(input, { target: { value: '19345', selectionStart: 5 } });
+    expect(change).toHaveBeenCalledWith('19345');
+  });
   it('formats mask typing, reports raw values, clears and resets to the initial raw value', async () => {
     const change = vi.fn();
     const { container } = render(
@@ -72,7 +102,7 @@ describe('Extended inputs and form integration', () => {
         <button type="reset">Reset</button>
       </form>,
     );
-    const input = screen.getByRole('textbox');
+    const input = screen.getByRole('textbox') as HTMLInputElement;
     expect(input).toHaveValue('123');
     await userEvent.type(input, '456');
     expect(input).toHaveValue('123-456');
@@ -82,8 +112,20 @@ describe('Extended inputs and form integration', () => {
     );
     await userEvent.click(screen.getByRole('button', { name: '清除输入' }));
     expect(input).toHaveValue('');
+    expect(change).toHaveBeenLastCalledWith('', '');
     await userEvent.click(screen.getByText('Reset'));
     await waitFor(() => expect(input).toHaveValue('123'));
+  });
+  it('avoids resetting caret to the end when editing inside the middle of a masked value', async () => {
+    const change = vi.fn();
+    render(<InputMask aria-label="Code" mask="00-00" defaultValue="1234" onChange={change} />);
+    const input = screen.getByRole('textbox') as HTMLInputElement;
+    expect(input).toHaveValue('12-34');
+    input.focus();
+    input.setSelectionRange(1, 2);
+    await userEvent.keyboard('9');
+    expect(input).toHaveValue('19-34');
+    expect(input.selectionStart).not.toBe(input.value.length);
   });
   it('synchronizes a controlled mask without firing user change callbacks', () => {
     const change = vi.fn();

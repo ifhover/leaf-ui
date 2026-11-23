@@ -31,11 +31,15 @@
       cursor: pointer;
       outline: 2px solid transparent;
       outline-offset: 3px;
+      &[data-neutral='true'] {
+        background: var(--leaf-color-text);
+        color: var(--leaf-color-surface);
+      }
       &[aria-pressed='true'] {
         outline-color: var(--leaf-site-muted);
       }
       &:focus-visible {
-        outline-color: var(--leaf-site-accent);
+        outline-color: var(--leaf-site-text);
       }
     }
   }
@@ -67,7 +71,7 @@
     strong {
       display: block;
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 600;
       letter-spacing: -0.3px;
     }
     small {
@@ -186,7 +190,7 @@
     margin: 0 0 6px;
     font-size: 24px;
     line-height: 1.4;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: -0.6px;
   }
   &__description {
@@ -245,7 +249,7 @@
     min-width: 0;
     + .leaf-workspace__project {
       padding-top: 20px;
-      border-top: 1px solid var(--leaf-color-border);
+      border-top: 1px solid var(--leaf-color-divider);
     }
   }
   &__project-heading {

@@ -2,7 +2,6 @@
 
 @layer leaf-ui {
   .leaf-splitter {
-    @include mixins.accent-soft-feedback-family;
     display: flex;
     width: 100%;
     min-width: 0;
@@ -14,9 +13,6 @@
       min-width: 0;
       min-height: 0;
       overflow: hidden;
-      &[data-collapsed] {
-        overflow: hidden;
-      }
     }
     &__handle {
       position: relative;
@@ -25,35 +21,39 @@
       cursor: col-resize;
       touch-action: none;
       transition: background var(--leaf-motion-duration);
-      &:hover,
-      &:focus-visible {
-        background: var(--leaf-accent-soft-border);
+      &:hover {
+        background: var(--leaf-color-border-hover);
       }
       &:focus-visible {
-        --leaf-focus-color: var(--leaf-color-primary);
-        background: var(--leaf-color-surface-muted);
         @include mixins.focus-ring;
         outline-offset: -2px;
       }
-      button {
-        @include mixins.action-transition;
+      &__toggles,
+      .leaf-splitter__toggles {
         position: absolute;
-        inset-inline-start: 50%;
+        left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        z-index: 1;
+      }
+      button {
+        @include mixins.action-transition;
         border: 0;
         border-radius: var(--leaf-radius-sm);
         background: var(--leaf-color-surface);
-        color: var(--leaf-color-primary);
+        color: var(--leaf-color-text-muted);
         width: 18px;
         height: 28px;
         cursor: pointer;
-        z-index: 1;
         &:hover {
-          background: var(--leaf-accent-soft-background);
+          color: var(--leaf-color-text);
+          background: var(--leaf-color-surface-muted);
         }
         &:active {
-          background: var(--leaf-accent-soft-border);
+          background: var(--leaf-color-option-hover);
         }
         &:focus-visible {
           @include mixins.focus-ring;
@@ -62,16 +62,13 @@
     }
     &--vertical &__handle {
       cursor: row-resize;
+      .leaf-splitter__toggles {
+        flex-direction: row;
+      }
       button {
         width: 28px;
         height: 18px;
       }
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-splitter__handle,
-    .leaf-splitter__handle button {
-      transition: none;
     }
   }
 }

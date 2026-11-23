@@ -224,14 +224,15 @@ export function TreeDragRow({
           {...listeners}
           ref={setActivatorNodeRef}
           variant="text"
-          size="sm"
+          size="icon-sm"
           disabled={node.disabled}
           className="leaf-tree__drag-handle"
-          startIcon={<GripVertical size={14} />}
           aria-label={format('tree.moveNode', {
             label: node.searchLabel ?? (typeof node.title === 'string' ? node.title : node.key),
           })}
-        />
+        >
+          <GripVertical aria-hidden="true" />
+        </ButtonControl>
       )}
       {children}
     </div>

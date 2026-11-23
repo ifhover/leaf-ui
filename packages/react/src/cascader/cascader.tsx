@@ -2,7 +2,12 @@ import { Check, ChevronDown, ChevronRight, LoaderCircle } from 'lucide-react';
 import {
   type ButtonHTMLAttributes,
   forwardRef,
+  type HTMLAttributes,
+  type KeyboardEvent,
+  type MouseEvent,
   type ReactNode,
+  type Ref,
+  type RefObject,
   useEffect,
   useId,
   useMemo,
@@ -82,6 +87,42 @@ export type CascaderProps = CascaderBaseProps &
   );
 
 const emptyPath: readonly string[] = [];
+
+function samePath(left: readonly string[], right: readonly string[]) {
+  return left.length === right.length && left.every((value, index) => value === right[index]);
+}
+
+function moveOptionFocus(
+  container: HTMLElement | null,
+  current: HTMLButtonElement | null,
+  key: string,
+  onTopEdge?: () => void,
+) {
+  const items = Array.from(
+    container?.querySelectorAll<HTMLButtonElement>('button:not(:disabled)') ?? [],
+  );
+  if (!items.length) return;
+  const index = current ? items.indexOf(current) : -1;
+  if (key === 'ArrowUp' && index === 0 && onTopEdge) {
+    onTopEdge();
+    return;
+  }
+  const next =
+    key === 'Home'
+      ? 0
+      : key === 'End'
+        ? items.length - 1
+        : key === 'ArrowDown'
+          ? index < 0
+            ? 0
+            : (index + 1) % items.length
+          : index <= 0
+            ? items.length - 1
+            : index - 1;
+  items[next]?.focus();
+  items[next]?.scrollIntoView?.({ block: 'nearest' });
+}
+
 function resolvePath(options: readonly CascaderOption[], values: readonly string[]) {
   const path: CascaderOption[] = [];
   let level = options;
@@ -127,7 +168,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
     cacheKey,
     tagWrap = true,
     maxTagCount,
-    popupWidth = 'trigger',
+    popupWidth = 'auto',
     popupMaxWidth,
     popupPlacement,
     popupClassName,
@@ -174,10 +215,14 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
   const id = idProp ?? field?.id;
   const ariaDescribedBy =
     [ariaDescribedByProp, field?.descriptionId].filter(Boolean).join(' ') || undefined;
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const triggerRef = useRef<HTMLButtonElement | HTMLDivElement>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const ref = useMergedRef(triggerRef, forwardedRef);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const ref = useMergedRef(
+    triggerRef as RefObject<HTMLElement | null>,
+    forwardedRef as Ref<HTMLElement | null>,
+  );
   const panelId = `${useId()}-cascader`;
   const [selectedValue, setSelectedValue] = useFieldValue<
     readonly string[] | readonly (readonly string[])[]
@@ -196,6 +241,9 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
     defaultOpen,
   );
   const [focusLevel, setFocusLevel] = useState<number | null>(null);
+  const initialDraftRef = useRef<readonly string[]>(emptyPath);
+  initialDraftRef.current = paths[0] ?? emptyPath;
+  const wasOpenRef = useRef(open);
   const selectedPaths = paths.map((path) => resolvePath(options, path));
   const caption = (path: CascaderOption[]) =>
     displayRender?.(
@@ -208,6 +256,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
           option.searchLabel ?? (typeof option.label === 'string' ? option.label : option.value),
       )
       .join(' / ');
+  const normalizedQuery = query.trim();
   const searchResults: CascaderOption[][] = [];
   const visit = (entries: readonly CascaderOption[], path: CascaderOption[]) => {
     for (const entry of entries) {
@@ -223,37 +272,67 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
             )
             .join(' / ')
             .toLocaleLowerCase()
-            .includes(query.toLocaleLowerCase())
+            .includes(normalizedQuery.toLocaleLowerCase())
         )
           searchResults.push(next);
       }
       if (entry.children) visit(entry.children, next);
     }
   };
-  if (query) visit(options, []);
+  if (normalizedQuery) visit(options, []);
   const draftOptions = resolvePath(options, draft);
   const levels: (readonly CascaderOption[])[] = [options];
   for (const option of draftOptions) if (option.children?.length) levels.push(option.children);
+  const prevLevelsRef = useRef(open ? levels.length : 0);
   const close = () => {
+    setQuery('');
+    setFocusLevel(null);
     setOpen(false);
   };
   useFloatingDismiss(open, close, triggerRef, panelRef);
   useEffect(() => {
-    if (open && focusLevel !== null) {
-      const column = panelRef.current?.querySelector<HTMLElement>(`[data-level='${focusLevel}']`);
-      const option =
-        column?.querySelector<HTMLButtonElement>('button[aria-selected="true"]:not(:disabled)') ??
-        column?.querySelector<HTMLButtonElement>('button:not(:disabled)');
-      option?.focus();
-      option?.scrollIntoView?.({ block: 'nearest' });
+    if (open && !wasOpenRef.current) {
+      setDraft(initialDraftRef.current);
+      if (showSearch) searchInputRef.current?.focus();
+      else setFocusLevel(0);
+    } else if (!open && wasOpenRef.current) {
+      setQuery('');
       setFocusLevel(null);
     }
-  }, [open, focusLevel]);
+    wasOpenRef.current = open;
+  }, [open, showSearch]);
+  useEffect(() => {
+    if (!open || focusLevel === null) return;
+    if (focusLevel >= levels.length) {
+      if (!loading.size) setFocusLevel(null);
+      return;
+    }
+    const column = panelRef.current?.querySelector<HTMLElement>(`[data-level='${focusLevel}']`);
+    const option =
+      column?.querySelector<HTMLButtonElement>('button[aria-selected="true"]:not(:disabled)') ??
+      column?.querySelector<HTMLButtonElement>('button:not(:disabled)');
+    option?.focus();
+    option?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+    setFocusLevel(null);
+  }, [open, focusLevel, levels.length, loading.size]);
+  useEffect(() => {
+    if (!open || normalizedQuery) {
+      prevLevelsRef.current = open ? levels.length : 0;
+      return;
+    }
+    if (levels.length > prevLevelsRef.current && prevLevelsRef.current > 0) {
+      const column = panelRef.current?.querySelector<HTMLElement>(
+        `[data-level='${levels.length - 1}']`,
+      );
+      column?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+    }
+    prevLevelsRef.current = levels.length;
+  }, [open, normalizedQuery, levels.length]);
 
   const openPanel = () => {
     if (disabled) return;
     setDraft(paths[0] ?? []);
-    setFocusLevel(0);
+    if (!showSearch) setFocusLevel(0);
     setOpen(true);
   };
   const choose = (option: CascaderOption, level: number) => {
@@ -305,10 +384,8 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
   const commit = (path: string[], leaf = true) => {
     if (disabled || readOnly) return;
     const next = multiple
-      ? paths.some((current) => JSON.stringify(current) === JSON.stringify(path))
-        ? paths
-            .filter((current) => JSON.stringify(current) !== JSON.stringify(path))
-            .map((current) => [...current])
+      ? paths.some((current) => samePath(current, path))
+        ? paths.filter((current) => !samePath(current, path)).map((current) => [...current])
         : [...paths.map((current) => [...current]), path]
       : path;
     setSelectedValue(next);
@@ -327,6 +404,102 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
       triggerRef.current?.focus();
     }
   };
+  const removePath = (targetPath: readonly string[]) => {
+    if (disabled || readOnly || !multiple) return;
+    const next = paths
+      .filter((current) => !samePath(current, targetPath))
+      .map((current) => [...current]);
+    setSelectedValue(next);
+    (onChange as ((value: string[][], options: CascaderOption[][]) => void) | undefined)?.(
+      next,
+      next.map((path) => resolvePath(options, path)),
+    );
+    triggerRef.current?.focus();
+  };
+  const triggerContent = (
+    <>
+      {multiple && selectedPaths.length ? (
+        <SelectionContent
+          className="leaf-cascader__value"
+          tagClassName="leaf-cascader__tag"
+          tagWrap={tagWrap}
+          maxTagCount={maxTagCount}
+          removeLabel={messages.common.remove}
+          items={selectedPaths.map((path, index) => ({
+            key: JSON.stringify(paths[index]),
+            label: caption(path),
+            text: path
+              .map(
+                (option) =>
+                  option.searchLabel ??
+                  (typeof option.label === 'string' ? option.label : option.value),
+              )
+              .join(' / '),
+            remove:
+              !disabled && !readOnly ? () => removePath(paths[index] ?? emptyPath) : undefined,
+          }))}
+        />
+      ) : (
+        <span
+          className={classes(
+            'leaf-cascader__value',
+            !selectedPaths.length && 'leaf-cascader__placeholder',
+          )}
+        >
+          {selectedPaths.length
+            ? selectedPaths.map((path, index) => (
+                <span key={paths[index]?.join('/')}>
+                  {index > 0 ? '、' : ''}
+                  {caption(path)}
+                </span>
+              ))
+            : placeholder || messages.cascader.placeholder}
+        </span>
+      )}
+      <ChevronDown size={16} aria-hidden="true" />
+    </>
+  );
+  const triggerClick = (event: MouseEvent<HTMLElement>) => {
+    if (disabled) return;
+    onClick?.(event as MouseEvent<HTMLButtonElement>);
+    if (!event.defaultPrevented) {
+      if (open) close();
+      else openPanel();
+    }
+  };
+  const triggerKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (disabled) return;
+    onKeyDown?.(event as KeyboardEvent<HTMLButtonElement>);
+    if (event.defaultPrevented) return;
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (!open) openPanel();
+    } else if (multiple && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      if (open) close();
+      else openPanel();
+    } else if (multiple && event.key === 'Backspace' && paths.length && !readOnly) {
+      event.preventDefault();
+      removePath(paths[paths.length - 1] ?? emptyPath);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      event.stopPropagation();
+      close();
+    }
+  };
+  const popupWidthMode =
+    popupWidth === 'auto' ? 'auto' : popupWidth === 'trigger' ? 'trigger' : 'fixed';
+  const popupMinWidth =
+    popupStyle?.minWidth ??
+    (popupWidth === 'auto' &&
+    popupStyle?.width === undefined &&
+    (showSearch || Boolean(normalizedQuery))
+      ? 'trigger'
+      : undefined);
+  const searchResultValues = searchResults.map((path) => path.map((option) => option.value));
+  const hasSelectedSearchResult = searchResultValues.some((valuePath) =>
+    paths.some((current) => samePath(current, valuePath)),
+  );
 
   return (
     <div
@@ -344,81 +517,53 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
       data-open={open ? '' : undefined}
       data-clearable={allowClear && selectedValue.length && !disabled && !readOnly ? '' : undefined}
     >
-      <button
-        {...props}
-        dir={props.dir ?? direction}
-        ref={ref}
-        type="button"
-        form={form}
-        className="leaf-cascader__trigger"
-        disabled={disabled}
-        role="combobox"
-        aria-expanded={open}
-        aria-haspopup="dialog"
-        aria-controls={panelId}
-        aria-label={ariaLabel}
-        id={id}
-        aria-describedby={ariaDescribedBy}
-        aria-invalid={status === 'error' ? true : ariaInvalid}
-        aria-required={required || undefined}
-        onClick={(event) => {
-          onClick?.(event);
-          if (!event.defaultPrevented) {
-            if (open) close();
-            else openPanel();
-          }
-        }}
-        onKeyDown={(event) => {
-          onKeyDown?.(event);
-          if (event.defaultPrevented) return;
-          if (event.key === 'ArrowDown') {
-            event.preventDefault();
-            if (!open) openPanel();
-          }
-          if (event.key === 'Escape') {
-            event.preventDefault();
-            event.stopPropagation();
-            close();
-          }
-        }}
-      >
-        {multiple && selectedPaths.length ? (
-          <SelectionContent
-            className="leaf-cascader__value"
-            tagClassName="leaf-cascader__tag"
-            tagWrap={tagWrap}
-            maxTagCount={maxTagCount}
-            items={selectedPaths.map((path, index) => ({
-              key: JSON.stringify(paths[index]),
-              label: caption(path),
-              text: path
-                .map(
-                  (option) =>
-                    option.searchLabel ??
-                    (typeof option.label === 'string' ? option.label : option.value),
-                )
-                .join(' / '),
-            }))}
-          />
-        ) : (
-          <span
-            className={classes(
-              'leaf-cascader__value',
-              !selectedPaths.length && 'leaf-cascader__placeholder',
-            )}
-          >
-            {selectedPaths.length
-              ? selectedPaths.map((path, index) => (
-                  <span key={paths[index]?.join('/')}>
-                    {index > 0 ? '、' : ''}
-                    {caption(path)}
-                  </span>
-                ))
-              : placeholder || messages.cascader.placeholder}
-          </span>
-        )}
-        <ChevronDown size={16} aria-hidden="true" />
-      </button>
+      {multiple ? (
+        // 多选触发器内部包含可点击移除的标签按钮，使用 div 承担 combobox 以避免嵌套原生 button
+        <div
+          {...(props as HTMLAttributes<HTMLDivElement>)}
+          dir={props.dir ?? direction}
+          ref={ref as Ref<HTMLDivElement>}
+          tabIndex={disabled ? -1 : (props.tabIndex ?? 0)}
+          className="leaf-cascader__trigger"
+          role="combobox"
+          aria-expanded={open}
+          aria-haspopup="dialog"
+          aria-controls={panelId}
+          aria-label={ariaLabel}
+          id={id}
+          aria-describedby={ariaDescribedBy}
+          aria-disabled={disabled || undefined}
+          aria-invalid={status === 'error' ? true : ariaInvalid}
+          aria-required={required || undefined}
+          onClick={triggerClick}
+          onKeyDown={triggerKeyDown}
+        >
+          {triggerContent}
+        </div>
+      ) : (
+        <button
+          {...props}
+          dir={props.dir ?? direction}
+          ref={ref as Ref<HTMLButtonElement>}
+          type="button"
+          form={form}
+          className="leaf-cascader__trigger"
+          disabled={disabled}
+          role="combobox"
+          aria-expanded={open}
+          aria-haspopup="dialog"
+          aria-controls={panelId}
+          aria-label={ariaLabel}
+          id={id}
+          aria-describedby={ariaDescribedBy}
+          aria-invalid={status === 'error' ? true : ariaInvalid}
+          aria-required={required || undefined}
+          onClick={triggerClick}
+          onKeyDown={triggerKeyDown}
+        >
+          {triggerContent}
+        </button>
+      )}
       {allowClear && selectedValue.length > 0 && !disabled && !readOnly && (
         <ClearButton
           label={messages.cascader.clear}
@@ -453,9 +598,12 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
         width={
           popupWidth === 'trigger' ? undefined : popupWidth === 'auto' ? 'max-content' : popupWidth
         }
+        minWidth={popupMinWidth}
         maxWidth={popupMaxWidth}
         id={panelId}
         className={classes('leaf-floating leaf-cascader__panel', popupClassName)}
+        data-popup-width={popupWidthMode}
+        data-searchable={showSearch ? '' : undefined}
         role="dialog"
         aria-label={ariaLabel || messages.cascader.placeholder}
       >
@@ -463,136 +611,204 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
           <FieldScope>
             <div className="leaf-cascader__search">
               <InputControl
+                ref={searchInputRef}
                 allowClear
+                placeholder={messages.common.search}
                 aria-label={messages.common.search}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key !== 'ArrowDown') return;
+                  event.preventDefault();
+                  const targetContainer = normalizedQuery
+                    ? panelRef.current?.querySelector<HTMLElement>('.leaf-cascader__search-list')
+                    : panelRef.current?.querySelector<HTMLElement>("[data-level='0']");
+                  const first =
+                    targetContainer?.querySelector<HTMLButtonElement>(
+                      'button[aria-selected="true"]:not(:disabled)',
+                    ) ?? targetContainer?.querySelector<HTMLButtonElement>('button:not(:disabled)');
+                  first?.focus();
+                  first?.scrollIntoView?.({ block: 'nearest' });
+                }}
               />
             </div>
           </FieldScope>
         )}
-        {query ? (
+        {normalizedQuery ? (
           <Scrollbar
             role="listbox"
             aria-label={messages.common.search}
-            className="leaf-cascader__column"
+            aria-multiselectable={multiple || undefined}
+            className="leaf-cascader__search-list"
             orientation="vertical"
+            size="sm"
+            tabIndex={-1}
             maxHeight={256}
           >
             {searchResults.length ? (
-              searchResults.map((path) => (
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={paths.some(
-                    (current) =>
-                      JSON.stringify(current) ===
-                      JSON.stringify(path.map((option) => option.value)),
-                  )}
-                  className="leaf-floating__option"
-                  key={path.map((option) => option.value).join('/')}
-                  onClick={() => commit(path.map((option) => option.value))}
-                >
-                  {caption(path)}
-                </button>
-              ))
+              searchResults.map((path, index) => {
+                const valuePath = searchResultValues[index] ?? [];
+                const selected = paths.some((current) => samePath(current, valuePath));
+                return (
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    className="leaf-floating__option"
+                    key={valuePath.join('/')}
+                    tabIndex={selected || (!hasSelectedSearchResult && index === 0) ? 0 : -1}
+                    onClick={() => commit(valuePath)}
+                    onKeyDown={(event) => {
+                      if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
+                      event.preventDefault();
+                      moveOptionFocus(
+                        event.currentTarget.parentElement,
+                        event.currentTarget,
+                        event.key,
+                        showSearch ? () => searchInputRef.current?.focus() : undefined,
+                      );
+                    }}
+                  >
+                    <span className="leaf-floating__option-label">{caption(path)}</span>
+                    {selected && (
+                      <Check size={14} className="leaf-cascader__check" aria-hidden="true" />
+                    )}
+                  </button>
+                );
+              })
             ) : (
               <div className="leaf-floating__empty">{messages.cascader.empty}</div>
             )}
           </Scrollbar>
         ) : (
-          <div className="leaf-cascader__columns">
-            {levels.map((level, depth) => {
-              // Include depth so values containing '/' cannot collide across levels.
-              const stableKey = `${depth}:${draft.slice(0, depth).join('/')}`;
-              return (
-                <Scrollbar
-                  key={stableKey}
-                  className="leaf-cascader__column"
-                  orientation="vertical"
-                  maxHeight={256}
-                  data-level={depth}
-                  role="listbox"
-                  aria-label={format('cascader.level', { level: depth + 1 })}
-                >
-                  {level.length ? (
-                    level.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        role="option"
-                        className="leaf-floating__option"
-                        aria-selected={draft[depth] === option.value}
-                        disabled={option.disabled}
-                        tabIndex={
-                          option.value ===
-                          (draft[depth] ?? level.find((item) => !item.disabled)?.value)
-                            ? 0
-                            : -1
-                        }
-                        onClick={() => {
-                          choose(option, depth);
-                          if (option.children?.length) setFocusLevel(depth + 1);
-                        }}
-                        onKeyDown={(event) => {
-                          if (
-                            event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight') &&
-                            (option.children?.length || option.isLeaf === false)
-                          ) {
-                            event.preventDefault();
-                            choose(option, depth);
-                            setFocusLevel(depth + 1);
-                          } else if (
-                            event.key === (direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft') &&
-                            depth > 0
-                          ) {
-                            event.preventDefault();
-                            setFocusLevel(depth - 1);
-                          } else if (['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
-                            event.preventDefault();
-                            const items = Array.from(
-                              event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
-                                'button:not(:disabled)',
-                              ) ?? [],
-                            );
-                            const index = items.indexOf(event.currentTarget);
-                            const next =
-                              event.key === 'Home'
-                                ? 0
-                                : event.key === 'End'
-                                  ? items.length - 1
-                                  : (index + (event.key === 'ArrowDown' ? 1 : -1) + items.length) %
-                                    items.length;
-                            items[next]?.focus();
-                            items[next]?.scrollIntoView?.({ block: 'nearest' });
-                          }
-                        }}
-                      >
-                        <span>{optionRender?.(option) ?? option.label}</span>
-                        {loading.has(option.value) ? (
-                          <LoaderCircle size={14} className="leaf-select__spinner" />
-                        ) : option.children?.length || option.isLeaf === false ? (
-                          <ChevronRight size={14} aria-hidden="true" />
-                        ) : (
-                          (multiple
-                            ? paths.some(
-                                (path) =>
-                                  JSON.stringify(path) ===
-                                  JSON.stringify([...draft.slice(0, depth), option.value]),
+          <Scrollbar
+            className="leaf-cascader__columns-scroll"
+            orientation="horizontal"
+            size="sm"
+            role="presentation"
+            tabIndex={-1}
+          >
+            <div className="leaf-cascader__columns">
+              {levels.map((level, depth) => {
+                // Include depth so values containing '/' cannot collide across levels.
+                const stableKey = `${depth}:${draft.slice(0, depth).join('/')}`;
+                return (
+                  <Scrollbar
+                    key={stableKey}
+                    className="leaf-cascader__column"
+                    orientation="vertical"
+                    size="sm"
+                    tabIndex={-1}
+                    maxHeight={256}
+                    data-level={depth}
+                    role="listbox"
+                    aria-label={format('cascader.level', { level: depth + 1 })}
+                  >
+                    {level.length ? (
+                      level.map((option) => {
+                        const hasChildren = Boolean(
+                          option.children?.length || option.isLeaf === false,
+                        );
+                        const currentPath = [...draft.slice(0, depth), option.value];
+                        const isBranchExpanded = hasChildren && draft[depth] === option.value;
+                        const isSaved = multiple
+                          ? paths.some((path) => samePath(path, currentPath))
+                          : hasChildren
+                            ? Boolean(
+                                changeOnSelect && paths.some((path) => samePath(path, currentPath)),
                               )
-                            : draft[depth] === option.value) && (
-                            <Check size={14} className="leaf-cascader__check" aria-hidden="true" />
-                          )
-                        )}
-                      </button>
-                    ))
-                  ) : (
-                    <div className="leaf-floating__empty">{messages.cascader.empty}</div>
-                  )}
-                </Scrollbar>
-              );
-            })}
-          </div>
+                            : draft[depth] === option.value;
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            role="option"
+                            className="leaf-floating__option"
+                            aria-selected={draft[depth] === option.value}
+                            data-highlighted={isBranchExpanded ? 'true' : undefined}
+                            disabled={option.disabled}
+                            tabIndex={
+                              option.value ===
+                              (draft[depth] ?? level.find((item) => !item.disabled)?.value)
+                                ? 0
+                                : -1
+                            }
+                            onClick={() => {
+                              choose(option, depth);
+                            }}
+                            onKeyDown={(event) => {
+                              if (
+                                event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight') &&
+                                hasChildren
+                              ) {
+                                event.preventDefault();
+                                choose(option, depth);
+                                setFocusLevel(depth + 1);
+                              } else if (
+                                event.key === (direction === 'rtl' ? 'ArrowRight' : 'ArrowLeft') &&
+                                depth > 0
+                              ) {
+                                event.preventDefault();
+                                setFocusLevel(depth - 1);
+                              } else if (
+                                ['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)
+                              ) {
+                                event.preventDefault();
+                                moveOptionFocus(
+                                  event.currentTarget.parentElement,
+                                  event.currentTarget,
+                                  event.key,
+                                  depth === 0 && showSearch
+                                    ? () => searchInputRef.current?.focus()
+                                    : undefined,
+                                );
+                              }
+                            }}
+                          >
+                            <span className="leaf-floating__option-label">
+                              {optionRender?.(option) ?? option.label}
+                            </span>
+                            {loading.has(option.value) ? (
+                              <LoaderCircle
+                                size={14}
+                                className="leaf-cascader__spinner"
+                                aria-hidden="true"
+                              />
+                            ) : hasChildren ? (
+                              <>
+                                {isSaved && (
+                                  <Check
+                                    size={14}
+                                    className="leaf-cascader__check"
+                                    aria-hidden="true"
+                                  />
+                                )}
+                                <ChevronRight
+                                  size={14}
+                                  className="leaf-cascader__expand"
+                                  aria-hidden="true"
+                                />
+                              </>
+                            ) : (
+                              isSaved && (
+                                <Check
+                                  size={14}
+                                  className="leaf-cascader__check"
+                                  aria-hidden="true"
+                                />
+                              )
+                            )}
+                          </button>
+                        );
+                      })
+                    ) : (
+                      <div className="leaf-floating__empty">{messages.cascader.empty}</div>
+                    )}
+                  </Scrollbar>
+                );
+              })}
+            </div>
+          </Scrollbar>
         )}
       </FloatingPanel>
     </div>

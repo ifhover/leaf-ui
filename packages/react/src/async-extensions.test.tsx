@@ -168,6 +168,37 @@ describe('Async components and lifecycle', () => {
     unmount();
     expect(signal?.aborted).toBe(true);
   });
+  it('re-requests when dataLength resets back to 0 or hasMore turns back on', async () => {
+    const callbacks: IntersectionObserverCallback[] = [];
+    class Observer {
+      constructor(callback: IntersectionObserverCallback) {
+        callbacks.push(callback);
+      }
+      observe() {}
+      disconnect() {}
+    }
+    vi.stubGlobal('IntersectionObserver', Observer);
+    const load = vi.fn(async () => {});
+    const { rerender } = render(<InfiniteScroll dataLength={0} hasMore onLoadMore={load} />);
+    act(() => {
+      callbacks.at(-1)?.(
+        [{ isIntersecting: true }] as IntersectionObserverEntry[],
+        {} as IntersectionObserver,
+      );
+    });
+    await waitFor(() => expect(load).toHaveBeenCalledTimes(1));
+
+    // 加载完成第一批数据并清空回 0 条时，不应被之前的 '0:0' 去重键死锁
+    rerender(<InfiniteScroll dataLength={10} hasMore={false} onLoadMore={load} />);
+    rerender(<InfiniteScroll dataLength={0} hasMore onLoadMore={load} />);
+    act(() => {
+      callbacks.at(-1)?.(
+        [{ isIntersecting: true }] as IntersectionObserverEntry[],
+        {} as IntersectionObserver,
+      );
+    });
+    await waitFor(() => expect(load).toHaveBeenCalledTimes(2));
+  });
   it('renders a bounded virtual window for ten thousand rows with list positions', () => {
     vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (
       this: HTMLElement,

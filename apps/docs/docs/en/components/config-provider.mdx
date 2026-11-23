@@ -184,10 +184,10 @@ Common theme options. Unspecified fields inherit from the outer region.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `primaryColor` | `string` | `'#007aff'` | Primary base color shared by light and dark appearances; interaction colors are derived automatically. |
+| `primaryColor` | `string` | `'#007aff'` | Primary base color across light and dark appearances (supports `'neutral'` for adaptive monochrome contrast); interaction colors derive automatically. |
 | `appearance` | `'light' \| 'dark'` | `'light'` | Light or dark; inherits explicit ancestor settings |
 | `borderRadius` | `number \| string` | `10` | Base radius; small tags use × 0.5, sm/lg controls use × 0.8/1.2, and surface/popup radii use × 1.4/1.6. |
-| `controlHeight` | `number \| string` | `34` | Base height; small / large heights use − / + 6px |
+| `controlHeight` | `number \| string` | `32` | Base height; small / large heights use − / + 6px |
 | `fontSize` | `number \| string` | `14` | Base font; small font − 1px, large font + 2px |
 | `fontFamily` | `string` | System sans-serif | Font family |
 | `motion` | `boolean` | `true` | Enable interaction motion in this region; reduced-motion preferences take precedence and portals inherit it. |

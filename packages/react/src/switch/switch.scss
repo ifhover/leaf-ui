@@ -56,7 +56,7 @@
       border-radius: 999px;
       --leaf-switch-track-background: var(
         --leaf-component-switch-background,
-        light-dark(var(--leaf-color-option-hover), var(--leaf-color-option-hover))
+        var(--leaf-color-option-hover)
       );
       --leaf-switch-track-shadow: var(
         --leaf-component-switch-shadow,
@@ -65,10 +65,7 @@
       background: var(--leaf-switch-track-background);
       box-shadow: var(--leaf-switch-track-shadow);
       pointer-events: none;
-      transition:
-        background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-        border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-        box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-field-transition);
     }
     &__thumb {
       display: flex;
@@ -82,9 +79,7 @@
       box-shadow: var(--leaf-shadow-xs);
       transition:
         transform var(--leaf-motion-duration) var(--leaf-motion-easing),
-        background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-        color var(--leaf-motion-duration) var(--leaf-motion-easing),
-        box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+        var(--leaf-action-transition);
     }
     &__input:checked + &__track {
       --leaf-switch-track-border: var(
@@ -148,23 +143,14 @@
       );
     }
     &__spinner {
-      width: max(8px, calc(var(--leaf-switch-thumb) * 0.55));
-      height: max(8px, calc(var(--leaf-switch-thumb) * 0.55));
+      width: max(8px, calc(var(--leaf-switch-thumb) - 8px));
+      height: max(8px, calc(var(--leaf-switch-thumb) - 8px));
       color: currentColor;
       animation: var(
         --leaf-motion-animation,
-        leaf-switch-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite
+        leaf-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite
       );
-      animation-play-state: var(--leaf-motion-play-state, running);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      &__track,
-      &__thumb {
-        transition: none;
-      }
-      &__spinner {
-        animation: none;
-      }
+      animation-play-state: var(--leaf-motion-play-state);
     }
     @media (forced-colors: active) {
       & &__control > &__input + &__track {
@@ -185,11 +171,6 @@
       &__input:focus-visible + &__track {
         outline-color: Highlight;
       }
-    }
-  }
-  @keyframes leaf-switch-spin {
-    to {
-      transform: rotate(360deg);
     }
   }
 }

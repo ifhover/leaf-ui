@@ -1,4 +1,4 @@
-import { DateRangePicker, Form, FormField, type OpenDateRange, Text } from '@ifhover/leaf-ui';
+import { DateRangePicker, Flex, type OpenDateRange, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function OpenEnd() {
@@ -6,20 +6,19 @@ export function OpenEnd() {
   const [texts, setTexts] = useState<readonly [string, string]>(['2026-10-05', '']);
 
   return (
-    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
-      <FormField label="Ongoing project period">
-        <DateRangePicker
-          allowEmpty={[false, true]}
-          value={value}
-          onChange={(next: OpenDateRange | null, dateStrings: readonly [string, string]) => {
-            setValue(next);
-            setTexts(dateStrings);
-          }}
-        />
-      </FormField>
+    <Flex direction="column" gap="sm" align="start">
+      <DateRangePicker
+        aria-label="Ongoing project period"
+        allowEmpty={[false, true]}
+        value={value}
+        onChange={(next: OpenDateRange | null, dateStrings: readonly [string, string]) => {
+          setValue(next);
+          setTexts(dateStrings);
+        }}
+      />
       <Text tone="muted" role="status">
         Start: {texts[0] || 'Empty'}; end: {texts[1] || 'Empty'}
       </Text>
-    </Form>
+    </Flex>
   );
 }

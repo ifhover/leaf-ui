@@ -1,2 +1,2 @@
-export type { DrawerProps, DrawerTabsProps } from './drawer';
+export type { DrawerProps } from './drawer';
 export { Drawer } from './drawer';

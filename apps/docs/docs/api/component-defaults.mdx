@@ -6,112 +6,115 @@
 
 所有配置项均可选。每项接受下表列出的参数，或用 `null` 清除继承；点击类型可查看参数含义及组件内置默认值。必填项、模式关联值、泛型数据和命令式引用仍由实例提供。
 
-| 属性 | 类型 | 说明 |
-| --- | --- | --- |
-| `AvatarUpload` | `Partial<Omit<`[`AvatarUploadProps`](../components/upload#avataruploadprops-api)`, 'key' \| 'ref'>> \| null` | AvatarUpload 的区域默认参数。 |
-| `Affix` | `Partial<Omit<`[`AffixProps`](../components/anchor#affix-api)`, 'key' \| 'ref'>> \| null` | Affix 的区域默认参数。 |
-| `Alert` | `Partial<Omit<`[`AlertProps`](../components/alert#alert-api)`, 'key' \| 'ref' \| 'title'>> \| null` | Alert 的区域默认参数。 |
-| `Anchor` | `Partial<Omit<`[`AnchorProps`](../components/anchor#anchor-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Anchor 的区域默认参数。 |
-| `AutoComplete` | `Partial<Omit<`[`AutoCompleteProps`](../components/auto-complete#autocomplete-api)`, 'key' \| 'ref' \| 'options'>> \| null` | AutoComplete 的区域默认参数。 |
-| `Avatar` | `Partial<Omit<`[`AvatarProps`](../components/avatar#avatar-api)`, 'key' \| 'ref'>> \| null` | Avatar 的区域默认参数。 |
-| `AvatarGroup` | `Partial<Omit<`[`AvatarGroupProps`](../components/avatar#avatargroupprops-api)`, 'key' \| 'ref'>> \| null` | AvatarGroup 的区域默认参数。 |
-| `BackTop` | `Partial<Omit<`[`BackTopProps`](../components/back-top#backtopprops-api)`, 'key' \| 'ref'>> \| null` | BackTop 的区域默认参数。 |
-| `Badge` | `Partial<Omit<`[`BadgeProps`](../components/badge#badge-api)`, 'key' \| 'ref'>> \| null` | Badge 的区域默认参数。 |
-| `Breadcrumb` | `Partial<Omit<`[`BreadcrumbProps`](../components/breadcrumb#breadcrumb-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Breadcrumb 的区域默认参数。 |
-| `Button` | `Partial<Omit<`[`ButtonProps`](../components/button#button-api)`, 'key' \| 'ref'>> \| null` | Button 的区域默认参数。 |
-| `ButtonGroup` | `Partial<Omit<`[`ButtonGroupProps`](../components/button#buttongroupprops-api)`, 'key' \| 'ref'>> \| null` | ButtonGroup 的区域默认参数。 |
-| `Calendar` | `Partial<Omit<`[`CalendarProps`](../components/calendar#calendar-api)`, 'key' \| 'ref'>> \| null` | Calendar 的区域默认参数。 |
-| `Card` | `Partial<Omit<`[`CardProps`](../components/card#card-api)`, 'key' \| 'ref'>> \| null` | Card 的区域默认参数。 |
-| `CardTitle` | `Partial<Omit<`[`CardTitleProps`](../components/card#cardtitle-api)`, 'key' \| 'ref'>> \| null` | CardTitle 的区域默认参数。 |
-| `Carousel` | `Partial<Omit<`[`CarouselProps`](../components/carousel#carousel-api)`, 'key' \| 'ref'>> \| null` | Carousel 的区域默认参数。 |
-| `Cascader` | `Partial< Omit< `[`CascaderProps`](../components/cascader#cascader-api)`, 'key' \| 'ref' \| 'options' \| 'multiple' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | Cascader 的区域默认参数。 |
-| `CheckableTag` | `Partial<Omit<`[`CheckableTagProps`](../components/tag#checkabletagprops-api)`, 'key' \| 'ref'>> \| null` | CheckableTag 的区域默认参数。 |
-| `Checkbox` | `Partial<Omit<`[`CheckboxProps`](../components/checkbox#checkbox-api)`, 'key' \| 'ref'>> \| null` | Checkbox 的区域默认参数。 |
-| `CheckboxGroup` | `Partial<Omit<`[`CheckboxGroupProps`](../components/checkbox#checkboxgroupprops-api)`, 'key' \| 'ref' \| 'options'>> \| null` | CheckboxGroup 的区域默认参数。 |
-| `Col` | `Partial<Omit<`[`ColProps`](../components/grid#colprops-api)`, 'key' \| 'ref'>> \| null` | Col 的区域默认参数。 |
-| `Collapse` | `Partial<Omit<`[`CollapseProps`](../components/collapse#collapse-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Collapse 的区域默认参数。 |
-| `ColorPicker` | `Partial<Omit<`[`ColorPickerProps`](../components/color-picker#colorpicker-api)`, 'key' \| 'ref'>> \| null` | ColorPicker 的区域默认参数。 |
-| `Confirm` | `Partial<Omit<`[`ConfirmOptions`](../components/confirm#confirmoptions)`, 'key' \| 'ref'>> \| null` | Confirm 的区域默认参数。 |
-| `Countdown` | `Partial<Omit<`[`CountdownProps`](../components/statistic#countdown-api)`, 'key' \| 'ref' \| 'value'>> \| null` | Countdown 的区域默认参数。 |
-| `DataTable` | `Partial<Omit<`[`DataTablePresentationProps`](../components/table#datatablepresentation-api)`, 'tableRef'>> \| null` | DataTable 的区域默认参数。 |
-| `DatePicker` | `Partial< Omit<`[`DatePickerProps`](../components/date-picker#datepicker-api)`, 'key' \| 'ref' \| 'value' \| 'defaultValue' \| 'onChange'> > \| null` | DatePicker 的区域默认参数。 |
-| `DateRangePicker` | `Partial<Omit<`[`DateRangePickerProps`](../components/date-range-picker#daterangepicker-api)`, 'key' \| 'ref'>> \| null` | DateRangePicker 的区域默认参数。 |
-| `Descriptions` | `Partial<Omit<`[`DescriptionsProps`](../components/descriptions#descriptionsprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Descriptions 的区域默认参数。 |
-| `Divider` | `Partial<Omit<`[`DividerProps`](../components/divider#divider-api)`, 'key' \| 'ref'>> \| null` | Divider 的区域默认参数。 |
-| `Drawer` | `Partial<Omit<`[`DrawerProps`](../components/drawer#drawer-api)`, 'key' \| 'ref' \| 'open'>> \| null` | Drawer 的区域默认参数。 |
-| `Dropdown` | `Partial<Omit<`[`DropdownProps`](../components/dropdown#dropdown-api)`, 'key' \| 'ref' \| 'items' \| 'children'>> \| null` | Dropdown 的区域默认参数。 |
-| `Empty` | `Partial<Omit<`[`EmptyProps`](../components/result#empty-api)`, 'key' \| 'ref'>> \| null` | Empty 的区域默认参数。 |
-| `ErrorBoundary` | `Partial<Omit<`[`ErrorBoundaryProps`](../components/error-boundary#errorboundaryprops-api)`, 'key' \| 'ref'>> \| null` | ErrorBoundary 的区域默认参数。 |
-| `FileList` | `Partial<Omit<`[`FileListProps`](../components/file-list#filelistprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | FileList 的区域默认参数。 |
-| `Flex` | `Partial<Omit<`[`FlexProps`](../components/flex#flex-api)`, 'key' \| 'ref'>> \| null` | Flex 的区域默认参数。 |
-| `FloatButton` | `Partial<Omit<`[`FloatButtonProps`](../components/float-button#floatbutton-api)`, 'key' \| 'ref'>> \| null` | FloatButton 的区域默认参数。 |
-| `FloatButtonGroup` | `Partial<Omit<`[`FloatButtonGroupProps`](../components/float-button#floatbuttongroup-api)`, 'key' \| 'ref' \| 'actions'>> \| null` | FloatButtonGroup 的区域默认参数。 |
-| `Form` | `Partial<Omit<`[`FormProps`](../components/form#form-api)`, 'key' \| 'ref'>> \| null` | Form 的区域默认参数。 |
-| `FormErrorSummary` | `Partial<Omit<`[`FormErrorSummaryProps`](../components/form#formerrorsummaryprops-api)`, 'key' \| 'ref'>> \| null` | FormErrorSummary 的区域默认参数。 |
-| `FormField` | `Partial<Omit<`[`FormFieldProps`](../components/form#formfield-api)`, 'key' \| 'ref'>> \| null` | FormField 的区域默认参数。 |
-| `FormGroup` | `Partial<Omit<`[`FormGroupProps`](../components/form#formgroupprops-api)`, 'key' \| 'ref'>> \| null` | FormGroup 的区域默认参数。 |
-| `FormList` | `Partial< Omit< `[`FormListProps`](../components/form#formlistprops-api)`<unknown>, 'name' \| 'children' \| 'value' \| 'defaultValue' \| 'onChange' \| 'itemKey' > > \| null` | FormList 的区域默认参数。 |
-| `Grid` | `Partial<Omit<`[`GridProps`](../components/grid#gridprops-api)`, 'key' \| 'ref'>> \| null` | Grid 的区域默认参数。 |
-| `ImagePreview` | `Omit<`[`ImagePreviewOptions`](../components/image#imagepreviewoptions)`, 'onClose'> \| null` | ImagePreview 的区域默认参数。 |
-| `InfiniteScroll` | `Partial< Omit<`[`InfiniteScrollProps`](../components/infinite-scroll#infinitescrollprops-api)`, 'key' \| 'ref' \| 'dataLength' \| 'hasMore' \| 'onLoadMore'> > \| null` | InfiniteScroll 的区域默认参数。 |
-| `Input` | `Partial<Omit<`[`InputProps`](../components/input#input-api)`, 'key' \| 'ref'>> \| null` | Input 的区域默认参数。 |
-| `InputGroup` | `Partial<Omit<`[`InputGroupProps`](../components/input#inputgroupprops-api)`, 'key' \| 'ref'>> \| null` | InputGroup 的区域默认参数。 |
-| `InputMask` | `Partial<Omit<`[`InputMaskProps`](../components/input-mask#inputmaskprops-api)`, 'key' \| 'ref' \| 'mask'>> \| null` | InputMask 的区域默认参数。 |
-| `InputNumber` | `Partial< Omit< `[`InputNumberProps`](../components/input-number#inputnumber-api)`, 'key' \| 'ref' \| 'stringMode' \| 'value' \| 'defaultValue' \| 'onChange' \| 'min' \| 'max' \| 'step' > > \| null` | InputNumber 的区域默认参数。 |
-| `InputOTP` | `Partial<Omit<`[`InputOTPProps`](../components/input-otp#inputotpprops-api)`, 'key' \| 'ref'>> \| null` | InputOTP 的区域默认参数。 |
-| `InputSearch` | `Partial<Omit<`[`InputSearchProps`](../components/input#inputsearchprops-api)`, 'key' \| 'ref'>> \| null` | InputSearch 的区域默认参数。 |
-| `Layout` | `Partial<Omit<`[`LayoutProps`](../components/layout#layoutprops-api)`, 'key' \| 'ref'>> \| null` | Layout 的区域默认参数。 |
-| `LayoutContent` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | LayoutContent 的区域默认参数。 |
-| `LayoutFooter` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | LayoutFooter 的区域默认参数。 |
-| `LayoutHeader` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | LayoutHeader 的区域默认参数。 |
-| `LayoutSider` | `Partial<Omit<`[`LayoutSiderProps`](../components/layout#layoutsiderprops-api)`, 'key' \| 'ref'>> \| null` | LayoutSider 的区域默认参数。 |
-| `Link` | `Partial<Omit<`[`LinkProps`](../components/typography#link-api)`, 'key' \| 'ref'>> \| null` | Link 的区域默认参数。 |
-| `Loading` | `Partial<Omit<`[`LoadingProps`](../components/loading#loading-api)`, 'key' \| 'ref'>> \| null` | Loading 的区域默认参数。 |
-| `LoadingBar` | `Partial<Omit<`[`LoadingBarProps`](../components/loading-bar#loadingbarprops-api)`, 'key' \| 'ref' \| 'active' \| 'progress'>> \| null` | LoadingBar 的区域默认参数。 |
-| `Masonry` | `Partial<Omit<`[`MasonryProps`](../components/masonry#masonryprops-api)`, 'key' \| 'ref'>> \| null` | Masonry 的区域默认参数。 |
-| `Mentions` | `Partial<Omit<`[`MentionsProps`](../components/mentions#mentions-api)`, 'key' \| 'ref' \| 'options'>> \| null` | Mentions 的区域默认参数。 |
-| `Menu` | `Partial<Omit<`[`MenuProps`](../components/menu#menuprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Menu 的区域默认参数。 |
-| `MenuGroup` | `Partial<Omit<`[`MenuGroupProps`](../components/menu#menugroup-api)`, 'key' \| 'ref' \| 'title'>> \| null` | MenuGroup 的区域默认参数。 |
-| `Message` | `Partial<Omit<`[`MessageOptions`](../components/message#messageoptions)`, 'key' \| 'content'>> \| null` | Message 的区域默认参数。 |
-| `Modal` | `Partial<Omit<`[`ModalProps`](../components/modal#modal-api)`, 'key' \| 'ref' \| 'open'>> \| null` | Modal 的区域默认参数。 |
-| `Notification` | `Partial<Omit<`[`NotificationOptions`](../components/notification#notificationoptions-api)`, 'key' \| 'title'>> \| null` | Notification 的区域默认参数。 |
-| `Pagination` | `Partial<Omit<`[`PaginationProps`](../components/pagination#pagination-api)`, 'key' \| 'ref' \| 'total'>> \| null` | Pagination 的区域默认参数。 |
-| `Paragraph` | `Partial<Omit<`[`ParagraphProps`](../components/typography#paragraph-api)`, 'key' \| 'ref'>> \| null` | Paragraph 的区域默认参数。 |
-| `Popconfirm` | `Partial<Omit<`[`PopconfirmProps`](../components/popconfirm#popconfirmprops-api)`, 'key' \| 'ref' \| 'children' \| 'title'>> \| null` | Popconfirm 的区域默认参数。 |
-| `Popover` | `Partial<Omit<`[`PopoverProps`](../components/popover#popover-api)`, 'key' \| 'ref' \| 'children' \| 'content'>> \| null` | Popover 的区域默认参数。 |
-| `Progress` | `Partial<Omit<`[`ProgressProps`](../components/progress#progress-api)`, 'key' \| 'ref'>> \| null` | Progress 的区域默认参数。 |
-| `QRCode` | `Partial<Omit<`[`QRCodeProps`](../components/qr-code#qrcodeprops-api)`, 'key' \| 'ref' \| 'value'>> \| null` | QRCode 的区域默认参数。 |
-| `Radio` | `Partial<Omit<`[`RadioProps`](../components/radio#radio-api)`, 'key' \| 'ref'>> \| null` | Radio 的区域默认参数。 |
-| `RadioGroup` | `Partial<Omit<`[`RadioGroupProps`](../components/radio#radiogroup-api)`, 'key' \| 'ref' \| 'options'>> \| null` | RadioGroup 的区域默认参数。 |
-| `Rate` | `Partial<Omit<`[`RateProps`](../components/rate#rate-api)`, 'key' \| 'ref'>> \| null` | Rate 的区域默认参数。 |
-| `Result` | `Partial<Omit<`[`ResultProps`](../components/result#result-api)`, 'key' \| 'ref'>> \| null` | Result 的区域默认参数。 |
-| `Row` | `Partial<Omit<`[`RowProps`](../components/grid#rowprops-api)`, 'key' \| 'ref'>> \| null` | Row 的区域默认参数。 |
-| `ScrollArea` | `Partial<Omit<`[`ScrollAreaProps`](../components/scroll-area#scrollareaprops-api)`, 'key' \| 'ref'>> \| null` | ScrollArea 的区域默认参数。 |
-| `Scrollbar` | `Partial<Omit<`[`ScrollbarProps`](../components/scrollbar#scrollbar-api)`, 'key' \| 'ref'>> \| null` | Scrollbar 的区域默认参数。 |
-| `Select` | `Partial< Omit< `[`SelectProps`](../components/select#select-api)`, 'key' \| 'ref' \| 'options' \| 'multiple' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | Select 的区域默认参数。 |
-| `Skeleton` | `Partial<Omit<`[`SkeletonProps`](../components/skeleton#skeleton-api)`, 'key' \| 'ref'>> \| null` | Skeleton 的区域默认参数。 |
-| `Slider` | `Partial< Omit<`[`SliderProps`](../components/slider#slider-api)`, 'key' \| 'ref' \| 'range' \| 'value' \| 'defaultValue' \| 'onChange'> > \| null` | Slider 的区域默认参数。 |
-| `Space` | `Partial<Omit<`[`SpaceProps`](../components/space#spaceprops-api)`, 'key' \| 'ref'>> \| null` | Space 的区域默认参数。 |
-| `SplitButton` | `Partial<Omit<`[`SplitButtonProps`](../components/button#splitbuttonprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | SplitButton 的区域默认参数。 |
-| `Splitter` | `Partial<Omit<`[`SplitterProps`](../components/splitter#splitter-api)`, 'key' \| 'ref' \| 'panels'>> \| null` | Splitter 的区域默认参数。 |
-| `Statistic` | `Partial<Omit<`[`StatisticProps`](../components/statistic#statistic-api)`, 'key' \| 'ref' \| 'value'>> \| null` | Statistic 的区域默认参数。 |
-| `Steps` | `Partial<Omit<`[`StepsProps`](../components/steps#steps-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Steps 的区域默认参数。 |
-| `Switch` | `Partial<Omit<`[`SwitchProps`](../components/switch#switch-api)`, 'key' \| 'ref'>> \| null` | Switch 的区域默认参数。 |
-| `Tabs` | `Partial<Omit<`[`TabsProps`](../components/tabs#tabs-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Tabs 的区域默认参数。 |
-| `Tag` | `Partial<Omit<`[`TagProps`](../components/tag#tag-api)`, 'key' \| 'ref'>> \| null` | Tag 的区域默认参数。 |
-| `TagGroup` | `Partial<Omit<`[`TagGroupProps`](../components/tag#taggroupprops-api)`, 'key' \| 'ref' \| 'options'>> \| null` | TagGroup 的区域默认参数。 |
-| `Text` | `Partial<Omit<`[`TextProps`](../components/typography#text-api)`, 'key' \| 'ref'>> \| null` | Text 的区域默认参数。 |
-| `Textarea` | `Partial<Omit<`[`TextareaProps`](../components/textarea#textarea-api)`, 'key' \| 'ref'>> \| null` | Textarea 的区域默认参数。 |
-| `Timeline` | `Partial<Omit<`[`TimelineProps`](../components/timeline#timelineprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Timeline 的区域默认参数。 |
-| `Title` | `Partial<Omit<`[`TitleProps`](../components/typography#title-api)`, 'key' \| 'ref'>> \| null` | Title 的区域默认参数。 |
-| `Tooltip` | `Partial<Omit<`[`TooltipProps`](../components/tooltip#tooltip-api)`, 'key' \| 'ref' \| 'content' \| 'children'>> \| null` | Tooltip 的区域默认参数。 |
-| `Tour` | `Partial<Omit<`[`TourProps`](../components/tour#tour-api)`, 'key' \| 'ref' \| 'open' \| 'steps'>> \| null` | Tour 的区域默认参数。 |
-| `Transfer` | `Partial<Omit<`[`TransferProps`](../components/transfer#transferprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | Transfer 的区域默认参数。 |
-| `Tree` | `Partial<Omit<`[`TreeProps`](../components/tree#tree-api)`, 'key' \| 'ref' \| 'data'>> \| null` | Tree 的区域默认参数。 |
-| `TreeSelect` | `Partial< Omit< `[`TreeSelectProps`](../components/tree-select#treeselect-api)`, \| 'key' \| 'ref' \| 'options' \| 'multiple' \| 'treeCheckable' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | TreeSelect 的区域默认参数。 |
-| `Typography` | `Partial<Omit<`[`TypographyProps`](../components/typography#typography-api)`, 'key' \| 'ref'>> \| null` | Typography 的区域默认参数。 |
-| `Upload` | `Partial<Omit<`[`UploadProps`](../components/upload#uploadprops-api)`, 'key' \| 'ref'>> \| null` | Upload 的区域默认参数。 |
-| `VirtualList` | `(Partial< Omit<`[`VirtualListProps`](../components/virtual-list#virtuallistprops-api)`<unknown>, 'items' \| 'itemKey' \| 'renderItem' \| 'estimateSize'> > & { estimateSize?: number }) \| null` | VirtualList 的区域默认参数。 |
+| 属性 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `AvatarUpload` | `Partial<Omit<`[`AvatarUploadProps`](../components/upload#avataruploadprops-api)`, 'key' \| 'ref'>> \| null` | — | AvatarUpload 的区域默认参数。 |
+| `Affix` | `Partial<Omit<`[`AffixProps`](../components/anchor#affix-api)`, 'key' \| 'ref'>> \| null` | — | Affix 的区域默认参数。 |
+| `Alert` | `Partial<Omit<`[`AlertProps`](../components/alert#alert-api)`, 'key' \| 'ref' \| 'title'>> \| null` | — | Alert 的区域默认参数。 |
+| `Anchor` | `Partial<Omit<`[`AnchorProps`](../components/anchor#anchor-api)`, 'key' \| 'ref' \| 'items'>> \| null` | — | Anchor 的区域默认参数。 |
+| `AutoComplete` | `Partial<Omit<`[`AutoCompleteProps`](../components/auto-complete#autocomplete-api)`, 'key' \| 'ref' \| 'options'>> \| null` | — | AutoComplete 的区域默认参数。 |
+| `Avatar` | `Partial<Omit<`[`AvatarProps`](../components/avatar#avatar-api)`, 'key' \| 'ref'>> \| null` | — | Avatar 的区域默认参数。 |
+| `AvatarGroup` | `Partial<Omit<`[`AvatarGroupProps`](../components/avatar#avatargroupprops-api)`, 'key' \| 'ref'>> \| null` | — | AvatarGroup 的区域默认参数。 |
+| `BackTop` | `Partial<Omit<`[`BackTopProps`](../components/back-top#backtopprops-api)`, 'key' \| 'ref'>> \| null` | — | BackTop 的区域默认参数。 |
+| `Badge` | `Partial<Omit<`[`BadgeProps`](../components/badge#badge-api)`, 'key' \| 'ref'>> \| null` | — | Badge 的区域默认参数。 |
+| `Breadcrumb` | `Partial<Omit<`[`BreadcrumbProps`](../components/breadcrumb#breadcrumb-api)`, 'key' \| 'ref' \| 'items'>> \| null` | — | Breadcrumb 的区域默认参数。 |
+| `Button` | `Partial<Omit<`[`ButtonProps`](../components/button#button-api)`, 'key' \| 'ref'>> \| null` | — | Button 的区域默认参数。 |
+| `ButtonGroup` | `Partial<Omit<`[`ButtonGroupProps`](../components/button#buttongroupprops-api)`, 'key' \| 'ref'>> \| null` | — | ButtonGroup 的区域默认参数。 |
+| `Calendar` | `Partial<Omit<`[`CalendarProps`](../components/calendar#calendar-api)`, 'key' \| 'ref'>> \| null` | — | Calendar 的区域默认参数。 |
+| `Card` | `Partial<Omit<`[`CardProps`](../components/card#card-api)`, 'key' \| 'ref'>> \| null` | — | Card 的区域默认参数。 |
+| `CardTitle` | `Partial<Omit<`[`CardTitleProps`](../components/card#cardtitle-api)`, 'key' \| 'ref'>> \| null` | — | CardTitle 的区域默认参数。 |
+| `Carousel` | `Partial<Omit<`[`CarouselProps`](../components/carousel#carousel-api)`, 'key' \| 'ref'>> \| null` | — | Carousel 的区域默认参数。 |
+| `Cascader` | `Partial< Omit< `[`CascaderProps`](../components/cascader#cascader-api)`, 'key' \| 'ref' \| 'options' \| 'multiple' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | — | Cascader 的区域默认参数。 |
+| `CheckableTag` | `Partial<Omit<`[`CheckableTagProps`](../components/tag#checkabletagprops-api)`, 'key' \| 'ref'>> \| null` | — | CheckableTag 的区域默认参数。 |
+| `Checkbox` | `Partial<Omit<`[`CheckboxProps`](../components/checkbox#checkbox-api)`, 'key' \| 'ref'>> \| null` | — | Checkbox 的区域默认参数。 |
+| `CheckboxGroup` | `Partial<Omit<`[`CheckboxGroupProps`](../components/checkbox#checkboxgroupprops-api)`, 'key' \| 'ref' \| 'options'>> \| null` | — | CheckboxGroup 的区域默认参数。 |
+| `Col` | `Partial<Omit<`[`ColProps`](../components/grid#colprops-api)`, 'key' \| 'ref'>> \| null` | — | Col 的区域默认参数。 |
+| `Collapse` | `Partial<Omit<`[`CollapseProps`](../components/collapse#collapse-api)`, 'key' \| 'ref' \| 'items'>> \| null` | — | Collapse 的区域默认参数。 |
+| `ColorPicker` | `Partial<Omit<`[`ColorPickerProps`](../components/color-picker#colorpicker-api)`, 'key' \| 'ref'>> \| null` | — | ColorPicker 的区域默认参数。 |
+| `Confirm` | `Partial<Omit<`[`ConfirmOptions`](../components/confirm#confirmoptions)`, 'key' \| 'ref'>> \| null` | — | Confirm 的区域默认参数。 |
+| `Countdown` | `Partial<Omit<`[`CountdownProps`](../components/statistic#countdown-api)`, 'key' \| 'ref' \| 'value'>> \| null` | — | Countdown 的区域默认参数。 |
+| `DataTable` | `Partial<Omit<`[`DataTablePresentationProps`](../components/table#datatablepresentation-api)`, 'tableRef'>> \| null` | — | DataTable 的区域默认参数。 |
+| `DatePicker` | `Partial< Omit<`[`DatePickerProps`](../components/date-picker#datepicker-api)`, 'key' \| 'ref' \| 'value' \| 'defaultValue' \| 'onChange'> > \| null` | — | DatePicker 的区域默认参数。 |
+| `DateRangePicker` | `Partial<Omit<`[`DateRangePickerProps`](../components/date-range-picker#daterangepicker-api)`, 'key' \| 'ref'>> \| null` | — | DateRangePicker 的区域默认参数。 |
+| `Descriptions` | `Partial<Omit<`[`DescriptionsProps`](../components/descriptions#descriptionsprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | — | Descriptions 的区域默认参数。 |
+| `Divider` | `Partial<Omit<`[`DividerProps`](../components/divider#divider-api)`, 'key' \| 'ref'>> \| null` | — | Divider 的区域默认参数。 |
+| `Drawer` | `Partial<Omit<`[`DrawerProps`](../components/drawer#drawer-api)`, 'key' \| 'ref' \| 'open'>> \| null` | — | Drawer 的区域默认参数。 |
+| `Dropdown` | `Partial<Omit<`[`DropdownProps`](../components/dropdown#dropdown-api)`, 'key' \| 'ref' \| 'items' \| 'children'>> \| null` | — | Dropdown 的区域默认参数。 |
+| `Empty` | `Partial<Omit<`[`EmptyProps`](../components/result#empty-api)`, 'key' \| 'ref'>> \| null` | — | Empty 的区域默认参数。 |
+| `ErrorBoundary` | `Partial<Omit<`[`ErrorBoundaryProps`](../components/error-boundary#errorboundaryprops-api)`, 'key' \| 'ref'>> \| null` | — | ErrorBoundary 的区域默认参数。 |
+| `FileList` | `Partial<Omit<`[`FileListProps`](../components/file-list#filelistprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | — | FileList 的区域默认参数。 |
+| `Flex` | `Partial<Omit<`[`FlexProps`](../components/flex#flex-api)`, 'key' \| 'ref'>> \| null` | — | Flex 的区域默认参数。 |
+| `FloatButton` | `Partial<Omit<`[`FloatButtonProps`](../components/float-button#floatbutton-api)`, 'key' \| 'ref'>> \| null` | — | FloatButton 的区域默认参数。 |
+| `FloatButtonGroup` | `Partial<Omit<`[`FloatButtonGroupProps`](../components/float-button#floatbuttongroup-api)`, 'key' \| 'ref' \| 'actions'>> \| null` | — | FloatButtonGroup 的区域默认参数。 |
+| `Form` | `Partial<Omit<`[`FormProps`](../components/form#form-api)`, 'key' \| 'ref'>> \| null` | — | Form 的区域默认参数。 |
+| `FormErrorSummary` | `Partial<Omit<`[`FormErrorSummaryProps`](../components/form#formerrorsummaryprops-api)`, 'key' \| 'ref'>> \| null` | — | FormErrorSummary 的区域默认参数。 |
+| `FormField` | `Partial<Omit<`[`FormFieldProps`](../components/form#formfield-api)`, 'key' \| 'ref'>> \| null` | — | FormField 的区域默认参数。 |
+| `FormGroup` | `Partial<Omit<`[`FormGroupProps`](../components/form#formgroupprops-api)`, 'key' \| 'ref'>> \| null` | — | FormGroup 的区域默认参数。 |
+| `FormList` | `Partial< Omit< `[`FormListProps`](../components/form#formlistprops-api)`<unknown>, 'name' \| 'children' \| 'value' \| 'defaultValue' \| 'onChange' \| 'itemKey' > > \| null` | — | FormList 的区域默认参数。 |
+| `Grid` | `Partial<Omit<`[`GridProps`](../components/grid#gridprops-api)`, 'key' \| 'ref'>> \| null` | — | Grid 的区域默认参数。 |
+| `ImagePreview` | `Omit<`[`ImagePreviewOptions`](../components/image#imagepreviewoptions)`, 'onClose'> \| null` | — | ImagePreview 的区域默认参数。 |
+| `InfiniteScroll` | `Partial< Omit<`[`InfiniteScrollProps`](../components/infinite-scroll#infinitescrollprops-api)`, 'key' \| 'ref' \| 'dataLength' \| 'hasMore' \| 'onLoadMore'> > \| null` | — | InfiniteScroll 的区域默认参数。 |
+| `Input` | `Partial<Omit<`[`InputProps`](../components/input#input-api)`, 'key' \| 'ref'>> \| null` | — | Input 的区域默认参数。 |
+| `InputGroup` | `Partial<Omit<`[`InputGroupProps`](../components/input#inputgroupprops-api)`, 'key' \| 'ref'>> \| null` | — | InputGroup 的区域默认参数。 |
+| `InputMask` | `Partial<Omit<`[`InputMaskProps`](../components/input-mask#inputmaskprops-api)`, 'key' \| 'ref' \| 'mask'>> \| null` | — | InputMask 的区域默认参数。 |
+| `InputNumber` | `Partial< Omit< `[`InputNumberProps`](../components/input-number#inputnumber-api)`, 'key' \| 'ref' \| 'stringMode' \| 'value' \| 'defaultValue' \| 'onChange' \| 'min' \| 'max' \| 'step' > > \| null` | — | InputNumber 的区域默认参数。 |
+| `InputOTP` | `Partial<Omit<`[`InputOTPProps`](../components/input-otp#inputotpprops-api)`, 'key' \| 'ref'>> \| null` | — | InputOTP 的区域默认参数。 |
+| `InputSearch` | `Partial<Omit<`[`InputSearchProps`](../components/input#inputsearchprops-api)`, 'key' \| 'ref'>> \| null` | — | InputSearch 的区域默认参数。 |
+| `Layout` | `Partial<Omit<`[`LayoutProps`](../components/layout#layoutprops-api)`, 'key' \| 'ref'>> \| null` | — | Layout 的区域默认参数。 |
+| `LayoutContent` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | — | LayoutContent 的区域默认参数。 |
+| `LayoutFooter` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | — | LayoutFooter 的区域默认参数。 |
+| `LayoutHeader` | `Partial<Omit<HTMLAttributes<HTMLElement>, 'key' \| 'ref'>> \| null` | — | LayoutHeader 的区域默认参数。 |
+| `LayoutSider` | `Partial<Omit<`[`LayoutSiderProps`](../components/layout#layoutsiderprops-api)`, 'key' \| 'ref'>> \| null` | — | LayoutSider 的区域默认参数。 |
+| `Link` | `Partial<Omit<`[`LinkProps`](../components/typography#link-api)`, 'key' \| 'ref'>> \| null` | — | Link 的区域默认参数。 |
+| `Loading` | `Partial<Omit<`[`LoadingProps`](../components/loading#loading-api)`, 'key' \| 'ref'>> \| null` | — | Loading 的区域默认参数。 |
+| `LoadingBar` | `Partial<Omit<`[`LoadingBarProps`](../components/loading-bar#loadingbarprops-api)`, 'key' \| 'ref' \| 'active' \| 'progress'>> \| null` | — | LoadingBar 的区域默认参数。 |
+| `Masonry` | `Partial<Omit<`[`MasonryProps`](../components/masonry#masonryprops-api)`, 'key' \| 'ref'>> \| null` | — | Masonry 的区域默认参数。 |
+| `Mentions` | `Partial<Omit<`[`MentionsProps`](../components/mentions#mentions-api)`, 'key' \| 'ref' \| 'options'>> \| null` | — | Mentions 的区域默认参数。 |
+| `Menu` | `Partial<Omit<`[`MenuProps`](../components/menu#menuprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | — | Menu 的区域默认参数。 |
+| `MenuGroup` | `Partial<Omit<`[`MenuGroupProps`](../components/menu#menugroup-api)`, 'key' \| 'ref' \| 'title'>> \| null` | — | MenuGroup 的区域默认参数。 |
+| `Message` | `Partial<Omit<`[`MessageOptions`](../components/message#messageoptions)`, 'key' \| 'content'>> \| null` | — | Message 的区域默认参数。 |
+| `Modal` | `Partial<Omit<`[`ModalProps`](../components/modal#modal-api)`, 'key' \| 'ref' \| 'open'>> \| null` | — | Modal 的区域默认参数。 |
+| `Notification` | `Partial<Omit<`[`NotificationOptions`](../components/notification#notificationoptions-api)`, 'key' \| 'title'>> \| null` | — | Notification 的区域默认参数。 |
+| `Pagination` | `Partial<Omit<`[`PaginationProps`](../components/pagination#pagination-api)`, 'key' \| 'ref' \| 'total'>> \| null` | — | Pagination 的区域默认参数。 |
+| `Paragraph` | `Partial<Omit<`[`ParagraphProps`](../components/typography#paragraph-api)`, 'key' \| 'ref'>> \| null` | — | Paragraph 的区域默认参数。 |
+| `Popconfirm` | `Partial<Omit<`[`PopconfirmProps`](../components/popconfirm#popconfirmprops-api)`, 'key' \| 'ref' \| 'children' \| 'title'>> \| null` | — | Popconfirm 的区域默认参数。 |
+| `Popover` | `Partial<Omit<`[`PopoverProps`](../components/popover#popover-api)`, 'key' \| 'ref' \| 'children' \| 'content'>> \| null` | — | Popover 的区域默认参数。 |
+| `Progress` | `Partial<Omit<`[`ProgressProps`](../components/progress#progress-api)`, 'key' \| 'ref'>> \| null` | — | Progress 的区域默认参数。 |
+| `QRCode` | `Partial<Omit<`[`QRCodeProps`](../components/qr-code#qrcodeprops-api)`, 'key' \| 'ref' \| 'value'>> \| null` | — | QRCode 的区域默认参数。 |
+| `Radio` | `Partial<Omit<`[`RadioProps`](../components/radio#radio-api)`, 'key' \| 'ref'>> \| null` | — | Radio 的区域默认参数。 |
+| `RadioGroup` | `Partial<Omit<`[`RadioGroupProps`](../components/radio#radiogroup-api)`, 'key' \| 'ref' \| 'options'>> \| null` | — | RadioGroup 的区域默认参数。 |
+| `Rate` | `Partial<Omit<`[`RateProps`](../components/rate#rate-api)`, 'key' \| 'ref'>> \| null` | — | Rate 的区域默认参数。 |
+| `Result` | `Partial<Omit<`[`ResultProps`](../components/result#result-api)`, 'key' \| 'ref'>> \| null` | — | Result 的区域默认参数。 |
+| `Row` | `Partial<Omit<`[`RowProps`](../components/grid#rowprops-api)`, 'key' \| 'ref'>> \| null` | — | Row 的区域默认参数。 |
+| `ScrollArea` | `Partial<Omit<`[`ScrollAreaProps`](../components/scroll-area#scrollareaprops-api)`, 'key' \| 'ref'>> \| null` | — | ScrollArea 的区域默认参数。 |
+| `Scrollbar` | `Partial<Omit<`[`ScrollbarProps`](../components/scrollbar#scrollbar-api)`, 'key' \| 'ref'>> \| null` | — | Scrollbar 的区域默认参数。 |
+| `Select` | `Partial< Omit< `[`SelectProps`](../components/select#select-api)`, 'key' \| 'ref' \| 'options' \| 'multiple' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | — | Select 的区域默认参数。 |
+| `Skeleton` | `Partial<Omit<`[`SkeletonProps`](../components/skeleton#skeleton-api)`, 'key' \| 'ref'>> \| null` | — | Skeleton 的区域默认参数。 |
+| `SkeletonAvatar` | `Partial<Omit<`[`SkeletonAvatarProps`](../components/skeleton#skeletonavatar-api)`, 'key' \| 'ref'>> \| null` | — | SkeletonAvatar 的区域默认参数。 |
+| `SkeletonButton` | `Partial<Omit<`[`SkeletonButtonProps`](../components/skeleton#skeletonbutton-api)`, 'key' \| 'ref'>> \| null` | — | SkeletonButton 的区域默认参数。 |
+| `SkeletonImage` | `Partial<Omit<`[`SkeletonImageProps`](../components/skeleton#skeletonimage-api)`, 'key' \| 'ref'>> \| null` | — | SkeletonImage 的区域默认参数。 |
+| `SkeletonInput` | `Partial<Omit<`[`SkeletonInputProps`](../components/skeleton#skeletoninput-api)`, 'key' \| 'ref'>> \| null` | — | SkeletonInput 的区域默认参数。 |
+| `Slider` | `Partial< Omit<`[`SliderProps`](../components/slider#slider-api)`, 'key' \| 'ref' \| 'range' \| 'value' \| 'defaultValue' \| 'onChange'> > \| null` | — | Slider 的区域默认参数。 |
+| `Space` | `Partial<Omit<`[`SpaceProps`](../components/space#spaceprops-api)`, 'key' \| 'ref'>> \| null` | — | Space 的区域默认参数。 |
+| `Splitter` | `Partial<Omit<`[`SplitterProps`](../components/splitter#splitter-api)`, 'key' \| 'ref' \| 'panels'>> \| null` | — | Splitter 的区域默认参数。 |
+| `Statistic` | `Partial<Omit<`[`StatisticProps`](../components/statistic#statistic-api)`, 'key' \| 'ref' \| 'value'>> \| null` | — | Statistic 的区域默认参数。 |
+| `Steps` | `Partial<Omit<`[`StepsProps`](../components/steps#steps-api)`, 'key' \| 'ref' \| 'items'>> \| null` | — | Steps 的区域默认参数。 |
+| `Switch` | `Partial<Omit<`[`SwitchProps`](../components/switch#switch-api)`, 'key' \| 'ref'>> \| null` | — | Switch 的区域默认参数。 |
+| `Tabs` | `Partial<Omit<`[`TabsProps`](../components/tabs#tabs-api)`, 'key' \| 'ref' \| 'items'>> \| null` | — | Tabs 的区域默认参数。 |
+| `Tag` | `Partial<Omit<`[`TagProps`](../components/tag#tag-api)`, 'key' \| 'ref'>> \| null` | — | Tag 的区域默认参数。 |
+| `TagGroup` | `Partial<Omit<`[`TagGroupProps`](../components/tag#taggroupprops-api)`, 'key' \| 'ref' \| 'options'>> \| null` | — | TagGroup 的区域默认参数。 |
+| `Text` | `Partial<Omit<`[`TextProps`](../components/typography#text-api)`, 'key' \| 'ref'>> \| null` | — | Text 的区域默认参数。 |
+| `Textarea` | `Partial<Omit<`[`TextareaProps`](../components/textarea#textarea-api)`, 'key' \| 'ref'>> \| null` | — | Textarea 的区域默认参数。 |
+| `Timeline` | `Partial<Omit<`[`TimelineProps`](../components/timeline#timelineprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | — | Timeline 的区域默认参数。 |
+| `Title` | `Partial<Omit<`[`TitleProps`](../components/typography#title-api)`, 'key' \| 'ref'>> \| null` | — | Title 的区域默认参数。 |
+| `Tooltip` | `Partial<Omit<`[`TooltipProps`](../components/tooltip#tooltip-api)`, 'key' \| 'ref' \| 'content' \| 'children'>> \| null` | — | Tooltip 的区域默认参数。 |
+| `Tour` | `Partial<Omit<`[`TourProps`](../components/tour#tour-api)`, 'key' \| 'ref' \| 'open' \| 'steps'>> \| null` | — | Tour 的区域默认参数。 |
+| `Transfer` | `Partial<Omit<`[`TransferProps`](../components/transfer#transferprops-api)`, 'key' \| 'ref' \| 'items'>> \| null` | — | Transfer 的区域默认参数。 |
+| `Tree` | `Partial<Omit<`[`TreeProps`](../components/tree#tree-api)`, 'key' \| 'ref' \| 'data'>> \| null` | — | Tree 的区域默认参数。 |
+| `TreeSelect` | `Partial< Omit< `[`TreeSelectProps`](../components/tree-select#treeselect-api)`, \| 'key' \| 'ref' \| 'options' \| 'multiple' \| 'treeCheckable' \| 'value' \| 'defaultValue' \| 'onChange' > > \| null` | — | TreeSelect 的区域默认参数。 |
+| `Typography` | `Partial<Omit<`[`TypographyProps`](../components/typography#typography-api)`, 'key' \| 'ref'>> \| null` | — | Typography 的区域默认参数。 |
+| `Upload` | `Partial<Omit<`[`UploadProps`](../components/upload#uploadprops-api)`, 'key' \| 'ref'>> \| null` | — | Upload 的区域默认参数。 |
+| `VirtualList` | `(Partial< Omit<`[`VirtualListProps`](../components/virtual-list#virtuallistprops-api)`<unknown>, 'items' \| 'itemKey' \| 'renderItem' \| 'estimateSize'> > & { estimateSize?: number }) \| null` | — | VirtualList 的区域默认参数。 |
 
 ## 类型导入
 

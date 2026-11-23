@@ -23,8 +23,9 @@ export function DropdownExtra() {
   return (
     <Flex direction="column" gap="md" align="start">
       <Dropdown items={items} onSelect={setAction}>
-        <Button variant="outline" endIcon={<ChevronDown size={16} />}>
+        <Button variant="outline">
           更多操作
+          <ChevronDown />
         </Button>
       </Dropdown>
       {action && <Text role="status">已选择: {action}</Text>}

@@ -10,3 +10,14 @@ export function composedParent(node: HTMLElement): HTMLElement | null {
   const root = node.getRootNode();
   return root instanceof ShadowRoot && root.host instanceof HTMLElement ? root.host : null;
 }
+
+/** 沿组合 DOM 祖先链向上查找最近的指定属性值。 */
+export function inheritedAttribute(node: HTMLElement, name: string): string | undefined {
+  let current: HTMLElement | null = node;
+  while (current) {
+    const value = current.getAttribute(name);
+    if (value !== null) return value;
+    current = composedParent(current);
+  }
+  return undefined;
+}

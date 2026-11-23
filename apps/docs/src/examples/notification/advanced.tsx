@@ -17,8 +17,7 @@ export function NotificationOptions() {
         成功通知
       </Button>
       <Button
-        variant="outline"
-        danger
+        variant="danger"
         onClick={() =>
           notification.danger({
             key: 'sync',

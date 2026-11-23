@@ -14,28 +14,21 @@
     }
   }
   .leaf-text {
-    @include mixins.accent-soft-feedback-family;
-
     color: var(--leaf-color-text);
     font: inherit;
     line-height: var(--leaf-line-height);
     &--muted {
       color: var(--leaf-color-text-muted);
     }
-    &--primary {
-      @include mixins.status-ink-family(primary);
-      color: var(--leaf-status-ink);
+    @each $tone in primary, success, warning, danger {
+      &--#{$tone} {
+        @include mixins.status-ink-family($tone);
+      }
     }
-    &--success {
-      @include mixins.status-ink-family(success);
-      color: var(--leaf-status-ink);
-    }
-    &--warning {
-      @include mixins.status-ink-family(warning);
-      color: var(--leaf-status-ink);
-    }
+    &--primary,
+    &--success,
+    &--warning,
     &--danger {
-      @include mixins.status-ink-family(danger);
       color: var(--leaf-status-ink);
     }
     &--strong {
@@ -49,7 +42,9 @@
     }
     &--code {
       padding: 2px 5px;
+      font-size: 0.9em;
       background: var(--leaf-color-surface-muted);
+      border: 1px solid var(--leaf-color-divider);
       border-radius: var(--leaf-radius-sm);
       font-family: var(
         --leaf-font-family-mono,
@@ -61,6 +56,8 @@
       );
     }
     &--mark {
+      padding: 0 2px;
+      border-radius: 2px;
       background: var(--leaf-color-warning-alpha-16);
     }
     &__content {
@@ -79,15 +76,22 @@
       }
     }
     &__action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 4px;
+      margin-inline-start: 4px;
+      vertical-align: middle;
       border: 0;
       background: transparent;
-      color: var(--leaf-color-primary);
+      color: var(--leaf-color-text-muted);
       font: inherit;
       cursor: pointer;
       border-radius: var(--leaf-radius-sm);
-      transition: background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
       &:hover {
-        background: var(--leaf-accent-soft-background);
+        color: var(--leaf-color-text);
+        background: var(--leaf-color-surface-muted);
       }
       &:focus-visible {
         @include mixins.focus-ring;
@@ -119,7 +123,7 @@
     font: inherit;
     text-underline-offset: 4px;
     text-decoration-thickness: 1px;
-    transition: color var(--leaf-motion-fast) var(--leaf-motion-easing);
+    transition: var(--leaf-action-transition);
     &:hover:not([aria-disabled]) {
       color: var(--leaf-color-primary-link-hover, var(--leaf-color-primary));
     }
@@ -138,6 +142,7 @@
   }
 
   .leaf-text__editor {
+    @include mixins.field-ring-variables(var(--leaf-color-text-muted));
     box-sizing: border-box;
     width: 100%;
     min-height: var(--leaf-control-height);
@@ -147,20 +152,14 @@
     background: var(--leaf-color-surface);
     color: var(--leaf-color-text);
     font: inherit;
-    transition: border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+    transition: var(--leaf-field-transition);
     &:hover:not(:focus) {
       border-color: var(--leaf-color-border-hover);
     }
     &:focus {
-      outline: 2px solid var(--leaf-color-primary);
-      outline-offset: 2px;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-text__action,
-    .leaf-text__editor,
-    .leaf-link {
-      transition: none;
+      outline: none;
+      border-color: var(--leaf-color-text-muted);
+      box-shadow: var(--leaf-field-focus-shadow);
     }
   }
 }

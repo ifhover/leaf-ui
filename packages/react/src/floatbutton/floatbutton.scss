@@ -1,25 +1,33 @@
 @layer leaf-ui {
   .leaf-float-button {
-    width: 44px;
-    height: 44px;
-    min-height: 44px;
+    --leaf-float-button-size: 44px;
+    --leaf-button-icon-size: 20px;
+    width: var(--leaf-float-button-size);
+    height: var(--leaf-float-button-size);
+    min-height: var(--leaf-float-button-size);
     padding: 0;
     border-radius: 50%;
     box-shadow: var(--leaf-shadow-md);
-    transition:
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+    transition: var(--leaf-field-transition);
+    &.leaf-button--sm,
+    &.leaf-button--icon-sm {
+      --leaf-float-button-size: 36px;
+      --leaf-button-icon-size: 16px;
+    }
+    &.leaf-button--lg,
+    &.leaf-button--icon-lg {
+      --leaf-float-button-size: 52px;
+      --leaf-button-icon-size: 22px;
+    }
     &:active:not(:disabled) {
-      transform: scale(0.96);
+      translate: none;
       box-shadow: var(--leaf-shadow-sm);
     }
-    &--fixed {
-      position: fixed;
-      inset-inline-end: 24px;
-      bottom: 24px;
-      z-index: 50;
-    }
+  }
+  .leaf-float-button--fixed,
+  .leaf-float-group--fixed {
+    position: fixed;
+    z-index: 50;
   }
   .leaf-float-group {
     display: flex;
@@ -29,11 +37,11 @@
     padding: 0;
     margin: 0;
     min-width: 0;
-    &--fixed {
-      position: fixed;
-      inset-inline-end: 24px;
-      bottom: 24px;
-      z-index: 50;
+    &--top {
+      flex-direction: column-reverse;
+      .leaf-float-group__action {
+        translate: 0 -6px;
+      }
     }
     &__actions {
       display: grid;
@@ -59,14 +67,14 @@
       padding: 12px;
     }
     &__action {
-      transform: translateY(8px) scale(0.9);
+      translate: 0 6px;
       opacity: 0;
       transition:
-        transform var(--leaf-motion-slow) var(--leaf-motion-easing),
+        translate var(--leaf-motion-slow) var(--leaf-motion-easing),
         opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
     }
     &__actions[data-open] &__action {
-      transform: translateY(0) scale(1);
+      translate: 0 0;
       opacity: 1;
       transition-delay: calc(var(--leaf-motion-fast) * var(--leaf-float-order, 0) * 0.3);
     }
@@ -78,12 +86,48 @@
       }
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-float-button,
-    .leaf-float-group__actions,
-    .leaf-float-group__action,
-    .leaf-float-group__trigger-icon {
-      transition: none;
-    }
+  .leaf-float-button--bottom-end,
+  .leaf-float-group--bottom-end,
+  .leaf-float-button--bottom-start,
+  .leaf-float-group--bottom-start,
+  .leaf-float-button--bottom-right,
+  .leaf-float-group--bottom-right,
+  .leaf-float-button--bottom-left,
+  .leaf-float-group--bottom-left {
+    bottom: 24px;
+  }
+  .leaf-float-button--top-end,
+  .leaf-float-group--top-end,
+  .leaf-float-button--top-start,
+  .leaf-float-group--top-start,
+  .leaf-float-button--top-right,
+  .leaf-float-group--top-right,
+  .leaf-float-button--top-left,
+  .leaf-float-group--top-left {
+    top: 24px;
+  }
+  .leaf-float-button--bottom-end,
+  .leaf-float-group--bottom-end,
+  .leaf-float-button--top-end,
+  .leaf-float-group--top-end {
+    inset-inline-end: 24px;
+  }
+  .leaf-float-button--bottom-start,
+  .leaf-float-group--bottom-start,
+  .leaf-float-button--top-start,
+  .leaf-float-group--top-start {
+    inset-inline-start: 24px;
+  }
+  .leaf-float-button--bottom-right,
+  .leaf-float-group--bottom-right,
+  .leaf-float-button--top-right,
+  .leaf-float-group--top-right {
+    right: 24px;
+  }
+  .leaf-float-button--bottom-left,
+  .leaf-float-group--bottom-left,
+  .leaf-float-button--top-left,
+  .leaf-float-group--top-left {
+    left: 24px;
   }
 }

@@ -29,7 +29,7 @@
       font-weight: 500;
       white-space: nowrap;
       font-variant-numeric: tabular-nums;
-      transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
     }
     &__indicator--dot {
       border-radius: 100px;
@@ -60,11 +60,6 @@
     }
     &__count {
       display: inline-block;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-badge__indicator {
-      transition: none;
     }
   }
 }

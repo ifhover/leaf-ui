@@ -23,24 +23,24 @@ const items: MenuItem[] = [
 ];
 
 describe('Menu transitions', () => {
-  it('uses primary by default and allows regional and instance appearance overrides', () => {
+  it('uses neutral by default and allows regional and instance appearance overrides', () => {
     const { rerender } = render(<Menu items={items} />);
-    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--primary');
-    expect(renderToString(<Menu items={items} />)).toContain('leaf-menu--primary');
-
-    rerender(
-      <ConfigProvider components={{ Menu: { variant: 'neutral' } }}>
-        <Menu items={items} />
-      </ConfigProvider>,
-    );
     expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--neutral');
+    expect(renderToString(<Menu items={items} />)).toContain('leaf-menu--neutral');
 
     rerender(
       <ConfigProvider components={{ Menu: { variant: 'primary' } }}>
-        <Menu items={items} variant="neutral" />
+        <Menu items={items} />
       </ConfigProvider>,
     );
-    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--neutral');
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--primary');
+
+    rerender(
+      <ConfigProvider components={{ Menu: { variant: 'primary' } }}>
+        <Menu items={items} variant="raised" />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('navigation')).toHaveClass('leaf-menu--raised');
   });
 
   it('renders item extra inline and in collapsed navigation without changing the item label', async () => {
@@ -322,12 +322,12 @@ describe('Menu groups', () => {
 });
 
 describe('Menu popup navigation', () => {
-  it('inherits the default primary appearance in collapsed submenus', async () => {
+  it('inherits the default neutral appearance in collapsed submenus', async () => {
     render(<Menu items={items} collapsed defaultSelectedKey="design" />);
     await userEvent.click(screen.getByRole('menuitem', { name: 'Projects' }));
     expect(
       screen.getByRole('menuitem', { name: 'Design' }).closest('.leaf-menu__popup'),
-    ).toHaveClass('leaf-menu__popup--primary');
+    ).toHaveClass('leaf-menu__popup--neutral');
   });
   it.each(['neutral', 'raised', 'primary'] as const)(
     'keeps the %s appearance in collapsed submenus',
@@ -385,5 +385,78 @@ describe('Menu popup navigation', () => {
     await userEvent.keyboard('{Escape}');
     expect(trigger).toHaveFocus();
     expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('shows tooltips for collapsed leaves, isolates popup state, forwards renderers, and collapses parent on Escape', async () => {
+    const onOpenChange = vi.fn();
+    const { rerender } = render(
+      <Menu
+        collapsed={false}
+        defaultOpenKeys={['resources']}
+        onOpenChange={onOpenChange}
+        linkRender={(item, link) => <div data-custom-link={item.key}>{link}</div>}
+        itemClassName={(item) => `custom-${item.key}`}
+        items={[
+          { key: 'home', label: 'Home' },
+          {
+            key: 'resources',
+            label: 'Resources',
+            children: [
+              { key: 'design', label: 'Design', href: '#design' },
+              { key: 'tokens', label: 'Tokens' },
+            ],
+          },
+          { key: 'extra-parent', label: 'Extra', children: [{ key: 'sub', label: 'Sub' }] },
+        ]}
+      />,
+    );
+
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Extra' }));
+    expect(onOpenChange).toHaveBeenLastCalledWith(['resources', 'extra-parent']);
+
+    const designItem = screen.getByRole('menuitem', { name: 'Design' });
+    designItem.focus();
+    await userEvent.keyboard('{Escape}');
+    expect(screen.getByRole('menuitem', { name: 'Resources' })).toHaveFocus();
+    expect(screen.getByRole('menuitem', { name: 'Resources' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    expect(screen.getByRole('menuitem', { name: 'Extra' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+
+    rerender(
+      <Menu
+        collapsed
+        defaultOpenKeys={['resources']}
+        onOpenChange={onOpenChange}
+        linkRender={(item, link) => <div data-custom-link={item.key}>{link}</div>}
+        itemClassName={(item) => `custom-${item.key}`}
+        items={[
+          { key: 'home', label: 'Home' },
+          {
+            key: 'resources',
+            label: 'Resources',
+            children: [
+              { key: 'design', label: 'Design', href: '#design' },
+              { key: 'tokens', label: 'Tokens' },
+            ],
+          },
+        ]}
+      />,
+    );
+
+    const home = screen.getByRole('menuitem', { name: 'Home' });
+    home.focus();
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('Home');
+
+    onOpenChange.mockClear();
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Resources' }));
+    expect(onOpenChange).not.toHaveBeenCalled();
+    const popupDesign = screen.getByRole('menuitem', { name: 'Design' });
+    expect(popupDesign).toHaveClass('custom-design');
+    expect(popupDesign.closest('[data-custom-link="design"]')).not.toBeNull();
   });
 });

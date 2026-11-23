@@ -7,8 +7,7 @@ export function ConfirmBasic() {
   return (
     <Space direction="vertical" align="start">
       <Button
-        danger
-        variant="outline"
+        variant="danger"
         onClick={async () => {
           setResult('');
           const accepted = await confirm({

@@ -3,7 +3,9 @@ import { Bell } from 'lucide-react';
 export function BadgeBasic() {
   return (
     <Badge count={8} aria-label="8 unread notifications">
-      <Button variant="outline" startIcon={<Bell />} aria-label="Notifications" />
+      <Button variant="outline" size="icon" aria-label="Notifications">
+        <Bell />
+      </Button>
     </Badge>
   );
 }

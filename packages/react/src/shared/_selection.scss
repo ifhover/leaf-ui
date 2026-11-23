@@ -1,13 +1,4 @@
-@mixin trigger-padding($component, $inline-end, $inline-start: 3px) {
-  padding-block: var(--leaf-component-#{$component}-padding-top, 3px)
-    var(--leaf-component-#{$component}-padding-bottom, 3px);
-  padding-inline: var(--leaf-component-#{$component}-padding-left, #{$inline-start})
-    var(--leaf-component-#{$component}-padding-right, #{$inline-end});
-  &:where([dir='rtl']) {
-    padding-inline: var(--leaf-component-#{$component}-padding-right, #{$inline-start})
-      var(--leaf-component-#{$component}-padding-left, #{$inline-end});
-  }
-}
+@forward './selection-mixins';
 
 @layer leaf-ui {
   .leaf-selection {
@@ -30,18 +21,24 @@
       gap: 4px;
       min-width: 0;
       max-width: 100%;
-      height: max(
-        1px,
-        calc(
-          var(--leaf-current-control-height) - 6px - 2 *
-            var(--leaf-field-border-width, var(--leaf-border-width, 1px))
+      height: var(
+        --leaf-selection-tag-height,
+        max(
+          1px,
+          min(
+            20px,
+            calc(
+              var(--leaf-current-control-height) - 6px - 2 *
+                var(--leaf-field-border-width, var(--leaf-border-width, 1px))
+            )
+          )
         )
       );
       padding: 0 7px;
-      border-radius: var(--leaf-radius-sm);
+      border-radius: max(0px, calc(var(--leaf-radius) - 6px));
       background: var(--leaf-color-surface-muted);
       box-shadow: inset 0 0 0 1px var(--leaf-color-divider);
-      font-size: var(--leaf-font-size-sm);
+      font-size: max(12px, calc(var(--leaf-font-size) - 2px));
       line-height: var(--leaf-line-height-sm);
       white-space: nowrap;
       &[hidden] {
@@ -57,23 +54,23 @@
         display: grid;
         place-items: center;
         flex: none;
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
+        margin-inline-end: -2px;
         padding: 0;
         border: 0;
-        border-radius: 3px;
+        border-radius: 50%;
         color: var(--leaf-color-text-muted);
         background: transparent;
         cursor: pointer;
-        transition:
-          color var(--leaf-motion-fast),
-          background-color var(--leaf-motion-fast);
+        transition: var(--leaf-action-transition);
         &:hover {
           color: var(--leaf-color-text);
           background: var(--leaf-color-border);
         }
       }
       &[data-custom] {
+        height: auto;
         padding: 0;
         background: transparent;
         box-shadow: none;
@@ -124,11 +121,6 @@
       clip-path: inset(50%);
       overflow: hidden;
       white-space: nowrap;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-selection__tag > button {
-      transition: none;
     }
   }
 }

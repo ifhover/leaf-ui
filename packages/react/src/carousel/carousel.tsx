@@ -121,8 +121,14 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
         if (
           !event.defaultPrevented &&
           !(event.target as HTMLElement).closest('button,a,input,textarea,select,[contenteditable]')
-        )
+        ) {
           pointer.current = event.clientX;
+          const resetPointer = () => {
+            pointer.current = undefined;
+          };
+          window.addEventListener('pointerup', resetPointer, { once: true });
+          window.addEventListener('pointercancel', resetPointer, { once: true });
+        }
       }}
       onPointerUp={(event) => {
         props.onPointerUp?.(event);
@@ -168,7 +174,7 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
         <div ref={track} className="leaf-carousel__track">
           {slides.map((slide, position) => (
             <fieldset
-              key={isValidElement(slide) ? slide.key : `slide-${position}`}
+              key={isValidElement(slide) && slide.key != null ? slide.key : `slide-${position}`}
               id={`${id}-${position}`}
               aria-roledescription={t('carousel.slide')}
               aria-label={`${position + 1} / ${count}`}
@@ -208,7 +214,7 @@ export const Carousel = forwardRef<CarouselHandle, CarouselProps>(function Carou
         <div className="leaf-carousel__dots">
           {slides.map((slide, position) => (
             <button
-              key={isValidElement(slide) ? slide.key : String(slide)}
+              key={isValidElement(slide) && slide.key != null ? slide.key : `dot-${position}`}
               type="button"
               aria-label={format('carousel.goTo', { index: position + 1 })}
               aria-current={position === index ? 'true' : undefined}

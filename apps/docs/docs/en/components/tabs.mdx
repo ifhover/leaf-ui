@@ -18,11 +18,12 @@ Switch content within one region.
 
 ## Basic usage
 
-Define labels and content with `items`; select a tab to switch panels. Unselected line tabs use body text color, then the lighter theme color on hover and the darker theme color when pressed, with a default color transition of 300ms. Selected tabs use the theme color and an underline spanning the tab width. A continuous divider runs along the bottom of the tab bar.
+Define labels and content with `items`; select a tab to switch panels. Unselected line tabs use muted text color and transition crisply to foreground contrast on hover, press and selection; the active tab shows a fading underline spanning its padded width without a full-width bar border.
 
 <ComponentExample exampleId="basic" preview={<TabsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -33,22 +34,24 @@ Define labels and content with `items`; select a tab to switch panels. Unselecte
 
 ### Sizes
 
-Use `size` to set the tab control size. Small and medium line tabs share a font size and differ in vertical spacing; large line tabs increase both the font size and vertical spacing. Each row shows one appearance, with columns comparing small, medium and large sizes. Scroll horizontally on narrow screens.
+Use `size` to set the tab control size (`sm`, `md`, `lg`); line tabs default to control height plus 2px (and expand cleanly for taller label content). Each row shows one appearance, with columns comparing small, medium and large sizes. Scroll horizontally on narrow screens.
 
 <ComponentExample exampleId="sizes" preview={<TabsSizes />} fileName="sizes.tsx" width="100%">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/sizes.tsx"
+
 ```
 
 </ComponentExample>
 
 ### Appearances
 
-Use `type` to choose the tab appearance. For `card` and `segmented` tabs, configure `tone` (`soft` or `solid`) and `shape` (`default` or `pill`).
+Use `type` to choose between `line`, `card` and `segmented` tab appearances, all using restrained monochrome neutral feedback.
 
 <ComponentExample exampleId="appearances" preview={<TabsAppearances />} fileName="appearances.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/appearances.tsx"
+
 ```
 
 </ComponentExample>
@@ -62,6 +65,7 @@ Arrow keys activate the next enabled tab by default; Home / End move to the firs
 <ComponentExample exampleId="view-switcher" preview={<TabsViewSwitcher />} fileName="view-switcher.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/view-switcher.tsx"
+
 ```
 
 </ComponentExample>
@@ -73,6 +77,7 @@ Content mounts on first visit. Visited panels and their input state are kept by 
 <ComponentExample exampleId="preserved" preview={<TabsPreserved />} fileName="preserved.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/preserved.tsx"
+
 ```
 
 </ComponentExample>
@@ -84,6 +89,7 @@ Content mounts on first visit. Visited panels and their input state are kept by 
 <ComponentExample exampleId="closable" preview={<TabsClosable />} fileName="closable.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/closable.tsx"
+
 ```
 
 </ComponentExample>
@@ -95,6 +101,7 @@ Enable `sortable` and store the items returned by `onReorder`. Drag a handle to 
 <ComponentExample exampleId="extensions" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/extensions.tsx"
+
 ```
 
 </ComponentExample>
@@ -106,6 +113,7 @@ Set `placement="bottom"` to place the tabs below the content.
 <ComponentExample exampleId="capabilities" preview={<Capabilities />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/tabs/capabilities.tsx"
+
 ```
 
 </ComponentExample>
@@ -125,8 +133,6 @@ Configure tab data, the active tab and panel retention.
 | `defaultActiveKey` | `string` | First enabled item | Initial tab key in uncontrolled mode; later changes do not reset the selection. |
 | `onChange` | `(key: string) => void` | — | Active key change |
 | `type` | `'line' \| 'card' \| 'segmented'` | `'line'` | Tab appearance |
-| `tone` | `'soft' \| 'solid'` | `'soft'` | Selection highlight tone for card and segmented tabs: soft primary tint or solid primary fill. |
-| `shape` | `'default' \| 'pill'` | `'default'` | Tab corner shape for card and segmented tabs: rounded rectangle or pill. |
 | `placement` | `'top' \| 'bottom'` | `'top'` | Tab bar placement |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Tab size. |
 | `block` | `boolean` | `false` | Fill the available width with equal-width tabs |

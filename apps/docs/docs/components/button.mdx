@@ -8,7 +8,6 @@ import { ButtonIcons } from '../../src/examples/button/icons';
 import { ButtonFullWidth } from '../../src/examples/button/full-width';
 import { ButtonLoading } from '../../src/examples/button/loading';
 import { ButtonGroupDemo } from '../../src/examples/button/button-group';
-import { SplitButtonDemo } from '../../src/examples/button/split-button';
 
 export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 
@@ -25,6 +24,7 @@ export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 <ComponentExample exampleId="basic" preview={<ButtonBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -37,11 +37,12 @@ export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 
 ### 按钮外观
 
-通过 `variant` 选择外观：默认描边、实底、文字或行内链接。行内链接默认使用主题色，悬停时文字变亮，按下时变深，默认颜色过渡为 200ms。
+通过 `variant` 选择外观：默认描边（`outline`）、实底（`solid`）、文字（`text`）、行内链接（`link`）或危险（`danger`）。默认 `outline` 采用无阴影纯边框并在悬停时展示浅灰背景，悬停与按下时边框保持不变且按下保留轻压位移而不做额外变色；行内链接默认使用主题色，悬停时文字变亮，按下时变深，默认颜色过渡为 200ms。
 
 <ComponentExample exampleId="variants" preview={<ButtonVariants />} fileName="variants.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/variants.tsx"
+
 ```
 
 </ComponentExample>
@@ -53,17 +54,19 @@ export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 <ComponentExample exampleId="sizes" preview={<ButtonSizes />} fileName="sizes.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/sizes.tsx"
+
 ```
 
 </ComponentExample>
 
 ### 危险操作
 
-设置 `danger` 表示删除、清空等危险操作，可搭配任意外观。
+设置 `variant="danger"` 表示删除、清空等危险操作；危险按钮仅保留浅红底色与危险文字这一种外观。兼容属性 `danger` 已废弃，请改用 `variant="danger"`。
 
 <ComponentExample exampleId="danger" preview={<ButtonDanger />} fileName="danger.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/danger.tsx"
+
 ```
 
 </ComponentExample>
@@ -75,17 +78,19 @@ export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 <ComponentExample exampleId="states" preview={<ButtonStates />} fileName="states.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/states.tsx"
+
 ```
 
 </ComponentExample>
 
 ### 图标
 
-通过 `startIcon` 和 `endIcon` 添加图标。只有图标时，必须提供 `aria-label`。
+将图标作为子元素直接传入，图标尺寸（`sm` 14px / `md` 16px / `lg` 18px）、图文间距与图标所在一侧的内边距会随按钮 `size` 自动协调；当图标位于包装元素内部或使用自定义按钮元素时，可按需添加 `data-icon="inline-start"` 或 `data-icon="inline-end"`。纯图标按钮使用 `size="icon"`、`icon-sm` 或 `icon-lg` 并提供 `aria-label`。
 
 <ComponentExample exampleId="icons" preview={<ButtonIcons />} fileName="icons.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/icons.tsx"
+
 ```
 
 </ComponentExample>
@@ -97,6 +102,7 @@ export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 <ComponentExample exampleId="full-width" preview={<ButtonFullWidth />} fileName="full-width.tsx">
 
 ```tsx lineNumbers file="../../src/examples/button/full-width.tsx"
+
 ```
 
 </ComponentExample>
@@ -110,28 +116,19 @@ export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 <ComponentExample exampleId="loading" preview={<ButtonLoading />} fileName="loading.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/loading.tsx"
+
 ```
 
 </ComponentExample>
 
 ### 按钮组
 
-使用 `ButtonGroup` 连接相邻操作，并统一配置尺寸或禁用状态。
+使用 `ButtonGroup` 连接相邻操作并统一配置尺寸、外观或禁用状态；搭配 `Dropdown` 与图标按钮即可组合出主操作加扩展菜单的分裂按钮效果。
 
 <ComponentExample exampleId="button-group" preview={<ButtonGroupDemo />} fileName="button-group.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/button/button-group.tsx"
-```
 
-</ComponentExample>
-
-### 分裂按钮
-
-`SplitButton` 将主要操作和相关菜单放在一起；主按钮使用 `onClick`，菜单项分别提供自己的操作。
-
-<ComponentExample exampleId="split-button" preview={<SplitButtonDemo />} fileName="split-button.tsx" width="fit-content">
-
-```tsx lineNumbers file="../../src/examples/button/split-button.tsx"
 ```
 
 </ComponentExample>
@@ -146,13 +143,11 @@ export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | 视觉样式 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸 |
-| `danger` | `boolean` | `false` | 使用红色危险语义，支持所有 variant |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link' \| 'danger'` | `'outline'` | 视觉样式 |
+| `size` | `'sm' \| 'md' \| 'lg' \| 'icon' \| 'icon-sm' \| 'icon-lg'` | `'md'` | 按钮尺寸或纯图标正方形尺寸 |
+| `danger` | `boolean` | `false` | 已废弃，改用 `variant="danger"`；传入时统一回退为危险按钮外观 |
 | `loading` | `boolean` | `false` | 显示加载指示器并禁用交互 |
 | `fullWidth` | `boolean` | `false` | 填满父容器宽度 |
-| `startIcon` | `ReactNode` | — | 文字前的图标，加载时由指示器替代 |
-| `endIcon` | `ReactNode` | — | 文字后的图标 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `type` | `'button' \| 'submit' \| 'reset'` | `'button'` | 原生按钮类型 |
 | `ref` | `Ref<HTMLButtonElement>` | — | 按钮 DOM 引用 |
@@ -163,23 +158,7 @@ export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `size` | `'sm' \| 'md' \| 'lg'` | — | 按钮尺寸 |
+| `size` | `'sm' \| 'md' \| 'lg'` | — | 按钮尺寸，同时会将组内 `size="icon"` 自动适配为对应尺寸的图标按钮 |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link' \| 'danger'` | — | 组内按钮默认视觉样式 |
 | `disabled` | `boolean` | — | 禁用交互。 |
 | `attached` | `boolean` | `true` | 连接相邻按钮 |
-
-### SplitButtonProps API
-
-主操作与下拉操作组合按钮的参数。
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'outline'` | 按钮样式 |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 按钮尺寸。 |
-| `danger` | `boolean` | `false` | 危险操作颜色 |
-| `loading` | `boolean` | `false` | 加载状态 |
-| `fullWidth` | `boolean` | `false` | 占满宽度 |
-| `startIcon` | `ReactNode` | — | 前置图标 |
-| `endIcon` | `ReactNode` | — | 后置图标 |
-| `items` | `readonly `[`DropdownItem`](dropdown#dropdownitem)`[]` | 必填 | 数据项目，保持 key 唯一且稳定 |
-| `menuLabel` | `string` | — | 菜单按钮的可访问名称 |
-| `dropdownProps` | `Omit<`[`DropdownProps`](dropdown#dropdown-api)`, 'items' \| 'children' \| 'disabled'>` | — | 操作菜单属性 |

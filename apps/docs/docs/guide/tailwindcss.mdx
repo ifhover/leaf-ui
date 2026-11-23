@@ -116,7 +116,7 @@ export default {
 | ---------- | ------------------------------------------------------------------------------ |
 | 主题色     | `bg-leaf-primary`、`text-leaf-primary`、`text-leaf-on-primary`                 |
 | 状态色     | `text-leaf-success`、`text-leaf-warning`、`text-leaf-danger`、`text-leaf-info` |
-| 语义色阶   | `bg-leaf-primary-light-9`、`text-leaf-success-dark-3`、`bg-leaf-neutral-100`   |
+| 浅底与文字 | `bg-leaf-primary-soft`、`bg-leaf-success-soft`、`text-leaf-success-ink`、`text-leaf-danger-ink` |
 | 文字颜色   | `text-leaf-text`、`text-leaf-muted`、`text-leaf-subtle`                        |
 | 背景颜色   | `bg-leaf-surface`、`bg-leaf-surface-muted`、`bg-leaf-surface-raised`           |
 | 边框与焦点 | `border-leaf-border`、`border-leaf-divider`、`ring-leaf-focus`                 |
@@ -129,7 +129,7 @@ export default {
 
 </div>
 
-五个语义 family 各提供 `light-3`、`light-7`、`light-9`、`dark-1`、`dark-3`、`dark-7`、`dark-9` 七档；中性色保留 `100`–`900` 九档。颜色名称也可用于 `border-*`、`ring-*`、`fill-*` 等工具类。字号类默认包含主题行高。
+Tailwind 映射覆盖活跃的用途角色：`primary` 提供 `soft` / `soft-hover` / `border` / `hover` / `active` / `on-primary`，其余语义提供 `soft` / `soft-hover` / `ink` / `on-*`（其中 `danger` / `warning` 含 `border`，`danger` 含 `active`）。颜色名称也可用于 `border-*`、`ring-*`、`fill-*` 等工具类；字号类默认包含主题行高。需要静态明暗数值时，可在 JS 侧调用 `generateColorScale` 与 `generateColorShades`。
 
 <DocsCollapse title="更多设计变量">
 
@@ -137,9 +137,9 @@ export default {
 
 | 设计变量       | 工具类示例                                                                                                                                     |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| 主题色交互     | `hover:bg-leaf-primary-hover`、`active:bg-leaf-primary-active`                                                                                 |
-| 危险色交互     | `hover:bg-leaf-danger-hover`、`active:bg-leaf-danger-active`                                                                                   |
-| 状态色上的文字 | `text-leaf-on-warning`、`text-leaf-on-danger`                                                                                                  |
+| 主题色交互     | `hover:bg-leaf-primary-hover`、`active:bg-leaf-primary-active`、`border-leaf-primary-border`                                                   |
+| 危险色交互     | `bg-leaf-danger-soft`、`hover:bg-leaf-danger-soft-hover`、`active:bg-leaf-danger-active`                                                       |
+| 状态色上的文字 | `text-leaf-on-warning`、`text-leaf-on-danger`、`text-leaf-warning-ink`                                                                         |
 | 边框与选项悬停 | `hover:border-leaf-border-hover`、`hover:bg-leaf-option-hover`                                                                                 |
 | 选择控件圆角   | `rounded-leaf-choice`                                                                                                                          |
 | 密度相关间距   | `gap-leaf-form-gap`、`gap-leaf-label-gap`、`py-leaf-row-padding`、`min-h-leaf-option-height`、`p-leaf-option-padding`、`px-leaf-field-padding` |

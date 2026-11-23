@@ -152,10 +152,4 @@
     transition-duration: var(--leaf-motion-duration);
     transition-timing-function: var(--leaf-motion-easing);
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-notification-slot,
-    .leaf-notification {
-      transition: none;
-    }
-  }
 }

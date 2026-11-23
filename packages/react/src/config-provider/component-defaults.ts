@@ -9,7 +9,7 @@ import type { BackTopProps } from '../backtop/backtop';
 import type { BadgeProps } from '../badge/badge';
 import type { BreadcrumbProps } from '../breadcrumb/breadcrumb';
 import type { ButtonProps } from '../button/button';
-import type { ButtonGroupProps, SplitButtonProps } from '../button/group';
+import type { ButtonGroupProps } from '../button/group';
 import type { CalendarProps } from '../calendar/calendar';
 import type { CardProps } from '../card/card';
 import type { CardTitleProps } from '../card/title';
@@ -66,7 +66,13 @@ import type { ResultProps } from '../result/result';
 import type { ScrollAreaProps } from '../scrollarea/scrollarea';
 import type { ScrollbarProps } from '../scrollbar/scrollbar';
 import type { SelectProps } from '../select/select';
-import type { SkeletonProps } from '../skeleton/skeleton';
+import type {
+  SkeletonAvatarProps,
+  SkeletonButtonProps,
+  SkeletonImageProps,
+  SkeletonInputProps,
+  SkeletonProps,
+} from '../skeleton/skeleton';
 import type { SliderProps } from '../slider/slider';
 import type { SpaceProps } from '../space/space';
 import type { SplitterProps } from '../splitter/splitter';
@@ -179,9 +185,12 @@ interface ComponentPropsMap {
   Scrollbar: ScrollbarProps;
   Select: SelectProps;
   Skeleton: SkeletonProps;
+  SkeletonAvatar: SkeletonAvatarProps;
+  SkeletonButton: SkeletonButtonProps;
+  SkeletonImage: SkeletonImageProps;
+  SkeletonInput: SkeletonInputProps;
   Slider: SliderProps;
   Space: SpaceProps;
-  SplitButton: SplitButtonProps;
   Splitter: SplitterProps;
   Statistic: StatisticProps;
   Steps: StepsProps;
@@ -311,11 +320,14 @@ export interface LeafComponentDefaults {
     >
   > | null;
   Skeleton?: Partial<Omit<SkeletonProps, 'key' | 'ref'>> | null;
+  SkeletonAvatar?: Partial<Omit<SkeletonAvatarProps, 'key' | 'ref'>> | null;
+  SkeletonButton?: Partial<Omit<SkeletonButtonProps, 'key' | 'ref'>> | null;
+  SkeletonImage?: Partial<Omit<SkeletonImageProps, 'key' | 'ref'>> | null;
+  SkeletonInput?: Partial<Omit<SkeletonInputProps, 'key' | 'ref'>> | null;
   Slider?: Partial<
     Omit<SliderProps, 'key' | 'ref' | 'range' | 'value' | 'defaultValue' | 'onChange'>
   > | null;
   Space?: Partial<Omit<SpaceProps, 'key' | 'ref'>> | null;
-  SplitButton?: Partial<Omit<SplitButtonProps, 'key' | 'ref' | 'items'>> | null;
   Splitter?: Partial<Omit<SplitterProps, 'key' | 'ref' | 'panels'>> | null;
   Statistic?: Partial<Omit<StatisticProps, 'key' | 'ref' | 'value'>> | null;
   Steps?: Partial<Omit<StepsProps, 'key' | 'ref' | 'items'>> | null;

@@ -384,6 +384,40 @@ describe('new content and interaction families', () => {
     await userEvent.keyboard('{ArrowDown}{Enter}');
     expect(input.value).toBe('Hello @ada  suffix');
   });
+  it('collapses trailing collapsible Splitter panels, normalizes aria-valuenow, and triggers Mentions cleanly after CJK text without duplicate onSearch', async () => {
+    const resize = vi.fn();
+    const search = vi.fn();
+    render(
+      <>
+        <Splitter
+          defaultSizes={[1, 2]}
+          onResizeEnd={resize}
+          panels={[
+            { key: 'main', children: 'Main' },
+            { key: 'aside', collapsible: true, children: 'Aside' },
+          ]}
+        />
+        <Mentions
+          aria-label="中文提及"
+          onSearch={search}
+          options={[{ value: 'ada', label: 'Ada' }]}
+        />
+      </>,
+    );
+    const handle = screen.getByRole('separator');
+    expect(handle).toHaveAttribute('aria-valuenow', '33');
+    await userEvent.click(screen.getByRole('button', { name: '折叠或展开面板' }));
+    expect(resize).toHaveBeenLastCalledWith([100, 0]);
+    await userEvent.click(screen.getByRole('button', { name: '折叠或展开面板' }));
+    expect(Math.round(resize.mock.lastCall?.[0]?.[0] ?? 0)).toBe(33);
+
+    const textarea = screen.getByRole('combobox', { name: '中文提及' }) as HTMLTextAreaElement;
+    fireEvent.change(textarea, { target: { value: '请@ad', selectionStart: 4 } });
+    fireEvent.select(textarea);
+    expect(search).toHaveBeenCalledTimes(1);
+    expect(search).toHaveBeenLastCalledWith('ad', '@');
+    expect(screen.getByRole('option', { name: /Ada/ })).toBeInTheDocument();
+  });
   it('finishes a countdown once even under StrictMode and stops its timer', () => {
     vi.useFakeTimers();
     const finish = vi.fn();

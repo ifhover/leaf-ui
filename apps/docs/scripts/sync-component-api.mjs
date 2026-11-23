@@ -164,17 +164,14 @@ const descriptions = {
   label: ['展示文字或内容。', 'Visible label or content.'],
   title: ['标题内容。', 'Title content.'],
   description: ['补充说明。', 'Additional description.'],
-  divided: [
-    '用浅分隔线划分标题、内容和底部操作区。',
-    'Separate the heading, content and footer with subtle borders.',
-  ],
+  divided: ['在底部操作栏顶部显示细分隔线。', 'Show a subtle divider above the footer action bar.'],
   headerBackground: [
     '标题区域背景；默认继承表面颜色。',
     'Header background; inherits the surface by default.',
   ],
   footerBackground: [
-    '底部操作区域背景；分区外观默认使用淡灰辅助面。',
-    'Footer background; divided surfaces use the muted surface by default.',
+    '底部操作区域背景；默认继承内容表面或保持透明。',
+    'Footer background; inherits the surface or stays transparent by default.',
   ],
   dividerColor: [
     '分区分隔线颜色；默认从边框和表面颜色派生。',
@@ -597,12 +594,12 @@ const choicePopupMaxWidth = [
   'Optional maximum popup width; no additional limit when unset, still bounded by the viewport.',
 ];
 const tableStripedDescription = [
-  '默认显示细行分割线；设置为 true 后从第二行开始展示交替行背景并隐藏行间分割线，bordered 网格始终保留。',
-  'Fine row dividers are shown by default; true adds alternating backgrounds from the second row and hides row dividers, except in bordered grids.',
+  '默认显示细行分割线；设置为 true 后切换为斑马条纹样式，从第二行开始展示交替浅灰背景并隐藏行间分割线。',
+  'Fine row dividers are shown by default; true enables zebra striping from the second row with an alternating light gray background and hides row dividers.',
 ];
 const tableBorderedDescription = [
-  '显示完整行列网格，包含分组表头和末行底线；仅顶部有圆角。',
-  'Show a full cell grid, including grouped headers and the final bottom rule, with rounded top corners.',
+  '仅在表格外层添加边框与四角圆角，内部单元格分割线与表头样式保持不变。',
+  'Add only an outer border and four rounded corners while keeping internal dividers and headers unchanged.',
 ];
 const tableHeightDescription = [
   '表格视口最大高度，表头始终固定，表体在内部滚动；虚拟模式未指定时使用 400。',
@@ -642,7 +639,9 @@ const specificDefaults = {
   'FormFieldProps.controlAlign': ['继承 Form', 'Inherited from Form'],
   'FormFieldProps.settingsControlWidth': ['继承 Form', 'Inherited from Form'],
   'FormProps.settingsControlWidth': ['—', '—'],
-  'ConfirmOptions.type': "`'info'`",
+  'ModalProps.width': ['480（mini 为 340）', '480 (340 for mini)'],
+  'ConfirmOptions.type': "`'default'`",
+  'ConfirmOptions.width': '`340`',
   'ScrollAreaProps.persistent': '`false`',
   'ScrollAreaProps.scrollbar': "`'auto'`",
   'ScrollAreaProps.verticalOffset': '`0`',
@@ -681,10 +680,14 @@ const specificDefaults = {
   'FormErrorSummaryProps.title': ['语言默认值', 'Localized default'],
   'ResultProps.title': '—',
   'ResultProps.description': '—',
+  'FloatButtonProps.placement': "`'bottom-end'`",
+  'FloatButtonGroupProps.placement': "`'bottom-end'`",
   'FloatButtonProps.variant': "`'solid'`",
+  'DrawerProps.showSwipeHandle': [
+    'bottom 为 true，其余为 false',
+    'true for bottom, false otherwise',
+  ],
   'TabsProps.activeKey': '—',
-  'TabsProps.tone': "`'soft'`",
-  'TabsProps.shape': "`'default'`",
   'DatePickerProps.value': '—',
   'DatePickerProps.needConfirm': '`picker === "datetime"`',
   'DatePickerProps.panelVariant': "`'plain'`",
@@ -697,6 +700,7 @@ const specificDefaults = {
   'ScrollbarProps.persistent': '`false`',
   'DateRangePickerProps.defaultTime': "`['00:00:00', '23:59:59']`",
   'InputNumberProps.value': '—',
+  'InputNumberProps.variant': "`'default'`",
   'ColorPickerProps.value': '—',
   'TreeProps.selectedKeys': '—',
   'TreeProps.checkedKeys': '—',
@@ -858,14 +862,21 @@ const apiSectionOrder = {
     'UploadResult',
   ],
   'components/file-list': ['FileListProps', 'FileItem'],
-  'components/modal': ['ModalProps', 'ModalTabsProps'],
-  'components/drawer': ['DrawerProps', 'DrawerTabsProps'],
+  'components/modal': ['ModalProps'],
+  'components/drawer': ['DrawerProps'],
   'components/confirm': ['ConfirmApi', 'ConfirmOptions', 'ConfirmProviderProps'],
   'components/grid': ['GridProps', 'RowProps', 'ColProps'],
   'components/descriptions': ['DescriptionsProps', 'DescriptionItem'],
   'components/anchor': ['AnchorProps', 'AnchorItem', 'AffixProps'],
   'components/breadcrumb': ['BreadcrumbProps', 'BreadcrumbItem'],
   'components/steps': ['StepsProps', 'StepItem'],
+  'components/skeleton': [
+    'SkeletonProps',
+    'SkeletonAvatarProps',
+    'SkeletonButtonProps',
+    'SkeletonInputProps',
+    'SkeletonImageProps',
+  ],
   'components/tabs': ['TabsProps', 'TabItem'],
   'components/dropdown': ['DropdownProps', 'DropdownItem'],
   'components/select': ['SelectProps', 'SelectOption', 'SelectOptionGroup'],
@@ -982,13 +993,12 @@ const apiPropertyOrder = {
   FloatButtonProps: [
     'tooltip',
     'fixed',
+    'placement',
     'variant',
     'size',
     'danger',
     'loading',
     'disabled',
-    'startIcon',
-    'endIcon',
     'fullWidth',
   ],
   FloatButtonGroupProps: [
@@ -998,9 +1008,14 @@ const apiPropertyOrder = {
     'onOpenChange',
     'expandable',
     'fixed',
+    'placement',
     'icon',
     'className',
   ],
+  SkeletonAvatarProps: ['size', 'shape', 'active'],
+  SkeletonButtonProps: ['size', 'shape', 'block', 'active'],
+  SkeletonInputProps: ['size', 'block', 'active'],
+  SkeletonImageProps: ['size', 'active'],
   FloatButtonAction: ['key', 'label', 'icon', 'onClick', 'disabled'],
   MessageApi: ['open', 'success', 'info', 'warning', 'danger', 'error', 'loading', 'close'],
   MessageOptions: ['content', 'type', 'duration', 'closable', 'key', 'onClose'],
@@ -1295,7 +1310,6 @@ const apiPropertyOrder = {
     'open',
     'title',
     'description',
-    'tabs',
     'children',
     'onClose',
     'onConfirm',
@@ -1307,7 +1321,10 @@ const apiPropertyOrder = {
     'cancelButtonProps',
     'footer',
     'icon',
+    'size',
+    'danger',
     'divided',
+    'padding',
     'width',
     'closable',
     'maskClosable',
@@ -1324,7 +1341,6 @@ const apiPropertyOrder = {
     'open',
     'title',
     'description',
-    'tabs',
     'children',
     'onClose',
     'placement',
@@ -1334,11 +1350,13 @@ const apiPropertyOrder = {
     'extra',
     'icon',
     'divided',
+    'padding',
     'closable',
     'maskClosable',
     'keyboard',
     'initialFocus',
     'returnFocus',
+    'showSwipeHandle',
     'resizable',
     'minSize',
     'maxSize',
@@ -1633,6 +1651,7 @@ const apiPropertyOrder = {
     'children',
     'trigger',
     'placement',
+    'arrow',
     'disabled',
     'open',
     'defaultOpen',
@@ -1665,6 +1684,7 @@ const apiPropertyOrder = {
     'defaultOpen',
     'onOpenChange',
     'placement',
+    'arrow',
     'aria-label',
     'width',
     'maxWidth',
@@ -1675,16 +1695,35 @@ const apiPropertyOrder = {
   ],
 };
 const specificTypes = {
+  'CardProps.padding':
+    "number | string | 'none' | { header?: number | string | 'none'; body?: number | string | 'none'; footer?: number | string | 'none' }",
+  'ModalProps.padding':
+    "number | string | 'none' | { header?: number | string | 'none'; body?: number | string | 'none'; footer?: number | string | 'none' }",
+  'DrawerProps.padding':
+    "number | string | 'none' | { header?: number | string | 'none'; body?: number | string | 'none'; footer?: number | string | 'none' }",
   'RadioProps.value': 'string | number | readonly string[]',
   'TreeSelectProps.multiple': 'boolean',
   'TreeSelectProps.treeCheckable': 'boolean',
   'TreeSelectProps.onChange':
     '((value: string | null) => void) | ((value: readonly string[]) => void)',
-  'ResultProps.status': "'empty' | 'success' | 'info' | 'warning' | 'danger' | 'error'",
+  'AlertProps.type': "'default' | 'success' | 'warning' | 'danger' | 'error'",
+  'ResultProps.status': "'empty' | 'success' | 'warning' | 'danger' | 'error'",
   'UseDataTableSelectionOptions.selectedRowKeys': 'readonly DataTableRowSelectionKey[]',
   'UseDataTableSelectionOptions.defaultSelectedRowKeys': 'readonly DataTableRowSelectionKey[]',
 };
 const specific = {
+  'CardProps.padding': [
+    "整体或按 header / body / footer 分区覆盖内边距；数字按 px，'none' 为 0。",
+    "Override card or section (`header`, `body`, `footer`) padding; numbers use pixels and `'none'` sets 0.",
+  ],
+  'ModalProps.padding': [
+    "整体或按 header / body / footer 分区覆盖弹窗内边距；数字按 px，'none' 为 0（Confirm 不继承）。",
+    "Override modal or section (`header`, `body`, `footer`) padding; numbers use pixels and `'none'` sets 0 (Confirm excludes it).",
+  ],
+  'DrawerProps.padding': [
+    "整体或按 header / body / footer 分区覆盖抽屉内边距；数字按 px，'none' 为 0。",
+    "Override drawer or section (`header`, `body`, `footer`) padding; numbers use pixels and `'none'` sets 0.",
+  ],
   'FormProps.layout': [
     '字段默认布局；settings 将标签与描述放在左侧，将控件放在右侧控件列。',
     'Default field layout; settings places labels and descriptions on the left and controls in a right-side control column.',
@@ -1710,15 +1749,16 @@ const specific = {
     'Label-column width for horizontal/settings fields; numbers use pixels and strings accept CSS lengths, percentages, or functions such as clamp(). FormField.labelWidth can override individual fields.',
   ],
   'MenuProps.variant': [
-    '选中项外观：中性、浮起或主题色。',
-    'Selection appearance: neutral, raised or primary.',
+    '选中项外观：中性（默认）、浮起或主题色。',
+    'Selection appearance: neutral (default), raised or primary.',
   ],
   'MenuGroupProps.children': ['分组中的菜单项。', 'Menu items in this group.'],
   'DividerProps.children': ['显示在分割线中的内容。', 'Content displayed within the divider.'],
+  'LoadingProps.variant': ['指示器动画样式。', 'Animation style of the loading indicator.'],
   'LoadingProps.children': ['被加载遮罩覆盖的内容。', 'Content covered by the loading overlay.'],
   'LeafTheme.primaryColor': [
-    '主题基色，浅深外观共用；交互色自动派生。',
-    'Primary base color shared by light and dark appearances; interaction colors are derived automatically.',
+    "主题基色，浅深外观共用；支持 `'neutral'` 自适应黑白单色对比，交互色自动派生。",
+    "Primary base color across light and dark appearances (supports `'neutral'` for adaptive monochrome contrast); interaction colors derive automatically.",
   ],
   'ScrollAreaProps.size': [
     '滚动条尺寸；sm 使用较窄轨道。',
@@ -2071,14 +2111,6 @@ const specific = {
   ],
   'ModalProps.title': ['弹窗标题。', 'Dialog title.'],
   'DrawerProps.title': ['抽屉标题。', 'Drawer title.'],
-  'ModalProps.tabs': [
-    '内嵌标签页；无标题时替代标题栏，有标题时位于其下方；底部分割线始终保留。',
-    'Embedded tabs; replace the heading when untitled or sit beneath it, retaining the tab bar bottom divider.',
-  ],
-  'DrawerProps.tabs': [
-    '内嵌标签页；无标题时替代标题栏，有标题时位于其下方；底部分割线始终保留。',
-    'Embedded tabs; replace the heading when untitled or sit beneath it, retaining the tab bar bottom divider.',
-  ],
   'ModalProps.onConfirm': [
     '默认确认按钮的操作，可返回 Promise；等待期间阻止重复确认和默认关闭。成功后应用仍须更新 open。',
     'Default confirm-button action, optionally returning a Promise; blocks repeated confirmation and built-in closing while pending. The application must still update open after success.',
@@ -2135,13 +2167,25 @@ const specific = {
     '推动最近的父弹层；true 使用 40px，数字指定距离。',
     'Push the nearest parent overlay; true uses 40px and a number specifies the distance.',
   ],
+  'DrawerProps.showSwipeHandle': [
+    '在靠近展开边缘的一侧显示拖拽手柄条并支持滑动关闭；bottom 方向默认开启。',
+    'Show a swipe handle bar along the leading edge to close by dragging; enabled by default for bottom drawers.',
+  ],
   'DrawerProps.onResize': [
     '用户拖动或键盘调整时返回新尺寸；width 或 height 改变会重置手动尺寸。',
     'Return the new size on pointer or keyboard resizing; changing width or height resets the manual size.',
   ],
   'ConfirmApi.confirm': [
-    '等待决定并返回 boolean；确认成功为 true，取消或调用区域卸载为 false，不等待关闭动画。',
-    'Resolve to a boolean on decision: true after successful confirmation, false on cancellation or caller unmount, without waiting for the closing animation.',
+    '等待决定并返回 boolean；确认成功为 true，取消、onConfirm 失败或调用区域卸载为 false，不等待关闭动画。',
+    'Resolve to a boolean on decision: true after successful confirmation, false on cancellation, `onConfirm` failure or caller unmount, without waiting for the closing animation.',
+  ],
+  'ConfirmOptions.onConfirm': [
+    '确认操作；成功后自动关闭，抛出错误则关闭当前框（返回 false）并弹出单按钮失败提示。',
+    'Action to run on confirmation; closes on success, or closes the dialog (resolving false) and opens a single-action failure notice on rejection.',
+  ],
+  'ConfirmOptions.type': [
+    '状态图标与语义风格；仅 danger 改变确定按钮样式，success 默认隐藏取消按钮。',
+    'Status icon and semantic styling; only danger styles the confirm button, and success hides Cancel by default.',
   ],
   'ConfirmProviderProps.children': [
     '共用此独立确认队列的内容；ConfigProvider 已自动提供队列，嵌套 ConfigProvider 不另建队列。',
@@ -2384,10 +2428,12 @@ const specific = {
     '禁止显示提示，不禁用触发元素。',
     'Suppress the tooltip without disabling its trigger.',
   ],
-  'TooltipProps.arrow': [
-    '是否显示指向触发元素的箭头。',
-    'Whether to show the arrow pointing to the trigger.',
-  ],
+  ...Object.fromEntries(
+    ['TooltipProps', 'PopoverProps', 'PopconfirmProps'].map((name) => [
+      `${name}.arrow`,
+      ['是否显示指向触发元素的箭头。', 'Whether to show the arrow pointing to the trigger.'],
+    ]),
+  ),
   'PopconfirmProps.aria-label': [
     '确认浮层的可访问名称；默认使用字符串标题或当前语言的确认名称。',
     'Accessible name of the confirmation panel; defaults to a string title or the localized confirmation label.',
@@ -2507,6 +2553,50 @@ const specific = {
     'Use pill-shaped title and body placeholders; the avatar is unchanged.',
   ],
   'SkeletonProps.children': ['加载完成后展示的内容。', 'Content shown after loading finishes.'],
+  'SkeletonAvatarProps.size': [
+    '头像占位尺寸，支持预设尺寸或像素值。',
+    'Avatar placeholder size as a preset or pixel number.',
+  ],
+  'SkeletonAvatarProps.shape': ['头像占位形状。', 'Avatar placeholder shape.'],
+  'SkeletonAvatarProps.active': ['启用占位动画。', 'Animate the placeholder.'],
+  'SkeletonButtonProps.size': ['按钮占位高度尺寸。', 'Button placeholder height size.'],
+  'SkeletonButtonProps.shape': ['按钮占位轮廓形状。', 'Button placeholder shape.'],
+  'SkeletonButtonProps.block': [
+    '是否撑满父容器宽度。',
+    'Stretch the placeholder to the container width.',
+  ],
+  'SkeletonButtonProps.active': ['启用占位动画。', 'Animate the placeholder.'],
+  'SkeletonInputProps.size': ['输入框占位高度尺寸。', 'Input placeholder height size.'],
+  'SkeletonInputProps.block': [
+    '是否撑满父容器宽度。',
+    'Stretch the placeholder to the container width.',
+  ],
+  'SkeletonInputProps.active': ['启用占位动画。', 'Animate the placeholder.'],
+  'SkeletonImageProps.size': [
+    '图片占位宽高像素尺寸。',
+    'Square pixel size of the image placeholder.',
+  ],
+  'SkeletonImageProps.active': ['启用占位动画。', 'Animate the placeholder.'],
+  'FloatButtonProps.placement': [
+    '固定定位时相对视口的角落位置。',
+    'Viewport corner used when fixed positioning is active.',
+  ],
+  'FloatButtonGroupProps.placement': [
+    '固定定位时相对视口的角落位置。',
+    'Viewport corner used when fixed positioning is active.',
+  ],
+  'VirtualListProps.height': [
+    '高度，数字按像素计算，也支持 CSS 长度。',
+    'Height; numbers are in pixels and CSS lengths are also supported.',
+  ],
+  'VirtualListHandle.scrollToIndex': [
+    '滚动至项目；第三个参数可传入平滑滚动行为。',
+    'Scroll to an item; optionally pass a scroll behavior.',
+  ],
+  'VirtualListHandle.scrollToOffset': [
+    '滚动至偏移量；第二个参数可传入平滑滚动行为。',
+    'Scroll to an offset; optionally pass a scroll behavior.',
+  ],
   'LoadingBarApi.start': [
     '开始任务，返回仅完成该任务的函数；应在 finally 或取消清理时调用。',
     'Start a task and return its completion function; call it in finally or cancellation cleanup.',
@@ -2612,6 +2702,10 @@ const specific = {
     'Increment per adjustment; null restricts selection to marks.',
   ],
   'FloatButtonProps.variant': ['按钮外观，默认使用实底。', 'Button appearance; solid by default.'],
+  'FloatButtonProps.danger': [
+    '已废弃，改用 `variant="danger"`；传入时统一回退为危险按钮外观。',
+    'Deprecated; use `variant="danger"`. Falls back to the danger appearance when set.',
+  ],
   'TabsProps.activeKey': [
     '受控的当前标签 key，配合 onChange 更新。',
     'Controlled active tab key; update it with onChange.',
@@ -2619,14 +2713,6 @@ const specific = {
   'TabsProps.defaultActiveKey': [
     '非受控模式的初始标签 key，后续变化不重置选中项。',
     'Initial tab key in uncontrolled mode; later changes do not reset the selection.',
-  ],
-  'TabsProps.tone': [
-    '卡片或分段形态的选中高亮风格：soft 为主题浅底，solid 为主题实底。',
-    'Selection highlight tone for card and segmented tabs: soft primary tint or solid primary fill.',
-  ],
-  'TabsProps.shape': [
-    '卡片或分段形态的标签圆角：default 为圆角矩形，pill 为胶囊形。',
-    'Tab corner shape for card and segmented tabs: rounded rectangle or pill.',
   ],
   'DatePickerProps.value': [
     '受控值：日期 / 日期时间为 Date，纯时间为 HH:mm[:ss] 字符串；空值为 null。',
@@ -2643,6 +2729,10 @@ const specific = {
   'InputNumberProps.defaultValue': [
     '非受控初始值；stringMode 时使用字符串，表单重置时恢复。',
     'Initial uncontrolled value, a string in stringMode; restored on form reset.',
+  ],
+  'InputNumberProps.variant': [
+    '步进按钮布局样式；split 在输入框左右两侧分别展示减少、增加按钮。',
+    'Step control layout; split places standalone decrease and increase buttons outside both sides of the input.',
   ],
   'TreeProps.showLine': ['显示节点之间的层级连接线。', 'Show hierarchy connector lines.'],
   'TreeProps.showIcon': [
@@ -2684,6 +2774,18 @@ const specific = {
   'TreeProps.checkStrictly': [
     '勾选时不联动父子节点；配合 checkable 使用。',
     'Keep parent and child checks independent; use with checkable.',
+  ],
+  'ModalProps.size': [
+    "弹窗尺寸；'mini' 切换为居中图标标题、窄宽及底栏按钮等分的确认布局。",
+    "Modal size; `'mini'` uses a compact centered confirmation layout with equal-width footer buttons.",
+  ],
+  'ModalProps.danger': [
+    '使用危险样式高亮确认按钮及标题图标底座。',
+    'Highlight the confirm button and header icon tray with danger styling.',
+  ],
+  'ModalProps.width': [
+    '弹窗宽度，数字为像素；size="mini" 时默认 340。',
+    'Modal width in pixels for numbers; defaults to 340 when size is mini.',
   ],
   'ModalProps.closable': ['显示右上角关闭按钮。', 'Show the close button.'],
   'ModalProps.maskClosable': ['点击遮罩时请求关闭。', 'Request closing when the mask is clicked.'],
@@ -3069,12 +3171,12 @@ const specific = {
     'Supporting text below the title; only supported by the default appearance, not layered.',
   ],
   'CardProps.footer': [
-    '底部内容或操作；layered 展示在内容卡下方的外层区域。',
-    'Footer content or actions; layered places them on the canvas below the content card.',
+    '底部内容或操作；默认带浅底与底部分割线并右对齐布局（可通过 `divided={false}` 关闭分割线），layered 外观展示在内容卡下方的外层画布。',
+    'Footer content or actions; uses a right-aligned flex row with subtle background and top divider by default (`divided={false}` hides the divider), while layered places it on the outer canvas below the content card.',
   ],
-  'CardProps.selected': [
-    '标记选中外观，不提供选择交互；使用按钮或选择控件管理选中状态。',
-    'Mark the card as selected; use a button or selection control to manage selection.',
+  'CardProps.divided': [
+    '在底部操作栏顶部显示细分隔线；layered 外观不显示。',
+    'Show a subtle divider above the footer action bar; omitted on layered cards.',
   ],
   'CardProps.loading': [
     '将正文和标签页内容替换为骨架屏；不会禁用标题、标签页或操作。',
@@ -3124,11 +3226,14 @@ const specific = {
     'soft 使用状态底色；neutral 使用中性底色并保留语义图标颜色。',
     'Soft uses a semantic surface; neutral uses a neutral surface with a semantic icon.',
   ],
-  'ModalProps.icon': ['标题左侧的装饰图标。', 'Decorative icon to the left of the heading.'],
+  'ModalProps.icon': [
+    '标题装饰图标；md 位于标题左侧，mini 位于标题上方居中底座。',
+    'Decorative header icon (beside the heading in md; centered above it in mini).',
+  ],
   'DrawerProps.icon': ['标题左侧的装饰图标。', 'Decorative icon to the left of the heading.'],
   'ConfirmOptions.icon': [
-    '标题旁的状态图标；无标题时位于正文旁，传入 null 隐藏。',
-    'Semantic icon beside the title, or the explanation when untitled; null hides it.',
+    '标题上方居中底座的内置状态或自定义图标；传入 null 隐藏。',
+    'Built-in status or custom icon in the centered header tray above the title; null hides it.',
   ],
   'ProgressProps.active': [
     '未完成的线形进度是否显示流光；设为 true 开启，完成、错误或不确定进度时自动停止。',
@@ -3164,17 +3269,13 @@ const specific = {
     '由 useDataTable 或 useReactTable 创建的实例；与 data、columns、rowKey、options 和 localPagination 互斥。',
     'Instance from useDataTable or useReactTable; mutually exclusive with data, columns, rowKey, options and localPagination.',
   ],
-  'DataTableProps.renderRowHeader': [
-    '为每条记录的正常列上方渲染通栏信息行；选择控件跨两行，展开入口显示在信息行右侧。分页和排序仍按记录计算。',
-    'Render a spanning information row above each record. Selection spans both rows, and expansion controls move to its trailing edge. Pagination and sorting still operate on records.',
-  ],
   'DataTableProps.getRowProps': [
-    '自定义正常数据行的属性与事件；selected 样式同时应用于该记录的信息行。',
-    'Customize the regular data row attributes and events; selected styling also applies to its information row.',
+    '自定义数据行的属性与事件。',
+    'Customize data row attributes and events.',
   ],
   'DataTableVirtualOptions.estimateRowHeight': [
-    '测量前的估算记录高度，包含信息行、数据行与展开详情。',
-    'Estimated record height before measurement, including its information row, data row and expanded details.',
+    '测量前的估算记录高度，包含数据行与展开详情。',
+    'Estimated record height before measurement, including the data row and expanded details.',
   ],
   'DataTableProps.pagination': tablePaginationDescription,
   'DataTablePresentationProps.pagination': tablePaginationDescription,
@@ -3197,6 +3298,10 @@ const specific = {
   'DataTableColumnMeta.label': [
     '排序和列宽调整使用的纯文字列名。',
     'Plain-text column name for sorting and resize controls.',
+  ],
+  'DataTableColumnMeta.ellipsis': [
+    '是否开启单行省略截断；启用后自动切换为固定列宽分配以约束内容宽度。',
+    'Truncate overflowing cell content onto a single line with an ellipsis; automatically enables fixed width allocation.',
   ],
   'DataTableColumnMeta.flex': [
     '分配剩余宽度的正数权重，受 minSize / maxSize 约束；固定列和手动调整宽度的列忽略此项。',
@@ -3530,6 +3635,7 @@ function typeCell(value, page, english, preserveAliases = false) {
   return pieces.join('') || code(text);
 }
 const contractDescriptions = new Set([
+  'divided',
   'disabled',
   'readOnly',
   'inputReadOnly',
@@ -3592,8 +3698,7 @@ for (const [page, names] of byPage) {
       // 内嵌标签页直接复用独立 Tabs API 说明，不重复生成整张表格。
       if (
         (page === 'components/card' && name === 'CardTabsProps') ||
-        (page === 'components/modal' && name === 'ModalTabsProps') ||
-        (page === 'components/drawer' && name === 'DrawerTabsProps')
+        (page === 'guide/theming' && (name === 'SectionPadding' || name === 'ContainerPadding'))
       )
         continue;
       const props = schema.get(name);
@@ -3754,19 +3859,7 @@ for (const [page, names] of byPage) {
                 '内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Card 固定使用 `type="line"` 与 `placement="top"`，并为标签页内容接入加载骨架；`tabs.extra` 仍属于标签栏，`items` 为空时恢复普通卡片。\n\n```ts\ntype CardTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
                 'See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Card fixes `type="line"` and `placement="top"`, adds loading skeletons to tab content, and keeps `tabs.extra` on the tab bar; an empty `items` list restores an ordinary card.\n\n```ts\ntype CardTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
               ]
-            : page === 'components/modal'
-              ? [
-                  'ModalTabsProps',
-                  '内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Modal 固定使用 `type="line"` 与 `placement="top"`，标签栏固定在正文滚动区上方，底部分割线不受 `divided={false}` 影响；`items` 为空时恢复普通弹窗。\n\n```ts\ntype ModalTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
-                  'See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Modal fixes `type="line"` and `placement="top"`, keeps the tab bar fixed above the scrollable body with its bottom divider always visible regardless of `divided={false}`, and restores an ordinary modal when `items` is empty.\n\n```ts\ntype ModalTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
-                ]
-              : page === 'components/drawer'
-                ? [
-                    'DrawerTabsProps',
-                    '内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Drawer 固定使用 `type="line"` 与 `placement="top"`，标签栏固定在正文滚动区上方，底部分割线不受 `divided={false}` 影响；`items` 为空时恢复普通抽屉。\n\n```ts\ntype DrawerTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
-                    'See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Drawer fixes `type="line"` and `placement="top"`, keeps the tab bar fixed above the scrollable body with its bottom divider always visible regardless of `divided={false}`, and restores an ordinary drawer when `items` is empty.\n\n```ts\ntype DrawerTabsProps = Omit<TabsProps, \'type\' | \'placement\' | \'children\'>;\n```',
-                  ]
-                : undefined;
+            : undefined;
     if (sharedReference) {
       const sharedSection = apiSectionMatch(document, sharedReference[0]);
       if (sharedSection) {

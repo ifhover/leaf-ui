@@ -20,8 +20,33 @@ describe('Drawer', () => {
     const dialog = screen.getByRole('dialog', { name: 'Workspace' });
     expect(dialog).toHaveAccessibleDescription('Manage the connected services');
     expect(dialog.querySelector('.leaf-drawer__icon')).toHaveAttribute('aria-hidden', 'true');
+    expect(dialog.querySelector('.leaf-drawer__header > .leaf-drawer__close')).toBeNull();
+    expect(dialog).toHaveClass('leaf-drawer--closable');
+    expect(dialog.querySelector(':scope > .leaf-drawer__close')).not.toBeNull();
     expect(dialog).not.toHaveClass('leaf-drawer--divided');
     expect(dialog).not.toHaveClass('leaf-drawer--card');
+  });
+  it('omits empty headers on untitled drawers unless extra actions are supplied', () => {
+    const { rerender } = render(
+      <Drawer open aria-label="Plain drawer">
+        Plain body
+      </Drawer>,
+    );
+    const plain = screen.getByRole('dialog', { name: 'Plain drawer' });
+    expect(plain).toHaveClass('leaf-drawer--closable');
+    expect(plain.querySelector('.leaf-drawer__header')).toBeNull();
+    expect(plain.querySelector(':scope > .leaf-drawer__close')).not.toBeNull();
+
+    rerender(
+      <Drawer open aria-label="Extra drawer" extra={<button type="button">Help</button>}>
+        Body with extra
+      </Drawer>,
+    );
+    const withExtra = screen.getByRole('dialog', { name: 'Extra drawer' });
+    expect(
+      withExtra.querySelector('.leaf-drawer__header--compact > .leaf-drawer__extra'),
+    ).not.toBeNull();
+    expect(withExtra.querySelector(':scope > .leaf-drawer__close')).not.toBeNull();
   });
   it('shares scroll and focus ownership with nested modals and picker portals', async () => {
     function Example() {
@@ -61,75 +86,6 @@ describe('Drawer', () => {
     await userEvent.keyboard('{Escape}');
     expect(document.body.style.overflow).toBe('');
     expect(screen.getByRole('button', { name: 'Open drawer' })).toHaveFocus();
-  });
-  it('embeds top line tabs outside the scrolling body and preserves panel state', async () => {
-    const tabItems = [
-      { key: 'profile', label: 'Profile', children: <input aria-label="Display name" /> },
-      { key: 'tokens', label: 'Tokens', children: 'Access tokens' },
-    ];
-    render(
-      <Drawer
-        open
-        title={<span>Account</span>}
-        extra={<button type="button">Help</button>}
-        tabs={{ items: tabItems }}
-      >
-        Shared footer hint
-      </Drawer>,
-    );
-    const dialog = screen.getByRole('dialog', { name: 'Account' });
-    expect(dialog).toHaveClass('leaf-drawer--tabbed', 'leaf-drawer--headed');
-    expect(dialog).not.toHaveClass('leaf-drawer--divided');
-    const tablist = screen.getByRole('tablist', { name: 'Account' });
-    const body = dialog.querySelector('.leaf-drawer__body');
-    expect(body?.contains(tablist)).toBe(false);
-    expect(body?.contains(screen.getByRole('tabpanel', { name: 'Profile' }))).toBe(true);
-    expect(screen.getByText('Shared footer hint').closest('.leaf-drawer__content')).not.toBeNull();
-
-    await userEvent.type(screen.getByRole('textbox', { name: 'Display name' }), 'Alice');
-    await userEvent.click(screen.getByRole('tab', { name: 'Tokens' }));
-    expect(screen.getByRole('tabpanel', { name: 'Tokens' })).toHaveTextContent('Access tokens');
-    await userEvent.click(screen.getByRole('tab', { name: 'Profile' }));
-    expect(screen.getByRole('textbox', { name: 'Display name' })).toHaveValue('Alice');
-  });
-  it('supports header-only tabs and places extra and close actions on untitled drawer tabs', async () => {
-    const close = vi.fn();
-    function Example() {
-      const [view, setView] = useState('summary');
-      return (
-        <Drawer
-          open
-          aria-label="Inspect"
-          extra={<button type="button">Refresh</button>}
-          footer={<div>Footer actions</div>}
-          onClose={close}
-          tabs={{
-            activeKey: view,
-            onChange: setView,
-            items: [
-              { key: 'summary', label: 'Summary' },
-              { key: 'events', label: 'Events' },
-            ],
-          }}
-        >
-          {view === 'summary' ? 'Summary view' : 'Events view'}
-        </Drawer>
-      );
-    }
-    render(<Example />);
-    const dialog = screen.getByRole('dialog');
-    expect(dialog.querySelector('.leaf-drawer__header')).toBeNull();
-    expect(dialog.querySelector('.leaf-tabs__panels')).toBeNull();
-    expect(screen.queryByRole('tabpanel')).toBeNull();
-    expect(screen.getByRole('tab', { name: 'Summary' })).not.toHaveAttribute('aria-controls');
-    expect(dialog.querySelector('.leaf-drawer__body')).not.toBeNull();
-    expect(dialog.querySelector('.leaf-drawer__tab-extra > .leaf-drawer__extra')).not.toBeNull();
-    expect(dialog.querySelector('.leaf-drawer__tab-extra > .leaf-drawer__close')).not.toBeNull();
-
-    await userEvent.click(screen.getByRole('tab', { name: 'Events' }));
-    expect(screen.getByText('Events view')).toBeInTheDocument();
-    await userEvent.click(dialog.querySelector('.leaf-drawer__close') as HTMLButtonElement);
-    expect(close).toHaveBeenCalledOnce();
   });
   it('stacks a newly opened drawer above an earlier open modal and preserves closing order', async () => {
     function Example({ snapshotKey }: { snapshotKey: number }) {
@@ -192,5 +148,112 @@ describe('Drawer', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Open snapshot' }));
     await userEvent.click(screen.getByRole('button', { name: 'Open merchant' }));
     expect(drawerMask.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 2)');
+  });
+
+  it('supports section-level padding overrides without changing default divided behavior', () => {
+    const { rerender } = render(
+      <Drawer open title="Drawer spacing" padding={{ body: 'none', header: 16 }}>
+        Body
+      </Drawer>,
+    );
+    const dialog = screen.getByRole('dialog', { name: 'Drawer spacing' });
+    expect(dialog).not.toHaveClass('leaf-drawer--divided');
+    expect(dialog).toHaveAttribute('data-header-padding', '');
+    expect(dialog).toHaveAttribute('data-body-padding', '');
+    expect(dialog).not.toHaveAttribute('data-footer-padding');
+    expect(dialog.style.getPropertyValue('--leaf-drawer-header-padding')).toBe('16px');
+    expect(dialog.style.getPropertyValue('--leaf-drawer-body-padding')).toBe('0px');
+    expect(dialog.style.getPropertyValue('--leaf-drawer-footer-padding')).toBe('');
+    expect(dialog.style.getPropertyValue('--leaf-drawer-close-inset-top')).toBe('16px');
+    expect(dialog.style.getPropertyValue('--leaf-drawer-close-inset-right')).toBe('16px');
+    expect(dialog.style.getPropertyValue('--leaf-drawer-close-inset-left')).toBe('16px');
+
+    rerender(
+      <Drawer open title="Divided drawer" divided padding="none">
+        Body
+      </Drawer>,
+    );
+    const divided = screen.getByRole('dialog', { name: 'Divided drawer' });
+    expect(divided).toHaveClass('leaf-drawer--divided');
+    expect(divided).not.toHaveAttribute('data-header-padding');
+    expect(divided.style.getPropertyValue('--leaf-drawer-shell-padding-top')).toBe('0px');
+    expect(divided.style.getPropertyValue('--leaf-drawer-header-padding')).toBe('0px');
+    expect(divided.style.getPropertyValue('--leaf-drawer-body-padding')).toBe('0px');
+    expect(divided.style.getPropertyValue('--leaf-drawer-footer-padding')).toBe('0px');
+  });
+
+  it('defaults showSwipeHandle on bottom placement, honors overrides, and closes when swiped past threshold', () => {
+    const close = vi.fn();
+    const { rerender } = render(
+      <Drawer open title="Right drawer" onClose={close}>
+        Body
+      </Drawer>,
+    );
+    const rightDialog = screen.getByRole('dialog', { name: 'Right drawer' });
+    expect(rightDialog).not.toHaveClass('leaf-drawer--swipeable');
+    expect(rightDialog.querySelector('[data-swipe-handle]')).toBeNull();
+
+    rerender(
+      <Drawer open placement="bottom" title="Bottom sheet" onClose={close}>
+        Body
+      </Drawer>,
+    );
+    const bottomDialog = screen.getByRole('dialog', { name: 'Bottom sheet' });
+    expect(bottomDialog).toHaveClass('leaf-drawer--placement-bottom', 'leaf-drawer--swipeable');
+    const handle = bottomDialog.querySelector<HTMLElement>('[data-swipe-handle]');
+    expect(handle).toHaveClass('leaf-drawer__swipe-handle--bottom');
+    expect(handle).toHaveAttribute('aria-hidden', 'true');
+
+    if (!handle) throw new Error('Swipe handle missing');
+    fireEvent.pointerDown(handle, { pointerId: 1, button: 0, clientX: 100, clientY: 100 });
+    expect(bottomDialog).toHaveAttribute('data-swiping', 'true');
+    fireEvent.pointerMove(window, { pointerId: 1, clientX: 100, clientY: 120 });
+    expect(bottomDialog.style.getPropertyValue('--leaf-drawer-swipe-transform')).toBe(
+      'translateY(20px)',
+    );
+    fireEvent.pointerUp(window, { pointerId: 1, clientX: 100, clientY: 120 });
+    expect(close).not.toHaveBeenCalled();
+    expect(bottomDialog).not.toHaveAttribute('data-swiping');
+
+    fireEvent.pointerDown(handle, { pointerId: 2, button: 0, clientX: 100, clientY: 100 });
+    fireEvent.pointerMove(window, { pointerId: 2, clientX: 100, clientY: 240 });
+    fireEvent.pointerUp(window, { pointerId: 2, clientX: 100, clientY: 240 });
+    expect(close).toHaveBeenCalledOnce();
+
+    rerender(
+      <Drawer open placement="bottom" showSwipeHandle={false} title="No handle" onClose={close}>
+        Body
+      </Drawer>,
+    );
+    expect(screen.getByRole('dialog', { name: 'No handle' })).not.toHaveClass(
+      'leaf-drawer--swipeable',
+    );
+    expect(
+      screen.getByRole('dialog', { name: 'No handle' }).querySelector('[data-swipe-handle]'),
+    ).toBeNull();
+
+    rerender(
+      <Drawer open placement="right" showSwipeHandle title="Right swipe" onClose={close}>
+        Body
+      </Drawer>,
+    );
+    const rightSwipe = screen.getByRole('dialog', { name: 'Right swipe' });
+    expect(rightSwipe).toHaveClass('leaf-drawer--swipeable');
+    expect(rightSwipe.querySelector('[data-swipe-handle]')).toHaveClass(
+      'leaf-drawer__swipe-handle--right',
+    );
+  });
+
+  it('uses localized drawer resize label on the resize separator handle', () => {
+    render(
+      <ConfigProvider locale="en-US">
+        <Drawer open resizable width={360} title="Resizable">
+          Body
+        </Drawer>
+      </ConfigProvider>,
+    );
+    const separator = screen.getByRole('separator', { name: 'Resize drawer' });
+    expect(separator).toHaveAttribute('aria-orientation', 'vertical');
+    expect(separator).toHaveAttribute('aria-valuenow', '360');
   });
 });

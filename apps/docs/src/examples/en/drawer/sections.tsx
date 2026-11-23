@@ -1,4 +1,4 @@
-import { Button, Drawer, Form, FormField, Input, Space } from '@ifhover/leaf-ui';
+import { Button, Drawer, Form, FormField, Input } from '@ifhover/leaf-ui';
 import { useId, useState } from 'react';
 
 export function DrawerSections() {
@@ -10,14 +10,16 @@ export function DrawerSections() {
       <Drawer
         open={open}
         title="Edit name"
+        description="The updated name appears in document lists and shared links."
+        divided
         onClose={() => setOpen(false)}
         footer={
-          <Space wrap>
+          <>
             <Button onClick={() => setOpen(false)}>Cancel</Button>
             <Button variant="solid" type="submit" form={formId}>
               Save
             </Button>
-          </Space>
+          </>
         }
       >
         <Form

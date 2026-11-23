@@ -298,4 +298,16 @@ describe('ColorPicker', () => {
     expect(screen.getByRole('button', { name: '选择颜色' })).toBeDisabled();
     expect(screen.queryByRole('dialog')).toBeNull();
   });
+
+  it('uses floating hover-reveal clear with showText and inline always-visible clear for swatch triggers', () => {
+    const { container, rerender } = render(<ColorPicker defaultValue="#1677ff" allowClear />);
+    const swatchClear = container.querySelector('.leaf-clear');
+    expect(swatchClear).toHaveClass('leaf-clear--inline', 'leaf-clear--always');
+
+    rerender(<ColorPicker defaultValue="#1677ff" showText allowClear />);
+    const textClear = container.querySelector('.leaf-clear');
+    expect(textClear).not.toBeNull();
+    expect(textClear).not.toHaveClass('leaf-clear--inline');
+    expect(textClear).not.toHaveClass('leaf-clear--always');
+  });
 });

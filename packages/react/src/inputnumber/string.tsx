@@ -1,10 +1,9 @@
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
-import { classes } from '../shared/classes';
-import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
+import { useFieldValue, useMergedRef } from '../shared/field';
 import { addDecimal, compareDecimal, decimalParts, roundDecimal } from './decimal';
+import { InputNumberFrame } from './frame';
 import type { NumericInputNumberProps } from './inputnumber';
 export interface StringInputNumberProps
   extends Omit<
@@ -34,9 +33,10 @@ export const ExactInputNumber = forwardRef<HTMLInputElement, StringInputNumberPr
       grouping,
       locale: numberLocale,
       controls = true,
+      variant = 'default',
       keyboard = true,
       size = 'md',
-      status,
+      status: statusProp,
       prefix,
       suffix,
       disabled: disabledProp,
@@ -75,19 +75,31 @@ export const ExactInputNumber = forwardRef<HTMLInputElement, StringInputNumberPr
       },
       [formatter, precision, grouping, group, decimal],
     );
-    const parse = (text: string) => {
-      const raw = parser
-        ? String(parser(text))
-        : grouping
-          ? text.split(group).join('').replace(decimal, '.')
-          : text;
-      return decimalParts(raw) ? roundDecimal(raw) : null;
-    };
+    const parse = useCallback(
+      (text: string) => {
+        const raw = parser
+          ? String(parser(text))
+          : grouping
+            ? text.split(group).join('').replace(decimal, '.')
+            : text;
+        return decimalParts(raw) ? roundDecimal(raw) : null;
+      },
+      [parser, grouping, group, decimal],
+    );
     const [draft, setDraft] = useState(() => format(current));
     const editing = useRef(false);
+    const inputChanged = useRef(false);
     useEffect(() => {
-      if (!editing.current) setDraft(format(current));
-    }, [current, format]);
+      if (inputChanged.current && input.current?.value === draft) {
+        inputChanged.current = false;
+        input.current?.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    }, [draft]);
+    useEffect(() => {
+      setDraft((text) =>
+        editing.current && parse(text) === current ? text : current === null ? '' : format(current),
+      );
+    }, [current, format, parse]);
     useEffect(() => {
       const owner = input.current?.form;
       const reset = (event: Event) =>
@@ -128,57 +140,88 @@ export const ExactInputNumber = forwardRef<HTMLInputElement, StringInputNumberPr
     const commit = () => {
       if (disabled || readOnly) return;
       const next = !draft.trim() ? null : parsed === null ? current : normalize(parsed);
-      setDraft(format(next));
+      const nextDraft = format(next);
+      inputChanged.current = nextDraft !== draft;
+      setDraft(nextDraft);
       emit(next);
     };
     const increment = (direction: number) => {
       if (disabled || readOnly) return;
       const amount = decimalParts(step) && compareDecimal(step, 0) > 0 ? step : '1';
       const next = normalize(addDecimal(parsed ?? current ?? '0', amount, direction));
-      setDraft(format(next));
+      const nextDraft = format(next);
+      inputChanged.current = nextDraft !== draft;
+      setDraft(nextDraft);
       emit(next);
       input.current?.focus();
     };
+    const resolvedStatus = statusProp ?? (field?.error ? 'error' : undefined);
+    const toAriaNumber = (raw: string | null | undefined) => {
+      if (raw == null || raw === '') return undefined;
+      const numeric = Number(raw);
+      return Number.isFinite(numeric) ? numeric : undefined;
+    };
     return (
-      <div
-        className={classes('leaf-input-number', `leaf-input-number--${size}`, className)}
+      <InputNumberFrame
+        variant={variant}
+        size={size}
+        status={resolvedStatus}
+        disabled={disabled}
+        controls={controls}
+        prefix={prefix}
+        suffix={suffix}
+        className={className}
         style={style}
-        data-status={status ?? (field?.error ? 'error' : undefined)}
-        data-disabled={disabled || undefined}
-      >
-        {prefix && <span className="leaf-input__affix">{prefix}</span>}
-        <input
-          {...props}
-          ref={merged}
-          id={props.id ?? field?.id}
-          type="text"
-          role="spinbutton"
-          inputMode="decimal"
-          className="leaf-input-number__input"
-          value={draft}
-          readOnly={readOnly}
-          disabled={disabled}
-          required={props.required ?? field?.required}
-          aria-valuetext={draft}
-          aria-describedby={field?.descriptionId}
-          onChange={(event) => {
+        inputRef={merged}
+        triggerRef={input}
+        formName={name}
+        form={props.form}
+        formValue={current ?? ''}
+        increaseDisabled={
+          disabled ||
+          readOnly ||
+          (parsed !== null && max !== undefined && compareDecimal(parsed, max) >= 0)
+        }
+        decreaseDisabled={
+          disabled ||
+          readOnly ||
+          (parsed !== null && min !== undefined && compareDecimal(parsed, min) <= 0)
+        }
+        onStep={increment}
+        inputProps={{
+          ...props,
+          id: props.id ?? field?.id,
+          inputMode: props.inputMode ?? 'decimal',
+          value: draft,
+          readOnly,
+          disabled,
+          required: props.required ?? field?.required,
+          'aria-valuemin': toAriaNumber(min),
+          'aria-valuemax': toAriaNumber(max),
+          'aria-valuenow': toAriaNumber(parsed),
+          'aria-valuetext': draft || undefined,
+          'aria-invalid': resolvedStatus === 'error' ? true : props['aria-invalid'],
+          'aria-describedby':
+            [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') ||
+            undefined,
+          onChange: (event) => {
             if (disabled || readOnly) return;
             const text = event.target.value;
             setDraft(text);
             const raw = parse(text);
             if (!text.trim()) emit(null);
             else if (raw !== null && within(raw)) emit(raw);
-          }}
-          onFocus={(event) => {
+          },
+          onFocus: (event) => {
             editing.current = true;
             onFocus?.(event);
-          }}
-          onBlur={(event) => {
+          },
+          onBlur: (event) => {
             editing.current = false;
             commit();
             onBlur?.(event);
-          }}
-          onKeyDown={(event) => {
+          },
+          onKeyDown: (event) => {
             onKeyDown?.(event);
             if (event.defaultPrevented || event.nativeEvent.isComposing) return;
             if (event.key === 'Enter') commit();
@@ -186,45 +229,9 @@ export const ExactInputNumber = forwardRef<HTMLInputElement, StringInputNumberPr
               event.preventDefault();
               increment(event.key === 'ArrowUp' ? 1 : -1);
             }
-          }}
-        />
-        <FormValue
-          name={name}
-          form={props.form}
-          value={current ?? ''}
-          disabled={disabled}
-          triggerRef={input}
-        />
-        {suffix && <span className="leaf-input__affix">{suffix}</span>}
-        {controls && (
-          <span className="leaf-input-number__controls">
-            {[1, -1].map((direction) => (
-              <button
-                key={direction}
-                type="button"
-                tabIndex={-1}
-                aria-label={
-                  direction === 1
-                    ? config.messages.inputNumber.increase
-                    : config.messages.inputNumber.decrease
-                }
-                disabled={
-                  disabled ||
-                  readOnly ||
-                  (parsed !== null &&
-                    (direction === 1
-                      ? max !== undefined && compareDecimal(parsed, max) >= 0
-                      : min !== undefined && compareDecimal(parsed, min) <= 0))
-                }
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => increment(direction)}
-              >
-                {direction === 1 ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
-              </button>
-            ))}
-          </span>
-        )}
-      </div>
+          },
+        }}
+      />
     );
   },
 );

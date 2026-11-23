@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -328,5 +328,57 @@ describe('Select custom popup', () => {
     await userEvent.click(screen.getByRole('option', { name: '设计' }));
     expect(form.checkValidity()).toBe(true);
     expect(new FormData(form).get('team')).toBe('design');
+  });
+  it('suppresses searchable attributes and toggles data-open across readonly and searchable selects', async () => {
+    const { container, rerender } = render(
+      <Select aria-label="只读搜索" options={options} showSearch inputReadOnly />,
+    );
+    const root = container.querySelector('.leaf-select') as HTMLElement;
+    const input = screen.getByRole('combobox');
+    expect(root).not.toHaveAttribute('data-searchable');
+    expect(root).not.toHaveAttribute('data-open');
+    expect(input).toHaveAttribute('readonly');
+    expect(input).not.toHaveAttribute('aria-autocomplete');
+    await userEvent.click(input);
+    expect(root).toHaveAttribute('data-open', '');
+    await userEvent.click(input);
+    expect(root).not.toHaveAttribute('data-open');
+
+    rerender(<Select aria-label="可搜索" options={options} showSearch />);
+    expect(root).toHaveAttribute('data-searchable', '');
+    expect(input).not.toHaveAttribute('readonly');
+    expect(input).toHaveAttribute('aria-autocomplete', 'list');
+    await userEvent.click(input);
+    expect(root).toHaveAttribute('data-open', '');
+    await userEvent.click(screen.getByRole('option', { name: '设计' }));
+    expect(root).not.toHaveAttribute('data-open');
+    expect(input).toHaveFocus();
+  });
+  it('applies an internal minimum popup width for trigger and auto modes while honoring fixed widths and popupStyle', async () => {
+    const { rerender } = render(<Select aria-label="默认宽度" options={options} open />);
+    const panel = () => document.querySelector('.leaf-select__panel') as HTMLElement;
+    const minWidthPattern = /^min\(120px,\s*(?:calc\(100vw - 24px\)|-24px \+ 100vw)\)$/u;
+    await waitFor(() => {
+      expect(panel().style.minWidth).toMatch(minWidthPattern);
+    });
+
+    rerender(<Select aria-label="自适应宽度" options={options} popupWidth="auto" open />);
+    await waitFor(() => {
+      expect(panel().style.width).toBe('max-content');
+      expect(panel().style.minWidth).toMatch(minWidthPattern);
+    });
+
+    rerender(<Select aria-label="固定宽度" options={options} popupWidth={80} open />);
+    await waitFor(() => {
+      expect(panel().style.width).toBe('80px');
+      expect(panel().style.minWidth).toBe('');
+    });
+
+    rerender(
+      <Select aria-label="自定义最小宽度" options={options} popupStyle={{ minWidth: 96 }} open />,
+    );
+    await waitFor(() => {
+      expect(panel().style.minWidth).toBe('96px');
+    });
   });
 });

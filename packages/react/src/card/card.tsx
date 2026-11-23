@@ -1,7 +1,9 @@
 import { type HTMLAttributes, type ReactNode, useId, useMemo, useRef } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
+import { resolvePaddingVars } from '../shared/padding';
 import { useContentTransition } from '../shared/presence';
+import type { ContainerPadding } from '../shared/types';
 import { SkeletonControl as Skeleton } from '../skeleton/skeleton';
 import type { TabsProps } from '../tabs';
 import { TabsControl as Tabs } from '../tabs/tabs';
@@ -23,12 +25,14 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'>
   bordered?: boolean;
   /** Show the card's resting shadow; layered cards apply this to the inner content surface. */
   shadow?: boolean;
-  /** Visual selection only; use explicit buttons or selection controls for interaction. */
-  selected?: boolean;
+  /** Separate the footer bar with a top border. */
+  divided?: boolean;
   /** `layered` separates the content surface from the heading and footer on a muted canvas. */
   variant?: 'default' | 'layered';
   /** Card spacing, heading typography and height, and the default size of embedded tabs. */
   size?: 'sm' | 'md' | 'lg';
+  /** Customize inner padding for the card or individual header/body/footer regions. */
+  padding?: ContainerPadding;
 }
 export function Card(rawProps: CardProps) {
   const {
@@ -41,13 +45,16 @@ export function Card(rawProps: CardProps) {
     loading = false,
     bordered = true,
     shadow = true,
-    selected = false,
+    divided = true,
     variant = 'default',
     size = 'md',
+    padding,
     children,
     className,
+    style,
     ...props
   } = useComponentProps('Card', rawProps);
+  const paddingStyle = resolvePaddingVars('card', padding);
   const titleId = useId();
   const body = useRef<HTMLDivElement>(null);
   // Skeleton 内部已负责内容显露动效，此处仅保留高度过渡避免叠加。
@@ -129,12 +136,13 @@ export function Card(rawProps: CardProps) {
         `leaf-card--${size}`,
         bordered && 'leaf-card--bordered',
         !shadow && 'leaf-card--shadowless',
-        selected && 'leaf-card--selected',
+        divided && 'leaf-card--divided',
         layered && 'leaf-card--layered',
         hasHeading && 'leaf-card--headed',
         hasTabs && 'leaf-card--tabbed',
         className,
       )}
+      style={paddingStyle || style ? { ...paddingStyle, ...style } : undefined}
     >
       {(hasHeading || (!hasTabs && extra != null)) && (
         <div className="leaf-card__header">

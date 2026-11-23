@@ -63,3 +63,42 @@ it('stacks Tour above an already-open modal', () => {
   expect(tourRoot?.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 2)');
   expect(tourDialog.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 3)');
 });
+
+it('clamps spotlight mask slices to viewport bounds and renders the spotlight outline inside Tour root', () => {
+  const targetNode = document.createElement('button');
+  targetNode.textContent = 'Target';
+  document.body.appendChild(targetNode);
+  const rectSpy = vi
+    .spyOn(targetNode, 'getBoundingClientRect')
+    .mockReturnValue(new DOMRect(2, 3, 80, 32));
+  const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+    callback(0);
+    return 1;
+  });
+  try {
+    render(
+      <ConfigProvider locale="en-US">
+        <Tour open steps={[{ title: 'Spotlight', target: () => targetNode }]} padding={8} />
+      </ConfigProvider>,
+    );
+    const dialog = screen.getByRole('dialog', { name: 'Spotlight' });
+    expect(dialog.closest('.leaf-tour-root')).not.toBeNull();
+    const maskSlices = Array.from(
+      document.querySelectorAll<HTMLElement>('.leaf-tour__mask > div:not(.leaf-tour__spotlight)'),
+    );
+    expect(maskSlices).toHaveLength(4);
+    for (const slice of maskSlices) {
+      expect(Number.parseFloat(slice.style.top || '0')).toBeGreaterThanOrEqual(0);
+      expect(Number.parseFloat(slice.style.left || '0')).toBeGreaterThanOrEqual(0);
+      expect(Number.parseFloat(slice.style.width || '0')).toBeGreaterThanOrEqual(0);
+      expect(Number.parseFloat(slice.style.height || '0')).toBeGreaterThanOrEqual(0);
+    }
+    const spotlight = document.querySelector<HTMLElement>('.leaf-tour__spotlight');
+    expect(spotlight?.style.top).toBe('0px');
+    expect(spotlight?.style.left).toBe('0px');
+  } finally {
+    rafSpy.mockRestore();
+    rectSpy.mockRestore();
+    targetNode.remove();
+  }
+});

@@ -22,15 +22,17 @@ const dialog = (title, body, confirm = false) =>
   text(91, 93, 'Cancel', '#68686f', 9) +
   button(140, 78, confirm ? 'Delete' : 'Save', confirm ? '#ff4d4f' : '#1e964f');
 const confirmation =
-  rect(20, 13, 200, 102, '#00000026', 'none', 12) +
-  rect(36, 24, 168, 80, '#fff', '#e5e5e8', 10) +
-  text(48, 43, 'Delete project?', '#202024', 11) +
-  icon(CircleAlert, 48, 53, '#ff4d4f') +
-  text(68, 64, 'This cannot be undone.', '#202024', 8) +
-  rect(94, 78, 43, 18, '#fff', '#e5e5e8', 5) +
-  text(103, 90, 'Cancel', '#202024', 8) +
-  rect(143, 78, 49, 18, '#ff4d4f', 'none', 5) +
-  text(155, 90, 'Delete', '#fff', 8);
+  rect(20, 8, 200, 112, '#00000026', 'none', 12) +
+  rect(42, 16, 156, 96, '#fff', '#e5e5e8', 10) +
+  rect(108, 24, 24, 24, '#ffeded', 'none', 6) +
+  icon(CircleAlert, 113, 29, '#ff4d4f') +
+  text(87, 61, 'Delete project?', '#202024', 10) +
+  text(77, 74, 'This cannot be undone.', '#68686f', 8) +
+  rect(42, 84, 156, 28, '#fafafa', '#e5e5e8', 6) +
+  rect(52, 89, 64, 18, '#fff', '#e5e5e8', 5) +
+  text(71, 101, 'Cancel', '#202024', 8) +
+  rect(124, 89, 64, 18, '#ffeded', 'none', 5) +
+  text(143, 101, 'Delete', '#ff4d4f', 8);
 const images = {
   form:
     text(24, 37, 'Name') +
@@ -55,10 +57,10 @@ const images = {
     rect(59, 7, 122, 25) +
     text(72, 24, 'More actions') +
     rect(59, 38, 122, 82) +
-    rect(64, 43, 112, 22, '#eaf4ed', 'none', 4) +
-    text(75, 58, 'Edit', '#1e964f') +
+    rect(64, 43, 112, 22, '#f5f5f5', 'none', 4) +
+    text(75, 58, 'Edit', '#0d0d0d') +
     text(75, 81, 'Copy') +
-    `<path d="M66 91h108" stroke="#e5e5e8"/>` +
+    `<path d="M66 91h108" stroke="#eaeaea"/>` +
     text(75, 108, 'Delete', '#ff4d4f'),
   alert:
     rect(18, 30, 204, 68, '#eaf4ed', '#b9d8c3') +

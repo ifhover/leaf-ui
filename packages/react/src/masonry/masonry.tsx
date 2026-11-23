@@ -1,4 +1,4 @@
-import { Children, forwardRef, type HTMLAttributes } from 'react';
+import { Children, forwardRef, type HTMLAttributes, isValidElement } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import type { GridBreakpoint } from '../grid/grid';
 import { classes } from '../shared/classes';
@@ -23,11 +23,15 @@ export const Masonry = forwardRef<HTMLDivElement, MasonryProps>(function Masonry
     '--leaf-masonry-gap': typeof gap === 'number' ? `${gap}px` : gap,
     ...style,
   };
-  if (typeof columns === 'number') variables['--leaf-masonry-columns'] = Math.max(1, columns);
-  else {
+  if (typeof columns === 'number') {
+    variables['--leaf-masonry-columns'] = Number.isFinite(columns)
+      ? Math.max(1, Math.trunc(columns))
+      : 1;
+  } else {
     let last = 1;
     for (const point of ['xs', 'sm', 'md', 'lg', 'xl'] as const) {
-      last = columns[point] ?? last;
+      const candidate = columns[point];
+      if (candidate !== undefined && Number.isFinite(candidate)) last = candidate;
       variables[`--leaf-masonry-columns-${point}`] = Math.max(1, Math.trunc(last));
     }
   }
@@ -36,7 +40,7 @@ export const Masonry = forwardRef<HTMLDivElement, MasonryProps>(function Masonry
       {Children.toArray(children).map((child, index) => (
         <div
           className="leaf-masonry__item"
-          key={typeof child === 'object' && child !== null && 'key' in child ? child.key : index}
+          key={isValidElement(child) && child.key != null ? child.key : index}
         >
           {child}
         </div>

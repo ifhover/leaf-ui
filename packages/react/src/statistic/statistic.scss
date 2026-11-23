@@ -60,9 +60,4 @@
       background-position: -240% 0;
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-statistic__number[data-loading] {
-      animation: none;
-    }
-  }
 }

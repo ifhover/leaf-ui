@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
-import { type HTMLAttributes, type ReactNode, useId, useRef, useState } from 'react';
+import { type HTMLAttributes, type ReactNode, useEffect, useId, useRef, useState } from 'react';
 import { ButtonControl } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
@@ -8,7 +8,6 @@ import { SelectControl } from '../select/select';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
 import { useFormattedText } from '../shared/use-formatted-text';
-import { useMovingIndicator } from '../tabs/use-moving-indicator';
 
 export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onChange'> {
   total: number;
@@ -44,7 +43,7 @@ export function PaginationControl({
   disabled = false,
   hideOnSinglePage = false,
   size = 'md',
-  variant = 'outline',
+  variant = 'ghost',
   className,
   dir,
   'aria-label': label,
@@ -53,7 +52,6 @@ export function PaginationControl({
   const { messages, direction } = useLeafConfig();
   const format = useFormattedText();
   const root = useRef<HTMLElement>(null);
-  const indicator = useRef<HTMLSpanElement>(null);
   const jumpId = `${useId()}-jump`;
   const [internalPage, setPage] = useState(defaultCurrent);
   const [internalSize, setSize] = useState(defaultPageSize);
@@ -64,13 +62,6 @@ export function PaginationControl({
   const perPage = positiveInteger(pageSize ?? internalSize);
   const pages = Math.max(1, Math.ceil(count / perPage));
   const page = Math.min(pages, positiveInteger(current ?? internalPage));
-  useMovingIndicator(
-    root,
-    indicator,
-    '[aria-current="page"]',
-    `${page}-${pages}-${simple}-${variant}-${dir ?? direction}`,
-    !hideOnSinglePage || pages !== 1,
-  );
   const choose = (next: number, nextSize = perPage) => {
     if (disabled) return;
     const normalizedSize = positiveInteger(nextSize);
@@ -103,12 +94,21 @@ export function PaginationControl({
             ...(page >= pages - 2 ? [pages - 3, pages - 2, pages - 1] : []),
           ]),
         ].sort((a, b) => a - b);
-  const options = [
-    ...new Set([
-      ...pageSizeOptions.filter((value) => Number.isFinite(value) && value >= 1).map(Math.floor),
-      perPage,
-    ]),
-  ].sort((a, b) => a - b);
+  const baseOptions = pageSizeOptions
+    .filter((value) => Number.isFinite(value) && value >= 1)
+    .map(Math.floor);
+  const hasPerPageInBase = baseOptions.includes(perPage);
+  // 记住不在 pageSizeOptions 中但已传入过的每页条数，避免切换后原选项消失
+  const [retainedSizes, setRetainedSizes] = useState<number[]>(() =>
+    hasPerPageInBase ? [] : [perPage],
+  );
+  useEffect(() => {
+    if (hasPerPageInBase || retainedSizes.includes(perPage)) return;
+    setRetainedSizes((previous) =>
+      previous.includes(perPage) ? previous : [...previous, perPage],
+    );
+  }, [hasPerPageInBase, perPage, retainedSizes]);
+  const options = [...new Set([...baseOptions, ...retainedSizes, perPage])].sort((a, b) => a - b);
   if (hideOnSinglePage && pages === 1) return null;
   return (
     <nav
@@ -131,7 +131,6 @@ export function PaginationControl({
         props.onPointerDownCapture?.(event);
       }}
     >
-      <span ref={indicator} className="leaf-pagination__indicator" aria-hidden="true" />
       {showTotal && (
         <span className="leaf-pagination__total">
           {typeof showTotal === 'function'
@@ -146,11 +145,13 @@ export function PaginationControl({
         size={size}
         variant={variant === 'outline' ? 'outline' : 'text'}
         type="button"
+        className="leaf-pagination__nav"
         disabled={disabled || page === 1}
-        aria-label={messages.pagination.previousPage}
-        startIcon={<ChevronLeft size={16} aria-hidden="true" />}
         onClick={() => choose(page - 1)}
-      />
+      >
+        <ChevronLeft aria-hidden="true" />
+        {messages.pagination.previousPage}
+      </ButtonControl>
       {simple ? (
         <span className="leaf-pagination__simple">
           {page} / {pages}
@@ -185,20 +186,19 @@ export function PaginationControl({
                 >
                   <span aria-hidden="true">…</span>
                   {number > page ? (
-                    <ChevronsRight size={16} aria-hidden="true" />
+                    <ChevronsRight aria-hidden="true" />
                   ) : (
-                    <ChevronsLeft size={16} aria-hidden="true" />
+                    <ChevronsLeft aria-hidden="true" />
                   )}
                 </ButtonControl>
               ))}
             <ButtonControl
               size={size}
-              variant={variant === 'outline' ? 'outline' : 'text'}
+              variant={variant === 'outline' ? 'outline' : number === page ? 'outline' : 'text'}
               type="button"
               aria-label={format('pagination.pageLabel', { page: number })}
               aria-current={number === page ? 'page' : undefined}
-              data-leaf-indicator-item=""
-              disabled={disabled}
+              disabled={disabled || (variant === 'outline' && number === page)}
               onClick={() => choose(number)}
             >
               {number}
@@ -210,28 +210,34 @@ export function PaginationControl({
         size={size}
         variant={variant === 'outline' ? 'outline' : 'text'}
         type="button"
+        className="leaf-pagination__nav"
         disabled={disabled || page === pages}
-        aria-label={messages.pagination.nextPage}
-        startIcon={<ChevronRight size={16} aria-hidden="true" />}
         onClick={() => choose(page + 1)}
-      />
+      >
+        {messages.pagination.nextPage}
+        <ChevronRight aria-hidden="true" />
+      </ButtonControl>
       {showSizeChanger && (
-        <SelectControl
-          size={size}
-          className="leaf-pagination__size"
-          aria-label={messages.pagination.pageSize}
-          disabled={disabled}
-          value={String(perPage)}
-          popupWidth="auto"
-          popupMaxWidth={240}
-          options={options.map((number) => ({
-            value: String(number),
-            label: format('pagination.pageSizeOption', { count: number }),
-          }))}
-          onChange={(next) =>
-            choose(Math.floor(((page - 1) * perPage) / Number(next)) + 1, Number(next))
-          }
-        />
+        <span className="leaf-pagination__size">
+          <SelectControl
+            size={size}
+            className="leaf-pagination__size-select"
+            aria-label={messages.pagination.pageSize}
+            showSearch={false}
+            inputReadOnly
+            disabled={disabled}
+            value={String(perPage)}
+            popupWidth="auto"
+            popupMaxWidth={240}
+            options={options.map((number) => ({
+              value: String(number),
+              label: format('pagination.pageSizeOption', { count: number }),
+            }))}
+            onChange={(next) =>
+              choose(Math.floor(((page - 1) * perPage) / Number(next)) + 1, Number(next))
+            }
+          />
+        </span>
       )}
       {showQuickJumper && (
         <label className="leaf-pagination__jumper" htmlFor={jumpId}>
@@ -274,6 +280,7 @@ export function PaginationControl({
               }
             }}
           />
+          {messages.pagination.page}
         </label>
       )}
     </nav>

@@ -36,7 +36,13 @@
       padding: 12px;
       box-sizing: border-box;
       background: var(--leaf-color-surface);
-      transition: width var(--leaf-motion-slow) var(--leaf-motion-easing);
+      transition:
+        width var(--leaf-motion-slow) var(--leaf-motion-easing),
+        padding var(--leaf-motion-slow) var(--leaf-motion-easing);
+    }
+    &__sider--zero {
+      padding: 0;
+      overflow: hidden;
     }
     &__sider-content {
       flex: 1;
@@ -46,15 +52,8 @@
       width: 100%;
       padding-inline: 0;
       overflow: hidden;
-      .leaf-button__label {
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-layout__sider {
-      transition: none;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 }

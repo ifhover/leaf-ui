@@ -1,16 +1,18 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { ConfirmSimple } from '../../../src/examples/en/confirm/simple';
 import { ConfirmStatus } from '../../../src/examples/en/confirm/status';
+import { ConfirmIcon } from '../../../src/examples/en/confirm/icon';
 import { ConfirmBasic } from '../../../src/examples/en/confirm/basic';
-import { ConfirmRetry } from '../../../src/examples/en/confirm/retry';
+import { ConfirmFailure } from '../../../src/examples/en/confirm/failure';
+import { ConfirmQueue } from '../../../src/examples/en/confirm/queue';
 
 export const leafDoc = { component: 'Confirm', primaryApi: 'useConfirm' };
 
 # Confirm
 
-Ask for confirmation before an important action and await the user's choice.
+Ask for confirmation before an important action, or display a brief result or failure notice in a single-action dialog.
 
-Use [Modal](/en/components/modal) for editing, or [Popconfirm](/en/components/popconfirm) for a brief confirmation beside a trigger.
+Confirm builds on [Modal](/en/components/modal)'s compact confirmation layout (`size="mini"`) with built-in status icons and the imperative `useConfirm()` queue API. Use [Modal](/en/components/modal) when managing controlled dialog slots, forms or tabs directly, or [Popconfirm](/en/components/popconfirm) for a quick confirmation anchored to a trigger.
 
 Set up [ConfigProvider](/en/components/config-provider) at the application entry, then call `useConfirm()` in a child component. Each confirmation inherits the caller's theme and language.
 
@@ -32,7 +34,7 @@ export function Root() {
 
 <a id="basic-confirmation"></a>
 
-`confirm()` returns `Promise<boolean>`: confirmation resolves to `true`, cancellation to `false`.
+`confirm()` returns `Promise<boolean>`: confirmation resolves to `true`, while cancellation or pressing `Escape` resolves to `false`. When `type` is omitted, it defaults to a neutral appearance with an icon tray.
 
 <ComponentExample exampleId="basic" preview={<ConfirmSimple />} fileName="simple.tsx" width="fit-content">
 
@@ -45,9 +47,9 @@ export function Root() {
 
 ## Examples
 
-### Semantic states
+### States and failure notice
 
-Use `type` to select a semantic state; it defaults to `info`. `type="default"` omits the built-in icon, and `icon={null}` hides the icon for any type. `success` hides Cancel by default; set `showCancel` to display it.
+Choose a built-in `type` across `'default'` (default), `'success'`, `'warning'` and `'danger'` (`'info'` has been removed). `success` hides the Cancel button by default. For a single-button failure notice, combine `type="danger"`, `showCancel={false}` and an explicit `icon`.
 
 <ComponentExample exampleId="status" preview={<ConfirmStatus />} fileName="status.tsx" width="fit-content">
 
@@ -56,11 +58,22 @@ Use `type` to select a semantic state; it defaults to `info`. `type="default"` o
 
 </ComponentExample>
 
+### Custom icons and actions
+
+Replace the header tray icon with `icon`, or pass `icon={null}` to omit it. Set `showCancel` to override whether the Cancel button is shown for any state, and customize labels with `confirmText` and `cancelText`.
+
+<ComponentExample exampleId="custom-icon" preview={<ConfirmIcon />} fileName="icon.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/confirm/icon.tsx"
+```
+
+</ComponentExample>
+
 ### Async confirmation
 
 <a id="advanced-usage"></a>
 
-Place the async action in `onConfirm`. Success closes the dialog automatically and resolves to `true`. While pending, the default buttons show loading and prevent repeated confirmation or cancellation.
+Place an async action in `onConfirm`. When the Promise fulfills, the dialog closes automatically and resolves to `true`. While pending, the confirm button shows loading and blocks duplicate confirmation, cancellation, backdrop clicks and `Escape`.
 
 <ComponentExample exampleId="async-confirm" preview={<ConfirmBasic />} fileName="basic.tsx" width="fit-content">
 
@@ -69,13 +82,24 @@ Place the async action in `onConfirm`. Success closes the dialog automatically a
 
 </ComponentExample>
 
-### Failure and retry
+### Async failure handling
 
-A rejected `onConfirm` displays the error and keeps the dialog open for another attempt. Each new confirmation in this example fails once, then succeeds on the second attempt.
+When `onConfirm` throws or returns a rejected Promise, the confirmation dialog closes, resolves `confirm()` to `false`, and opens a single-action `danger` failure notice showing the error message once the closing transition completes.
 
-<ComponentExample exampleId="retry" preview={<ConfirmRetry />} fileName="retry.tsx" width="fit-content">
+<ComponentExample exampleId="failure" preview={<ConfirmFailure />} fileName="failure.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../../src/examples/en/confirm/retry.tsx"
+```tsx lineNumbers file="../../../src/examples/en/confirm/failure.tsx"
+```
+
+</ComponentExample>
+
+### Sequential queue
+
+Multiple requests triggered within the same `ConfirmProvider` (or `ConfigProvider`) queue in order, opening each dialog only after the previous one finishes closing.
+
+<ComponentExample exampleId="queue" preview={<ConfirmQueue />} fileName="queue.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/confirm/queue.tsx"
 ```
 
 </ComponentExample>
@@ -88,11 +112,11 @@ A rejected `onConfirm` displays the error and keeps the dialog open for another 
 
 The returned object is [`ConfirmApi`](#confirmapi). Requests in the same queue appear in sequence, after the previous dialog finishes closing. The Promise resolves when the decision closes the dialog, without waiting for its closing animation.
 
-Unmounting the caller or provider resolves outstanding requests to `false`. It does not abort an async action already in progress or invoke `onCancel`.
+Unmounting the caller or provider resolves outstanding requests to `false`. It does not abort an async action already in progress, invoke `onCancel`, or open an automatic failure notice.
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `confirm` | [`(options: ConfirmOptions) => Promise<boolean>`](#confirmoptions) | — | Resolves true on confirmation, false on cancellation or caller unmount. |
+| `confirm` | [`(options: ConfirmOptions) => Promise<boolean>`](#confirmoptions) | — | Resolves true on confirmation, false on cancellation, failure, or caller unmount. |
 
 ### ConfirmApi
 
@@ -100,7 +124,7 @@ The command interface returned by `useConfirm()`.
 
 | Property | Type | Default | Description |
 | --- | --- | --- | --- |
-| `confirm` | `(options: `[`ConfirmOptions`](#confirmoptions)`) => Promise<boolean>` | Required | Resolve to a boolean on decision: true after successful confirmation, false on cancellation or caller unmount, without waiting for the closing animation. |
+| `confirm` | `(options: `[`ConfirmOptions`](#confirmoptions)`) => Promise<boolean>` | Required | Resolve to a boolean on decision: true after successful confirmation, false on cancellation, `onConfirm` failure or caller unmount, without waiting for the closing animation. |
 
 ### ConfirmOptions
 
@@ -110,16 +134,16 @@ Content, actions and interaction settings supplied to `confirm()`.
 | --- | --- | --- | --- |
 | `title` | `ReactNode` | — | Confirmation heading. |
 | `children` | `ReactNode` | — | A short explanation of the action's consequences. |
-| `onConfirm` | `() => void \| Promise<void>` | — | Close after success; keep the dialog open and show the error on rejection. |
+| `onConfirm` | `() => void \| Promise<void>` | — | Action to run on confirmation; closes on success, or closes the dialog (resolving false) and opens a single-action failure notice on rejection. |
 | `onCancel` | `() => void` | — | Called on cancellation. |
-| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'info'` | Semantic icon and color; only danger changes the confirm button color. |
-| `icon` | `ReactNode` | — | Semantic icon beside the title, or the explanation when untitled; null hides it. |
+| `type` | `'default' \| 'success' \| 'warning' \| 'danger'` | `'default'` | Status icon and semantic styling; only danger styles the confirm button, and success hides Cancel by default. |
+| `icon` | `ReactNode` | — | Built-in status or custom icon in the centered header tray above the title; null hides it. |
 | `confirmText` | `ReactNode` | Locale default | Confirm button label. |
 | `cancelText` | `ReactNode` | Locale default | Cancel button label. |
 | `showCancel` | `boolean` | false for success; otherwise true | Show the cancel button. |
 | `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | Confirm button props. |
 | `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | Cancel button props. |
-| `width` | `number \| string` | `420` | Dialog width, in pixels for numbers. |
+| `width` | `number \| string` | `340` | Dialog width, in pixels for numbers. |
 | `closable` | `boolean` | `false` | Show a close button in the corner. |
 | `maskClosable` | `boolean` | `false` | Cancel when the backdrop is clicked. |
 | `keyboard` | `boolean` | `true` | Cancel when Escape is pressed. |

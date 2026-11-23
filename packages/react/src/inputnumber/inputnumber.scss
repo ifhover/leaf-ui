@@ -2,13 +2,37 @@
 
 @layer leaf-ui {
   .leaf-input-number {
-    @include mixins.field('input-number');
+    @include mixins.field-width;
     display: inline-flex;
-    align-items: center;
-    gap: var(--leaf-component-input-number-gap, 8px);
-    height: var(--leaf-current-control-height);
-    padding-inline-start: 10px;
-    overflow: hidden;
+    align-items: stretch;
+    &--split {
+      gap: var(--leaf-component-input-number-gap, 8px);
+      > .leaf-input-number__step {
+        flex: none;
+      }
+      .leaf-input-number__input {
+        text-align: center;
+      }
+    }
+    &__field {
+      @include mixins.field('input-number');
+      @include mixins.field-color-border-30;
+      display: inline-flex;
+      flex: 1;
+      align-items: center;
+      gap: var(--leaf-component-input-number-gap, 8px);
+      width: auto;
+      min-width: 0;
+      height: var(--leaf-current-control-height);
+      padding-inline-start: var(--leaf-density-field-padding);
+      overflow: hidden;
+      &:not(:has(.leaf-input-number__controls)) {
+        padding-inline-end: var(--leaf-density-field-padding);
+      }
+      &:focus-within .leaf-input-number__controls {
+        border-inline-start-color: var(--leaf-field-color-border-30);
+      }
+    }
     &__input {
       box-sizing: border-box;
       width: 100%;
@@ -28,17 +52,14 @@
         cursor: not-allowed;
       }
     }
-    &:not(:has(#{&}__controls)) {
-      padding-inline-end: 10px;
-    }
     &__controls {
       display: flex;
       flex: 0 0 24px;
       align-self: stretch;
       flex-direction: column;
       border-inline-start: 1px solid var(--leaf-color-border);
-      background: var(--leaf-color-surface);
-      transition: border-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      background: transparent;
+      transition: var(--leaf-field-transition);
       button {
         @include mixins.text-action;
         display: inline-flex;
@@ -58,39 +79,5 @@
         border-top: 1px solid var(--leaf-color-border);
       }
     }
-    &:focus-within &__controls {
-      border-inline-start-color: var(--leaf-field-color-border-30);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-input-number__controls,
-    .leaf-input-number__controls button {
-      transition: none;
-    }
-  }
-
-  .leaf-input-number {
-    --leaf-current-control-height: var(
-      --leaf-component-input-number-height,
-      var(--leaf-control-height)
-    );
-    --leaf-current-font-size: var(--leaf-component-input-number-font-size, var(--leaf-font-size));
-    --leaf-current-radius: var(--leaf-radius);
-  }
-  .leaf-input-number--sm {
-    --leaf-current-control-height: var(
-      --leaf-component-input-number-height-sm,
-      var(--leaf-control-height-sm)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-sm);
-    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
-  }
-  .leaf-input-number--lg {
-    --leaf-current-control-height: var(
-      --leaf-component-input-number-height-lg,
-      var(--leaf-control-height-lg)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-lg);
-    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
   }
 }

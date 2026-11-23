@@ -3,7 +3,9 @@ import { Mail } from 'lucide-react';
 export function BadgeDot() {
   return (
     <Badge dot aria-label="Unread messages">
-      <Button variant="outline" startIcon={<Mail />} aria-label="Messages" />
+      <Button variant="outline" size="icon" aria-label="Messages">
+        <Mail />
+      </Button>
     </Badge>
   );
 }

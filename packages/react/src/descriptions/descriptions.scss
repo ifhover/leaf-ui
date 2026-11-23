@@ -2,10 +2,6 @@
 
 @layer leaf-ui {
   .leaf-descriptions {
-    @include mixins.softened-frame-color(
-      descriptions,
-      var(--leaf-component-descriptions-background, var(--leaf-color-surface))
-    );
     box-sizing: border-box;
     min-width: 0;
     color: var(--leaf-component-descriptions-color, var(--leaf-color-text));
@@ -16,11 +12,14 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      margin-bottom: 16px;
+      margin-block-end: 16px;
       h3 {
         margin: 0;
         font-size: inherit;
         font-weight: var(--leaf-font-weight);
+      }
+      > :not(h3):last-child {
+        margin-inline-start: auto;
       }
     }
     &__list {
@@ -35,6 +34,7 @@
     }
     &__item {
       display: flex;
+      align-items: baseline;
       gap: 12px;
       min-width: 0;
       grid-column: span min(var(--leaf-descriptions-span), var(--leaf-descriptions-columns-active));
@@ -51,6 +51,7 @@
     }
     &--vertical &__item {
       flex-direction: column;
+      align-items: stretch;
       gap: 4px;
     }
     &--bordered {
@@ -68,7 +69,7 @@
       background: var(--leaf-component-descriptions-background, var(--leaf-color-surface));
       .leaf-descriptions__header {
         padding-block-end: 14px;
-        border-bottom: 1px solid var(--leaf-descriptions-frame-color);
+        border-block-end: 1px solid var(--leaf-color-divider);
       }
     }
     &--sm {

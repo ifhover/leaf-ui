@@ -130,12 +130,13 @@ export function Tour(rawProps: TourProps) {
         <div className="leaf-tour__header">
           <h3 id={`${id}-title`}>{step.title}</h3>
           <ButtonControl
-            size="sm"
+            size="icon-sm"
             variant="text"
-            startIcon={<X size={16} />}
             aria-label={messages.common.close}
             onClick={onClose}
-          />
+          >
+            <X aria-hidden="true" />
+          </ButtonControl>
         </div>
         <div className="leaf-tour__description">{step.description}</div>
         <div className="leaf-tour__footer">
@@ -179,26 +180,47 @@ export function Tour(rawProps: TourProps) {
             {mask && (
               <div className="leaf-tour__mask" aria-hidden="true">
                 {rect ? (
-                  <>
-                    <div style={{ inset: `0 0 auto 0`, height: Math.max(0, rect.top - padding) }} />
-                    <div style={{ inset: `${rect.bottom + padding}px 0 0 0` }} />
-                    <div
-                      style={{
-                        top: rect.top - padding,
-                        left: 0,
-                        width: Math.max(0, rect.left - padding),
-                        height: rect.height + 2 * padding,
-                      }}
-                    />
-                    <div
-                      style={{
-                        top: rect.top - padding,
-                        left: rect.right + padding,
-                        right: 0,
-                        height: rect.height + 2 * padding,
-                      }}
-                    />
-                  </>
+                  (() => {
+                    const viewportWidth = typeof window === 'undefined' ? 0 : window.innerWidth;
+                    const viewportHeight = typeof window === 'undefined' ? 0 : window.innerHeight;
+                    const holeTop = Math.max(0, rect.top - padding);
+                    const holeBottom = Math.min(viewportHeight, rect.bottom + padding);
+                    const holeLeft = Math.max(0, rect.left - padding);
+                    const holeRight = Math.min(viewportWidth, rect.right + padding);
+                    const holeWidth = Math.max(0, holeRight - holeLeft);
+                    const holeHeight = Math.max(0, holeBottom - holeTop);
+                    return (
+                      <>
+                        <div style={{ inset: '0 0 auto 0', height: holeTop }} />
+                        <div style={{ inset: `${holeBottom}px 0 0 0` }} />
+                        <div
+                          style={{
+                            top: holeTop,
+                            left: 0,
+                            width: holeLeft,
+                            height: holeHeight,
+                          }}
+                        />
+                        <div
+                          style={{
+                            top: holeTop,
+                            left: holeRight,
+                            right: 0,
+                            height: holeHeight,
+                          }}
+                        />
+                        <div
+                          className="leaf-tour__spotlight"
+                          style={{
+                            top: holeTop,
+                            left: holeLeft,
+                            width: holeWidth,
+                            height: holeHeight,
+                          }}
+                        />
+                      </>
+                    );
+                  })()
                 ) : (
                   <div style={{ inset: 0 }} />
                 )}
@@ -210,7 +232,7 @@ export function Tour(rawProps: TourProps) {
                 triggerRef={target}
                 panelRef={panel}
                 placement={step.placement ?? 'bottom'}
-                container={getPopupContainer}
+                container={() => root.current ?? document.body}
                 role="dialog"
                 aria-modal={mask || undefined}
                 aria-labelledby={`${id}-title`}

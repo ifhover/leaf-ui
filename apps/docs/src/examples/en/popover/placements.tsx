@@ -1,34 +1,54 @@
-import { Button, Flex, Grid, Popover, Text } from '@ifhover/leaf-ui';
+import { Button, Grid, Popover, type PopoverProps } from '@ifhover/leaf-ui';
 
-const placements = [
+type Placement = NonNullable<PopoverProps['placement']>;
+
+const slots: ReadonlyArray<{ placement: Placement; label: string } | string> = [
+  's1',
+  { placement: 'top-start', label: 'TL' },
   { placement: 'top', label: 'Top' },
-  { placement: 'bottom', label: 'Bottom' },
+  { placement: 'top-end', label: 'TR' },
+  's2',
+  { placement: 'left-start', label: 'LT' },
+  's3',
+  's4',
+  's5',
+  { placement: 'right-start', label: 'RT' },
   { placement: 'left', label: 'Left' },
+  's6',
+  's7',
+  's8',
   { placement: 'right', label: 'Right' },
-] as const;
+  { placement: 'left-end', label: 'LB' },
+  's9',
+  's10',
+  's11',
+  { placement: 'right-end', label: 'RB' },
+  's12',
+  { placement: 'bottom-start', label: 'BL' },
+  { placement: 'bottom', label: 'Bottom' },
+  { placement: 'bottom-end', label: 'BR' },
+  's13',
+];
 
 export function PopoverPlacements() {
   return (
-    <Flex direction="column" gap="md">
-      {placements.map(({ placement, label }) => (
-        <Grid
-          key={placement}
-          role="group"
-          aria-label={label}
-          columns={{ xs: 1, sm: 2 }}
-          gap="8px"
-          align="center"
-        >
-          <Text tone="muted">{label}</Text>
+    <Grid columns={5} gap={8}>
+      {slots.map((slot) =>
+        typeof slot === 'string' ? (
+          <span key={slot} aria-hidden="true" />
+        ) : (
           <Popover
-            placement={placement}
-            title="Project details"
-            content="See project details and recent updates here."
+            key={slot.placement}
+            placement={slot.placement}
+            title={slot.placement}
+            content="Check project overview and recent updates here."
           >
-            <Button variant="outline">View details</Button>
+            <Button variant="outline" aria-label={slot.placement}>
+              {slot.label}
+            </Button>
           </Popover>
-        </Grid>
-      ))}
-    </Flex>
+        ),
+      )}
+    </Grid>
   );
 }

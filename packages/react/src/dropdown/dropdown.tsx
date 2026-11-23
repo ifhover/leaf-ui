@@ -1,3 +1,4 @@
+import type { OffsetOptions } from '@floating-ui/react-dom';
 import { Check, ChevronRight, Circle } from 'lucide-react';
 import {
   type ButtonHTMLAttributes,
@@ -17,6 +18,7 @@ import {
   version,
 } from 'react';
 import { tabbable } from 'tabbable';
+import { useButtonGroup } from '../button/group-context';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
@@ -70,6 +72,9 @@ interface NavigationMenu {
   selectedKey?: string;
   title?: ReactNode;
   variant?: 'neutral' | 'raised' | 'primary';
+  renderLink?: (item: DropdownItem, link: ReactNode) => ReactNode;
+  renderItem?: (item: DropdownItem, content: ReactNode) => ReactNode;
+  getItemClassName?: (item: DropdownItem) => string | undefined;
 }
 interface DropdownControlProps extends DropdownProps {
   navigation?: NavigationMenu;
@@ -131,7 +136,7 @@ export function DropdownControl({
   };
   const hoverEnter = () => {
     clearTimeout(timer.current);
-    if (triggers.includes('hover') && !inactive)
+    if (triggers.includes('hover') && !inactive && !open)
       timer.current = setTimeout(() => {
         setPosition(undefined);
         setPointerOpen(true);
@@ -140,8 +145,11 @@ export function DropdownControl({
   };
   const hoverLeave = () => {
     clearTimeout(timer.current);
-    if (triggers.includes('hover')) timer.current = setTimeout(() => close(), mouseLeaveDelay);
+    if (triggers.includes('hover') && (pointerOpen || !triggers.includes('click')))
+      timer.current = setTimeout(() => close(), mouseLeaveDelay);
   };
+  const closeRef = useRef(close);
+  closeRef.current = close;
   useEffect(() => {
     if (inactive) setInternal(false);
   }, [inactive]);
@@ -152,10 +160,10 @@ export function DropdownControl({
       (trigger.current?.contains(target) ||
         [...panels.current].some((panel) => panel.contains(target)));
     const pointer = (event: PointerEvent) => {
-      if (!inside(event.target)) close();
+      if (!inside(event.target)) closeRef.current();
     };
     const focus = (event: FocusEvent) => {
-      if (!inside(event.target)) close();
+      if (!inside(event.target)) closeRef.current();
     };
     document.addEventListener('pointerdown', pointer);
     document.addEventListener('focusin', focus);
@@ -163,7 +171,7 @@ export function DropdownControl({
       document.removeEventListener('pointerdown', pointer);
       document.removeEventListener('focusin', focus);
     };
-  });
+  }, [open]);
   const choose = (item: DropdownItem, event: MouseEvent<HTMLElement>) => {
     if (item.disabled) return;
     if (item.type === 'checkbox' || item.type === 'radio') {
@@ -210,9 +218,15 @@ export function DropdownControl({
           children.props.onClick?.(event);
           if (!event.defaultPrevented && !inactive && triggers.includes('click')) {
             setPosition(undefined);
-            setPointerOpen(false);
             setStartAtEnd(false);
-            change(!open);
+            // 仅由悬停展开时，首次点击将其固定而非立即收起
+            if (open && pointerOpen) {
+              clearTimeout(timer.current);
+              setPointerOpen(false);
+            } else {
+              setPointerOpen(false);
+              change(!open);
+            }
           }
         },
         onPointerEnter: (event) => {
@@ -275,6 +289,9 @@ export function DropdownControl({
     </>
   );
 }
+// 子菜单紧贴父菜单并向内重叠外框内边距与边框厚度，同时顶边与当前触发项平齐（参考 shadcn）。
+const SUBMENU_OFFSET: OffsetOptions = { mainAxis: 0, alignmentAxis: 0 };
+
 interface PanelProps extends PopupOptions {
   size: ControlSize;
   navigation?: NavigationMenu;
@@ -283,6 +300,7 @@ interface PanelProps extends PopupOptions {
   trigger: RefObject<HTMLElement | null>;
   id: string;
   placement: 'top-start' | 'top-end' | 'bottom-start' | 'bottom-end' | 'right-start' | 'left-start';
+  popupOffset?: OffsetOptions;
   width?: number | string;
   minWidth?: CSSProperties['minWidth'];
   maxWidth: number | string;
@@ -307,6 +325,7 @@ function MenuPanel({
   trigger,
   id,
   placement,
+  popupOffset,
   width,
   minWidth,
   maxWidth,
@@ -330,6 +349,9 @@ function MenuPanel({
   const { direction } = useLeafConfig();
   const panel = useRef<HTMLDivElement>(null);
   const submenuTrigger = useRef<HTMLElement | null>(null);
+  const submenuTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const submenuHover = useRef<string | undefined>(undefined);
+  useEffect(() => () => clearTimeout(submenuTimer.current), []);
   const rows = flatten(items);
   const enabled = rows.filter(
     (item) => !item.disabled && item.type !== 'group' && item.type !== 'divider',
@@ -343,6 +365,8 @@ function MenuPanel({
       : enabled[0]?.key;
   useEffect(() => {
     if (!open) {
+      clearTimeout(submenuTimer.current);
+      submenuHover.current = undefined;
       setSubmenu(undefined);
       return;
     }
@@ -387,6 +411,8 @@ function MenuPanel({
     } else if (event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight')) {
       const item = enabled[index];
       if (item?.children?.length) {
+        clearTimeout(submenuTimer.current);
+        submenuHover.current = undefined;
         submenuTrigger.current = event.target as HTMLElement;
         setSubmenu(item.key);
       } else return;
@@ -401,6 +427,8 @@ function MenuPanel({
       )?.key;
     else return;
     if (next) {
+      clearTimeout(submenuTimer.current);
+      submenuHover.current = undefined;
       setSubmenu(undefined);
       focus(next);
     }
@@ -420,6 +448,7 @@ function MenuPanel({
         panelRef={panel}
         id={id}
         placement={placement}
+        popupOffset={popupOffset}
         width={width}
         minWidth={minWidth}
         maxWidth={maxWidth}
@@ -453,6 +482,7 @@ function MenuPanel({
           ) : (
             <MenuAction
               item={item}
+              navigation={navigation}
               key={item.key}
               data-key={item.key}
               role={
@@ -476,59 +506,98 @@ function MenuPanel({
               aria-expanded={item.children?.length ? submenu === item.key : undefined}
               disabled={item.disabled}
               tabIndex={current === item.key ? 0 : -1}
-              className={classes('leaf-floating__option', item.danger && 'leaf-dropdown__danger')}
+              className={classes(
+                'leaf-floating__option',
+                item.danger && 'leaf-dropdown__danger',
+                navigation?.getItemClassName?.(item),
+              )}
               onFocus={() => setActive(item.key)}
               onPointerEnter={(event) => {
                 if (item.disabled) return;
                 setActive(item.key);
+                clearTimeout(submenuTimer.current);
                 if (item.children?.length) {
                   submenuTrigger.current = event.currentTarget;
-                  setSubmenu(item.key);
-                } else setSubmenu(undefined);
+                  submenuHover.current = item.key;
+                  if (!submenu || submenu === item.key) {
+                    setSubmenu(item.key);
+                  } else {
+                    const target = event.currentTarget;
+                    submenuTimer.current = setTimeout(() => {
+                      submenuTrigger.current = target;
+                      submenuHover.current = item.key;
+                      setSubmenu(item.key);
+                    }, 120);
+                  }
+                } else if (submenu) {
+                  // 指针斜向滑向子菜单途中短暂经过兄弟项时不立刻收起子菜单
+                  submenuTimer.current = setTimeout(() => {
+                    submenuHover.current = undefined;
+                    setSubmenu(undefined);
+                  }, 120);
+                }
               }}
               onClick={(event) => {
+                clearTimeout(submenuTimer.current);
                 if (item.children?.length) {
                   submenuTrigger.current = event.currentTarget;
+                  if (submenu === item.key && submenuHover.current === item.key) {
+                    submenuHover.current = undefined;
+                    return;
+                  }
+                  submenuHover.current = undefined;
                   setSubmenu((previous) => (previous === item.key ? undefined : item.key));
                 } else choose(item, event);
               }}
             >
-              {item.type === 'checkbox' ? (
-                <Check
-                  size={15}
-                  className="leaf-dropdown__check"
-                  style={{ opacity: (item.checked ?? checks[item.key]) ? 1 : 0 }}
-                  aria-hidden="true"
-                />
-              ) : item.type === 'radio' ? (
-                <Circle
-                  size={8}
-                  className="leaf-dropdown__check"
-                  fill="currentColor"
-                  style={{ opacity: (item.checked ?? checks[item.key]) ? 1 : 0 }}
-                  aria-hidden="true"
-                />
-              ) : navigation && item.icon ? (
-                <span className="leaf-menu__popup-icon" aria-hidden="true">
-                  {item.icon}
-                </span>
-              ) : (
-                item.icon
-              )}
-              <span
-                className={classes('leaf-dropdown__label', navigation && 'leaf-menu__popup-label')}
-              >
-                {itemRender?.(item) ?? item.label}
-              </span>
-              {item.extra != null && (
-                <>
-                  {' '}
-                  <span className="leaf-dropdown__extra">{item.extra}</span>
-                </>
-              )}
-              {item.children?.length ? (
-                <ChevronRight size={14} className="leaf-dropdown__arrow" aria-hidden="true" />
-              ) : null}
+              {(() => {
+                const defaultContent = (
+                  <>
+                    {item.type === 'checkbox' ? (
+                      <Check
+                        size={13}
+                        className="leaf-dropdown__check"
+                        style={{ opacity: (item.checked ?? checks[item.key]) ? 1 : 0 }}
+                        aria-hidden="true"
+                      />
+                    ) : item.type === 'radio' ? (
+                      <Circle
+                        size={8}
+                        className="leaf-dropdown__check"
+                        fill="currentColor"
+                        style={{ opacity: (item.checked ?? checks[item.key]) ? 1 : 0 }}
+                        aria-hidden="true"
+                      />
+                    ) : navigation && item.icon ? (
+                      <span className="leaf-menu__popup-icon" aria-hidden="true">
+                        {item.icon}
+                      </span>
+                    ) : (
+                      item.icon
+                    )}
+                    <span
+                      className={classes(
+                        'leaf-dropdown__label',
+                        navigation && 'leaf-menu__popup-label',
+                      )}
+                    >
+                      {itemRender?.(item) ?? item.label}
+                    </span>
+                    {item.extra != null && (
+                      <>
+                        {' '}
+                        <span className="leaf-dropdown__extra">{item.extra}</span>
+                      </>
+                    )}
+                    {item.children?.length ? (
+                      <ChevronRight size={13} className="leaf-dropdown__arrow" aria-hidden="true" />
+                    ) : null}
+                  </>
+                );
+                return navigation?.renderItem
+                  ? navigation.renderItem(item, defaultContent)
+                  : defaultContent;
+              })()}
             </MenuAction>
           ),
         )}
@@ -538,7 +607,13 @@ function MenuPanel({
           size={size}
           navigation={
             navigation
-              ? { selectedKey: navigation.selectedKey, variant: navigation.variant }
+              ? {
+                  selectedKey: navigation.selectedKey,
+                  variant: navigation.variant,
+                  renderLink: navigation.renderLink,
+                  renderItem: navigation.renderItem,
+                  getItemClassName: navigation.getItemClassName,
+                }
               : undefined
           }
           items={child.children}
@@ -546,8 +621,12 @@ function MenuPanel({
           trigger={submenuTrigger}
           id={`${id}-sub`}
           placement={direction === 'rtl' ? 'left-start' : 'right-start'}
+          popupOffset={navigation ? undefined : SUBMENU_OFFSET}
           pointerOpen={pointerOpen}
-          onPointerEnter={onPointerEnter}
+          onPointerEnter={() => {
+            clearTimeout(submenuTimer.current);
+            onPointerEnter?.();
+          }}
           onPointerLeave={onPointerLeave}
           getPopupContainer={getPopupContainer}
           itemRender={itemRender}
@@ -568,11 +647,12 @@ function MenuPanel({
 
 function MenuAction({
   item,
+  navigation,
   children,
   ...props
-}: { item: DropdownItem } & ButtonHTMLAttributes<HTMLButtonElement>) {
-  if (item.href && !item.children?.length)
-    return (
+}: { item: DropdownItem; navigation?: NavigationMenu } & ButtonHTMLAttributes<HTMLButtonElement>) {
+  if (item.href && !item.children?.length) {
+    const link = (
       <a
         href={item.disabled ? undefined : item.href}
         target={item.target}
@@ -593,6 +673,8 @@ function MenuAction({
         {children}
       </a>
     );
+    return navigation?.renderLink ? navigation.renderLink(item, link) : link;
+  }
   return (
     <button {...props} type="button">
       {children}
@@ -601,6 +683,14 @@ function MenuAction({
 }
 
 export function Dropdown(rawProps: DropdownProps) {
-  const props = useComponentProps('Dropdown', rawProps);
+  const group = useButtonGroup();
+  const configProps = useComponentProps('Dropdown', rawProps);
+  const size = rawProps.size ?? group?.size ?? configProps.size;
+  const disabled = group?.disabled ? true : (rawProps.disabled ?? configProps.disabled);
+  const props: DropdownProps = {
+    ...configProps,
+    ...(size !== undefined ? { size } : undefined),
+    ...(disabled !== undefined ? { disabled } : undefined),
+  };
   return <DropdownControl {...props} />;
 }

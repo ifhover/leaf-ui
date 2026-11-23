@@ -48,6 +48,7 @@ export const InputMask = forwardRef<HTMLInputElement, InputMaskProps>(function I
   const [current, setCurrent] = useFieldValue(value, defaultValue, native, props.form);
   const [formatted, setFormatted] = useState(defaultValue);
   const syncing = useRef(false);
+  const accepted = useRef(false);
   const latest = useRef({ onChange, onComplete });
   latest.current = { onChange, onComplete };
   const { maskRef } = useIMask(
@@ -55,6 +56,7 @@ export const InputMask = forwardRef<HTMLInputElement, InputMaskProps>(function I
     {
       ref: native,
       onAccept: (text, instance) => {
+        accepted.current = true;
         setFormatted(text);
         if (!syncing.current) {
           const next = unmask ? instance.unmaskedValue : text;
@@ -72,11 +74,16 @@ export const InputMask = forwardRef<HTMLInputElement, InputMaskProps>(function I
   useEffect(() => {
     const instance = maskRef.current;
     if (!instance) return;
-    syncing.current = true;
-    if (unmask) instance.unmaskedValue = current;
-    else instance.value = current;
-    if (formatted !== instance.value) setFormatted(instance.value);
-    syncing.current = false;
+    const actual = unmask ? instance.unmaskedValue : instance.value;
+    if (actual !== current) {
+      syncing.current = true;
+      if (unmask) instance.unmaskedValue = current;
+      else instance.value = current;
+      if (formatted !== instance.value) setFormatted(instance.value);
+      syncing.current = false;
+    } else if (formatted !== instance.value) {
+      setFormatted(instance.value);
+    }
   }, [current, formatted, unmask, maskRef, mask, definitions, lazy]);
   return (
     <InputControl
@@ -86,7 +93,13 @@ export const InputMask = forwardRef<HTMLInputElement, InputMaskProps>(function I
       value={formatted}
       onChange={() => {}}
       onClear={() => {
+        accepted.current = false;
         if (maskRef.current) maskRef.current.value = '';
+        if (!accepted.current) {
+          setFormatted('');
+          setCurrent('');
+          latest.current.onChange?.('', '');
+        }
         onClear?.();
       }}
     />

@@ -18,6 +18,7 @@ import {
   useComponentProps,
 } from '../config-provider/component-defaults';
 import { ConfigContext, type LeafConfig, useLeafConfig } from '../config-provider/context';
+import { leafDensityVariables } from '../density';
 import { type FeedbackTypeInput, normalizeFeedbackType } from '../shared/feedback';
 import { inertProps } from '../shared/inert';
 import { useContentTransition, usePresence } from '../shared/presence';
@@ -267,7 +268,17 @@ function NotificationItem({
         ref={ref}
         className="leaf-notification-slot"
         data-state={entry.open ? 'open' : 'closing'}
-        style={entry.config ? leafThemeVariables(config.theme) : undefined}
+        data-leaf-theme={config.theme.appearance}
+        dir={config.direction}
+        lang={config.locale}
+        style={
+          entry.config
+            ? {
+                ...leafDensityVariables(config.density),
+                ...leafThemeVariables(config.theme),
+              }
+            : undefined
+        }
         {...inertProps(!entry.open)}
         aria-hidden={!entry.open || undefined}
       >

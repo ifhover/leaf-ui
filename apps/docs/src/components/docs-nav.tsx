@@ -202,13 +202,15 @@ export function DocsNav({
             {afterNavMenu}
             <Button
               className="leaf-docs-nav__menu"
+              size="icon"
               aria-label={t('打开导航菜单', 'Open navigation menu')}
               aria-haspopup="dialog"
               aria-expanded={open}
               aria-controls={open ? drawerId : undefined}
-              startIcon={<Menu />}
               onClick={() => setOpen(true)}
-            />
+            >
+              <Menu aria-hidden="true" />
+            </Button>
           </div>
         </div>
       </header>

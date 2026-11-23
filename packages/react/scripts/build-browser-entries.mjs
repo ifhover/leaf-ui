@@ -64,6 +64,9 @@ async function stylesFor(name) {
     const folder = path.relative(esm, file).split(path.sep)[0];
     if (styled.has(folder)) styles.add(folder);
     if (file === path.join(esm, 'shared/calendar.js')) styles.add('shared-calendar');
+    if (file === path.join(esm, 'shared/clear-button.js')) styles.add('shared-clear');
+    if (file === path.join(esm, 'shared/selection-content.js')) styles.add('shared-selection');
+    if (file === path.join(esm, 'shared/date-input.js')) styles.add('datepicker');
     for (const dependency of await dependencies(file)) pending.push(dependency);
   }
   return [...styles].sort();
@@ -120,14 +123,23 @@ const compileComponentCss = async (owner, entry) => {
             context.containingUrl?.protocol === 'leaf-src:'
               ? path.posix.dirname(context.containingUrl.pathname.slice(1))
               : '';
-          const candidate = url.startsWith('leaf-src:')
-            ? new URL(url).pathname.slice(1)
-            : url.startsWith('.')
+          const candidate = url.startsWith('leaf-src:') ? new URL(url).pathname.slice(1) : url;
+          const relativeCandidate =
+            baseDir && !url.startsWith('/') && !url.includes(':')
               ? path.posix.normalize(path.posix.join(baseDir, url))
-              : url;
-          const resolved = await resolveSourceFile(candidate);
+              : null;
+          const resolved =
+            (relativeCandidate && !relativeCandidate.startsWith('..')
+              ? await resolveSourceFile(relativeCandidate)
+              : null) ?? (await resolveSourceFile(candidate));
           if (!resolved) return null;
           const segments = resolved.replace(/\.scss$/u, '').split('/');
+          if (resolved === 'shared/_clear.scss' && owner !== 'shared-clear') {
+            return new URL('leaf-empty:///clear');
+          }
+          if (resolved === 'shared/_selection.scss' && owner !== 'shared-selection') {
+            return new URL('leaf-src:///shared/_selection-mixins.scss');
+          }
           if (
             segments.length === 2 &&
             segments[0] === segments[1] &&
@@ -155,8 +167,13 @@ const compileComponentCss = async (owner, entry) => {
 };
 
 const componentCss = new Map();
-for (const name of [...styled, 'shared-calendar']) {
-  const module = name === 'shared-calendar' ? 'shared/calendar' : `${name}/${name}`;
+const sharedCssEntries = new Map([
+  ['shared-calendar', 'shared/calendar'],
+  ['shared-clear', 'shared/_clear'],
+  ['shared-selection', 'shared/_selection'],
+]);
+for (const name of [...styled, ...sharedCssEntries.keys()]) {
+  const module = sharedCssEntries.get(name) ?? `${name}/${name}`;
   componentCss.set(name, (await compileComponentCss(name, module)).css);
 }
 for (const format of ['esm', 'cjs']) {
@@ -184,7 +201,16 @@ for (const format of ['esm', 'cjs']) {
     const destination = path.join(modules, file);
     const relative = file.replaceAll(path.sep, '/');
     const folder = relative.split('/')[0];
-    let owner = relative === `shared/calendar.${extension}` ? 'shared-calendar' : null;
+    let owner =
+      relative === `shared/calendar.${extension}`
+        ? 'shared-calendar'
+        : relative === `shared/clear-button.${extension}`
+          ? 'shared-clear'
+          : relative === `shared/selection-content.${extension}`
+            ? 'shared-selection'
+            : relative === `shared/date-input.${extension}`
+              ? 'datepicker'
+              : null;
     // The always-mounted image scope must not preload its lazy renderer's stylesheet.
     const stylelessScope = relative === `image/provider.${extension}`;
     if (styled.has(folder) && !relative.endsWith(`/index.${extension}`) && !stylelessScope) {

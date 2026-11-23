@@ -1,6 +1,34 @@
 @use '../styles/mixins' as mixins;
-@use '../shared/picker';
+@use '../shared/clear';
 @use '../shared/selection';
+
+@mixin cascader-option {
+  @include mixins.choice-option;
+  @include mixins.choice-option-size;
+  justify-content: space-between;
+  .leaf-floating__option-label {
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  > svg {
+    flex: 0 0 auto;
+  }
+  > .leaf-cascader__expand {
+    color: var(--leaf-color-text-muted);
+    transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+  }
+  &[aria-selected='true'] > .leaf-cascader__expand {
+    transform: translateX(2px);
+  }
+  &:dir(rtl) > .leaf-cascader__expand {
+    transform: rotate(180deg);
+  }
+  &:dir(rtl)[aria-selected='true'] > .leaf-cascader__expand {
+    transform: translateX(-2px) rotate(180deg);
+  }
+}
 
 @layer leaf-ui {
   .leaf-cascader {
@@ -14,9 +42,9 @@
       width: 100%;
       min-height: calc(var(--leaf-current-control-height) - 2 * var(--leaf-field-border-width));
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 0 var(--leaf-density-field-padding);
       border: 0;
       border-radius: inherit;
       color: inherit;
@@ -25,7 +53,8 @@
       line-height: inherit;
       text-align: start;
       cursor: pointer;
-      &:disabled {
+      &:disabled,
+      &[aria-disabled='true'] {
         cursor: not-allowed;
       }
       &:focus-visible {
@@ -47,7 +76,7 @@
     &__placeholder {
       color: var(--leaf-color-text-subtle);
     }
-    &--multiple &__trigger {
+    &--multiple:has(.leaf-selection) &__trigger {
       @include selection.trigger-padding('cascader', 10px);
     }
     &--multiple &__value {
@@ -58,48 +87,62 @@
       }
     }
     &__search {
-      margin: 0 var(--leaf-cascader-column-padding, 4px) 8px;
+      margin: 0 0 4px;
       > .leaf-input {
         width: 100%;
       }
     }
-    &__panel {
-      width: max-content;
-      max-width: min(560px, calc(100vw - 24px));
+    &__columns-scroll.leaf-scrollbar,
+    &__search-list.leaf-scrollbar {
+      width: 100%;
+      border-radius: 0;
     }
     &__columns {
       display: flex;
       width: max-content;
       min-width: 100%;
+      align-items: stretch;
     }
     &__column.leaf-scrollbar {
-      --leaf-cascader-column-padding: 4px;
+      flex: 1 0 auto;
+      width: auto;
       min-width: 140px;
-      width: 160px;
       max-width: none;
-      flex: 0 0 auto;
       border-radius: 0;
-      padding: 0 var(--leaf-cascader-column-padding);
+      padding: 0 4px;
+      &:first-child {
+        padding-inline-start: 0;
+      }
+      &:last-child {
+        padding-inline-end: 0;
+      }
+    }
+    &__panel[data-popup-width='auto'] &__column.leaf-scrollbar:not(:only-child),
+    &__panel[data-popup-width='auto']:not([data-searchable]) &__column.leaf-scrollbar {
+      max-width: 240px;
     }
     &__column + &__column {
-      border-inline-start: 1px solid var(--leaf-color-border);
+      border-inline-start: 1px solid var(--leaf-color-divider);
     }
-    &__column .leaf-floating__option {
-      @include mixins.choice-option;
-      @include mixins.choice-option-size;
-      justify-content: space-between;
-      > svg:not(.leaf-select__spinner) {
-        transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+    &__column,
+    &__search-list {
+      > .leaf-scrollbar__viewport > .leaf-scrollbar__content {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
       }
-      &[aria-selected='true'] > .lucide-chevron-right {
-        transform: translateX(2px);
-      }
-      &:dir(rtl) > .lucide-chevron-right {
-        transform: rotate(180deg);
-      }
-      &:dir(rtl)[aria-selected='true'] > .lucide-chevron-right {
-        transform: rotate(180deg) translateX(2px);
-      }
+    }
+    &__column .leaf-floating__option,
+    &__search-list .leaf-floating__option {
+      @include cascader-option;
+    }
+    &__spinner {
+      color: var(--leaf-color-text-muted);
+      animation: var(
+        --leaf-motion-animation,
+        leaf-spin calc(var(--leaf-motion-duration) * 4) linear infinite
+      );
+      animation-play-state: var(--leaf-motion-play-state);
     }
     &[data-open] &__trigger > svg {
       transform: rotate(180deg);
@@ -107,58 +150,38 @@
     &__check {
       animation: var(
         --leaf-motion-animation,
-        leaf-cascader-check-enter var(--leaf-motion-duration) var(--leaf-motion-easing)
+        leaf-fade-in var(--leaf-motion-fast) var(--leaf-motion-easing)
       );
+      path,
+      polyline {
+        stroke-dasharray: 24;
+        stroke-dashoffset: 0;
+        animation: var(
+          --leaf-motion-animation,
+          leaf-cascader-check-draw var(--leaf-motion-duration) var(--leaf-motion-easing)
+        );
+      }
     }
   }
-  @keyframes leaf-cascader-check-enter {
+  @keyframes leaf-cascader-check-draw {
     from {
-      opacity: 0;
-      transform: scale(0.5);
+      stroke-dashoffset: 24;
     }
     to {
-      opacity: 1;
-      transform: scale(1);
+      stroke-dashoffset: 0;
     }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-cascader__trigger > svg,
-    .leaf-cascader__column .leaf-floating__option > svg {
-      transition: none;
-    }
-    .leaf-cascader__check {
-      animation: none;
-    }
-  }
-
-  .leaf-cascader {
-    --leaf-current-control-height: var(
-      --leaf-component-cascader-height,
-      var(--leaf-control-height)
-    );
-    --leaf-current-font-size: var(--leaf-component-cascader-font-size, var(--leaf-font-size));
-    --leaf-current-radius: var(--leaf-radius);
-  }
-  .leaf-cascader--sm {
-    --leaf-current-control-height: var(
-      --leaf-component-cascader-height-sm,
-      var(--leaf-control-height-sm)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-sm);
-    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
-  }
-  .leaf-cascader--lg {
-    --leaf-current-control-height: var(
-      --leaf-component-cascader-height-lg,
-      var(--leaf-control-height-lg)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-lg);
-    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
   }
 
   .leaf-floating.leaf-cascader__panel {
     @include mixins.floating-paint(cascader);
     @include mixins.field-popup(cascader);
+    --leaf-surface-padding: var(--leaf-component-floating-padding, 4px);
+    @each $side in top, right, bottom, left {
+      --leaf-surface-padding-#{$side}: var(
+        --leaf-component-floating-padding-#{$side},
+        var(--leaf-surface-padding)
+      );
+    }
     font-size: var(
       --leaf-component-cascader-font-size,
       var(--leaf-current-font-size, var(--leaf-font-size))

@@ -25,7 +25,8 @@ export function GettingStartedForm() {
           ]}
         />
       </FormField>
-      <Button type="submit" startIcon={<Plus />}>
+      <Button type="submit">
+        <Plus />
         Create project
       </Button>
       {result && (

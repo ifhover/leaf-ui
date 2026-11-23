@@ -1,24 +1,32 @@
-import { Button, Result, Space, Text } from '@ifhover/leaf-ui';
+import { Button, Flex, Link, Result, Space, Text } from '@ifhover/leaf-ui';
+import { ArrowUpRight } from 'lucide-react';
 import { useState } from 'react';
 
 export function ResultBasic() {
   const [feedback, setFeedback] = useState('');
   return (
-    <Space direction="vertical" align="stretch">
+    <Flex direction="column" gap="sm" align="center">
       <Result
-        status="success"
-        title="项目已创建"
-        description="现在可以开始添加项目内容。"
+        title="还没有项目"
+        description="你还没有创建任何项目，先创建一个开始使用。"
         extra={
-          <Space wrap>
-            <Button variant="outline" onClick={() => setFeedback('已返回项目列表')}>
-              返回列表
-            </Button>
-            <Button onClick={() => setFeedback('已打开项目')}>进入项目</Button>
-          </Space>
+          <Flex direction="column" align="center" gap="md">
+            <Space wrap>
+              <Button variant="solid" onClick={() => setFeedback('已触发创建项目')}>
+                创建项目
+              </Button>
+              <Button variant="outline" onClick={() => setFeedback('已触发导入项目')}>
+                导入项目
+              </Button>
+            </Space>
+            <Link href="#result-api">
+              了解更多
+              <ArrowUpRight size={14} aria-hidden="true" />
+            </Link>
+          </Flex>
         }
       />
       {feedback && <Text role="status">{feedback}</Text>}
-    </Space>
+    </Flex>
   );
 }

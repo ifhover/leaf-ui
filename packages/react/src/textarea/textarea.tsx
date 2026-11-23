@@ -119,6 +119,20 @@ export const TextareaControl = forwardRef<HTMLTextAreaElement, TextareaProps>(
       return () => observer?.disconnect();
     }, [autoSize, minRows, maxRows, current, motionEnabled]);
     useEffect(() => () => heightAnimation.current?.cancel(), []);
+    const layoutStyle = {
+      width: style?.width,
+      minWidth: style?.minWidth,
+      maxWidth: style?.maxWidth,
+      flex: style?.flex,
+      flexBasis: style?.flexBasis,
+      flexGrow: style?.flexGrow,
+      flexShrink: style?.flexShrink,
+      alignSelf: style?.alignSelf,
+      order: style?.order,
+      gridArea: style?.gridArea,
+      gridColumn: style?.gridColumn,
+      gridRow: style?.gridRow,
+    };
     const control = (
       <ScrollbarControl
         externalViewport={textarea}
@@ -126,20 +140,9 @@ export const TextareaControl = forwardRef<HTMLTextAreaElement, TextareaProps>(
         resizeHandle={!autoSize && resize !== 'none'}
         scrollbarTabIndex={-1}
         className="leaf-textarea-scrollbar"
-        style={{
-          width: style?.width,
-          minWidth: style?.minWidth,
-          maxWidth: style?.maxWidth,
-          flex: style?.flex,
-          flexBasis: style?.flexBasis,
-          flexGrow: style?.flexGrow,
-          flexShrink: style?.flexShrink,
-          alignSelf: style?.alignSelf,
-          order: style?.order,
-          gridArea: style?.gridArea,
-          gridColumn: style?.gridColumn,
-          gridRow: style?.gridRow,
-        }}
+        style={
+          showCount ? (style?.width === undefined ? undefined : { width: '100%' }) : layoutStyle
+        }
       >
         <textarea
           {...props}
@@ -170,7 +173,7 @@ export const TextareaControl = forwardRef<HTMLTextAreaElement, TextareaProps>(
       </ScrollbarControl>
     );
     return showCount ? (
-      <div className="leaf-textarea-wrap">
+      <div className="leaf-textarea-wrap" style={layoutStyle}>
         {control}
         <span className="leaf-textarea__count">
           {typeof showCount === 'function'

@@ -18,9 +18,29 @@
     &__overlay {
       position: absolute;
       inset: 0;
-      display: grid;
-      place-items: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px;
+      text-align: center;
       background: var(--leaf-color-surface-alpha-90);
+    }
+    &__expired {
+      color: var(--leaf-color-text);
+      font-size: var(--leaf-font-size-sm);
+      font-weight: var(--leaf-font-weight);
+      line-height: var(--leaf-line-height-sm);
+    }
+  }
+  @media (forced-colors: active) {
+    .leaf-qr-code__image {
+      border: 1px solid CanvasText;
+    }
+    .leaf-qr-code__overlay {
+      background: Canvas;
+      border: 1px solid CanvasText;
     }
   }
 }

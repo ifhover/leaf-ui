@@ -75,7 +75,7 @@
       z-index: 4;
       opacity: 0;
       pointer-events: none;
-      transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
       &--vertical {
         inset-inline-end: var(--leaf-scrollbar-inset);
         width: var(--leaf-scrollbar-thickness);
@@ -98,7 +98,7 @@
       background-clip: padding-box;
       opacity: var(--leaf-scrollbar-thumb-opacity);
       pointer-events: none;
-      transition: opacity var(--leaf-motion-fast) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
     }
     &__bar--horizontal &__thumb {
       left: 0;
@@ -121,7 +121,7 @@
       touch-action: none;
     }
     &__bar:has(:focus-visible) {
-      outline: 2px solid var(--leaf-color-primary);
+      @include mixins.focus-ring;
       outline-offset: 2px;
       border-radius: 999px;
     }
@@ -136,12 +136,6 @@
     &[data-dragging] > &__bar {
       opacity: 1;
       pointer-events: auto;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-scrollbar__bar,
-    .leaf-scrollbar__thumb {
-      transition: none;
     }
   }
   @media (forced-colors: active) {

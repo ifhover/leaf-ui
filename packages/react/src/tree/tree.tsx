@@ -454,6 +454,18 @@ export function TreeControl({
               setHovered((current) => (current === node.key ? undefined : current));
             }}
           >
+            {showLine &&
+              flat &&
+              level > 1 &&
+              Array.from({ length: level - 1 }, (_, depth) => (
+                <span
+                  // biome-ignore lint/suspicious/noArrayIndexKey: 虚线引导线按层级深度固定定位。
+                  key={depth}
+                  aria-hidden="true"
+                  className="leaf-tree__indent-line"
+                  style={{ '--leaf-tree-line-left': `${depth * 20 + 14}px` } as CSSProperties}
+                />
+              ))}
             <button
               type="button"
               className="leaf-tree__toggle"
@@ -596,7 +608,7 @@ export function TreeControl({
           renderNodes(data, 1)
         )
       ) : (
-        (notFoundContent ?? <Result size="sm" title={messages.select.empty} icon={null} />)
+        (notFoundContent ?? <Result title={messages.select.empty} icon={null} />)
       )}
     </ScrollbarControl>
   );

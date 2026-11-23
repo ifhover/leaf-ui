@@ -22,6 +22,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    width: 100%;
     min-width: 0;
   }
   .leaf-textarea__count {
@@ -29,39 +30,9 @@
     color: var(--leaf-color-text-subtle);
     font: var(--leaf-font-size-sm) var(--leaf-font-family);
     font-variant-numeric: tabular-nums;
-    transition: color var(--leaf-motion-duration) var(--leaf-motion-easing);
+    transition: var(--leaf-action-transition);
   }
   .leaf-textarea-wrap:focus-within .leaf-textarea__count {
     color: var(--leaf-color-text-muted);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-textarea__count {
-      transition: none;
-    }
-  }
-
-  .leaf-textarea {
-    --leaf-current-control-height: var(
-      --leaf-component-textarea-height,
-      var(--leaf-control-height)
-    );
-    --leaf-current-font-size: var(--leaf-component-textarea-font-size, var(--leaf-font-size));
-    --leaf-current-radius: var(--leaf-radius);
-  }
-  .leaf-textarea--sm {
-    --leaf-current-control-height: var(
-      --leaf-component-textarea-height-sm,
-      var(--leaf-control-height-sm)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-sm);
-    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
-  }
-  .leaf-textarea--lg {
-    --leaf-current-control-height: var(
-      --leaf-component-textarea-height-lg,
-      var(--leaf-control-height-lg)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-lg);
-    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
   }
 }

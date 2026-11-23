@@ -129,7 +129,7 @@ export function TooltipControl({
         panelRef={panel}
         id={id}
         role="tooltip"
-        data-arrow={arrow ? 'true' : 'false'}
+        arrow={arrow}
         placement={popupPlacement ?? placement}
         className={classes('leaf-floating', 'leaf-tooltip', className, popupClassName)}
         style={popupStyle}

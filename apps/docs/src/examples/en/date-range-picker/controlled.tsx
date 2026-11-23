@@ -1,4 +1,4 @@
-import { Button, type DateRange, DateRangePicker, Form, FormField, Text } from '@ifhover/leaf-ui';
+import { Button, type DateRange, DateRangePicker, Flex, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const initialRange: DateRange = [new Date(2026, 9, 5), new Date(2026, 9, 9)];
@@ -16,34 +16,33 @@ export function DateRangePickerControlled() {
   const [draft, setDraft] = useState('Not adjusted');
 
   return (
-    <Form
-      layout="vertical"
-      onSubmit={(event) => event.preventDefault()}
-      onReset={() => {
-        setValue(initialRange);
-        setCommitted('2026-10-05 ~ 2026-10-09');
-        setDraft('Not adjusted');
-      }}
-    >
-      <FormField label="Controlled date range">
-        <DateRangePicker
-          value={value}
-          onChange={(next: DateRange | null, texts: readonly [string, string]) => {
-            setValue(next);
-            setCommitted(next ? texts.join(' ~ ') : 'Empty');
-          }}
-          onCalendarChange={(next, { position }) => {
-            setDraft(`${position}: ${next.map(formatDate).join(' ~ ')}`);
-          }}
-        />
-      </FormField>
+    <Flex direction="column" gap="sm" align="start">
+      <DateRangePicker
+        aria-label="Controlled date range"
+        value={value}
+        onChange={(next: DateRange | null, texts: readonly [string, string]) => {
+          setValue(next);
+          setCommitted(next ? texts.join(' ~ ') : 'Empty');
+        }}
+        onCalendarChange={(next, { position }) => {
+          setDraft(`${position}: ${next.map(formatDate).join(' ~ ')}`);
+        }}
+      />
       <Text tone="muted" role="status">
         Committed: {committed}
       </Text>
       <Text tone="muted" role="status">
         Latest panel edit: {draft}
       </Text>
-      <Button type="reset">Reset</Button>
-    </Form>
+      <Button
+        onClick={() => {
+          setValue(initialRange);
+          setCommitted('2026-10-05 ~ 2026-10-09');
+          setDraft('Not adjusted');
+        }}
+      >
+        Reset
+      </Button>
+    </Flex>
   );
 }

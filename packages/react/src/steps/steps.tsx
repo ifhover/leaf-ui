@@ -60,11 +60,9 @@ export function Steps(rawProps: StepsProps) {
           `[data-step-index="${index}"] .leaf-steps__icon`,
         );
         if (icon) {
-          const animation = animateMotion(
-            icon,
-            [{ transform: 'scale(0.88)' }, { transform: 'scale(1)' }],
-            { durationMultiplier: 1.6, easing: 'spring' },
-          );
+          const animation = animateMotion(icon, [{ opacity: 0.45 }, { opacity: 1 }], {
+            durationMultiplier: 1,
+          });
           if (animation) animations.current.push(animation);
         }
       }

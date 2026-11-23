@@ -30,7 +30,8 @@ for (const [name, value] of Object.entries({
 }
 const { outputFiles } = await build({
   stdin: {
-    contents: "export * from './colors'; export * from './color-shades';",
+    contents:
+      "export * from './colors'; export * from './color-shades'; export * from './color-scale';",
     resolveDir: path.join(root, 'packages/react/src'),
   },
   bundle: true,
@@ -38,7 +39,13 @@ const { outputFiles } = await build({
   platform: 'node',
   format: 'esm',
 });
-const { deriveColors, semanticColorFamilies, semanticColorShadeSteps } = await import(
+const {
+  deriveColors,
+  generateColorShades,
+  neutralColorScale,
+  semanticColorFamilies,
+  semanticColorShadeSteps,
+} = await import(
   `data:text/javascript;base64,${Buffer.from(outputFiles[0].text).toString('base64')}`
 );
 const expectedFamilies = ['primary', 'success', 'danger', 'warning', 'info'];
@@ -54,10 +61,10 @@ const expectedShadeSteps = [
 const neutralColorScaleSteps = [100, 200, 300, 400, 500, 600, 700, 800, 900];
 assert.deepEqual([...semanticColorFamilies], expectedFamilies);
 assert.deepEqual([...semanticColorShadeSteps], expectedShadeSteps);
-assert.equal(tokens.comfortable.dimension['control-height'].$value.value, 34);
-assert.equal(tokens.compact.dimension['control-height'].$value.value, 30);
-assert.equal(tokens.comfortable.dimension['density-option-height'].$value.value, 30);
-assert.equal(tokens.compact.dimension['density-option-height'].$value.value, 26);
+assert.equal(tokens.comfortable.dimension['control-height'].$value.value, 32);
+assert.equal(tokens.compact.dimension['control-height'].$value.value, 28);
+assert.equal(tokens.comfortable.dimension['density-option-height'].$value.value, 28);
+assert.equal(tokens.compact.dimension['density-option-height'].$value.value, 24);
 assert.equal(tokens.foundation.fontSize.$value.value, 14);
 assert.equal(tokens.foundation.lineHeight.$type, 'dimension');
 assert.deepEqual(tokens.foundation.lineHeight.$value, { value: 20, unit: 'px' });
@@ -71,18 +78,31 @@ for (const mode of ['light', 'dark']) {
     assert.equal(tokens[mode].color[name].$value.alpha, parsed.getAlpha(), `${mode} ${name} alpha`);
     assert.equal(studio[mode].color[name].value, value, `${mode} ${name} studio`);
   }
-  for (const family of expectedFamilies)
-    for (const shade of expectedShadeSteps)
-      assert.ok(runtime[`--leaf-color-${family}-${shade}`], `${mode} ${family}-${shade}`);
-  for (const family of expectedFamilies)
+  for (const family of expectedFamilies) {
+    const shades = generateColorShades(runtime[`--leaf-color-${family}`]);
+    for (const shade of expectedShadeSteps) {
+      assert.ok(shades[shade], `${mode} ${family}-${shade}`);
+      assert.equal(
+        runtime[`--leaf-color-${family}-${shade}`],
+        undefined,
+        `${mode} ${family}-${shade} should stay internal`,
+      );
+    }
     for (const step of neutralColorScaleSteps)
       assert.equal(
         runtime[`--leaf-color-${family}-${step}`],
         undefined,
         `${mode} ${family}-${step} must not remain`,
       );
-  for (const step of neutralColorScaleSteps)
-    assert.ok(runtime[`--leaf-color-neutral-${step}`], `${mode} neutral-${step}`);
+  }
+  for (const step of neutralColorScaleSteps) {
+    assert.ok(neutralColorScale[step], `${mode} neutral-${step} scale`);
+    assert.equal(
+      runtime[`--leaf-color-neutral-${step}`],
+      undefined,
+      `${mode} neutral-${step} should stay internal`,
+    );
+  }
   for (const value of Object.values(tokens[mode].color)) {
     assert.equal(value.$type, 'color');
     assert.equal(value.$value.colorSpace, 'srgb');

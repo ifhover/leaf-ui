@@ -11,7 +11,7 @@
 ### 视觉方向
 
 - 默认外观安静、可读。所有组件使用语义主题 token，支持浅色 / 深色区域，并继承宽松 / 紧凑密度；组件局部覆盖与显式尺寸优先。
-- 桌面工具视觉：纯白（深色模式对应深色）净面与克制的中性边界、柔和圆角，紧凑控件放在宽松的容器留白中，避免过度堆叠灰色底板。品牌色可配置（默认 `#007aff`），常规切换多用 `primary-soft` 浅底高亮，主要操作与开关用 `primary` 实底；更换品牌色时视觉结构保持一致。
+- 桌面工具视觉：纯白（深色模式 `#0d0d0d`）净面与克制的黑白灰阶边界、柔和圆角，紧凑控件放在宽松的容器留白中，避免过度堆叠灰色底板。品牌色可配置（默认 `#007aff`，支持 `'neutral'` 自适应黑白灰单色主色），收敛至主要操作 `Button`、勾选/开关/滑块/进度、日历选中日期与状态标识；标签页、菜单、表格与普通表单聚焦保持黑白灰中性外观；更换品牌色时视觉结构保持一致。
 - 中性角色来自一套由 `neutralColor` 种子（默认纯灰 `#707070`）生成的共享色阶：默认灰阶不偏蓝，显式带色相的中性基色仍保留其色相。浅色模式把文字、边框、表面映射到适合浅底的档位，深色模式把同一色阶映射到深色表面。组件消费这些角色，不硬编码中性值。语义状态色和可读的焦点反馈与中性表面区分开。
 - 可选主题预设可以使用更粗的外边框和偏移阴影；token 缺省时默认外观不变。全局 `borderWidth`、`controlShadow`、`surfaceShadow` 与显式组件状态绘制必须经由 ConfigProvider 生效，包括 Portal 和 API 反馈服务。结构分割线保留自身细线。
 - 更粗的边框从内部控件几何和嵌套圆角中扣除，不增加控件高度。自定义阴影必须保留清晰的焦点轮廓、禁用语义、减少动态效果与强制颜色模式。预设只包含可移植的主题数据；文档装饰不得提供私有组件皮肤规则。
@@ -24,8 +24,8 @@
 
 ### 圆角与嵌套
 
-- 层级来自圆角、边框和字体，不来自装饰。默认圆角：小标签 5px（`--leaf-radius-sm`）、控件 10px（`--leaf-radius`，并按 `sm / md / lg` 尺寸提供 `8 / 10 / 12px` 阶梯：`--leaf-control-radius-sm` / `--leaf-radius` / `--leaf-control-radius-lg`）、内容面 14px（`--leaf-radius-md`，`sm / lg` 卡片与带边框 `Descriptions` 为 `12 / 16px`）、浮层与抽屉 16px（`--leaf-radius-lg`），均由基础圆角按 `0.5 / 0.8 / 1 / 1.2 / 1.4 / 1.6` 派生（`borderRadius: 0` 时全数归零）。Square `Avatar`（sm / md / lg）使用 `8 / 12 / 16px`，`Tag`（sm / md / lg）使用 `4 / 5 / 6px`，`InputOTP`（sm / md / lg）使用 `8 / 10 / 12px`。
-- 圆角由外向内递减：普通 Modal 用 medium，Confirm、抽屉和通用浮层用 large；表单浮层跟随字段实际圆角，Dropdown 使用组件圆角或基础圆角；内容面（Card、Alert、Collapse、Descriptions、Transfer、Upload、FileList、Result 内容、选择卡片与列表）用 medium；按钮和字段用 base；复选框与小标签用 small；DataTable 仅顶部使用 base 圆角，Tag 见下文。
+- 层级来自圆角、边框和字体，不来自装饰。默认圆角：小标签 5px（`--leaf-radius-sm`）、控件 10px（`--leaf-radius`，并按 `sm / md / lg` 尺寸提供 `8 / 10 / 12px` 阶梯：`--leaf-control-radius-sm` / `--leaf-radius` / `--leaf-control-radius-lg`）、内容面 14px（`--leaf-radius-md`，`sm / lg` 卡片与带边框 `Descriptions` 为 `12 / 16px`）、浮层与抽屉 16px（`--leaf-radius-lg`），均由基础圆角按整数偏移步进（`-5 / -2 / 0 / +2 / +4 / +6 px` 并下限归零）派生（`borderRadius: 0` 时全数归零）。Square `Avatar`（sm / md / lg）使用 `8 / 12 / 16px`，`Tag`（sm / md / lg）使用 `4 / 5 / 6px`，`InputOTP`（sm / md / lg）使用 `8 / 10 / 12px`。
+- 圆角由外向内递减：Modal 与 Confirm 用 medium，抽屉和通用浮层用 large；表单浮层跟随字段实际圆角，Dropdown 使用组件圆角或基础圆角；内容面（Card、Collapse、Descriptions、Transfer、Upload、FileList、Result 内容、选择卡片与列表）用 medium；按钮、字段与 Alert 用 base；复选框与小标签用 small；DataTable 仅顶部使用 base 圆角，Tag 见下文。
 - 嵌套表面使用同心曲线：`内圆角 = max(0px, 外圆角 - 内边距 - 边框宽度)`。例：外圆角 16px、内边距 6px、边框 1px 的通用浮层，内圆角为 9px。
 - 选择类浮层与 Dropdown 的选项圆角固定为字段 / 基础圆角减 2px（最小为 0），与 Select 一致，不随面板内边距变化；行内反馈层继承该选项圆角。日期 / 时间面板内的时间行、日期格与日历标题同样使用该选项圆角；周选择只在行首尾保留外侧圆角。其他嵌套表面使用共享几何辅助函数处理不等的横纵内缩。主题和组件内边距变化自动更新曲线；小圆角与直角主题收敛到 0。
 - 独立控件、日历格、标签和图标保留各自的语义圆角。不要用裁剪掩盖圆角不匹配。
@@ -33,67 +33,68 @@
 ### 文字
 
 - 只使用 400 / 500 / 700 三种字重：正文 400，控件和普通分区标签 500，强调文字和醒目标题 700。
-- 层级依靠字号与颜色，基础字号与行高沿用界面指南的标尺。除 Card 大号标题与 Typography 标题使用 `headingWeight`（默认 700）、Table 表头使用 600 外，组件标题、标签、选中标签页和按钮使用 `fontWeight`（500）。
+- 正文与 `Table` 表头使用 500，Modal、Confirm、Drawer 与 Card 标题使用 `fontWeight`（默认 500）；`Typography` 强标题使用 `headingWeight`（默认 700）；普通标签和按钮使用 `fontWeight`（500）。
 - 伴随文字的指示物（Steps 图标、Result 与 Upload 符号）按文字尺寸确定大小，不按控件高度。
 
 ### 阴影与边框
 
-- 纯白内容面在白色背景上通过清晰而不过重的中性外框区分边界：`Card`、`Collapse`（bordered）、`Descriptions`（bordered）、`Transfer` 与 `FileList` 外框统一使用 `--leaf-color-border`（浅色默认 `#e9e9e9`）；`Card` 默认加最轻的朝下静止阴影（`shadow-xs`），分层 `Card` 只在内层内容框使用 `shadow-sm`；`DataTable` 保持平面且无外框。
-- 描边按钮、`Collapse`（bordered）、分段 `Tabs` 轨道、`Transfer` 面板与 `Upload` 符号徽标共用朝下的 `shadow-xs` 静止阴影，悬停不抬起。
-- `Table` 网格、普通内部分割线、`Transfer` 表头底线与 `Card` 内嵌标签栏分区线使用更轻的 `--leaf-color-divider`（浅色 `#ededed`）或 70% `softened-frame-color`，形成“外框清、内线轻”的层级。
-- 更强的阴影只用于浮起的层和手柄：浮层 `shadow-md`；`Modal` 与 `Confirm` 叠加三层 `shadow-md`；`Drawer` `shadow-lg`；滑块手柄使用各自抬起阴影（分段 `Tabs` 默认 `soft` 指示器不加阴影）。
+- 纯白内容面在白色背景上通过清晰而不过重的中性外框区分边界：`Card`、`Collapse`（bordered）、`Descriptions`（bordered）、`Transfer`、`Modal`、`Drawer` 与 `FileList` 外框统一使用 `--leaf-color-border`（浅色 `#e5e5e5`，深色 `#262626`）；`Card` 默认加最轻的朝下静止阴影（`shadow-xs`），分层 `Card` 只在内层内容框使用 `shadow-sm`；`DataTable` 保持平面且无外框。
+- `Collapse`（bordered）、`Transfer` 面板与 `Upload` 符号徽标共用朝下的 `shadow-xs` 静止阴影，悬停不抬起；无边框 `Pagination` 当前页方框采用无阴影纯边框。
+- `Table` 网格、普通内部分割线、`Modal` / `Drawer` 页脚顶部 `divided` 分隔线、`Transfer` 表头底线与 `Card` 内嵌标签栏分区线使用更轻的 `--leaf-color-divider`（浅色 `#eaeaea`，深色 `#212121`），形成“外框清、内线轻”的层级。
+- 更强的阴影只用于浮起的层和手柄：分段 `Tabs` 轨道保持扁平无阴影、选中滑块使用 `shadow-sm`；浮层、`Modal` 与 `Confirm` 使用 `shadow-md`；`Drawer` `shadow-lg`；滑块手柄使用各自抬起阴影。
 
 ### 像素网格
 
-- 默认几何落在整像素：正文 / 次要 / 大号行盒为 20 / 18 / 22 px；28 / 34 / 40 px 控件、默认 Card 标题行盒（20 / 22 / 24 px）、浮层行与步骤指示器均为整像素。Steps 指示器至少 24 px，大号 28 px。
+- 默认几何落在整像素：正文 / 次要 / 大号行盒为 20 / 18 / 22 px；26 / 32 / 38 px 控件、默认 Card 标题行盒（20 / 22 / 24 px）、浮层行与步骤指示器均为整像素。Steps 指示器至少 24 px，大号 28 px。
 - 显式小数 token、自定义字号、相对宽度和 SVG 内部坐标仍可能产生小数几何；不要为掩盖应用自身布局而对任意内容取整。
 
 ## 状态
 
 ### 状态契约
 
-| 状态        | 要求                                                                                                                                 |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| 默认        | 文字清晰、图标对齐一致、几何稳定                                                                                                     |
-| 悬停        | 颜色或边框反馈；普通操作与悬浮按钮保持位置、尺寸与阴影层级不变                                                                         |
-| 按下        | 立即的颜色反馈；常用操作控件与列表条目可配合克制的按压微缩（`scale` `0.95`–`0.985`，零外缘波纹、不改变外围几何）                        |
-| 键盘焦点    | 可见且不引起布局位移：输入和选择类字段（含 Textarea、Mentions、InputNumber）统一使用主题色边框、无外圈；按钮使用中性键盘轮廓；强制颜色模式保留可辨识轮廓 |
-| 选中        | 语义化的选中背景 / 指示加 ARIA 状态；不能只靠颜色                                                                                    |
-| 禁用        | 不可操作，原生 / ARIA 状态正确；与 loading 区分                                                                                      |
-| 加载        | 尽量保持标签与宽度；暴露 busy 状态；防止重复提交                                                                                     |
-| 错误 / 警告 | 状态文字和图标；适用时提供可聚焦摘要；不只依赖颜色                                                                                   |
-| 空          | 说明什么为空，必要时提供下一步操作                                                                                                   |
+| 状态        | 要求                                                                                                                                                                                                                                                                    |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 默认        | 文字清晰、图标对齐一致、几何稳定                                                                                                                                                                                                                                        |
+| 悬停        | 颜色或边框反馈；普通操作与悬浮按钮保持位置、尺寸与阴影层级不变                                                                                                                                                                                                          |
+| 按下        | 立即的颜色反馈；仅普通 `Button` 配合克制的 `1px` 轻压下沉（`outline` 保留下沉位移但颜色与边框不变），其余控件与条目使用克制的变色、透明度或阴影收敛（零按压缩放、零外缘波纹、不改变外围几何）                                                                           |
+| 键盘焦点    | 可见且不引起布局位移：输入和选择类字段（含 Textarea、Mentions、InputNumber）与 InputOTP 激活格聚焦或展开时统一使用清晰边框（默认 `--leaf-color-text-muted`，校验态或显式主色随其变化）并叠加克制的 3px 20% 半透明外环；按钮使用中性键盘轮廓；强制颜色模式保留可辨识轮廓 |
+| 选中        | 语义化的选中背景 / 指示加 ARIA 状态；不能只靠颜色                                                                                                                                                                                                                       |
+| 禁用        | 不可操作，原生 / ARIA 状态正确；与 loading 区分                                                                                                                                                                                                                         |
+| 加载        | 尽量保持标签与宽度；暴露 busy 状态；防止重复提交                                                                                                                                                                                                                        |
+| 错误 / 警告 | 状态文字和图标；适用时提供可聚焦摘要；不只依赖颜色                                                                                                                                                                                                                      |
+| 空          | 说明什么为空，必要时提供下一步操作                                                                                                                                                                                                                                      |
 
 ### 颜色
 
 - 主题色用于可操作的强调；success / info / warning / danger 表达含义。弱化文字保持可读；自定义色板须对实际前景 / 背景组合满足 WCAG 对比度。透明派生色使用预乘 sRGB alpha。
-- 默认语义基色在 `colors.ts` 声明一次，浅深外观共享，经由显式 `light-N` / `dark-N` 派生与 `--leaf-color-*` 用途角色输出；组件不得重新声明。基色：primary `#007aff`、success `#4bb418`、danger `#ff4d4f`、warning `#e69f12`、info `#1677ff`。用户提供的 primary 保持原值，不改写、不强制为 500 档。
-- 浅深模式都保留显式主色实底；外观切换只换用途映射，不重新着色基色或生成另一套色阶。非主色语义 `ink` 与实底前景（`on-*`）的默认值见 [颜色系统：角色映射与选阶](COLOR-SYSTEM.md#角色映射与选阶)；内置组件的主色文字、指示与边界展示统一直接使用主题基色 `primary`。不要为了让主色文字可读而提亮所有主色实底；显式组件 / 状态、前景和焦点覆盖优先。
-- 使用主色焦点指示的组件直接使用主题基色 `--leaf-color-primary`；按钮保持中性焦点反馈。
+- 默认语义基色在 `colors.ts` 声明一次，浅深外观共享，经由 JS `generateColorShades` 与 `resolveColorRoles` 映射为 `--leaf-color-*` 用途角色输出；组件不得重新声明。基色：primary `#007aff`（支持 `'neutral'` 自适应黑白灰单色主色）、success `#4bb418`、danger `#ff4d4f`、warning `#e69f12`、info `#1677ff`。用户提供的具体 primary 保持原值，不改写、不强制为 500 档。
+- 浅深模式都保留显式主色实底；外观切换只换用途映射与 `'neutral'` 单色主色（浅 `#0d0d0d` / 深 `#f5f5f5`，对应 `on-primary` `#ffffff` / `#0d0d0d`），不重新着色具体基色。非主色语义 `ink` 与实底前景（`on-*`）的默认值见 [颜色系统：角色映射与选阶](COLOR-SYSTEM.md#角色映射与选阶)；内置主色控件与指示统一直接使用 `--leaf-color-primary`。不要为了让主色文字可读而提亮所有主色实底；显式组件 / 状态、前景和焦点覆盖优先。
+- 键盘焦点反馈以清晰中性轮廓与中性边框为主：按钮与常见控件复用 `--leaf-color-text-muted` 轮廓（可通过 `--leaf-color-focus` 显式覆盖），输入与选择字段悬停加深至 `--leaf-color-border-hover`、聚焦或展开时默认采用 `--leaf-color-text-muted` 边框配 3px 半透明外环（校验态与显式主色字段分别跟随语义色或 `--leaf-color-primary`），`Slider` 滑块在 `:focus-visible` 时叠加 `accent-halo-focus-color`。
 - 实底 Button 默认透明边框，即使基色与周围表面相同也不自动补对比边框；显式全局、组件和状态边框覆盖及系统强制颜色模式仍有效。保留独立的 on-primary / on-success / on-danger / on-warning / on-info 角色，即使取值相同。浅深模式可以共享取值；只有确有视觉或对比需要时才区分，不复制完整矩阵。
-- Checkbox、Radio、Switch 的选中实底与边界统一使用原 primary 与 on-primary 内容；不得把派生色阶用作实底却沿用另一颜色的前景。显式组件绘制覆盖优先。
-- Radio 按下不缩放控件；选中圆框和卡片边框使用主题基色，显式 Radio 组件边框与状态覆盖优先。选中圆点按 Ant Design 5 使用 300ms 的 `cubic-bezier(0.78, 0.14, 0.15, 0.86)` 缩放与透明度过渡，圆框颜色使用 200ms ease；时长随区域 motionDuration 缩放，遵守减少动态效果设置。
+- Checkbox、Radio、Switch 的选中实底与边界统一使用原 primary 与 on-primary 内容（未选中控件常态边框使用 `border-hover`、悬停加深为 `text-muted`）；不得把派生色阶用作实底却沿用另一颜色的前景。显式组件绘制覆盖优先。
+- Checkbox 与 Radio 按下不缩放控件；选中边框与填充使用主题基色，显式组件边框与状态覆盖优先。Checkbox 对号与半选横线使用 SVG `stroke-dashoffset` 绘制过渡；Radio 选中圆点按 Ant Design 5 使用 300ms 的 `cubic-bezier(0.78, 0.14, 0.15, 0.86)` `clip-path` 中心展开与透明度过渡，圆框颜色使用 200ms ease；时长随区域 motionDuration 缩放，遵守减少动态效果设置。
 - Switch 关闭态在两种外观下都是中性灰轨道配亮色滑块，不用浅色轨道配深色滑块。轨道默认边框与填充同色；显式全局、组件、状态绘制覆盖优先。关闭态 loading 图标保持中性；开启态轨道与 loading 图标使用 primary，滑块使用 on-primary。修改 on-primary 不得改变关闭态滑块。
 - Warning 图标、字段强调与状态填充使用共享琥珀基色（`#e69f12`）；警告文字独立派生可读 ink。Tag 的 soft 标签文字跟随对应语义基色，solid 标签文字使用白色；不要为文字对比度把所有警告强调色调暗。
 
 ### 动效
 
-- 普通操作反馈使用 120–200 ms 缓动。链接文字颜色按 Ant Design 使用 200 ms ease-in-out，线形 Tabs 文字颜色与指示线使用 300 ms ease，均随区域 motionDuration 缩放。对话框与抽屉最长 320 ms；抽屉滑入无过冲。Message 与 Notification 整体入场，内部图标 / 文字无弹性。
-- 选中指示在同组切换时可移动到新选中项（当前仅 `Tabs` 的 `card` / `segmented` 滑块与 `Pagination` 的当前页指示块保留 `--leaf-motion-spring`），其余组件、浮层与弹窗均采用无过冲 `--leaf-motion-easing`；悬停时 Card、按钮与悬浮按钮保持位置与表面阴影；`Button`、`Tabs` 标签、`Transfer` 条目、`Calendar` 视图分段 / 日期格、`Upload` 头像、`FloatButton` / `BackTop` 与浮动 `Menu` 选项按下时应用克制的按压微缩，不移动周围排版。
-- 遵守系统减少动态效果和 `theme.motion={false}`；动画永不阻塞功能，所有缩放与位移过渡在减少动态效果下均关闭。
+- 普通操作反馈使用 120–200 ms 缓动。链接文字颜色按 Ant Design 使用 200 ms ease-in-out，均随区域 motionDuration 缩放。对话框与抽屉最长 320 ms；抽屉滑入无过冲。Message 与 Notification 整体入场，内部图标 / 文字无弹性。
+- 选中指示在同组切换时可移动到新选中项（当前仅 `Tabs` 的 `card` / `segmented` 滑块保留 `--leaf-motion-spring`），其余组件、浮层与弹窗均采用无过冲 `--leaf-motion-easing`；悬停时 Card、按钮与悬浮按钮保持位置与表面阴影；`Button` 按下时应用克制的 `1px` 轻压下沉，`FloatButton` / `BackTop`、选项行、日历格与各类交互控件按下只改变颜色、透明度或阴影收敛而不做按压缩放与位移，均不移动周围排版。
+- 遵守系统减少动态效果和 `theme.motion={false}`；动画永不阻塞功能，所有动效在减少动态效果下均关闭。
 - 颜色过渡共用 `--leaf-motion-color`（当前等于标准动效时长），覆盖字段、按钮、菜单表面与浮层选项行。
 
 ## 操作
 
 ### Button
 
-- 外观：`solid`、`outline`、`text`、`link`，默认 `outline`。`solid` / `outline` / `text` / `link` 保持布局占位不变，按下时应用克制的 `scale: 0.975` 按压微缩反馈（遵守减少动态效果）；danger 只改变语义配色，不改变动效、装饰或几何。
+- 外观：`solid`、`outline`、`text`、`link`、`danger`，默认 `outline`。`solid`、`outline`、`text`、`danger` 保持布局占位不变，按下时应用克制的 `translate: 0 1px` 轻压下沉反馈（遵守减少动态效果）。
 - 按钮与紧凑操作在悬停、按下和恢复时共用同一绘制过渡时长与缓动。loading 内容使用同一缓动，无弹性。无外缘波纹；指针激活不显示焦点光环；键盘焦点使用中性轮廓，强制颜色模式下仍可见。
 - `solid`：悬停保持静止外观，只在按下时加深；按下色为基色混入 10% 黑色，不量化。前景色见 [颜色系统：角色映射与选阶](COLOR-SYSTEM.md#角色映射与选阶)。
-- `outline`：内容表面、正文色、可见中性边框和一道轻微静止阴影。普通描边悬停用 `border-hover` 加深边框，按下保留当前文字和边框；danger 描边的文字与默认边框直接使用 `danger` 基色，悬停时文字和边框共用危险链接的浅色，按下时共用其深色。按下背景将实际背景与 `surface-muted` 等比混合成浅灰，松开恢复；阴影和几何保持不变。文字、边框与背景使用共享颜色过渡，显式组件和状态覆盖优先。
-- `text`：常规按钮高度和行内内边距，正文色、透明静止背景；danger 文字直接使用 `danger` 基色。悬停使用 50% 不透明度的中性选项悬停底，按下使用完整强度，不改变几何。
-- `link`：普通链接使用主题基色 `primary`，危险链接使用 `danger` 基色，无边框、内边距和控件最小高度。悬停文字使用对应语义的 hover 亮色，按下使用 active 深色；danger 按下继续加下划线。显式组件文字和状态覆盖优先；无波纹。
-- 内边距随实际高度派生（高度 × 0.42，34px 时为 14.28px），显式组件内边距在所有尺寸下优先。显式交互 token 与组件状态覆盖优先。
+- `outline`：纯边框实现，内容表面、正文色配 `--leaf-color-border` 中性边框且无静止阴影；悬停展示 `--leaf-color-surface-muted` 中性浅灰背景，悬停与按下时边框保持不变，按下保留轻压位移且不做额外颜色或背景变化，松开恢复。文字、边框与背景使用共享颜色过渡，显式组件和状态覆盖优先。
+- `text`：常规按钮高度和行内内边距，正文色、透明静止背景。悬停使用 50% 不透明度的中性选项悬停底，按下使用完整强度，不改变几何。
+- `link`：使用主题基色 `primary`，无边框、内边距和控件最小高度。悬停文字使用 `primary-link-hover` 亮色，按下使用 `primary-link-active` 深色。显式组件文字和状态覆盖优先；无波纹。
+- `danger`：单一危险按钮外观（仅危险浅底 + 危险文字），静止态直接使用 `--leaf-color-danger` 前景、`--leaf-color-danger-soft` 背景、透明边框与无静止阴影；悬停与按下收小变化跨度，分别向 `--leaf-color-danger-soft-hover` 混合 30% 与 50%。兼容属性 `danger` 标记为 `@deprecated`，传入时统一回退为 `variant="danger"`。
+- 水平内边距对齐整像素网格：`sm` / `md` / `lg` 常规水平内边距分别为 `10px` / `12px` / `16px`，存在图标或加载指示器时仅图标所在一侧收窄为 `6px` / `8px` / `12px`（支持自动识别首尾直接子级 `svg` 图标与显式 `data-icon="inline-start"` / `"inline-end"` 标记）；`sm` / `md` / `lg` 图标尺寸对应 `14px` / `16px` / `18px`、图文间距为 `6px` / `8px` / `8px`，纯图标按钮使用 `size="icon" | "icon-sm" | "icon-lg"` 正方形零内边距。显式交互 token 与组件状态覆盖优先。
 
 ### 紧凑操作
 
@@ -102,10 +103,11 @@
 
 ### Pagination
 
-- 默认使用表面填充的描边按钮；`variant="ghost"` 保留无边框控件。两者共用控件高度 token 和稳定的按下几何。
-- 描边悬停只加深中性边框；按下加与描边 Button 相同的浅中性底，不改变文字或几何。ghost 使用中性填充。
-- 当前页使用主题色浅底的滑动选中指示块（`--leaf-motion-spring`，圆角随 `Pagination` 尺寸缩放）。移动背景同时插值位置与颜色；不透明填充防止经过选中项时变暗。
-- `showTotal` 接受布尔值（本地化总数）或渲染函数。页码和每页条数变化使用同一回调；快速跳转在 Enter 或离开分页区域时提交，不覆盖已点击的分页操作。
+- 默认使用无边框的 `variant="ghost"`；`variant="outline"` 为常规分页与翻页按钮提供表面填充描边样式。两者共用控件高度 token、稳定的按下几何与默认 `--leaf-color-text` 正文色（含总数、省略号与条数标签）。
+- 上一页、下一页按钮在图标旁直接展示文字（中文“上一页 / 下一页”，英文“Previous / Next”）。
+- `ghost` 模式下，非当前页与翻页按钮保持透明无边框，当前选中页直接切换为纯白净面（`--leaf-color-surface`）配略深中性边框（`--leaf-color-border-hover`）的无阴影纯边框方框，不使用滑动指示器过渡动画；`outline` 模式下，当前选中页保持相同占位但不展示边框、不可点击、直接显示默认正文色纯文字。
+- 上一页、下一页翻页按钮复用 Button 图标侧自动收窄内边距的行为（仅收窄图标一侧）。
+- `showSizeChanger` 在禁止输入搜索的紧凑下拉框内部展示 `{count} 条/页`（英文 `{count} / page`）；`showQuickJumper` 展示“跳至 [输入框] 页”（英文 “Go to [input] page”），在 Enter 或离开分页区域时提交，不覆盖已点击的分页操作。`showTotal` 接受布尔值或渲染函数，页码和每页条数变化使用同一回调。
 
 ## 选择与导航
 
@@ -115,8 +117,8 @@
 - 已保存的值用勾选标记表达，不常驻背景色；checkbox 模式以复选框作为持久标记。AutoComplete 与 Mentions 用 ARIA 选中态表示当前候选；建议候选即使使用 `aria-selected` 播报导航也保持中性。
 - Checkbox 与 Radio 禁用时，未选中的指示器使用 `surface-muted` 背景和 `border` 边框，已选中或半选的指示器使用 `border` 背景，保留组件级 disabled 颜色覆盖；文字和整体不可交互状态沿用共享禁用规则。
 - 每行只渐变自身背景色（默认 200ms），不使用移动高亮、透明度或内缩动画；勾选标记保留现有动效。
-- 这些行跟随当前控件高度（宽松 / 紧凑 34 / 30 px，遵循显式组件 token），行间无额外间隙；长标签换行并增高行。Select 与 AutoComplete 的显式 `optionHeight` 优先。其他浮动列表（Menu 子菜单、时间列）使用通用浮层选项最小高度。Dropdown 图标与文字间距 12px。Tree 的层级缩进属于行布局。
-- Dropdown 未指定宽度时从 160px 最小宽度按完整内容增宽，达到最大宽度或视口边界后才换行；右侧 extra 按自身内容占位，不固定占据一半菜单。`size` 的 sm / md / lg 同时控制字号、行高、图标与行内间距，子菜单继承；默认 md 图文间距仍为 12px。
+- 这些行跟随当前控件高度（宽松 / 紧凑 32 / 28 px，遵循显式组件 token），行间无额外间隙；长标签换行并增高行。Select 与 AutoComplete 的显式 `optionHeight` 优先，Select 浮层外框内边距默认为 `4px`、分组标题上下内边距收敛为 `6px / 2px`。其他浮动列表（Menu 子菜单、时间列）使用通用浮层选项最小高度。Tree 的层级缩进属于行布局。
+- Dropdown 浮层外框默认内边距为 `4px`，未指定宽度时从 160px 最小宽度按完整内容增宽，达到最大宽度或视口边界后才换行；右侧 extra 按自身内容占位，不固定占据一半菜单。`size` 的 sm / md / lg 同时控制字号、行高、图标（`12 / 13 / 15px`）、选项最小高度（默认 `26 / 30 / 34px`）与行内间距（`6 / 8 / 10px`，默认 md 图文间距仍为 12px），子菜单继承尺寸。含子菜单的父菜单项收窄右侧内边距且悬停/展开时箭头保持静止；分组标题上下间距收敛为 `4px / 2px`；子菜单紧贴父触发项边缘并与当前触发项顶边平齐，向父菜单方向内收消除外侧空隙。
 - 浮层外框匹配字段圆角（包括组件覆盖），选项为该圆角减 2px（最小 0）。Mentions 跟随其 Textarea 字段，所有基于 DateInput 的日期 / 时间浮层跟随 DatePicker 字段槽。Portal 几何不得继承外层 Card 或 Menu 的表面圆角。
 - 选中值变化时立即更新触发器标签，不重放内部文字动画。Cascader 父级变化时立即替换更深列，不用会被看成闪烁的淡入。
 
@@ -133,24 +135,24 @@
 
 ### Menu
 
-- 只支持纵向，布局与键盘语义独立于外观。`variant` 可选 `neutral`、`raised`、`primary`，默认使用 `primary`；每种外观提供完整的状态配色、边框、阴影与进出时长；内联和浮动导航共用同一状态绘制器，不事后覆盖默认选中规则。
-- `neutral`：浅色模式的悬停、按下与选中统一填充 `rgb(241, 241, 242)`，深色模式保留 8% 黑的中性反馈；未选中行文字为 80% 继承色混合区域表面，选中行为完整文字色。
-- `raised`：灰色画布、主题表面选中块、1px 中性边框和 `0 2px 3px -1px rgb(0 0 0 / 0.08)` 阴影，用 `inset(0 0 -4px)` 裁剪为只在行下方溢出；悬停只加深文字，按下 4% 黑。
-- `primary`：普通未选中一级项的文字使用完整正文色（组件文字覆盖优先），图标与箭头保留原有弱化色；选中使用主题基色 `primary` 与 5% primary 填充，不使用会调整深浅的 primary ink；悬停同色文字无背景；按下 4% primary 填充，松开时淡出到透明，不经过灰色背景；选中无边框或阴影。
+- 只支持纵向，布局与键盘语义独立于外观。`variant` 可选 `neutral`、`raised`、`primary`，默认使用 `neutral`；每种外观提供完整的状态配色、边框、阴影与进出时长；内联和浮动导航共用同一状态绘制器，不事后覆盖默认选中规则。
+- `neutral`：悬停使用轻盈的 `choice-option-background()`（32% `option-hover`），按下与选中保持 `--leaf-color-surface-muted`（不再让悬停与选中同底混淆）；未选中行文字为 80% 继承色混合区域表面，选中行为完整文字色。
+- `raised`：灰色画布、主题表面选中块、1px 中性边框和共享 `--leaf-shadow-xs` 轻阴影；悬停只加深文字，按下使用 `choice-option-background()`。
+- `primary`：普通未选中一级项的文字使用完整正文色（组件文字覆盖优先），图标与箭头保留原有弱化色；选中使用主题基色 `primary` 与 5% primary 填充，不使用会调整深浅的 primary ink；悬停同色文字无背景；按下使用 `--leaf-color-primary-alpha-4`，松开时淡出到透明，不经过灰色背景；选中无边框或阴影。
 - `raised` 与 `primary` 入场时长为标准时长的 1.2 倍（默认 240ms），立即清除旧选中，无灰色退出。
-- 所有外观的菜单项统一使用控件字重（默认 500），内联、浮动、选中与未选中项一致；保留危险语义、禁用行为、键盘轮廓、减少 / 关闭动效与系统强制颜色。只高亮当前页，不高亮其祖先。
-- 子菜单由点击、键盘或代码更新展开状态时共用相同过渡；首次挂载为展开状态也有进入动画，首次懒加载先建立收起布局，关闭时保留内容并立即禁用交互。快速反向切换从当前进度继续；嵌套子菜单只响应自身展开状态，减少或关闭动效时直接呈现目标状态。
-- 行圆角为基础圆角减 2px（默认 6px），浮层外框用基础圆角。顶层行高为控件高度加 2px（36 / 32px），子菜单行高跟随选项（30 / 26px）；16px 图标占 20px 槽，图标与文字间距 12px。内联子项占满菜单可用宽度，不显示层级竖线；二级项的内容起点与有图标的一级项文字起点对齐，更深层级每级缩进 32px。内联和浮动子菜单的普通未选中文字使用次要文字色，组件文字覆盖优先；选中、危险和禁用语义保持原样。反馈不改变排版占位；子菜单与浮层保留共享的展开动效，浮动菜单选项（`.leaf-menu__popup .leaf-floating__option`）按下时应用克制的 `scale: 0.985` 微缩（遵守减少动态效果）。
+- 所有外观的菜单项统一使用控件字重（默认 500），内联、浮动、选中与未选中项一致；行背景覆盖层保持 `inset: 0`（不做矩形内缩扩张），保留危险语义、禁用行为、键盘轮廓、减少 / 关闭动效与系统强制颜色。只高亮当前页，不高亮其祖先。
+- 子菜单由点击、键盘或代码更新展开状态时共用相同过渡；首次挂载为展开状态也有进入动画，首次懒加载先建立收起布局，关闭时保留内容并立即禁用交互。快速反向切换从当前进度继续；嵌套子菜单只响应自身展开状态，折叠态浮动弹层独立管理开启状态且透传自定义渲染、链接包装与类名，折叠叶子项通过 `Tooltip` 展示名称。内联子菜单中按下 `Escape` 只收起当前焦点所在最近一层父级并将焦点移回父项，减少或关闭动效时直接呈现目标状态。
+- 行圆角为基础圆角减 2px（默认 6px），浮层外框用基础圆角。顶层行高为控件高度加 2px（34 / 30px），二级及更深子菜单与折叠浮动子菜单行统一采用与 `Dropdown` 对齐的 `max(24px, calc(var(--leaf-control-height) - 2px))`（30 / 26px 最小高度，允许内容撑高不写死像素高度）；16px 图标占 20px 槽，图标与文字间距 12px。内联子项占满菜单可用宽度，不显示层级竖线；二级项的内容起点与有图标的一级项文字起点对齐，更深层级每级缩进 32px（由 `--leaf-menu-depth` 计算）。内联和浮动子菜单的普通未选中文字使用次要文字色，组件文字覆盖优先；选中、危险和禁用语义保持原样。反馈不改变排版占位；子菜单与浮层保留共享的展开动效，内联与浮动菜单选项按下只应用颜色反馈而不做按压缩放。
 
 ### Tabs
 
-- 只支持横向，提供 `type?: 'line' | 'card' | 'segmented'`（默认 `'line'`）、`tone?: 'soft' | 'solid'`（默认 `'soft'`）与 `shape?: 'default' | 'pill'`（默认 `'default'`）；标签按下时应用克制的 `scale: 0.97` 微缩反馈（遵守减少动态效果）。
-- line：尺寸与选中反馈参考 Ant Design 5.29.3。小、默认、大尺寸的上下内边距为 8 / 12 / 16 px，左右内边距为 0，项间距统一为 32 px；小、默认字号沿用基础字号，大尺寸沿用大字号，行盒为当前字号加 8 px，默认高度为 38 / 46 / 56 px，显式组件高度、字号和 gap 覆盖优先。选中标签用主题基色和 0.25 px 同色文字阴影，字重稳定；其他标签用正文色，悬停用 primary-hover 亮色，按下用 primary-link-active 深色，显式组件文字和状态覆盖优先。标签栏底部绘制全宽 1 px 分割线，选中指示线使用主题基色 `--leaf-color-primary`，统一为 2 px 厚、直角、铺满标签宽度，无横向内缩；底部标签将分割线与指示线放在栏顶。指示线使用 300 ms ease 缓动移动，随区域 motionDuration 缩放。
-- card：去掉外围栏，项间距 4 px，未选中标签使用弱文字色（`muted-color`）。默认 `tone="soft"` 时选中滑块为 `--leaf-color-primary-soft` 浅底配 `--leaf-color-primary` 文字，`tone="solid"` 时切换为 `--leaf-color-primary` 实底配 `--leaf-color-on-primary` 文字；`shape="pill"` 使用 `999px` 胶囊圆角。滑块使用 `--leaf-motion-spring` 移动到选中项，保持 28 / 34 / 40 px 控件尺寸与 12 px 行内内边距。
-- segmented：纯白外轨（`--leaf-segmented-background`，即 `--leaf-color-surface`）配 1 px `--leaf-segmented-border`（`--leaf-color-divider`）边框与 `shadow-xs`，默认内边距 3 px，小尺寸上下内边距为 2 px、左右仍为 3 px；项间距 3 px；轨道高 28 / 34 / 40 px，标签行内内边距 14 px。默认 `tone="soft"` 使用 `--leaf-color-primary-soft` 浅底滑块（无默认阴影）配 `--leaf-color-primary` 文字，`tone="solid"` 使用 `--leaf-color-primary` 实底配 `--leaf-color-on-primary`；`shape="pill"` 对外轨与标签启用 `999px` 胶囊圆角。滑块使用 `--leaf-motion-spring` 移动到选中项。
+- 只支持横向，提供 `type?: 'line' | 'card' | 'segmented'`（默认 `'line'`）；标签按下只更新颜色反馈，不做按压缩放。
+- line：对齐简洁中性线形规范（接近 shadcn/ui 风格）。小、默认、大尺寸的行内内边距为 8 / 10 / 14 px、项间距为 2 / 4 / 6 px；标签采用控件基础高度加 2 px 作为默认最小高度（`28 / 34 / 40 px`，含大尺寸内容时允许自然撑高），字号沿用统一控件字号阶梯（13 / 14 / 16 px），显式组件高度、字号和 gap 覆盖优先。未选中标签使用 `--leaf-color-text-muted`，悬停与按下使用 `--leaf-motion-fast`（120 ms）快速切换至 `--leaf-color-text`（不加 `text-shadow`，字重稳定；显式组件文字覆盖优先）。独立线形标签栏不绘制全宽底部分割线（仅 Card 内嵌头部保留底部分割线），选中指示线默认使用 `--leaf-color-text`（可通过组件 indicatorColor 覆盖），统一为 2 px 厚、直角、铺满标签宽度（含左右内边距），底部标签将指示线放在栏顶；切换选中项时不做移动动画，改为每项下划线独立渐隐渐显（`opacity` 200 ms `--leaf-motion-easing`，随区域 motionDuration 缩放）。
+- card：去掉外围栏，项间距 4 px，未选中标签使用弱文字色（`--leaf-color-text-muted`），选中滑块使用 `--leaf-color-surface-muted` 配 `--leaf-color-text` 文字。滑块使用 `--leaf-motion-spring` 移动到选中项，保持 26 / 32 / 38 px 控件尺寸与 12 px 行内内边距。
+- segmented：浅灰外轨（`--leaf-segmented-background`，即 `--leaf-color-surface-muted`）配 `1px solid transparent`（`--leaf-segmented-border`）且无外轨阴影，默认内边距 3 px，小尺寸上下内边距为 2 px、左右仍为 3 px；项间距 3 px；轨道高 26 / 32 / 38 px，标签行内内边距 14 px。使用 `--leaf-color-surface` 纯白滑块配 `--leaf-shadow-sm` 阴影与 `--leaf-color-text` 文字（悬停 / 按下高亮为 `--leaf-color-text`，未选中为 `--leaf-color-text-muted`）。滑块使用 `--leaf-motion-spring` 移动到选中项。
 - 大尺寸 card 与 segmented 外观的标签行内内边距为 18 px，项间距为 8 px，分段轨道内边距为 4 px；显式组件 gap 和 padding 继续优先。
 - `block` 等宽铺满；省略项内容可作为只有标签栏的视图切换器。标签溢出时在两侧显示描边纯图标滚动按钮，仅在标签栏悬停或获得键盘焦点时出现。
-- 内容与面板高度立即更新，无入场、淡入、滑动或高度动画；只有选中指示保留移动动画。
+- 内容与面板高度立即更新，无入场、淡入、滑动或高度动画；仅 `card` 与 `segmented` 的选中滑块保留移动动画，`line` 下划线使用渐隐渐显。
 - Tabs 不作为表单字段提交；需要原生提交时由表单单独持有字段。
 
 ### Tag
@@ -172,11 +174,11 @@
 
 ### 日期与时间输入
 
-- 单行字段共用稳定的 240px 默认宽度（Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelect 与单值日期 / 时间），最大宽度不超过容器；选值 / 清空不改变宽度。日期区间 300px，日期时间区间 380px，日期时间显示秒或时段时单值 280px / 区间 440px，纯时间区间长格式 300px。显式 style.width 优先；FormField 内默认铺满，Textarea 保持 100%。
+- 单行字段共用稳定的 240px 默认宽度（Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelect 与单值日期 / 时间），最大宽度不超过容器；选值 / 清空不改变宽度。日期区间 300px，日期时间区间 380px，日期时间显示秒或时段时单值 280px / 区间 440px，纯时间区间长格式 300px。显式 style.width 优先；FormField 内默认铺满，Textarea 保持 100%。`InputNumber variant="split"` 仍以整组共用同一 `240px` 默认宽与外置 8px 间距，在输入框左右两侧独立放置正方形纯边框减 / 加按钮并将输入数值居中展示。
 
 - 日期、时间和范围字段共享原生 input 的分段选择：数字输满或无法接下一位时自动换段；Tab / 空格切到下一段（包括空段），Shift + Tab 返回上一段，左右键换段，上下键步进，Home / End 到首尾。首段 Shift + Tab、末段 Tab 按正常顺序离开字段，不循环；清除可用全选后 Delete；点击字段或图标展开面板，Alt + 下键移入面板。
 - token 型日期 format 决定段顺序与字面量；函数型或无 token 的格式保留文本输入；DatePicker 仅支持单值，不支持多日期数组。粘贴整值沿用既有解析器。输入中保留不完整草稿，非法日期或越界时间不提交；Escape 还原，表单值始终是已提交的标准格式。
-- 只保留 DatePicker 与 DateRangePicker，通过 picker 切换日期、时间、日期时间或日历粒度。分段选中文字使用 info 蓝色与 on-info 前景；字段聚焦 / 展开复用 primary 字段配方。有效输入实时更新日历与时间列，不提前提交表单值。
+- 只保留 DatePicker 与 DateRangePicker，通过 picker 切换日期、时间、日期时间或日历粒度。分段选中文字使用 info 蓝色与 on-info 前景；字段聚焦 / 展开沿用共享中性 `field` 配方。有效输入实时更新日历与时间列，不提前提交表单值。
 - 时间浮层复用独立时、分列，开启秒后增加秒列；12 小时制另有时段列，上午 / 下午与列标题保持单行；列数增加时浮层随之加宽。分钟 / 秒步长默认 1，保留已有非步长值。时间行复用 choice-option 的中性悬停和勾选，Scrollbar 使用 sm 与 persistent；打开时当前项居中，键盘跳过禁用项。
 - 时间列点击只调整草稿，不自动关闭；确定或 Enter 提交。纯时间模式默认在外部点击 / Tab 离开时提交有效调整，needConfirm 时放弃。时间区间分为开始 / 结束两组并以细线分隔，不显示时长；未允许跨夜时禁用早于开始的结束时间。
 
@@ -184,28 +186,27 @@
 
 ### 对话框通用
 
-- 默认表面中，对话框标题、表单边缘与页脚操作共用同一行内内边距；正文与标题、操作之间有足够间隔。标题与辅助描述共用独立的文字列；关闭操作在行内终点；正文滚动时标题、内嵌标签栏与页脚不动。
-- Modal 与 Drawer 支持通过 `tabs` 嵌入顶部 `line` 标签页：有标题时标签栏位于标题下方且移除标题底线，无标题时替代标题栏并将关闭按钮（及 Drawer `extra`）移至标签栏行尾；标签面板放入正文滚动容器内部，省略项内容时直接配合各自 `children` 使用。无论 `divided` 为 `true` 或 `false`，标签栏底部的全宽分割线均始终保留。
-- Modal 切换标签页时立即更新面板与容器高度，不触发高度过渡动画。
+- 默认表面中，对话框标题、表单边缘与页脚操作共用同一行内内边距；正文与标题、操作之间有足够间隔。标题与辅助描述共用独立的文字列；关闭操作在行内终点；正文滚动时标题与页脚不动。
 - Modal、Drawer 及基于 Modal 的浮层默认使用半透明灰色遮罩、无背景模糊；ConfigProvider `maskBlur` 显式开启模糊。Tour 保留现有无模糊聚光遮罩。
-- Modal 与 Drawer 的标题图标共用中性表面，具体几何遵循各自组件约定。边框与表面来自当前浅 / 深区域，包括自定义色板与密度。
+- Modal 与 Drawer 的标题图标共用中性表面，与右侧标题文字保持 `--leaf-dialog-gap` 水平间距（宽松 16 px / 紧凑 12 px，窄屏 12 px），具体几何遵循各自组件约定。边框与表面来自当前浅 / 深区域，包括自定义色板与密度。
 
 ### Modal 与 Confirm
 
 - 水平居中，普通高度时通过额外的底部弹性留白维持视觉偏上，位置与底部视口内缩 16dvh（限制在 24–160 px）时一致；内容增高时优先压缩额外留白，达到高度上限时上下各留 24 px，最大高度为 `100dvh - 48px`，继续增高则滚动正文。
-- 默认阴影为三层共享 `shadow-md` 叠加：投影范围紧凑、色调更深，不影响其他浮层；显式组件与表面阴影优先。
-- 普通 Modal 使用 medium 圆角（默认 14 px），标题下方和页脚上方的分隔线复用共享柔化边框配方，与实际内容表面混合减淡；显式组件圆角和边框颜色优先。Confirm 保留 large 圆角与原有无分隔线外观。
-- Modal 默认使用内容表面（默认浅色主题为白色），标题下方与页脚上方各有 1 px 分隔线，`divided={false}` 可关闭。标题使用大号文字（默认 16 px）与标题字重（默认 700），标题栏上下留白为 10 px；带图标的标题栏上下留白增加到 16 px。关闭按钮为 32 px，内边距为 8 px，内部图标保持 16 px，在标题栏垂直居中并向行内终点外移 4 px。标题栏、正文与页脚的左右留白统一沿用正文的区域对话框块向间距（宽松 20 px / 紧凑 16 px），关闭按钮的位置微调不改变分区留白；正文上下留白不变，页脚上下留白为基础间距的 1.5 倍（默认 12 px），不额外使用灰色底板。显式组件内边距与分区背景优先。默认取消操作使用描边按钮。
-- Modal 的标题图标底座使用大号控件尺寸（默认 40 px），图形为 20 px，无边框，圆角使用区域 medium 圆角（默认 14 px）；与标题及说明文字列垂直居中。说明使用区域小号文字（默认 13 px）。
-- Modal 页脚容器不设置 `gap`；默认按钮由内部操作组保持 8 px 间距，自定义底部由调用方使用 Space 等布局组件管理间距，容器不再叠加。Confirm 与 Drawer 的既有页脚间距保持不变。
-- Confirm 是只通过 API 调用的决策提示：默认 `type="info"`，紧凑的 420 px 表面、以间距分区，语义图标裸放在粗体标题旁并垂直居中，无背景底座或分区线。标题使用大号文字（默认 16 px），说明使用基础字号，两者文字起点一致，分区间距 8 px；无标题时图标放在说明旁。
-- Confirm 的页脚继续使用与其他外边相同的底部留白，不继承普通 Modal 的紧凑标题栏与页脚。
+- 默认阴影为共享 `shadow-md`；显式组件与表面阴影优先。
+- Modal 与 Confirm 统一使用 medium 圆角（默认 14 px），外框使用实体 `--leaf-color-border`；页脚操作栏默认显示顶部 1 px `--leaf-color-divider` 分隔线（Modal 的 `divided` 默认 `true`，可设为 `false` 关闭），标题栏底部不再额外绘制分割线；显式组件圆角和边框颜色优先。
+- Modal 默认使用内容表面（默认浅色 `#ffffff` / 深色 `#0d0d0d`）。标题使用大号文字（默认 16 px）与常规控件字重（`fontWeight`，默认 500），说明与上方标题间隔 `--leaf-spacing-sm`（8 px，紧凑 6 px，与容器区块 `gap` 16 px / 12 px 构成 1:2 比例）；对话框浮层本身承担统一的四周内边距（宽松 20 px / 紧凑 16 px）与区块间隔 `gap`（宽松 16 px / 紧凑 12 px），标题栏本身不再叠加内边距（`padding: 0`，仅在显式分区覆盖或自定义页眉背景时抵消外边距贴边生效）；标题与描述直接位于浮层内部（无标题时不渲染空标题栏）；正文滚动画布保持 `width: auto` 与横向全宽以抵消 `.leaf-scrollbar` 的 `100%` 宽度约束并使滚动条贴边，内容容器补齐行内边距并归零首尾子元素外垂直边距；Modal（含 Confirm）页脚采用由表面色与 `surface-muted` 等比混色的克制浅底（`subtle-action-background`，可通过 `footerBackground` 覆盖；Drawer 保持 `transparent`），无论是否启用 `divided` 均贴合左右与底部同心内圆角并默认保留 `--leaf-spacing-md`（16 px，紧凑 12 px，可随整弹窗 `padding` 与页脚分区同步缩放）上下留白，取消操作默认使用描边按钮。关闭按钮为 32 px、内边距 8 px、内部图标 16 px，固定绝对定位于浮层右上角：纵向按首行标题行高垂直居中（`inset-block-start` 从顶部外边距出发并叠加 `(line-height-lg - 32px) / 2`，默认 15 px），横向从外边距减去按钮自身 8 px 内边距（`inset-inline-end` 默认 12 px、紧凑 8 px，低边距场景下限保护 4 px），使 16 px 关闭图标精准对齐首行标题中心与内容行内终点边界；启用浮层关闭按钮时自动为头部文字行内终点预留避让距离，避免长标题或描述与按钮重叠。支持通过 `padding?: ContainerPadding`（`number | string | 'none' | { header?, body?, footer? }`）按整体或分区独立覆盖内边距；显式组件内边距与分区背景优先（Confirm 不继承公开 `padding`）。
+- Modal 的标题图标底座在默认 `size="md"` 下使用大号控件尺寸（默认 38 px），图形为 20 px，无边框，圆角使用基础圆角 `--leaf-radius`（默认 10 px），顶部与标题行对齐（`align-self: flex-start`，不做垂直居中）；默认采用 `--leaf-color-surface-muted` 灰色背景配 `--leaf-color-text` 黑色/正文色图标。`size="md"` 说明使用区域小号文字（默认 13 px / 行高 18 px）。启用 `danger` 时主确认按钮切为 `variant="danger"`，标题图标底座消费 `status-label-family(danger)` 的减淡红色背景（`--leaf-color-danger-soft`）与直接危险色前景（`--leaf-status-label-base`，即 `--leaf-color-danger`，不加深）。
+- Modal 新增 `size="mini"` 紧凑确认布局：未手动设置 `width` 时默认收窄至 `340 px`；头部改为居中纵向排布（图标底座扩展为 `controlHeightLg + 2px`，默认 40 px、圆角 `--leaf-radius` 10 px、`align-self: center`），说明与无 description 时的简短正文在标题下方 `--leaf-spacing-sm`（8 px）处居中显示并使用基础字号；有居中图标时标题位于关闭按钮下方不额外偏置，无图标时左右对称预留关闭按钮避让；页脚按钮采用等分网格布局（双按钮平分区域，单按钮铺满全宽，极窄屏自动换行堆叠）。
+- Modal、Confirm 与 Drawer 的页脚容器均自带 `8 px` 按钮间距（`gap: 8px`），内置取消/确认按钮直接放在页脚容器内，自定义页脚无需额外包裹 `Space`。
+- Confirm 复用 `Modal` 的 `size="mini"` 紧凑确认架构（默认宽 `340 px`、居中图标与标题、`divided` 浅底等分按钮页脚、字重 500），并移除 `info` 类型与内联错误条：默认 `type="default"` 采用 `--leaf-color-surface-muted` 灰色底座配 `--leaf-color-text` 黑色 `Info` 图标，其余 `success`（无圆圈 `Check`）、`warning`（`TriangleAlert`）与 `danger`（`CircleAlert`，失败弹窗用 `CircleX`）分别消费 `status-label-family` 的减淡语义底色与未加深的基色图标（`--leaf-status-label-background` / `--leaf-status-label-base`），`type="danger"` 同步启用 `danger` 按钮样式；`onConfirm` 失败时不再留在原框内展示红色错误条，而是关闭当前框（返回 `false`）并顺位弹出单按钮 `danger` 失败提示框（仍支持 `icon={null}` 隐藏图标）；`closable` 与 `maskClosable` 默认关闭。
 
 ### Drawer
 
-- 使用普通内容表面，不嵌套卡片；标题、内容和页脚沿用共享对话框分区内边距，正文独立滚动，标题图标保留带边框的中性圆形底座。标题使用大号文字（默认 16 px）与标题字重（默认 700），关闭按钮对齐 Modal（32 px、8 px 内边距、16 px 图标，在标题栏垂直居中并向行内终点外移 4 px）。
-- 分区线默认关闭（`divided={false}`）；开启 `divided` 时页眉 / 页脚加分割线，页脚保持 `transparent`（延续纯白内容表面），显式 `footerBackground` 覆盖优先，维持 12 px 上下内边距。
-- 阴影 `shadow-lg`；滑入无过冲。
+- 抽屉外层遮罩四边保留轻量留白（`--leaf-drawer-offset`，默认跟随 `--leaf-spacing-sm`，即宽松 8 px / 紧凑 6 px），四个方向（`left`、`right`、`top`、`bottom`）均以悬浮面板展示并使用四角统一 `large` 圆角（`--leaf-radius-lg`，默认 16 px）。使用普通内容表面与实体 `--leaf-color-border` 外框，不嵌套卡片；标题、内容和页脚沿用与 Modal 统一的对话框浮层内边距（宽松 20 px / 紧凑 16 px，区块间隔 16 / 12 px；支持 `padding?: ContainerPadding` 按整体或分区覆盖），正文独立滚动，标题图标保留带边框的中性圆形底座。标题与描述样式对齐 Modal（标题 16 px / 常规控件字重 `fontWeight` 默认 500 / 行高 22 px，描述 13 px / 行高 18 px / 上间距 8 px），无标题且无 `extra` 时不渲染空标题栏；关闭按钮对齐 Modal（32 px、8 px 内边距、16 px 图标，绝对定位于浮层右上角并与首行标题及内容边界对齐，存在 `extra` 时在其首行与关闭按钮并行对齐并预留避让间距）。
+- 支持 `showSwipeHandle?: boolean` 在靠近展开边缘的一侧居中显示 `48 × 4 px` 胶囊拖拽指示条并支持指针拖拽滑动关闭（`bottom` 方向默认开启，其余方向默认关闭并可显式覆写）；显示手柄时对应边缘至少保留 `24 px` 安全内边距以避免遮挡头部或内容。
+- 页脚分隔线默认关闭（`divided={false}`）；开启 `divided` 时仅在页脚顶部绘制 `--leaf-color-divider` 分割线，页眉下方不额外绘制分割线，页脚保持 `transparent`（延续内容表面），显式 `footerBackground` 覆盖优先。
+- 阴影 `shadow-lg`；实心面板保持 `opacity: 1` 纯位移滑入与退出，使用平滑长减速曲线 `cubic-bezier(0.32, 0.72, 0, 1)`（打开 `2.5 × --leaf-motion-duration`，关闭 `1.5 × --leaf-motion-duration` 并同步遮罩退场时长），滑入无过冲。
 
 ### Popconfirm 与 Notification
 
@@ -225,16 +226,15 @@
 ### Calendar
 
 - 公开 Calendar 是独立实现，不复用浮层 CalendarPanel。完整布局参考 macOS 日历：粗体月份 + 常规字重年份作为标题，行尾为“月 / 年”分段控件与“‹ 今天 ›”按钮组。月视图使用 `divider` 细线网格，数字在格子顶部尾端，每月 1 日带月份缩写；年视图为 4 / 3 / 2 列迷你月历。
-- 行尾“月 / 年”分段控件（`.leaf-calendar-view__segmented`）使用 `--leaf-segmented-background`（纯白表面）与 `1px solid var(--leaf-segmented-border)` 边框，选中段使用 `--leaf-color-primary` 文字与主题浅底（无投影）并在按下时应用 `scale: 0.96` 微缩。
-- 选中日期是实心 `primary` 胶囊配 `on-primary` 文字；今天只用主题色粗体数字，不加底色或描边；悬停使用中性浅底，日历格按下应用 `scale: 0.95`（遵守减少动态效果）。`cellRender` 内容位于数字下方，单行省略。容器窄于 560px 时用单字母星期并居中数字。
+- 行尾“月 / 年”分段控件（`.leaf-calendar-view__segmented`）使用 `--leaf-segmented-background`（即 `--leaf-color-surface-muted`）与 `1px solid transparent`（`--leaf-segmented-border`）外框，选中段使用 `--leaf-segmented-selected-background`（`--leaf-color-surface`）、`--leaf-color-text` 文字与 `--leaf-shadow-xs` 轻阴影，未选中段按下时填充 `--leaf-color-option-hover`。
+- 选中日期是实心 `primary` 胶囊配 `on-primary` 文字；今天只用主题色粗体数字，不加底色或描边；悬停使用中性浅底，日历格按下加深中性底色而不做缩放。`cellRender` 内容位于数字下方，单行省略。容器窄于 560px 时用单字母星期并居中数字。
 - 紧凑日历宽 296px，日期为 30px 圆形目标，标题按钮展开月份选择。DatePicker 与 DateRangePicker 浮层继续复用紧凑 CalendarPanel，外观不受公开 Calendar 影响。
 
 ### Card
 
 - 不提供 `hoverable`，不做悬停抬起；保留朝下的轻微静止阴影，`bordered={false}` 可移除边框，`shadow={false}` 可移除阴影。
-- `size` 为 small / default / large：正文内边距默认 16 / 20 / 24 px，标题内缩相同，标题文字 14 / 16 / 18 px，浅色外观的默认标题文字为纯黑，深色外观使用区域文字色；`theme.components.Card.color` 可显式覆盖。默认 Card 四边外留白相等（16 / 20 / 24 px）；页眉、页脚与正文共用阅读边，不重复内部分区间距；显式组件内边距优先。
-- 标题字重：small / default 使用 `fontWeight`（500），large 使用 `headingWeight`（默认 700）；标题上下内缩相等，无分割线的页眉下方正文不再加第二道内缩。Card 总是以间距组织标题、正文和页脚，没有公开的 `divided` 模式。
-- `selected` 加主题色外边框（`bordered=false` 时同样生效），并移除外层与分层面板阴影，不改变几何或表面；显式组件 `borderColor` 仍优先。选中只是视觉，不增加点击目标、role 或 Tab 停靠。
+- `size` 为 small / default / large：正文内边距默认 16 / 20 / 24 px，标题左右内缩相同（上下分别为 `headingGap` 与 `headingGap * 0.8`），标题文字 14 / 16 / 18 px，标题颜色使用 `--leaf-color-text`（浅色 `#0d0d0d`，深色 `#f5f5f5`）；`theme.components.Card.color` 可显式覆盖。普通 Card 标题字重统一跟随 `fontWeight`（默认 500），描述样式对齐 Modal（13 px / 行高 18 px，紧接标题下方间隔 `--leaf-spacing-sm` 即 8 px），头部操作顶部对齐首行；页脚布局与样式对齐 Modal（默认右对齐弹性排列、`gap: 8 px`、克制浅底 `subtle-action-background`、同心底部内圆角、上下内边距上限 16 px 并默认启用顶部分割线 `divided={true}`，可通过 `divided={false}` 关闭；紧接仅含头部的标签栏时不重复绘制顶部线；`variant="layered"` 的页脚留在外层灰画布且保持透明底）。默认 Card 四边外留白相等（16 / 20 / 24 px）；页眉、页脚与正文共用阅读边，不重复内部分区间距；支持通过 `padding?: ContainerPadding`（`number | string | 'none' | { header?, body?, footer? }`）按整体或分区独立覆盖内边距；显式组件内边距与页脚背景覆盖优先。
+- 标题与页脚约定：标题栏下方不加分隔线；不再提供 `selected` 属性与选中边框修饰；是否显示页脚顶部分割线由 `divided` 控制。
 - 内嵌 Tabs 跟随 Card 尺寸，除非显式覆盖；子控件保持各自尺寸。
 - `variant="layered"`（原未发布的 `inset`）：无外层阴影，灰色画布上放小号弱化标题和页脚，不显示 `description`。只有封面、标签页和正文放在内容面上，内容面左右和底部内缩 4 px（无标题时顶部 6 px）。
 - 分层标题尺寸 12 / 12 / 13 px，字重 500。内圆角为外圆角减边框宽度再减 2 px（默认 11 px 对 14 px）；朝下的柔和阴影使用 `shadow-sm`，模糊 6 px，两侧与下方最多可见 6 px，不超出面板顶部。
@@ -250,17 +250,16 @@
 
 ### CardTitle
 
-- 在 Card 外复用 Card 标题排版，不加表面或内边距。small / default / large 与 Card 标题一致（默认基础字号下 14 / 16 / 18 px，small / default 字重 500，large 使用 headingWeight）。
+- 在 Card 外复用 Card 标题排版，不加表面或内边距。small / default / large 与 Card 标题一致（默认基础字号下 14 / 16 / 18 px，字重均跟随常规控件字重默认 500，描述与操作对齐 Card 标题区）。
 - Card 与 CardTitle 默认都是 h3，除非文档大纲需要，调用方不指定 level。`description` 位于标题下方，`extra` 位于行尾，与 Card 标题区一致。
 - Card 自己决定内部标题尺寸，不消费独立 CardTitle 的默认参数；用户传入的 CardTitle 元素仍读取区域默认值。
 
 ### DataTable
 
-- 仅保留简洁外观，无 `variant` 或 `columnDividers` 参数；内容表面仅顶部使用基础圆角（默认 10px），无内层内容框、阴影和固定列边缘阴影。表头复用共享浅灰表面配方，使用正文色和 600 字重；每个表头单元格有细底线，普通叶子列之间显示宽 1px、高 1.6em 的居中短竖线。显式颜色和边框色覆盖优先。`bordered` 使用顶边、起始边与各单元格右边、底边构成完整网格，末行保留底线，底部保持直角；分组表头恢复各层底线，隐藏短竖线。
-- 默认 `size="lg"`，所有尺寸均使用基础字号（默认 14px）和约 1.5714 倍行高（默认 22px），表头字重为 600；sm / md / lg 的上下内边距为 8 / 12 / 16px，水平内边距为 8 / 8 / 16px，普通单行高度为 39 / 47 / 55px。表头始终固定且不可关闭；高度受限的 flex 布局收缩表体视口。分组表头、固定列和虚拟行共用一个原生 table。
-- 排序表头右侧始终显示上下双箭头，标签与箭头最小间隔 4px，仅当前排序箭头使用主题色；排序表头与悬停表头使用中性反馈，排序列使用浅底。默认显示细行分割线，包括末行；设置 `striped` 后省略横向分割线并从第二行数据开始使用交替背景，`bordered` 始终保留网格。条纹在表格表面中混入 2% 表格文字色；详情行与虚拟占位行不影响条纹奇偶。选择列宽 34px（开启 `bordered` 时计入右侧边框宽度，默认 35px），展开列宽 48px。
-- 普通行与条纹行悬停使用表头浅灰底，选中行使用主题色浅底，选中悬停使用其 hover 角色。展开操作复用小号纯图标文字按钮及其中性反馈。显式组件状态覆盖优先。
-- `renderRowHeader` 在每条记录的数据列上方增加信息行，与普通数据单元格共用表面和交互背景；记录连续排列，不增加卡片或记录间距。选择控件跨信息行与数据行；可选详情的展开操作移至信息行末尾，使用带文字的小号文字按钮，不保留独立展开列。排序、分页、选择和条纹仍按记录处理；虚拟滚动将信息、数据与详情行合并测量，分组收起时信息与数据行一起隐藏。
+- 仅保留简洁外观，无 `variant` 或 `columnDividers` 参数；内容表面仅顶部使用基础圆角（默认 10px），无内层内容框、阴影和固定列边缘阴影。表头直接使用干净的内容表面 `--leaf-table-surface`，配次要弱化灰（`--leaf-color-text-muted`，保留 `--leaf-component-table-color` 组件覆盖）与 `fontWeight`（默认 500）字重；表头下沿（末行与跨行utility表头单元）使用 `2px` 柔和分割线（`--leaf-table-divider`，默认 `--leaf-color-divider`），非末行分组表头无底线，叶列之间不再添加装饰性居中短竖线。显式颜色和边框色覆盖优先。`bordered` 仅给外层增加四边边框并使用四角基础圆角，并在最末一行、状态行或表尾底部隐藏自身底线以避免双线，内部单元格与分组表头保持不变。
+- 默认 `size="md"`，所有尺寸均使用基础字号（默认 14px）、约 1.5714 倍行高（默认 22px）与等宽数字 `tabular-nums`，表头字重为 500；sm / md / lg 的上下内边距为 8 / 10 / 16px，水平内边距为 12 / 14 / 16px，数据行单行高度为 39 / 43 / 55px，表头单行高度为 40 / 44 / 56px。表头始终固定且不可关闭；高度受限的 flex 布局收缩表体视口。分组表头、固定列和虚拟行共用一个原生 table；列配置 `meta.ellipsis` 时启用单行省略并在未固定列宽时自动切换固定布局以约束列宽。
+- 排序表头紧跟文字右侧 `4px` 放置单向线性箭头图标（未排序与降序朝下、升序旋转 180° 朝上），跟随列对齐方向整体居中或靠右；激活排序箭头高亮为 `--leaf-color-text`，排序表头、悬停表头与排序列使用基于 `surface-muted` 的中性反馈。默认显示细行分割线，包括末行；设置 `striped` 后省略所有表体与表尾横向分割线，并从第二行数据开始展示与悬停同色的浅灰条纹背景（与悬停共用基于当前表格表面的 `25% option-hover`，`bordered` 下同样隐藏内部横向分割线）。详情行与虚拟占位行不影响条纹奇偶。选择列宽 34px，展开列宽 48px。
+- 普通行悬停基于 `25% option-hover` 混合轻量中性浅灰底（斑马条纹复用同一背景色），选中行使用 `--leaf-color-surface-muted` 且悬停时不改变背景色。展开操作复用小号纯图标文字按钮及其中性反馈；空数据与加载失败状态均复用 `Result` 组件渲染。显式组件状态覆盖优先。
 - 默认内容布局填满容器；尺寸布局遵循固定列宽与弹性分配，全部固定或达到最大宽度时允许右侧留白。内容区域的最小宽度只是下限。
 - 内部结构与引擎见 [Table 实现说明](packages/react/src/table/README.md)。
 
@@ -281,31 +280,31 @@
 
 - Form 的 `settings` 布局左侧标签列使用 `labelWidth`，右侧控件列默认占用扣除列间距后的剩余宽度；可通过 `settingsControlWidth` 按表单或字段覆盖为固定宽度。控件默认左对齐，也可按表单或字段切换为右对齐。标签和说明与控件顶部对齐；只有标签且右侧是单行控件时，标签保留一个控件高度并在该高度内垂直居中；窄容器仍改为上下排列。
 - Carousel 上一页 / 下一页使用浅中性底、无描边与阴影的圆形柔和按钮，复用文字动作的中性悬停 / 按下反馈，不缩放。按钮相对内容视口垂直居中，不包含底部指示点区域。
-- Transfer 采用左右双栏单层净白面板（容器默认宽度 `464px`，面板间距 `12px`）：直接消费 `--leaf-color-surface` 与 `--leaf-color-border`（外框带 `--leaf-shadow-xs`，无内层嵌套灰色托盘，搜索框聚焦不加深面板外框）；标题区与计数保留在净白面板顶部，底部使用 `1px solid var(--leaf-color-divider)` 分割线；列表区保留 `gap: 4px`（虚拟列表项包装 `2px 8px` 内边距），每个条目使用 `var(--leaf-radius)`（默认 `10px`）独立圆角与原生 `Checkbox description` 支持，悬停用中性浅底、选中用 `--leaf-accent-soft-background` 与 `--leaf-color-primary`（绝不彼此粘连），按下应用 `scale: 0.985` 微缩（遵守减少动态效果）。显式组件背景、标题背景、边框与阴影覆盖优先。
+- Transfer 采用左右双栏单层净白面板（容器默认宽度 `464px`，面板间距 `12px`）：直接消费 `--leaf-color-surface` 与 `--leaf-color-border`（外框带 `--leaf-shadow-xs`，无内层嵌套灰色托盘，搜索框聚焦不加深面板外框）；标题区与计数保留在净白面板顶部，底部使用 `1px solid var(--leaf-color-divider)` 分割线；列表区保留 `gap: 4px`（虚拟列表项包装 `2px 8px` 内边距），每个条目使用 `var(--leaf-radius)`（默认 `10px`）独立圆角与原生 `Checkbox description` 支持，悬停用中性浅底、按下深化为 `--leaf-color-option-hover`（不做按压缩放）、选中用 `--leaf-color-surface-muted` 与 `--leaf-color-text`（绝不彼此粘连）。显式组件背景、标题背景、边框与阴影覆盖优先。
 - 带边框的 Descriptions 与 Collapse 外框统一使用 `--leaf-color-border` 保持纯白边界清晰；Collapse（`--bordered`）附带 `--leaf-shadow-xs`，触发头悬停复用 `choice-option-background()` 中性浅底；内部分区维持更轻的分割线。组件圆角与内容绘制必须作用到可见表面。
 - 窄屏下 Form 与 Transfer 按自身容器宽度响应。
-- Checkbox / Radio 卡片选项：整张卡片是一个可点击 label，含中性图标底座、标题 / 描述列和行尾原生控件。组内可排成响应式网格，或一个共享边框与行分隔的列表。选中边框使用主题色，无渐变或抬起。状态标签不可交互；辅助文字是可访问描述，不属于选项名称。
-- Alert 默认无边框，使用对应状态的 `*-soft` 语义浅底，标题和图标使用对应状态基色，标题字重为 500；仅标题时采用紧凑内边距和与输入框相同的基础圆角，带描述时采用更宽松的内边距、medium 圆角并放大标题。显式组件颜色、背景、边框、圆角和内边距覆盖优先，保留播报 role。
-- Result 图标无背景或外框；danger 使用红色语义 CircleAlert。默认 / small 图标 48 / 36 px。标题使用大号正文（sm 为基础字号），描述使用小号文字。
+- Checkbox / Radio 卡片选项：整张卡片是一个可点击 label，采用 `10px 12px` 内边距、单行基准高度下限及与输入框一致的基础圆角（卡片使用 `--leaf-current-radius` / `--leaf-radius`，成组列表外框使用 `--leaf-radius`），含中性图标底座、标题 / 描述列和行尾原生控件；卡片内部使用顶部对齐并固定将行尾选中控件与首行标题居中对齐。未选中态悬停切为 `border-hover` 与 `surface-muted`；选中后使用主题色边框与 `--leaf-color-primary-soft` 淡主色底面（图标底座切为 `--leaf-color-surface`），悬停已选中卡片时维持选中边框与底色不变。组内可排成响应式网格，或一个共享边框与行分隔的列表，无渐变或抬起。状态标签不可交互；辅助文字是可访问描述，不属于选项名称。
+- Alert 仅保留 `default`、`success`、`warning` 与 `danger`（`error` 为兼容别名，移除 `info`）：默认 `default` 采用 shadcn 风格的白底（`--leaf-color-surface`）、`1px` `--leaf-color-border` 边框与 `--leaf-color-text` 黑字/图标；其余语义状态采用 `1px` 语义淡色边框（`25%` 反馈基色混入 `--leaf-color-border`）与减淡浅底（`50%` 对应状态 `*-soft` 混入当前表面），图标与 `14px`（`500` 字重）标题均消费对应状态深化文字色（`status-ink-family`，即 `*-ink`）；统一使用基础圆角（`--leaf-radius`，与输入框一致）与统一内边距（`10px 12px`，有无描述一致），带描述时收紧描述间距（`4px`），内置图标与关闭图标为 `16px / 14px`。显式组件颜色、背景、边框、圆角和内边距覆盖优先，保留播报 role。
+- Result 沿用 shadcn Empty 式的紧凑居中排版（仅保留单一紧凑尺寸，不提供 `size` 参数与 `info` 状态）：所有状态的非图片图标均无边框，放入 `32 px` 圆角方框底座（使用基础圆角 `--leaf-radius` 默认 `10 px`、内部 `16 px` 图标），`empty` 使用 `--leaf-color-surface-muted` 浅灰底配 `--leaf-color-text` 黑色/正文色图标（Windows 强制颜色模式下补回 `CanvasText` 细框），`success` / `warning` / `danger`（`error` 为兼容别名）与 `Confirm` 一致消费 `status-label-family`（`*-soft` 减淡底与未加深基色 `--leaf-status-label-base` 图标）；自定义 `<img>` 图标不套底座。图标下方留白 `--leaf-spacing-md`（16 px），标题与紧随其后的描述均使用 `14 px`（`--leaf-font-size` / `--leaf-line-height`），标题与描述间距 `--leaf-spacing-sm`（8 px），补充内容盒带 `1 px` `--leaf-color-border` 与 medium 圆角并与操作区保持 `--leaf-spacing-lg`（24 px）上间距（两者共存时操作区与内容盒间距 `16 px`）。兼容组件 `Empty` 同步取消 `size` 属性并复用同一无边框中性底座，提示标题使用 `--leaf-color-text-muted`、基础字号与 400 字重。
 - Scrollbar 轨道覆盖在内容上，在悬停、滚动或键盘聚焦时出现；拖动不抢输入焦点，也不显示指针焦点轮廓。`size="sm"` 用于密集列表：更窄的轨道（6 px、距边 2 px）和更淡的滑块。
 - Scrollbar 的 persistent 使轨道常驻并按 orientation 为对应轴预留独立空间；scrollbar="always" 仍是常显覆盖式，hidden 优先隐藏并不预留。时间列统一使用 persistent，避免遮挡数值与勾选。
 
 ### 共享灰色底板
 
 - 分层 Card（`variant="layered"`）与显式 card 型日期选择器画布直接共用 `--leaf-color-surface-muted`。显式 `mutedSurfaceColor` 在这些画布上绘制完全相同的颜色，不再与边框或表面混合。
-- 选中滑块、`Segmented Tabs` 轨道、`Transfer` 面板、`Drawer` 分区页脚和内嵌内容面使用 `--leaf-color-surface`（或 `transparent`）净白表面；显式组件覆盖与嵌套主题优先。
+- Segmented Tabs 选中滑块、`Transfer` 面板、`Drawer` 分区页脚和内嵌内容面使用 `--leaf-color-surface`（或 `transparent`）净白表面；`Segmented Tabs` 与 `Calendar` 视图分段外轨使用 `--leaf-color-surface-muted` 浅灰底；显式组件覆盖与嵌套主题优先。
 
 ### Upload、ColorPicker、InputOTP 与 Slider
 
 - ColorPicker 显示颜色文字时，HEX / RGB / HSL / 渐变模式默认宽度分别为 144 / 272 / 296 / 160px，透明度变化不改变宽度；显式 style.width 优先，最大宽度不超过容器。不显示文字时保持当前尺寸的方形色块控件，清除操作额外预留空间。格式切换复用内部 segmented Tabs。
-- Upload 拖拽图标徽标（`.leaf-upload__symbol`）使用 `--leaf-color-surface` 白色圆形底座配细边框与 `--leaf-shadow-xs`（悬停 / 拖拽时切至主题浅底与 `--leaf-color-primary`）；ColorPicker 色块 / 预设保持几何稳定。
-- AvatarUpload 使用 128px 的虚线圆角方形上传入口：初始底色为 `--leaf-color-surface`、加号和上传文字，悬停切换主题色边框、按下应用 `scale: 0.985` 微缩（遵守减少动态效果），校验与请求期间以转圈图标替换加号，成功后图片铺满；悬停或键盘聚焦时显示深色媒体遮罩与白色“重新上传”文字。禁用时不可操作，失败后显示错误并允许重新选择。
-- InputOTP 仅在当前激活格使用主题聚焦边框与 2px `accent-halo-focus-color` 阴影；Slider 滑块仅在 `:focus-visible` 键盘聚焦时显示 3px `accent-halo-focus-color` 聚焦环，悬停不放大、拖拽不扩张大光晕（按下微缩至 `0.96`）；Upload 拖拽区保留主题浅底与细光晕；Progress 默认 `active={false}`（需循环扫光时显式传入 `active`），LoadingBar 不再叠加外发光；不得据此给 Input / Select 恢复外圈。
+- Upload 拖拽图标徽标（`.leaf-upload__symbol`）使用 `--leaf-color-surface` 白色圆形底座配细边框与 `--leaf-shadow-xs`（悬停 / 拖拽时切至 `--leaf-color-surface-muted` 与 `--leaf-color-text`，拖拽区外框切为 `--leaf-color-text-muted` 配 `--leaf-color-surface-muted` 浅灰底）；ColorPicker 色块 / 预设保持几何稳定。
+- AvatarUpload 使用 128px 的虚线圆角方形上传入口：初始底色为 `--leaf-color-surface`、加号和上传文字，悬停切换 `--leaf-color-border-hover` 边框、按下切换为 `--leaf-color-text-muted` 边框与 `--leaf-color-surface-muted` 浅灰底（不做按压缩放），校验与请求期间以转圈图标替换加号，成功后图片铺满；悬停或键盘聚焦时显示深色媒体遮罩与白色“重新上传”文字。禁用时不可操作，失败后显示错误并允许重新选择。
+- InputOTP 与 `field` 家族统一悬停和聚焦反馈：非禁用状态下悬停显示 `border-hover` 边框，激活格聚焦使用 `--leaf-color-text-muted`（error / warning 状态跟随 `danger` / `warning`）边框与共享 3px 20% 半透明外环，闲置格不再附加多余静止投影；Slider 滑块仅在 `:focus-visible` 键盘聚焦时显示 3px `accent-halo-focus-color` 聚焦环，悬停不放大、拖拽仅加深描边至 `--leaf-color-primary-active` 而不缩滑块也不扩张大光晕；Progress 默认 `active={false}`（需循环扫光时显式传入 `active`），LoadingBar 不再叠加外发光。
 
 ## 配置
 
 - ConfigProvider 是唯一配置入口。基色、圆角和高度派生相关几何；高级 `dividerColor`、组件 `borderColor`、`headerBackground`、`footerBackground` 提供选择性覆盖。CSS 变量是应用样式的消费点。
-- 实心操作与勾选标记保持纯色；单行控件保持 34px 基础高度。
+- 实心操作与勾选标记保持纯色；单行控件保持 32px 基础高度。
 
 ## 验收
 

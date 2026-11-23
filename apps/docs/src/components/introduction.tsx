@@ -46,8 +46,9 @@ export function IntroductionHero({ children }: { children: ReactNode }) {
           </span>
         </Flex>
         <Flex gap={12} justify="center" wrap>
-          <ButtonLink href={url('/guide/getting-started.html')} endIcon={<ArrowRight size={16} />}>
+          <ButtonLink href={url('/guide/getting-started.html')}>
             {t('开始使用', 'Get started')}
+            <ArrowRight />
           </ButtonLink>
           <ButtonLink variant="outline" href={url('/components/index.html')}>
             {t('探索组件', 'Explore components')}

@@ -7,6 +7,45 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.18.0 - 2026-11-23
+
+### Features
+
+- **Loading indicator variants**: Added 12 built-in `variant` animations (`spinner`, `ring`, `dual`, `orbit`, `chase`, `dots`, `wave`, `bars`, `pulse`, `grid`, `blocks`, and `flip`), configurable as a default via `ConfigProvider` `components.Loading.variant`.
+- **Skeleton element primitives**: Exported `Skeleton.Avatar`, `Skeleton.Button`, `Skeleton.Input`, and `Skeleton.Image` (along with standalone exports `SkeletonAvatar`, `SkeletonButton`, `SkeletonInput`, and `SkeletonImage`).
+- **InputNumber split controls**: Added `variant="split"` to place decrement and increment stepper buttons on opposite ends of the numeric input.
+- **Checkbox option descriptions**: Added `description` support on `CheckboxOption` with top-aligned controls matching card and list presentations.
+- **Confirm queue, icons, and failure flow**: Sequential queuing for overlapping `useConfirm().confirm()` calls, custom `icon` (or `icon={null}` to hide), single-button alerts via `showCancel={false}`, and automatic handoff to a single-button `danger` dialog when an async `onConfirm` throws.
+- **DataTable striped rows, ellipsis, and container padding**: Added `striped` styling and `meta.ellipsis` truncation to `DataTable`, plus unified/sectioned `padding` (`number | string | 'none' | { header?, body?, footer? }`) on `Card`, `Modal`, and `Drawer` and `divided` on `Card`.
+- **Neutral monochrome accent**: Added `primaryColor="neutral"` to `ConfigProvider`, adapting `--leaf-color-primary` and `--leaf-color-on-primary` across light and dark modes.
+
+### Improvements and fixes
+
+- **Floating arrow tracking and placement**: Fixed `Tooltip` and `Popover` arrow alignment across all 12 placements (`top`, `bottom`, `left`, `right`, and `-start`/`-end` variants) so arrows track the trigger edge without clipping, and tightened button-group spacing in documentation examples.
+- **Interactive polish**: Updated `Cascader` (`popupWidth="auto"` default, column scrollbars, and search list keyboard navigation), collapsed `Menu` item tooltips, `Drawer` inset margin with default bottom `showSwipeHandle`, and `DataTable` linear sort direction arrows.
+- **Quality & CSS size reduction**: Expanded interaction, accessibility, and density test coverage while tightening CSS output by reusing shared transition tokens and deduplicating compiled rules.
+
+### Breaking changes and migration
+
+- **Neutral default surface palette and retirement of 64 unconsumed color tokens**:
+  - Shifted default component chrome to quiet neutral grayscale surfaces (`Tabs`, `Menu` default `variant` changed from `'primary'` to `'neutral'`, `Table` / `DataTable` header `surface` background with `text-muted` 500 weight, `Pagination`, `Transfer`, `Steps`, `Anchor`, `Breadcrumb`, `Splitter`, `Carousel`, `Collapse`, `Descriptions`, `Empty`, `Upload` dropzone, `InputOTP`, and default neutral `field` focus rings); use `variant="primary"` or scoped `ConfigProvider` tokens where primary accent is desired.
+  - Updated the neutral scale lightness steps and stopped emitting 64 unconsumed palette/derived CSS variables (`--leaf-color-neutral-100`..`-900`, `--leaf-color-*-light-N/-dark-N`, `primary-indicator`, `primary-focus`, `primary-fill-border`, `primary-ink*`, `danger-hover`, `*-soft-active`, etc.) as well as `primarySoftActiveColor` and `dangerHoverColor` on `LeafThemeTokens` (`generateColorScale`, `neutralColorScale`, and `generateColorShades` JS helpers remain exported). Field shells now darken to `--leaf-color-border-hover` on hover and highlight with `--leaf-color-text-muted` plus a shared 3px focus ring.
+- **Default control height updated to `32px`**: Changed `comfortable` default control height from `34px` to `32px` (`compact` from `30px` to `28px`); configure `ConfigProvider theme={{ controlHeight: 34 }}` to keep the previous baseline.
+- **Button convergence and SplitButton removal**:
+  - Added `'danger'` to `ButtonVariant` as the single soft-red appearance (removing danger outline/text/link combinations); `ButtonProps.danger` is now `@deprecated` and maps to `variant="danger"`. Default `outline` buttons use a crisp shadow-free border.
+  - Extended `ButtonSize` with `'icon' | 'icon-sm' | 'icon-lg'` and removed `startIcon` / `endIcon` from `ButtonProps` and `FloatButtonProps` (pass icons directly in `children`; padding automatically tightens on the icon edge) along with legacy inner `.leaf-button__content` / `__icon` / `__label` wrappers.
+  - Removed `SplitButton`, `SplitButtonProps`, and `.leaf-split-button`; compose `<ButtonGroup><Button>...</Button><Dropdown ...><Button size="icon"><ChevronDown /></Button></Dropdown></ButtonGroup>` instead. `ButtonGroup` now accepts `variant` and propagates size/variant/disabled via context.
+- **Modal / Confirm / Drawer / Tabs / Card cleanup**:
+  - Removed the header divider in `Modal` and `Drawer` (`divided` applies only above the footer) and removed embedded dialog `tabs` (`ModalTabsProps` / `DrawerTabsProps`); compose `Tabs` directly inside dialog bodies. Close buttons now align cleanly with the first heading line in the top-end corner.
+  - Added `size?: 'md' | 'mini'` and `danger?: boolean` on `Modal`, and removed `.leaf-confirm-error`; removed `'info'` from `ConfirmOptions.type` (defaults to `'default'` neutral info icon) and aligned `Confirm` to `340px` `mini` layout. Removed `CardProps.selected` / `.leaf-card--selected` and aligned `Card` headers, footers, and shadows with `Modal`.
+  - Removed `tone` (`'solid'`) and `shape` (`'pill'`) from `TabsProps` (retaining `type?: 'line' | 'card' | 'segmented'`); override `indicatorBackground` / `radius` tokens when needed.
+- **Pagination / Result / Empty / Alert / Radio / Checkbox / Table defaults**:
+  - Changed default `Pagination` `variant` from `'outline'` to `'ghost'`, added text labels to previous/next controls, and streamlined `showSizeChanger` / `showQuickJumper`.
+  - Removed `size` from `ResultProps` and `EmptyProps` and removed `'info'` from `ResultProps.status`, unifying around a compact borderless icon stage.
+  - Replaced `'info'` with `'default'` on `AlertProps.type`, unified `14px` headings and `10px 12px` padding with softened semantic tints.
+  - Updated `Radio` and `Checkbox` `variant="card"` / `"list"` to `--leaf-radius` (`10px`) with `10px 12px` padding, `primary-soft` selected cards, and top-line aligned controls.
+  - Changed `DataTable` / `Table` default `size` from `'lg'` to `'md'` (pass `size="lg"` for the prior relaxed spacing), removed `DataTableProps.renderRowHeader`, converged `bordered` to outer frame borders only, unified empty/error rendering on `Result`, and kept selected rows static on hover.
+
 ## 0.17.3 - 2026-11-18
 
 ### Fixes

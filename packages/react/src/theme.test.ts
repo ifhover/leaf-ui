@@ -175,28 +175,19 @@ describe('portable component themes', () => {
     const dark = leafThemeVariables({ appearance: 'dark' });
     const at = (variables: typeof light, key: string) => variables[key as keyof typeof variables];
     for (const family of families)
-      for (const step of family === 'neutral' ? colorScaleSteps : semanticColorShadeSteps) {
-        const key = `--leaf-color-${family}-${step}`;
-        expect(at(light, key), key).toBe(at(dark, key));
-        expect(new TinyColor(at(light, key) ?? '').isValid, key).toBe(true);
-      }
+      for (const step of family === 'neutral' ? colorScaleSteps : semanticColorShadeSteps)
+        expect(at(light, `--leaf-color-${family}-${step}`)).toBeUndefined();
     for (const family of Object.keys(seeds) as (keyof typeof seeds)[]) {
       const base = `--leaf-color-${family}`;
       expect(at(light, base)).toBe(seeds[family]);
       expect(at(dark, base)).toBe(seeds[family]);
-      expect(at(light, `--leaf-color-${family}-soft`)).toBe(
-        at(light, `--leaf-color-${family}-light-9`),
-      );
-      expect(at(dark, `--leaf-color-${family}-soft`)).toBe(
-        at(dark, `--leaf-color-${family}-dark-9`),
-      );
-      expect(at(light, `--leaf-color-${family}-border`)).toBe(
-        at(light, `--leaf-color-${family}-light-7`),
-      );
-      expect(at(dark, `--leaf-color-${family}-border`)).toBe(
-        at(dark, `--leaf-color-${family}-dark-7`),
-      );
+      expect(new TinyColor(at(light, `--leaf-color-${family}-soft`) ?? '').isValid).toBe(true);
+      expect(new TinyColor(at(dark, `--leaf-color-${family}-soft`) ?? '').isValid).toBe(true);
       expect(at(light, `--leaf-color-on-${family}`)).toBe(at(dark, `--leaf-color-on-${family}`));
+    }
+    for (const family of ['primary', 'danger', 'warning'] as const) {
+      expect(new TinyColor(at(light, `--leaf-color-${family}-border`) ?? '').isValid).toBe(true);
+      expect(new TinyColor(at(dark, `--leaf-color-${family}-border`) ?? '').isValid).toBe(true);
     }
   });
 
@@ -225,7 +216,9 @@ describe('portable component themes', () => {
     expect(node?.style.getPropertyValue('--leaf-color-danger')).toBe(
       'color-mix(in srgb, #dd3f2e 60%, black)',
     );
-    expect(node?.style.getPropertyValue('--leaf-color-primary-ink')).toBe('var(--brand-primary)');
+    expect(node?.style.getPropertyValue('--leaf-color-primary-soft')).toBe(
+      'color-mix(in srgb, var(--brand-primary) 10%, #ffffff)',
+    );
     expect(node?.style.getPropertyValue('--leaf-color-on-danger')).toBe('#123456');
   });
 });
@@ -308,12 +301,12 @@ describe('component padding geometry', () => {
   it('derives harmonic control and surface radii when borderRadius changes', () => {
     expect(leafThemeVariables({ borderRadius: 10 })).toEqual({
       '--leaf-radius': '10px',
-      '--leaf-radius-sm': 'calc(var(--leaf-radius) * 0.5)',
-      '--leaf-control-radius-sm': 'calc(var(--leaf-radius) * 0.8)',
-      '--leaf-control-radius-lg': 'calc(var(--leaf-radius) * 1.2)',
-      '--leaf-radius-md': 'calc(var(--leaf-radius) * 1.4)',
-      '--leaf-radius-lg': 'calc(var(--leaf-radius) * 1.6)',
-      '--leaf-choice-radius': 'calc(var(--leaf-radius) * 0.5)',
+      '--leaf-radius-sm': 'max(0px, calc(var(--leaf-radius) - 5px))',
+      '--leaf-control-radius-sm': 'max(0px, calc(var(--leaf-radius) - 2px))',
+      '--leaf-control-radius-lg': 'calc(var(--leaf-radius) + min(var(--leaf-radius), 2px))',
+      '--leaf-radius-md': 'calc(var(--leaf-radius) + min(var(--leaf-radius), 4px))',
+      '--leaf-radius-lg': 'calc(var(--leaf-radius) + min(var(--leaf-radius), 6px))',
+      '--leaf-choice-radius': 'max(0px, calc(var(--leaf-radius) - 5px))',
     });
     expect(leafThemeVariables({ borderRadius: 0 })['--leaf-radius']).toBe('0px');
   });

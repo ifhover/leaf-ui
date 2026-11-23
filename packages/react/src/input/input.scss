@@ -1,4 +1,5 @@
 @use '../styles/mixins' as mixins;
+@use '../shared/clear';
 
 @layer leaf-ui {
   .leaf-input {
@@ -11,6 +12,7 @@
       )
     );
     @include mixins.field('input');
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: var(--leaf-component-input-gap, 8px);
@@ -23,8 +25,11 @@
     > :last-child:not(.leaf-input__native) {
       margin-inline-end: var(--leaf-density-field-padding);
     }
-    > :is(.leaf-input__clear, .leaf-input__visibility):last-child {
+    > .leaf-input__visibility:last-child {
       margin-inline-end: calc(var(--leaf-density-field-padding) - 3px);
+    }
+    > .leaf-clear {
+      margin-inline-end: 0;
     }
 
     &__native {
@@ -47,7 +52,8 @@
         border-start-start-radius: $native-radius;
         border-end-start-radius: $native-radius;
       }
-      &:last-child {
+      &:last-child,
+      &:has(+ .leaf-clear:last-child) {
         padding-inline-end: var(--leaf-density-field-padding);
         border-start-end-radius: $native-radius;
         border-end-end-radius: $native-radius;
@@ -65,7 +71,7 @@
       display: inline-flex;
       flex: 0 0 auto;
       color: var(--leaf-color-text-muted);
-      transition: color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
       svg {
         width: 16px;
         height: 16px;
@@ -85,10 +91,9 @@
       font-size: var(--leaf-font-size-sm);
       white-space: nowrap;
       font-variant-numeric: tabular-nums;
-      transition: color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
     }
-    &__visibility,
-    &__clear {
+    &__visibility {
       display: inline-flex;
       flex: 0 0 auto;
       align-items: center;
@@ -102,30 +107,11 @@
 
       @include mixins.text-action;
     }
-    &:focus-within &__affix {
-      color: var(--leaf-field-color);
+    &:focus-within:not([data-disabled]) &__affix {
+      color: var(--leaf-color-text);
     }
     &:focus-within &__count {
       color: var(--leaf-color-text-muted);
-    }
-  }
-  @media (hover: hover) {
-    .leaf-input__clear {
-      opacity: 0;
-      pointer-events: none;
-    }
-    .leaf-input:hover .leaf-input__clear,
-    .leaf-input__clear:focus-visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-input__visibility,
-    .leaf-input__clear,
-    .leaf-input__affix,
-    .leaf-input__count {
-      transition: none;
     }
   }
 
@@ -188,27 +174,5 @@
     border: 0;
     padding: 0;
     margin: 0;
-  }
-
-  .leaf-input {
-    --leaf-current-control-height: var(--leaf-component-input-height, var(--leaf-control-height));
-    --leaf-current-font-size: var(--leaf-component-input-font-size, var(--leaf-font-size));
-    --leaf-current-radius: var(--leaf-radius);
-  }
-  .leaf-input--sm {
-    --leaf-current-control-height: var(
-      --leaf-component-input-height-sm,
-      var(--leaf-control-height-sm)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-sm);
-    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
-  }
-  .leaf-input--lg {
-    --leaf-current-control-height: var(
-      --leaf-component-input-height-lg,
-      var(--leaf-control-height-lg)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-lg);
-    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
   }
 }

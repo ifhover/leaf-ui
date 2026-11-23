@@ -20,6 +20,7 @@ Use `title` for the message and `description` for additional details.
 <ComponentExample exampleId="basic" preview={<AlertBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/alert/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -30,11 +31,12 @@ Use `title` for the message and `description` for additional details.
 
 ### Feedback types
 
-Use `type` for information, success, warning or danger messages. Use `danger` in new code; `error` remains a compatibility alias.
+The default style uses a neutral surface; use `type` for success, warning or danger messages. Use `danger` in new code; `error` remains a compatibility alias.
 
 <ComponentExample exampleId="types" preview={<AlertTypes />} fileName="types.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/alert/types.tsx"
+
 ```
 
 </ComponentExample>
@@ -46,6 +48,7 @@ Use `extra` for buttons, links or other elements on the right. It can be combine
 <ComponentExample exampleId="extra" preview={<AlertExtra />} fileName="extra.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/alert/extra.tsx"
+
 ```
 
 </ComponentExample>
@@ -57,6 +60,7 @@ Set `closable` to show a close button. Remount the alert to show it again after 
 <ComponentExample exampleId="closable" preview={<AlertClosable />} fileName="closable.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/alert/closable.tsx"
+
 ```
 
 </ComponentExample>
@@ -68,6 +72,7 @@ Replace the icon with `icon`, or hide it with `showIcon={false}`.
 <ComponentExample exampleId="icons" preview={<AlertIcons />} fileName="icons.tsx">
 
 ```tsx lineNumbers file="../../../src/examples/en/alert/icons.tsx"
+
 ```
 
 </ComponentExample>
@@ -85,7 +90,7 @@ Configuration for alert content, feedback type and dismissal.
 | `title` | `ReactNode` | Required | Main content |
 | `description` | `ReactNode` | — | Additional details |
 | `extra` | `ReactNode` | — | Trailing content. |
-| `type` | `FeedbackType \| 'error'` | `'info'` | Feedback type; `error` is a compatibility alias |
+| `type` | `'default' \| 'success' \| 'warning' \| 'danger' \| 'error'` | `'default'` | Feedback type; `error` is a compatibility alias |
 | `icon` | `ReactNode` | — | Icon content. |
 | `showIcon` | `boolean` | `true` | Show the feedback icon |
 | `closable` | `boolean` | `false` | Allow dismissal |

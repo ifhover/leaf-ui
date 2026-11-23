@@ -77,70 +77,74 @@ export function Popconfirm(rawProps: PopconfirmProps) {
       }
       className={['leaf-popconfirm', props.className].filter(Boolean).join(' ')}
       content={
-        <div className="leaf-popconfirm__content">
-          <div className={`leaf-popconfirm__icon leaf-popconfirm__icon--${normalizedType}`}>
-            {icon ?? (normalizedType !== 'default' ? <FeedbackIcon type={normalizedType} /> : null)}
-          </div>
-          <div className="leaf-popconfirm__body">
-            <div className="leaf-popconfirm__title">{title}</div>
-            {description && <div className="leaf-popconfirm__description">{description}</div>}
-            {error && (
-              <p role="alert" className="leaf-popconfirm__error">
-                {t('popconfirm.actionFailedPleaseRetry')}
-              </p>
-            )}
-            <div className="leaf-popconfirm__actions">
-              {showCancel && (
-                <ButtonControl
-                  {...cancelButtonProps}
-                  size={cancelButtonProps?.size ?? 'sm'}
-                  variant={cancelButtonProps?.variant ?? 'outline'}
-                  disabled={busy || cancelButtonProps?.disabled}
-                  onClick={(event) => {
-                    cancelButtonProps?.onClick?.(event);
-                    if (!event.defaultPrevented) {
-                      onCancel?.();
-                      setOpen(false);
-                    }
-                  }}
-                >
-                  {cancelText ?? messages.common.cancel}
-                </ButtonControl>
+        <>
+          <div className="leaf-popconfirm__content">
+            <div className={`leaf-popconfirm__icon leaf-popconfirm__icon--${normalizedType}`}>
+              {icon ??
+                (normalizedType !== 'default' ? <FeedbackIcon type={normalizedType} /> : null)}
+            </div>
+            <div className="leaf-popconfirm__body">
+              <div className="leaf-popconfirm__title">{title}</div>
+              {description && <div className="leaf-popconfirm__description">{description}</div>}
+              {error && (
+                <p role="alert" className="leaf-popconfirm__error">
+                  {t('popconfirm.actionFailedPleaseRetry')}
+                </p>
               )}
+            </div>
+          </div>
+          <div className="leaf-popconfirm__actions">
+            {showCancel && (
               <ButtonControl
-                {...confirmButtonProps}
-                size={confirmButtonProps?.size ?? 'sm'}
-                variant={confirmButtonProps?.variant ?? 'solid'}
-                danger={confirmButtonProps?.danger ?? normalizedType === 'danger'}
-                loading={busy || confirmButtonProps?.loading}
-                onClick={async (event) => {
-                  confirmButtonProps?.onClick?.(event);
-                  if (event.defaultPrevented || inFlight.current) return;
-                  inFlight.current = true;
-                  const request = generation.current;
-                  setBusy(true);
-                  setError(false);
-                  try {
-                    await onConfirm?.();
-                    if (generation.current !== request) return;
+                {...cancelButtonProps}
+                size={cancelButtonProps?.size ?? 'sm'}
+                variant={cancelButtonProps?.variant ?? 'outline'}
+                disabled={busy || cancelButtonProps?.disabled}
+                onClick={(event) => {
+                  cancelButtonProps?.onClick?.(event);
+                  if (!event.defaultPrevented) {
+                    onCancel?.();
                     setOpen(false);
-                  } catch (reason) {
-                    if (generation.current !== request) return;
-                    setError(true);
-                    onError?.(reason);
-                  } finally {
-                    if (generation.current === request) {
-                      inFlight.current = false;
-                      setBusy(false);
-                    }
                   }
                 }}
               >
-                {confirmText ?? messages.common.confirm}
+                {cancelText ?? messages.common.cancel}
               </ButtonControl>
-            </div>
+            )}
+            <ButtonControl
+              {...confirmButtonProps}
+              size={confirmButtonProps?.size ?? 'sm'}
+              variant={
+                confirmButtonProps?.variant ?? (normalizedType === 'danger' ? 'danger' : 'solid')
+              }
+              loading={busy || confirmButtonProps?.loading}
+              onClick={async (event) => {
+                confirmButtonProps?.onClick?.(event);
+                if (event.defaultPrevented || inFlight.current) return;
+                inFlight.current = true;
+                const request = generation.current;
+                setBusy(true);
+                setError(false);
+                try {
+                  await onConfirm?.();
+                  if (generation.current !== request) return;
+                  setOpen(false);
+                } catch (reason) {
+                  if (generation.current !== request) return;
+                  setError(true);
+                  onError?.(reason);
+                } finally {
+                  if (generation.current === request) {
+                    inFlight.current = false;
+                    setBusy(false);
+                  }
+                }
+              }}
+            >
+              {confirmText ?? messages.common.confirm}
+            </ButtonControl>
           </div>
-        </div>
+        </>
       }
     >
       {children}

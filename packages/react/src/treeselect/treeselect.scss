@@ -1,20 +1,28 @@
 @use '../styles/mixins' as mixins;
+@use '../shared/clear';
 @use '../shared/selection';
 
 @layer leaf-ui {
   .leaf-tree-select {
     @include mixins.field('tree-select');
+    --leaf-tree-select-end-padding: 30px;
     position: relative;
     display: inline-flex;
     align-items: center;
     min-height: var(--leaf-current-control-height);
-    padding: var(--leaf-component-tree-select-padding, 0 30px 0 10px);
+    padding: var(
+      --leaf-component-tree-select-padding,
+      0 var(--leaf-tree-select-end-padding) 0 var(--leaf-density-field-padding)
+    );
+    &:where(:dir(rtl)) {
+      padding: var(
+        --leaf-component-tree-select-padding,
+        0 var(--leaf-density-field-padding) 0 var(--leaf-tree-select-end-padding)
+      );
+    }
     cursor: pointer;
     &[data-searchable] {
       cursor: text;
-    }
-    &[data-clearable] {
-      padding-inline-end: 54px;
     }
     &__input-wrap {
       position: relative;
@@ -57,20 +65,17 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    &__arrow,
-    &__clear {
+    &__arrow {
       position: absolute;
+      inset-inline-end: 8px;
       top: 50%;
       transform: translateY(-50%);
       display: grid;
       place-items: center;
-      padding: 0;
-      border: 0;
-    }
-    &__arrow {
-      inset-inline-end: 8px;
       width: 18px;
       height: 18px;
+      padding: 0;
+      border: 0;
       background: transparent;
       color: var(--leaf-color-text-muted);
       cursor: pointer;
@@ -81,32 +86,14 @@
         transition: transform var(--leaf-motion-duration) var(--leaf-motion-easing);
       }
     }
-    &__clear {
-      inset-inline-end: 28px;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-
-      @include mixins.text-action;
-
-      &:hover {
-        color: var(--leaf-color-text);
-      }
-    }
     &[data-open] &__arrow svg {
       transform: rotate(180deg);
     }
     &--multiple {
-      @include selection.trigger-padding('tree-select', 30px);
+      @include selection.trigger-padding('tree-select', var(--leaf-tree-select-end-padding));
     }
     &--multiple &__input {
-      height: max(
-        1px,
-        calc(
-          var(--leaf-current-control-height) - 6px - 2 *
-            var(--leaf-field-border-width, var(--leaf-border-width, 1px))
-        )
-      );
+      height: var(--leaf-selection-tag-height);
     }
     &__panel {
       --leaf-tree-option-radius: var(--leaf-floating-option-radius);
@@ -124,45 +111,12 @@
       }
       .leaf-tree__row {
         min-height: var(--leaf-current-control-height);
-        padding-block: min(3px, max(0px, calc((var(--leaf-current-control-height) - 24px) / 2)));
+        padding-block: max(2px, calc(var(--leaf-density-option-padding) - 4px));
         margin-block: 0;
         border-radius: var(--leaf-tree-option-radius);
         white-space: nowrap;
       }
     }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-tree-select__arrow,
-    .leaf-tree-select__clear,
-    .leaf-tree-select__arrow svg,
-    .leaf-tree-select__tag > button {
-      transition: none;
-    }
-  }
-
-  .leaf-tree-select {
-    --leaf-current-control-height: var(
-      --leaf-component-tree-select-height,
-      var(--leaf-control-height)
-    );
-    --leaf-current-font-size: var(--leaf-component-tree-select-font-size, var(--leaf-font-size));
-    --leaf-current-radius: var(--leaf-radius);
-  }
-  .leaf-tree-select--sm {
-    --leaf-current-control-height: var(
-      --leaf-component-tree-select-height-sm,
-      var(--leaf-control-height-sm)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-sm);
-    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
-  }
-  .leaf-tree-select--lg {
-    --leaf-current-control-height: var(
-      --leaf-component-tree-select-height-lg,
-      var(--leaf-control-height-lg)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-lg);
-    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
   }
 
   .leaf-floating.leaf-tree-select__panel {

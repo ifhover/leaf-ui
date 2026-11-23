@@ -10,25 +10,240 @@
     position: relative;
     color: var(--leaf-color-text-muted);
     font: var(--leaf-font-size)/var(--leaf-line-height) var(--leaf-font-family);
+    &:not(&--wrapped) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     &__indicator {
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+    }
+    &__spinner,
+    &__ring,
+    &__dual,
+    &__orbit,
+    &__chase,
+    &__dots,
+    &__wave,
+    &__bars,
+    &__pulse,
+    &__grid,
+    &__blocks,
+    &__flip {
+      box-sizing: border-box;
+      flex: none;
+      width: var(--leaf-spinner-size);
+      height: var(--leaf-spinner-size);
+      color: var(--leaf-component-loading-color, var(--leaf-color-primary));
+    }
+    &__dual,
+    &__orbit,
+    &__chase,
+    &__blocks,
+    &__ring,
+    &__pulse,
+    &__flip {
+      position: relative;
+    }
+    &__ring,
+    &__pulse,
+    &__flip {
+      display: inline-grid;
+      place-items: center;
+    }
+    &__indicator,
+    &__dots,
+    &__wave,
+    &__bars {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      flex-direction: column;
-      gap: 8px;
+    }
+    &__ring::before,
+    &__dual-outer,
+    &__dual-inner,
+    &__orbit-arm,
+    &__chase-dot::before,
+    &__dot,
+    &__wave-dot,
+    &__bar,
+    &__pulse-ring,
+    &__grid-cell,
+    &__block,
+    &__flip::before {
+      animation: var(--leaf-motion-animation, var(--leaf-la));
+      animation-play-state: var(--leaf-motion-play-state);
+    }
+    &__chase-dot::before,
+    &__dot,
+    &__wave-dot,
+    &__bar,
+    &__pulse-ring,
+    &__grid-cell,
+    &__block {
+      animation-delay: calc(var(--leaf-motion-duration) * var(--leaf-d, 0));
     }
     &__spinner {
-      width: var(--leaf-spinner-size);
-      height: var(--leaf-spinner-size);
-      color: var(--leaf-color-primary);
+      display: block;
       animation: var(
         --leaf-motion-animation,
-        leaf-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite
+        leaf-loading-spin calc(var(--leaf-motion-duration) * 4.5) linear infinite
       );
       animation-play-state: var(--leaf-motion-play-state);
     }
+    &__ring::before {
+      content: '';
+      box-sizing: border-box;
+      width: 78%;
+      height: 78%;
+      border-width: max(2px, calc(var(--leaf-spinner-size) * 0.095));
+      border-style: solid;
+      border-color: currentColor var(--leaf-color-border) var(--leaf-color-border);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      --leaf-la: leaf-loading-spin calc(var(--leaf-motion-duration) * 4.5) ease-in-out infinite;
+    }
+    &__dual-outer,
+    &__dual-inner {
+      position: absolute;
+      box-sizing: border-box;
+      border-style: solid;
+      border-radius: 50%;
+    }
+    &__dual-outer {
+      inset: 11%;
+      border-width: max(2px, calc(var(--leaf-spinner-size) * 0.085));
+      border-color: currentColor transparent;
+      --leaf-la: leaf-loading-spin calc(var(--leaf-motion-duration) * 5) linear infinite;
+    }
+    &__dual-inner {
+      inset: 29%;
+      border-width: max(1.5px, calc(var(--leaf-spinner-size) * 0.07));
+      border-color: transparent currentColor;
+      opacity: 0.65;
+      --leaf-la: leaf-loading-spin calc(var(--leaf-motion-duration) * 4) linear infinite reverse;
+    }
+    &__orbit-track,
+    &__orbit-arm {
+      position: absolute;
+      inset: 11%;
+      border-radius: 50%;
+    }
+    &__orbit-track {
+      box-sizing: border-box;
+      border-width: max(1px, calc(var(--leaf-spinner-size) * 0.055));
+      border-style: solid;
+      border-color: var(--leaf-color-border);
+    }
+    &__orbit-arm {
+      --leaf-la: leaf-loading-spin calc(var(--leaf-motion-duration) * 5.5) linear infinite;
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: max(4px, calc(var(--leaf-spinner-size) * 0.19));
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: currentColor;
+        transform: translate(-50%, calc(-50% + max(0.5px, var(--leaf-spinner-size) * 0.025)));
+      }
+    }
+    &__chase-dot {
+      position: absolute;
+      inset: 9%;
+      transform: rotate(calc(var(--leaf-i, 0) * 45deg));
+      &::before {
+        content: '';
+        display: block;
+        margin-inline: auto;
+        width: max(3px, calc(var(--leaf-spinner-size) * 0.15));
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: calc(1 - var(--leaf-i, 0) * 0.1);
+        --leaf-la: leaf-loading-grid calc(var(--leaf-motion-duration) * 5) ease-in-out infinite;
+      }
+    }
+    &__dots,
+    &__bars {
+      gap: max(2px, calc(var(--leaf-spinner-size) * 0.11));
+    }
+    &__dot {
+      width: max(4px, calc(var(--leaf-spinner-size) * 0.21));
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: currentColor;
+      --leaf-la: leaf-loading-grid calc(var(--leaf-motion-duration) * 6) ease-in-out infinite;
+    }
+    &__wave {
+      gap: max(1px, calc(var(--leaf-spinner-size) * 0.06));
+    }
+    &__wave-dot {
+      width: max(2px, calc(var(--leaf-spinner-size) * 0.12));
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: currentColor;
+      --leaf-la: leaf-loading-wave calc(var(--leaf-motion-duration) * 6) ease-in-out infinite;
+    }
+    &__bar {
+      width: max(2px, calc(var(--leaf-spinner-size) * 0.12));
+      height: calc(var(--leaf-spinner-size) * 0.76);
+      border-radius: 999px;
+      background: currentColor;
+      --leaf-la: leaf-loading-bars calc(var(--leaf-motion-duration) * 5) ease-in-out infinite;
+    }
+    &__pulse-ring {
+      position: absolute;
+      inset: 4%;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: calc(0.55 - var(--leaf-i, 0) * 0.195);
+      transform: scale(calc(0.38 + var(--leaf-i, 0) * 0.31));
+      --leaf-la: leaf-loading-pulse-ring calc(var(--leaf-motion-duration) * 9) ease-out infinite;
+    }
+    &__grid {
+      display: inline-grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 12%;
+      gap: max(1.5px, calc(var(--leaf-spinner-size) * 0.08));
+    }
+    &__grid-cell {
+      border-radius: max(1px, calc(var(--leaf-spinner-size) * 0.07));
+      background: currentColor;
+      --leaf-la: leaf-loading-grid calc(var(--leaf-motion-duration) * 6.5) ease-in-out infinite;
+    }
+    &__blocks {
+      --leaf-bg: max(1.5px, calc(var(--leaf-spinner-size) * 0.08));
+      --leaf-bc: calc((var(--leaf-spinner-size) * 0.76 - var(--leaf-bg)) * 0.5);
+      --leaf-bs: calc(var(--leaf-bc) + var(--leaf-bg));
+    }
+    &__block {
+      position: absolute;
+      top: 12%;
+      left: 12%;
+      width: var(--leaf-bc);
+      aspect-ratio: 1;
+      border-radius: max(2px, calc(var(--leaf-spinner-size) * 0.09));
+      background: currentColor;
+      transform: translate(
+        calc(var(--leaf-x, 0) * var(--leaf-bs)),
+        calc(var(--leaf-y, 0) * var(--leaf-bs))
+      );
+      --leaf-la: leaf-loading-blocks calc(var(--leaf-motion-duration) * 12) ease-in-out infinite;
+    }
+    &__flip::before {
+      content: '';
+      width: 72%;
+      height: 72%;
+      border-radius: max(2px, calc(var(--leaf-spinner-size) * 0.14));
+      background: currentColor;
+      --leaf-la: leaf-loading-flip calc(var(--leaf-motion-duration) * 6) ease-in-out infinite;
+    }
     &__content {
-      transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
       &[data-loading='true'] {
         opacity: 0.45;
         user-select: none;
@@ -38,15 +253,19 @@
     &__overlay {
       position: absolute;
       inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       border-radius: inherit;
       background: var(--leaf-color-surface-alpha-55);
       pointer-events: none;
     }
+    &__state {
+      width: 100%;
+      height: 100%;
+    }
     &__overlay,
     &__state {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       opacity: 0;
       transform: translateY(3px);
       transition:
@@ -64,16 +283,119 @@
       }
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-loading__spinner {
-      animation: none;
+
+  @keyframes leaf-loading-spin {
+    to {
+      transform: rotate(360deg);
     }
-    .leaf-loading__content {
-      transition: none;
+  }
+  @keyframes leaf-loading-bars {
+    0%,
+    75%,
+    100% {
+      opacity: 0.35;
+      transform: scaleY(0.38);
     }
-    .leaf-loading__overlay,
-    .leaf-loading__state {
-      transition: none;
+    35% {
+      opacity: 1;
+      transform: scaleY(1);
+    }
+  }
+  @keyframes leaf-loading-pulse-ring {
+    0% {
+      opacity: 0;
+      transform: scale(0.08);
+    }
+    20% {
+      opacity: 0.55;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+  @keyframes leaf-loading-grid {
+    0%,
+    70%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    35% {
+      opacity: 0.25;
+      transform: scale(0.55);
+    }
+  }
+  @keyframes leaf-loading-wave {
+    0%,
+    100% {
+      opacity: 0.45;
+      transform: translateY(0);
+    }
+    25% {
+      opacity: 1;
+      transform: translateY(calc(var(--leaf-spinner-size) * -0.16));
+    }
+    75% {
+      opacity: 0.45;
+      transform: translateY(calc(var(--leaf-spinner-size) * 0.16));
+    }
+  }
+  @keyframes leaf-loading-blocks {
+    0%,
+    83.33%,
+    100% {
+      transform: translate(0, 0);
+    }
+    8.33%,
+    25% {
+      transform: translate(var(--leaf-bs), 0);
+    }
+    33.33%,
+    50% {
+      transform: translate(var(--leaf-bs), var(--leaf-bs));
+    }
+    58.33%,
+    75% {
+      transform: translate(0, var(--leaf-bs));
+    }
+  }
+  @keyframes leaf-loading-flip {
+    0% {
+      transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    }
+    50% {
+      transform: perspective(120px) rotateX(-180deg) rotateY(0deg);
+    }
+    100% {
+      transform: perspective(120px) rotateX(-180deg) rotateY(-180deg);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .leaf-loading__ring::before {
+      border-color: CanvasText;
+      border-top-color: Highlight;
+    }
+    .leaf-loading__orbit-track {
+      border-color: CanvasText;
+    }
+    .leaf-loading__dual-outer {
+      border-color: CanvasText transparent;
+    }
+    .leaf-loading__dual-inner {
+      border-color: transparent CanvasText;
+    }
+    .leaf-loading__orbit-arm::before,
+    .leaf-loading__chase-dot::before,
+    .leaf-loading__dot,
+    .leaf-loading__wave-dot,
+    .leaf-loading__bar,
+    .leaf-loading__pulse-ring,
+    .leaf-loading__grid-cell,
+    .leaf-loading__block,
+    .leaf-loading__flip::before {
+      background: CanvasText;
     }
   }
 }

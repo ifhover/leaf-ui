@@ -1,4 +1,4 @@
-import { DatePicker, Form, FormField } from '@ifhover/leaf-ui';
+import { DatePicker } from '@ifhover/leaf-ui';
 
 function tomorrow() {
   const date = new Date();
@@ -8,11 +8,5 @@ function tomorrow() {
 }
 
 export function DatePickerPresets() {
-  return (
-    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
-      <FormField label="交付日期">
-        <DatePicker presets={[{ label: '明天', value: tomorrow }]} />
-      </FormField>
-    </Form>
-  );
+  return <DatePicker aria-label="交付日期" presets={[{ label: '明天', value: tomorrow }]} />;
 }

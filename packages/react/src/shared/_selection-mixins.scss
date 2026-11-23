@@ -1,0 +1,34 @@
+@mixin trigger-padding($component, $inline-end, $inline-start: 3px) {
+  $tag-height: max(
+    1px,
+    min(
+      20px,
+      calc(
+        var(--leaf-current-control-height) - 6px - 2 *
+          var(--leaf-field-border-width, var(--leaf-border-width, 1px))
+      )
+    )
+  );
+  --leaf-selection-tag-height: #{$tag-height};
+  --leaf-selection-block-padding: max(
+    2px,
+    calc(
+      (
+          var(--leaf-current-control-height) - var(--leaf-selection-tag-height) - 2 *
+            var(--leaf-field-border-width, var(--leaf-border-width, 1px))
+        ) /
+        2
+    )
+  );
+  padding-block: var(
+      --leaf-component-#{$component}-padding-top,
+      var(--leaf-selection-block-padding)
+    )
+    var(--leaf-component-#{$component}-padding-bottom, var(--leaf-selection-block-padding));
+  padding-inline: var(--leaf-component-#{$component}-padding-left, #{$inline-start})
+    var(--leaf-component-#{$component}-padding-right, #{$inline-end});
+  &:where([dir='rtl']) {
+    padding-inline: var(--leaf-component-#{$component}-padding-right, #{$inline-start})
+      var(--leaf-component-#{$component}-padding-left, #{$inline-end});
+  }
+}

@@ -1,6 +1,8 @@
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { forwardRef, type HTMLAttributes, type ReactNode, useEffect, useState } from 'react';
 import { ButtonControl } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
+import { useLeafConfig } from '../config-provider/context';
 import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { useControllable } from '../shared/use-controllable';
@@ -48,6 +50,7 @@ export const LayoutSider = forwardRef<HTMLElement, LayoutSiderProps>(function La
     ...props
   } = useComponentProps('LayoutSider', rawProps);
   const t = useText();
+  const { direction } = useLeafConfig();
   const [compact, setCompact] = useControllable(collapsed, defaultCollapsed, onCollapse);
   const [narrow, setNarrow] = useState(false);
   useEffect(() => {
@@ -59,11 +62,20 @@ export const LayoutSider = forwardRef<HTMLElement, LayoutSiderProps>(function La
     return () => query.removeEventListener('change', update);
   }, [breakpoint]);
   const folded = compact || narrow;
+  const zeroCollapsed =
+    folded &&
+    (collapsedWidth === 0 ||
+      (typeof collapsedWidth === 'string' && Number.parseFloat(collapsedWidth) === 0));
+  const showExpandChevron = direction === 'rtl' ? !folded : folded;
   return (
     <aside
       {...props}
       ref={ref}
-      className={classes('leaf-layout__sider', className)}
+      className={classes(
+        'leaf-layout__sider',
+        zeroCollapsed && 'leaf-layout__sider--zero',
+        className,
+      )}
       data-collapsed={folded || undefined}
       style={{ width: folded ? collapsedWidth : width, ...style }}
     >
@@ -78,7 +90,13 @@ export const LayoutSider = forwardRef<HTMLElement, LayoutSiderProps>(function La
           aria-expanded={!folded}
           aria-label={folded ? t('layout.expandSidebar') : t('layout.collapseSidebar')}
         >
-          {trigger ?? (folded ? t('layout.expandSidebar') : t('layout.collapseSidebar'))}
+          {trigger !== undefined ? (
+            trigger
+          ) : showExpandChevron ? (
+            <ChevronRight size={16} aria-hidden="true" />
+          ) : (
+            <ChevronLeft size={16} aria-hidden="true" />
+          )}
         </ButtonControl>
       )}
     </aside>

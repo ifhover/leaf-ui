@@ -6,7 +6,12 @@ export function DrawerBasic() {
   return (
     <>
       <Button onClick={() => setOpen(true)}>View details</Button>
-      <Drawer open={open} title="Document details" onClose={() => setOpen(false)}>
+      <Drawer
+        open={open}
+        title="Document details"
+        description="Maintained by the design team, including version and permission notes."
+        onClose={() => setOpen(false)}
+      >
         <Paragraph>
           This document is maintained by the design team and was last updated this week.
         </Paragraph>

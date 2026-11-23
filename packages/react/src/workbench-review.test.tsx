@@ -2,9 +2,11 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, expect, it, vi } from 'vitest';
 import { Anchor } from './anchor';
+import { Breadcrumb } from './breadcrumb';
 import { Button } from './button';
 import { Carousel } from './carousel';
 import { ConfigProvider } from './config-provider';
+import { Descriptions } from './descriptions';
 import { Drawer } from './drawer';
 import { Popconfirm } from './popconfirm';
 import { Text } from './typography';
@@ -155,4 +157,63 @@ it('uses one Drawer surface and keeps section dividers opt-in', () => {
     </Drawer>,
   );
   expect(screen.getByRole('dialog')).toHaveClass('leaf-drawer--divided');
+});
+
+it('highlights bottom anchor section at container bottom, mirrors RTL breadcrumb separator, avoids empty Descriptions headings, and assigns stable keys to unkeyed Carousel slides', () => {
+  const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  const scrollBox = document.createElement('div');
+  Object.defineProperties(scrollBox, {
+    scrollTop: { value: 400, configurable: true },
+    scrollHeight: { value: 800, configurable: true },
+    clientHeight: { value: 400, configurable: true },
+  });
+  vi.spyOn(scrollBox, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 0, 400, 400));
+
+  const firstTarget = document.createElement('section');
+  firstTarget.id = 'sec-1';
+  vi.spyOn(firstTarget, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, -100, 400, 200));
+  const secondTarget = document.createElement('section');
+  secondTarget.id = 'sec-2';
+  // 第二个章节仍在 offset+24 之下，但容器已滚到底部，应自动高亮末节
+  vi.spyOn(secondTarget, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 200, 400, 150));
+  scrollBox.append(firstTarget, secondTarget);
+  document.body.appendChild(scrollBox);
+
+  const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+    callback(0);
+    return 1;
+  });
+
+  try {
+    render(
+      <ConfigProvider direction="rtl" locale="en-US">
+        <Anchor
+          container={() => scrollBox}
+          items={[
+            { key: '1', title: 'One', href: '#sec-1' },
+            { key: '2', title: 'Two', href: '#sec-2' },
+          ]}
+        />
+        <Breadcrumb items={[{ title: 'Home', href: '/' }, { title: 'Current' }]} />
+        <Descriptions
+          extra={<button type="button">Edit</button>}
+          items={[{ key: 'a', label: 'Owner', children: 'Leaf' }]}
+        />
+        <Carousel>
+          <div>Slide A</div>
+          <div>Slide B</div>
+        </Carousel>
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('link', { name: 'Two' })).toHaveAttribute('aria-current', 'location');
+    expect(document.querySelector('.leaf-breadcrumb__separator svg')).toHaveClass(
+      'lucide-chevron-left',
+    );
+    expect(document.querySelector('.leaf-descriptions__header h3')).toBeNull();
+    expect(errorSpy).not.toHaveBeenCalled();
+  } finally {
+    rafSpy.mockRestore();
+    errorSpy.mockRestore();
+    scrollBox.remove();
+  }
 });

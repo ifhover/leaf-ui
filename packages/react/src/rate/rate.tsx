@@ -48,7 +48,7 @@ export function Rate(rawProps: RateProps) {
     'aria-label': label,
     ...props
   } = useComponentProps('Rate', rawProps);
-  const { messages } = useLeafConfig();
+  const { messages, direction } = useLeafConfig();
   const field = useFormField();
   const disabled = disabledProp || field?.disabled;
   const required = requiredProp ?? field?.required;
@@ -56,8 +56,9 @@ export function Rate(rawProps: RateProps) {
   const step = allowHalf ? 0.5 : 1;
   const normalize = (number: number) =>
     Math.min(maximum, Math.max(0, Number.isFinite(number) ? Math.round(number / step) * step : 0));
-  const trigger = useRef<HTMLButtonElement>(null);
+  const trigger = useRef<HTMLButtonElement | null>(null);
   const root = useRef<HTMLDivElement>(null);
+  const optionRefs = useRef(new Map<number, HTMLButtonElement>());
   const [current, setCurrent] = useFieldValue(value, defaultValue, trigger, form);
   const selected = normalize(current);
   const [hovered, setHovered] = useState<number>();
@@ -114,7 +115,11 @@ export function Rate(rawProps: RateProps) {
             <button
               type="button"
               key={number}
-              ref={number === step ? trigger : undefined}
+              ref={(element) => {
+                if (number === step) trigger.current = element;
+                if (element) optionRefs.current.set(number, element);
+                else optionRefs.current.delete(number);
+              }}
               role="radio"
               aria-checked={number === selected}
               aria-label={`${number} / ${maximum}`}
@@ -130,6 +135,7 @@ export function Rate(rawProps: RateProps) {
               onKeyDown={(event) => {
                 if (disabled || readOnly) return;
                 let next: number | undefined;
+                const forwardKey = direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight';
                 if (event.key === 'Home') next = step;
                 else if (event.key === 'End') next = maximum;
                 else if (['ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown'].includes(event.key))
@@ -137,7 +143,7 @@ export function Rate(rawProps: RateProps) {
                     step,
                     Math.min(
                       maximum,
-                      number + (['ArrowRight', 'ArrowUp'].includes(event.key) ? step : -step),
+                      number + (event.key === 'ArrowUp' || event.key === forwardKey ? step : -step),
                     ),
                   );
                 else if ((event.key === 'Delete' || event.key === 'Backspace') && allowClear)
@@ -146,10 +152,7 @@ export function Rate(rawProps: RateProps) {
                   event.preventDefault();
                   choose(next);
                   setHovered(undefined);
-                  const target = root.current?.querySelector<HTMLButtonElement>(
-                    `[aria-label='${next || step} / ${maximum}']`,
-                  );
-                  target?.focus();
+                  optionRefs.current.get(next || step)?.focus();
                 }
               }}
             />

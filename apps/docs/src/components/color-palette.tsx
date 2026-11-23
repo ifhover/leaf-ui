@@ -1,11 +1,20 @@
 import './color-palette.scss';
 import { type CSSProperties, useMemo, useState } from 'react';
-import { type ColorScaleStep, colorScaleSteps } from '../../../../packages/react/src/color-scale';
+import {
+  type ColorScaleStep,
+  colorScaleSteps,
+  generateColorScale,
+} from '../../../../packages/react/src/color-scale';
 import {
   type ColorShadeStep,
   semanticColorShadeSteps,
 } from '../../../../packages/react/src/color-shades';
-import { type colorSeeds, resolveColorRoles } from '../../../../packages/react/src/colors';
+import {
+  type colorSeeds,
+  generateColorShades,
+  neutralColorScale,
+  resolveColorRoles,
+} from '../../../../packages/react/src/colors';
 import { useLeafConfig } from '../../../../packages/react/src/config-provider/context';
 import { leafThemeColors } from '../../../../packages/react/src/theme';
 import { useDocsLocale } from './i18n';
@@ -35,8 +44,11 @@ function ScaleRow({
   const neutral = family === 'neutral';
   const steps: readonly ColorStep[] = neutral ? colorScaleSteps : semanticColorShadeSteps;
   const [selected, setSelected] = useState<ColorStep>(neutral ? 500 : 'light-3');
-  const variable = `--leaf-color-${family}-${selected}`;
-  const base = values[`--leaf-color-${family}`];
+  const base = values[`--leaf-color-${family}`] ?? '';
+  const swatches: Record<string | number, string> = neutral
+    ? (generateColorScale(base) ?? neutralColorScale)
+    : generateColorShades(base);
+  const labelCode = `${family}-${selected}`;
   return (
     <section
       className="leaf-color-scale"
@@ -54,7 +66,6 @@ function ScaleRow({
       </header>
       <div className="leaf-color-scale__track">
         {steps.map((step) => {
-          const name = `--leaf-color-${family}-${step}`;
           return (
             <button
               type="button"
@@ -62,18 +73,21 @@ function ScaleRow({
               key={step}
               data-selected={selected === step}
               aria-pressed={selected === step}
-              aria-label={`${label} ${step}: ${values[name]}`}
+              aria-label={`${label} ${step}: ${swatches[step] ?? base}`}
               onClick={() => setSelected(step)}
             >
-              <span className="leaf-color-scale__paint" style={{ backgroundColor: values[name] }} />
+              <span
+                className="leaf-color-scale__paint"
+                style={{ backgroundColor: swatches[step] ?? base }}
+              />
               <span className="leaf-color-scale__step">{step}</span>
             </button>
           );
         })}
       </div>
       <div className="leaf-color-scale__selection" aria-live="polite">
-        <code>{variable}</code>
-        <code>{values[variable]}</code>
+        <code>{labelCode}</code>
+        <code>{swatches[selected] ?? base}</code>
       </div>
     </section>
   );

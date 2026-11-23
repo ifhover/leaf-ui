@@ -92,6 +92,14 @@ export function componentDefaultsTypeContracts() {
   const removedSoftButtonVariant = <Button variant="soft" />;
   // @ts-expect-error Regional defaults use the same public Button appearances.
   const removedSoftButtonDefault: LeafComponentDefaults = { Button: { variant: 'soft' } };
+  const dangerButtonVariant = <Button variant="danger" />;
+  const dangerButtonDefault: LeafComponentDefaults = { Button: { variant: 'danger' } };
+  const iconButtonVariant = <Button size="icon" aria-label="Add" />;
+  const iconButtonDefault: LeafComponentDefaults = { Button: { size: 'icon-sm' } };
+  // @ts-expect-error Removed startIcon slot in favor of passing icons as children.
+  const removedStartIcon = <Button startIcon={<span />} />;
+  // @ts-expect-error Removed endIcon slot in favor of passing icons as children.
+  const removedEndIcon: LeafComponentDefaults = { Button: { endIcon: <span /> } };
   const multi = <Select multiple options={[]} onChange={(values) => values.map(String)} />;
   const single = <Select options={[]} onChange={(value) => value.toUpperCase()} />;
   return {
@@ -114,6 +122,12 @@ export function componentDefaultsTypeContracts() {
     removedButtonDefault,
     removedSoftButtonVariant,
     removedSoftButtonDefault,
+    dangerButtonVariant,
+    dangerButtonDefault,
+    iconButtonVariant,
+    iconButtonDefault,
+    removedStartIcon,
+    removedEndIcon,
     multi,
     single,
   };
@@ -141,6 +155,7 @@ export function useComponentPropsTypeContracts() {
 export function expandedComponentDefaultsContracts() {
   const defaults: LeafComponentDefaults = {
     Pagination: { variant: 'outline', showTotal: true },
+    InputNumber: { variant: 'split' },
     Tabs: { size: 'sm' },
     DataTable: { size: 'sm', striped: true, bordered: true },
     VirtualList: { estimateSize: 36 },

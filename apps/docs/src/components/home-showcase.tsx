@@ -37,7 +37,7 @@ import { useState } from 'react';
 import { useDocsTheme } from './docs-theme';
 import { ComponentShowcase } from './home-components';
 import { useDocsLocale } from './i18n';
-import { themeColorPresets } from './theme-colors';
+import { isNeutralThemeColor, themeColorPresets } from './theme-colors';
 import './home-showcase.scss';
 
 export function HomeShowcase() {
@@ -52,7 +52,7 @@ export function HomeShowcase() {
     >
       <div className="leaf-showroom__toolbar">
         <Tabs
-          type="card"
+          type="segmented"
           aria-label={t('预览场景', 'Preview scene')}
           activeKey={scene}
           onChange={(key) => {
@@ -65,18 +65,22 @@ export function HomeShowcase() {
           ]}
         />
         <fieldset className="leaf-showroom__colors" aria-label={t('场景主题色', 'Scene accent')}>
-          {themeColorPresets.map(({ color, zh, en }) => (
-            <button
-              key={color}
-              type="button"
-              aria-label={t(zh, en)}
-              aria-pressed={accent === color}
-              style={{ background: color }}
-              onClick={() => setAccent(color)}
-            >
-              {accent === color && <Check size={14} />}
-            </button>
-          ))}
+          {themeColorPresets.map(({ color, zh, en }) => {
+            const neutral = isNeutralThemeColor(color);
+            return (
+              <button
+                key={color}
+                type="button"
+                aria-label={t(zh, en)}
+                aria-pressed={accent === color}
+                data-neutral={neutral || undefined}
+                style={neutral ? undefined : { background: color }}
+                onClick={() => setAccent(color)}
+              >
+                {accent === color && <Check size={14} />}
+              </button>
+            );
+          })}
         </fieldset>
       </div>
       <ConfigProvider theme={{ primaryColor: accent }}>
@@ -252,11 +256,9 @@ function WorkspaceShowcase() {
             readOnly
           />
           <div className="leaf-workspace__topbar-actions">
-            <Button
-              variant="text"
-              aria-label={t('通知', 'Notifications')}
-              startIcon={<Bell size={17} />}
-            />
+            <Button variant="text" size="icon" aria-label={t('通知', 'Notifications')}>
+              <Bell aria-hidden="true" />
+            </Button>
             <Avatar size="sm" alt={t('林小满', 'Lin Xiaoman')}>
               L
             </Avatar>
@@ -277,10 +279,12 @@ function WorkspaceShowcase() {
               </p>
             </div>
             <div className="leaf-workspace__actions">
-              <Button size="sm" startIcon={<Download size={15} />}>
+              <Button size="sm">
+                <Download aria-hidden="true" />
                 {t('导出', 'Export')}
               </Button>
-              <Button variant="solid" size="sm" startIcon={<Plus size={15} />}>
+              <Button variant="solid" size="sm">
+                <Plus aria-hidden="true" />
                 {t('新建项目', 'New project')}
               </Button>
             </div>

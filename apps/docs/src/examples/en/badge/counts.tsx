@@ -7,13 +7,17 @@ export function BadgeCounts() {
       <Text tone="muted">Over limit</Text>
       <Flex align="center" wrap>
         <Badge count={120} aria-label="120 unread notifications">
-          <Button startIcon={<Bell />} aria-label="Notifications" />
+          <Button size="icon" aria-label="Notifications">
+            <Bell />
+          </Button>
         </Badge>
       </Flex>
       <Text tone="muted">Show zero</Text>
       <Flex align="center" wrap>
         <Badge count={0} showZero aria-label="0 unread notifications">
-          <Button startIcon={<Bell />} aria-label="Notifications" />
+          <Button size="icon" aria-label="Notifications">
+            <Bell />
+          </Button>
         </Badge>
       </Flex>
     </Grid>

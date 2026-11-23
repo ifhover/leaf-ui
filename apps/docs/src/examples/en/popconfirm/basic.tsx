@@ -10,7 +10,7 @@ export function PopconfirmBasic() {
         description="You can restore it from the recycle bin."
         onConfirm={() => setRemoved(true)}
       >
-        <Button variant="outline" danger disabled={removed}>
+        <Button variant="danger" disabled={removed}>
           Remove project
         </Button>
       </Popconfirm>

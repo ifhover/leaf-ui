@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { compiledStyles } from './compiled-styles.mjs';
 
-test('link buttons brighten on hover and darken on press while respecting explicit paint', async () => {
+test('link buttons brighten on hover and darken on press while danger is a single soft-fill variant', async () => {
   const button = await compiledStyles('button/button.scss');
   const base = button('.leaf-button');
   assert.equal(
@@ -14,55 +14,55 @@ test('link buttons brighten on hover and darken on press while respecting explic
     'var(--leaf-color-primary-link-active,var(--leaf-button-active))',
   );
   assert.equal(base['--leaf-button-hover-color'], 'var(--leaf-button-base-color)');
-  const danger = button('.leaf-button--danger');
-  assert.equal(danger['--leaf-button-color'], 'var(--leaf-color-danger)');
-  assert.equal(danger['--leaf-button-ink'], 'var(--leaf-button-color)');
-  for (const variant of ['outline', 'text']) {
-    assert.equal(
-      button(`.leaf-button:is(.leaf-button--${variant}).leaf-button--danger`)[
-        '--leaf-button-rest-color'
-      ],
-      'var(--leaf-button-color)',
-    );
-  }
-  assert.equal(danger['--leaf-button-on-color'], 'var(--leaf-color-on-danger)');
+  const danger = button('.leaf-button:is(.leaf-button--danger)');
+  assert.equal(danger['--leaf-button-rest-color'], 'var(--leaf-color-danger)');
+  assert.equal(danger['--leaf-button-rest-background'], 'var(--leaf-danger-soft-background)');
+  assert.equal(danger['--leaf-button-rest-border'], 'transparent');
+  assert.equal(danger['--leaf-button-rest-shadow'], 'none');
   assert.equal(
-    danger['--leaf-button-ink-hover'],
-    'var(--leaf-color-danger-link-hover,var(--leaf-button-ink))',
+    danger['--leaf-button-hover-background'],
+    'color-mix(in srgb,var(--leaf-danger-soft-active-background)30%,var(--leaf-danger-soft-background))',
   );
   assert.equal(
-    danger['--leaf-button-ink-active'],
-    'var(--leaf-color-danger-link-active,var(--leaf-button-active))',
+    danger['--leaf-button-active-background'],
+    'color-mix(in srgb,var(--leaf-danger-soft-active-background)50%,var(--leaf-danger-soft-background))',
   );
   assert.equal(
     button('.leaf-button--link').transition,
     'color var(--leaf-motion-color)cubic-bezier(0.645,0.045,0.355,1)',
   );
   const link = button('.leaf-button:is(.leaf-button--link)');
-  const dangerOutline = button('.leaf-button:is(.leaf-button--outline).leaf-button--danger');
   for (const state of ['hover', 'active']) {
     assert.equal(
       link[`--leaf-button-${state}-color`],
       `var(--leaf-component-button-color,var(--leaf-button-ink-${state}))`,
     );
-    assert.equal(
-      dangerOutline[`--leaf-button-${state}-color`],
-      link[`--leaf-button-${state}-color`],
-    );
   }
-  assert.equal(
-    dangerOutline['--leaf-button-hover-border'],
-    'var(--leaf-component-button-border-color,var(--leaf-frame-border-color,var(--leaf-button-ink-hover)))',
+  const outline = button('.leaf-button:is(.leaf-button--outline)');
+  assert.equal(outline['--leaf-button-rest-color'], 'var(--leaf-color-text)');
+  assert.equal(outline['--leaf-button-rest-background'], 'var(--leaf-color-surface)');
+  assert.equal(outline['--leaf-button-rest-border'], 'var(--leaf-color-border)');
+  assert.equal(outline['--leaf-button-rest-shadow'], 'none');
+  assert.equal(outline['--leaf-button-hover-background'], 'var(--leaf-color-surface-muted)');
+  assert.equal(outline['--leaf-button-hover-border'], undefined);
+  assert.equal(outline['--leaf-button-active-color'], 'var(--leaf-button-base-color)');
+  assert.equal(outline['--leaf-button-active-background'], 'var(--leaf-button-base-background)');
+  assert.equal(outline['--leaf-button-active-border'], 'var(--leaf-button-base-border)');
+  const outlineHover = button(
+    '.leaf-button:is(.leaf-button--outline):hover:not(:disabled):not([data-loading]):where(:not(:focus-visible))',
   );
-  assert.equal(dangerOutline['--leaf-button-active-border'], 'var(--leaf-button-ink-active)');
   assert.equal(
-    button(
-      '.leaf-button:is(.leaf-button--outline):not(.leaf-button--danger):hover:not(:disabled):not([data-loading]):where(:not(:focus-visible))',
-    )['--leaf-button-active-border'],
-    'var(--leaf-button-hover-border)',
+    outlineHover['--leaf-button-active-background'],
+    'var(--leaf-button-hover-background)',
   );
+  assert.equal(outlineHover['--leaf-button-active-border'], undefined);
   const variants =
-    '.leaf-button:is(.leaf-button--solid, .leaf-button--outline, .leaf-button--text, .leaf-button--link)';
+    '.leaf-button:is(.leaf-button--solid, .leaf-button--outline, .leaf-button--text, .leaf-button--link, .leaf-button--danger)';
+  assert.equal(
+    button(`${variants}:active:not(:disabled):not([data-loading]):not(.leaf-button--link)`)
+      .translate,
+    '0 1px',
+  );
   assert.equal(
     button(`${variants}:hover:not(:disabled):not([data-loading]):where(:not(:focus-visible))`)
       .color,
@@ -78,29 +78,33 @@ test('link buttons brighten on hover and darken on press while respecting explic
   );
 });
 
-test('line Tabs use link feedback for unselected text without changing other appearances', async () => {
+test('line Tabs use muted unselected text and monochrome selected paint without solid or pill variants', async () => {
   const tabs = await compiledStyles('tabs/tabs.scss');
   const line = tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab');
   assert.equal(
     line['--leaf-tabs-tab-color'],
-    'var(--leaf-component-tabs-muted-color,var(--leaf-component-tabs-color,var(--leaf-color-text)))',
+    'var(--leaf-component-tabs-muted-color,var(--leaf-color-text-muted))',
   );
   const selected = tabs(
     '.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab[aria-selected=true]',
   );
   assert.equal(
     selected['--leaf-tabs-tab-color'],
-    'var(--leaf-component-tabs-color,var(--leaf-color-primary))',
+    'var(--leaf-component-tabs-color,var(--leaf-color-text))',
   );
   for (const state of ['hover', 'active']) {
     assert.equal(
       line[`--leaf-tabs-tab-${state}-color`],
-      `var(--leaf-component-tabs-color,var(--leaf-color-primary-${state === 'active' ? 'link-active' : 'hover'}))`,
+      'var(--leaf-component-tabs-color,var(--leaf-color-text))',
     );
     assert.equal(selected[`--leaf-tabs-tab-${state}-color`], 'var(--leaf-tabs-tab-color)');
   }
-  assert.equal(line.transition, 'color calc(var(--leaf-motion-color)* 1.5)ease');
-  assert.equal(selected['text-shadow'], '0 0 0.25px currentColor');
+  assert.equal(line.transition, undefined);
+  assert.equal(
+    tabs('.leaf-tabs__tab').transition,
+    'color var(--leaf-motion-fast)var(--leaf-motion-easing)',
+  );
+  assert.equal(selected['text-shadow'], undefined);
   for (const state of ['hover', 'active']) {
     const selector =
       state === 'hover'
@@ -120,12 +124,28 @@ test('line Tabs use link feedback for unselected text without changing other app
       tabs(`.leaf-tabs--${appearance} .leaf-tabs__tab[aria-selected=true]`)[
         '--leaf-tabs-tab-color'
       ],
-      'var(--leaf-component-tabs-color,var(--leaf-color-primary))',
+      'var(--leaf-component-tabs-color,var(--leaf-color-text))',
     );
+  }
+  assert.equal(
+    tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab::after').background,
+    'var(--leaf-component-tabs-indicator-color,var(--leaf-color-text))',
+  );
+  assert.equal(
+    tabs('.leaf-tabs--segmented .leaf-tabs__indicator')['box-shadow'],
+    'var(--leaf-component-tabs-indicator-shadow,var(--leaf-shadow-sm))',
+  );
+  for (const selector of [
+    '.leaf-tabs--solid.leaf-tabs--card .leaf-tabs__indicator',
+    '.leaf-tabs--solid.leaf-tabs--segmented .leaf-tabs__indicator',
+    '.leaf-tabs--pill.leaf-tabs--segmented .leaf-tabs__list',
+    '.leaf-tabs--pill.leaf-tabs--segmented .leaf-tabs__indicator',
+  ]) {
+    assert.throws(() => tabs(selector), /missing compiled rule/u);
   }
 });
 
-test('line Tabs share sizing and an edge-to-edge underline inside and outside Card', async () => {
+test('line Tabs share sizing and fade-in/out underline without bottom header border outside Card', async () => {
   const tabs = await compiledStyles('tabs/tabs.scss');
   const large = tabs('.leaf-tabs--lg');
   assert.equal(large['--leaf-tabs-item-padding'], '18px');
@@ -139,39 +159,47 @@ test('line Tabs share sizing and an edge-to-edge underline inside and outside Ca
     assert.match(tabs(selector).gap, /--leaf-component-tabs-gap/);
     assert.match(tabs(selector).gap, /--leaf-tabs-item-gap/);
   }
+  const lineRoot = tabs('.leaf-tabs--line');
+  assert.equal(lineRoot['--leaf-tabs-item-gap'], '4px');
+  assert.equal(lineRoot['--leaf-tabs-item-padding'], '10px');
   const line = tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab');
-  assert.equal(line['padding-inline'], '0px');
+  assert.equal(line['padding-inline'], 'var(--leaf-tabs-item-padding,10px)');
   assert.equal(line['min-height'], 'var(--leaf-current-control-height)');
-  for (const [selector, suffix] of [
-    ['.leaf-tabs--line', ''],
-    ['.leaf-tabs--line.leaf-tabs--sm', '-sm'],
-    ['.leaf-tabs--line.leaf-tabs--lg', '-lg'],
+  assert.equal(tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__indicator').display, 'none');
+  for (const [selector, suffix, offset] of [
+    ['.leaf-tabs--line', '', ''],
+    ['.leaf-tabs--line.leaf-tabs--sm', '-sm', '-sm'],
+    ['.leaf-tabs--line.leaf-tabs--lg', '-lg', '-lg'],
   ]) {
-    assert.ok(
-      tabs(selector)['--leaf-current-control-height'].startsWith(
-        `var(--leaf-component-tabs-height${suffix},`,
-      ),
+    assert.equal(
+      tabs(selector)['--leaf-current-control-height'],
+      `var(--leaf-component-tabs-height${suffix},calc(var(--leaf-control-height${offset})+ 2px))`,
     );
   }
-  const underline = tabs('.leaf-tabs__indicator::after');
+  const underline = tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab::after');
   assert.equal(underline['inset-inline'], '0px');
   assert.equal(underline.bottom, '0px');
   assert.equal(underline.height, '2px');
-  assert.equal(underline['border-radius'], undefined);
-  const baseline = tabs('.leaf-tabs--line > .leaf-tabs__header::before');
-  assert.equal(baseline['inset-inline'], '0px');
-  assert.equal(baseline.bottom, '0px');
+  assert.equal(underline.opacity, '0');
   assert.equal(
-    baseline['border-block-end'],
-    '1px solid var(--leaf-component-tabs-border-color,var(--leaf-color-divider))',
+    underline.transition,
+    'opacity var(--leaf-motion-duration)var(--leaf-motion-easing)',
   );
-  for (const selector of [
-    '.leaf-tabs--line.leaf-tabs--bottom > .leaf-tabs__header::before',
-    '.leaf-tabs--line.leaf-tabs--bottom > .leaf-tabs__header .leaf-tabs__indicator::after',
-  ]) {
-    assert.equal(tabs(selector).top, '0px');
-    assert.equal(tabs(selector).bottom, 'auto');
-  }
+  assert.equal(underline['border-radius'], undefined);
+  assert.equal(
+    tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab[aria-selected=true]::after')
+      .opacity,
+    '1',
+  );
+  assert.throws(
+    () => tabs('.leaf-tabs--line > .leaf-tabs__header::before'),
+    /missing compiled rule/u,
+  );
+  const bottomUnderline = tabs(
+    '.leaf-tabs--line.leaf-tabs--bottom > .leaf-tabs__header .leaf-tabs__tab::after',
+  );
+  assert.equal(bottomUnderline.top, '0px');
+  assert.equal(bottomUnderline.bottom, 'auto');
   const card = await compiledStyles('card/card.scss');
   assert.equal(card('.leaf-card__tabs')['--leaf-current-control-height'], undefined);
   const cardHeader = card('.leaf-card__tabs > .leaf-tabs__header');
@@ -213,12 +241,7 @@ test('field popup text follows scoped control typography while keeping explicit 
 test('compiled option and selection consumers expose their shared family roles', async () => {
   for (const [component, family, property, value] of [
     ['dropdown', 'danger-soft', 'background', 'danger-soft'],
-    ['menu', 'danger-soft', 'active-background', 'danger-soft-active'],
-    ['pagination', 'accent-soft', 'border', 'primary-border'],
-    ['transfer', 'accent-soft', 'background', 'primary-soft'],
-    ['upload', 'accent-soft', 'border', 'primary-border'],
-    ['splitter', 'accent-soft', 'border', 'primary-border'],
-    ['tree', 'accent-soft', 'background', 'primary-soft'],
+    ['menu', 'danger-soft', 'active-background', 'danger-soft-hover'],
   ]) {
     const rule = await compiledStyles(`${component}/${component}.scss`);
     assert.equal(
@@ -236,7 +259,6 @@ test('compiled solid selections retain base fills, foregrounds and visible bound
       'box-shadow',
     ],
     ['datepicker/datepicker.scss', '.leaf-date-picker__day--selected', 'box-shadow'],
-    ['steps/steps.scss', '[data-status=finish] .leaf-steps__icon', 'border-color'],
   ]) {
     const rule = await compiledStyles(file);
     const selected = rule(selector);
@@ -244,6 +266,11 @@ test('compiled solid selections retain base fills, foregrounds and visible bound
     assert.equal(selected.color, 'var(--leaf-color-on-primary)');
     assert.ok(selected[border].includes('--leaf-color-primary'), `${file}: selected boundary`);
   }
+  const steps = await compiledStyles('steps/steps.scss');
+  const finished = steps('[data-status=finish] .leaf-steps__icon');
+  assert.equal(finished.background, 'var(--leaf-color-text)');
+  assert.equal(finished.color, 'var(--leaf-color-surface)');
+  assert.equal(finished['border-color'], 'var(--leaf-color-text)');
 });
 
 test('compiled tree drag preview keeps the medium shadow role', async () => {
@@ -272,7 +299,7 @@ test('Menu popup and inline rows share text and interaction paint', async () => 
   assert.equal(menu('.leaf-menu__popup.leaf-dropdown .leaf-dropdown__arrow').color, 'inherit');
 });
 
-test('neutral Menu uses the requested light fill without changing other appearances', async () => {
+test('neutral Menu separates hover choice paint from muted surface selection without changing other appearances', async () => {
   const menu = await compiledStyles('menu/menu.scss');
   for (const selector of ['.leaf-menu', '.leaf-menu__popup']) {
     const palette = menu(selector);
@@ -280,22 +307,37 @@ test('neutral Menu uses the requested light fill without changing other appearan
       palette['--leaf-menu-unselected-color'],
       'color-mix(in srgb,currentColor 80%,var(--leaf-color-surface))',
     );
+    assert.equal(palette['--leaf-menu-neutral-background'], 'var(--leaf-color-surface-muted)');
     assert.equal(
-      palette['--leaf-menu-neutral-background'],
-      'light-dark(rgb(241 241 242),rgba(0,0,0,0.08))',
+      palette['--leaf-menu-hover-background'],
+      'color-mix(in srgb,var(--leaf-color-option-hover)32%,transparent)',
     );
-    for (const state of ['hover', 'selected', 'active']) {
+    for (const state of ['selected', 'active']) {
       assert.equal(
         palette[`--leaf-menu-${state}-background`],
         'var(--leaf-menu-neutral-background)',
       );
     }
   }
+  assert.equal(menu('.leaf-menu__item::before').inset, '0px');
+  assert.equal(menu('.leaf-menu__submenu .leaf-menu__item').height, undefined);
+  assert.equal(
+    menu('.leaf-menu__submenu .leaf-menu__item')['min-height'],
+    'max(24px,var(--leaf-control-height)- 2px)',
+  );
+  assert.equal(
+    menu('.leaf-menu__popup.leaf-dropdown .leaf-floating__option')['min-height'],
+    'max(24px,var(--leaf-control-height)- 2px)',
+  );
   for (const selector of ['.leaf-menu--raised', '.leaf-menu__popup--raised']) {
     const palette = menu(selector);
     assert.equal(palette['--leaf-menu-selected-background'], 'var(--leaf-color-surface)');
+    assert.equal(palette['--leaf-menu-selected-shadow'], 'var(--leaf-shadow-xs)');
     assert.equal(palette['--leaf-menu-hover-opacity'], '0');
-    assert.equal(palette['--leaf-menu-active-background'], 'rgba(0,0,0,0.04)');
+    assert.equal(
+      palette['--leaf-menu-active-background'],
+      'color-mix(in srgb,var(--leaf-color-option-hover)32%,transparent)',
+    );
   }
   for (const selector of ['.leaf-menu--primary', '.leaf-menu__popup--primary']) {
     const palette = menu(selector);
@@ -380,7 +422,11 @@ test('choice rows retain Select feedback independently of the neutral Menu appea
     const active = rule(
       `${selector}:is(:hover, :focus-visible, :active, [data-highlighted=true]):not(:disabled):not([aria-disabled=true]):not([data-disabled])::before`,
     );
-    assert.equal(active.background, 'color-mix(in srgb,rgba(0,0,0,0.08),transparent)', file);
+    assert.equal(
+      active.background,
+      'color-mix(in srgb,var(--leaf-color-option-hover)32%,transparent)',
+      file,
+    );
     assert.equal(
       rule(`${selector}:is([aria-selected=true], [aria-checked=true], [data-selected])`).color,
       'inherit',

@@ -1,11 +1,11 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { ModalBasic } from '../../../src/examples/en/modal/basic';
 import { ModalDescription } from '../../../src/examples/en/modal/description';
+import { ModalMini } from '../../../src/examples/en/modal/mini';
 import { ModalFooter } from '../../../src/examples/en/modal/footer';
 import { ModalDestroy } from '../../../src/examples/en/modal/destroy';
 import { ModalFocus } from '../../../src/examples/en/modal/focus';
 import { ModalAsync } from '../../../src/examples/en/modal/async';
-import { ModalTabs } from '../../../src/examples/en/modal/tabs';
 
 export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
@@ -36,7 +36,7 @@ Associate the default confirm button with the form using `type="submit"` and a f
 
 ### Icon and description
 
-Use `icon` and `description` to add an icon and supporting description to the modal. Header and footer dividers are shown by default; set `divided={false}` to hide them.
+Use `icon` and `description` to add an icon and supporting description to the modal. The footer action bar shows a top divider by default (`divided={false}` hides it); use `padding` to customize outer or section padding.
 
 <ComponentExample exampleId="description" preview={<ModalDescription />} fileName="description.tsx" width="fit-content">
 
@@ -45,9 +45,20 @@ Use `icon` and `description` to add an icon and supporting description to the mo
 
 </ComponentExample>
 
+### Compact confirmation and danger actions
+
+Set `size="mini"` for a narrower centered confirmation layout (defaults `width` to `340` when omitted) with equal-width footer buttons, and add `danger` to highlight destructive confirm actions and the header icon tray. Use this declarative form when you need controlled state or custom dialog slots; for built-in status icons and a lighter `Promise<boolean>` imperative API, prefer [Confirm](/en/components/confirm).
+
+<ComponentExample exampleId="mini" preview={<ModalMini />} fileName="mini.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/modal/mini.tsx"
+```
+
+</ComponentExample>
+
 ### Custom footer
 
-A `footer` function receives the default buttons, so extra actions can retain their confirmation and cancellation behavior. Use `Space` to manage custom button spacing. Set `footer={null}` to hide the footer.
+The footer provides built-in spacing between actions, so a `footer` render function can return buttons directly alongside the default buttons without wrapping them in `Space`. Set `footer={null}` to hide the footer.
 
 <ComponentExample exampleId="footer" preview={<ModalFooter />} fileName="footer.tsx" width="fit-content">
 
@@ -82,22 +93,11 @@ Focus moves to the first focusable control by default. Use `initialFocus` to cho
 
 ### Async submission
 
-Return a Promise to show loading and prevent duplicate actions. Default cancellation, close-button, backdrop and Escape dismissal are blocked while it is pending. The application must still update `open` after `onConfirm` succeeds; rejection keeps the dialog open and displays the error.
+Return a Promise to show loading and prevent duplicate actions. Default cancellation, close-button, backdrop and Escape dismissal are blocked while it is pending. The application must handle errors and update `open` on its own after `onConfirm` settles.
 
 <ComponentExample exampleId="async" preview={<ModalAsync />} fileName="async.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/modal/async.tsx"
-```
-
-</ComponentExample>
-
-### Tabbed modal
-
-Use `tabs` to embed line tabs beneath the heading or in place of it when untitled. The tab bar stays fixed above the scrolling body and always keeps its bottom divider even when `divided={false}`. Omit item `children` when using the tabs solely to switch state for Modal's `children`.
-
-<ComponentExample exampleId="tabs" preview={<ModalTabs />} fileName="tabs.tsx" width="fit-content">
-
-```tsx lineNumbers file="../../../src/examples/en/modal/tabs.tsx"
 ```
 
 </ComponentExample>
@@ -117,7 +117,6 @@ Provide `aria-label` when omitting `title`.
 | `open` | `boolean` | Required | Controlled open state, updated by the application. |
 | `title` | `ReactNode` | — | Dialog title. |
 | `description` | `ReactNode` | — | Additional description. |
-| `tabs` | [`ModalTabsProps`](#modaltabs-api) | — | Embedded tabs; replace the heading when untitled or sit beneath it, retaining the tab bar bottom divider. |
 | `onClose` | `() => void` | — | Requests closure; update open in the application |
 | `onConfirm` | `() => void \| Promise<void>` | — | Default confirm-button action, optionally returning a Promise; blocks repeated confirmation and built-in closing while pending. The application must still update open after success. |
 | `onCancel` | `() => void` | — | Called when Cancel, the close button, the mask or Escape requests closing; falls back to onClose. |
@@ -127,9 +126,12 @@ Provide `aria-label` when omitting `title`.
 | `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | Customize the default buttons |
 | `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | Customize the default buttons |
 | `footer` | `ReactNode \| ((actions: `[`ModalFooterActions`](#modalfooteractions)`) => ReactNode)` | Cancel + OK | Custom footer; null hides it; a function receives default buttons |
-| `icon` | `ReactNode` | — | Decorative icon to the left of the heading. |
-| `divided` | `boolean` | `true` | Separate the heading, content and footer with subtle borders. |
-| `width` | `number \| string` | `480` | Width; numbers are pixels |
+| `icon` | `ReactNode` | — | Decorative header icon (beside the heading in md; centered above it in mini). |
+| `size` | `'md' \| 'mini'` | `'md'` | Modal size; `'mini'` uses a compact centered confirmation layout with equal-width footer buttons. |
+| `danger` | `boolean` | `false` | Highlight the confirm button and header icon tray with danger styling. |
+| `divided` | `boolean` | `true` | Show a subtle divider above the footer action bar. |
+| `padding` | `number \| string \| 'none' \| { header?: number \| string \| 'none'; body?: number \| string \| 'none'; footer?: number \| string \| 'none' }` | — | Override modal or section (`header`, `body`, `footer`) padding; numbers use pixels and `'none'` sets 0 (Confirm excludes it). |
+| `width` | `number \| string` | 480 (340 for mini) | Modal width in pixels for numbers; defaults to 340 when size is mini. |
 | `closable` | `boolean` | `true` | Show the close button. |
 | `maskClosable` | `boolean` | `true` | Request closing when the mask is clicked. |
 | `keyboard` | `boolean` | `true` | Allow Escape to request closing. |
@@ -140,14 +142,6 @@ Provide `aria-label` when omitting `title`.
 | `preserve` | `boolean` | — | Control content preservation, taking precedence over destroyOnClose; does not reset external controlled state. |
 | `forceRender` | `boolean` | `false` | Mount before opening and keep hidden while closed. |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Portal mount target; may also return a ShadowRoot. |
-
-### ModalTabs API
-
-See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Modal fixes `type="line"` and `placement="top"`, keeps the tab bar fixed above the scrollable body with its bottom divider always visible regardless of `divided={false}`, and restores an ordinary modal when `items` is empty.
-
-```ts
-type ModalTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
-```
 
 ### ModalFooterActions
 

@@ -11,18 +11,28 @@ export function ResultStates() {
         <Text tone="muted">Empty</Text>
         <Result
           status="empty"
-          size="sm"
           title="No projects yet"
           description="Projects you create will appear here."
-          extra={<Button onClick={() => setCreated(true)}>Create project</Button>}
+          extra={
+            <Button variant="solid" onClick={() => setCreated(true)}>
+              Create project
+            </Button>
+          }
         />
         {created && <Text role="status">Project created</Text>}
+      </Flex>
+      <Flex direction="column" gap="sm">
+        <Text tone="muted">Success</Text>
+        <Result
+          status="success"
+          title="Project created"
+          description="You can now add content to the project."
+        />
       </Flex>
       <Flex direction="column" gap="sm">
         <Text tone="muted">Warning</Text>
         <Result
           status="warning"
-          size="sm"
           title="Storage is almost full"
           description="Remove unused content to free up space."
         />
@@ -31,21 +41,11 @@ export function ResultStates() {
         <Text tone="muted">Danger</Text>
         <Result
           status="danger"
-          size="sm"
           title="Publishing failed"
           description="Check your connection and try again."
           extra={<Button onClick={() => setRetried(true)}>Retry</Button>}
         />
         {retried && <Text role="status">Retry completed</Text>}
-      </Flex>
-      <Flex direction="column" gap="sm">
-        <Text tone="muted">Information</Text>
-        <Result
-          status="info"
-          size="sm"
-          title="Review in progress"
-          description="The review result will appear here."
-        />
       </Flex>
     </Flex>
   );

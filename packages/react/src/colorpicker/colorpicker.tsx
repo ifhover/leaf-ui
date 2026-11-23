@@ -1,5 +1,5 @@
 import { TinyColor } from '@ctrl/tinycolor';
-import { Check, X } from 'lucide-react';
+import { Check } from 'lucide-react';
 import {
   type ButtonHTMLAttributes,
   type CSSProperties,
@@ -19,6 +19,7 @@ import { useLeafConfig } from '../config-provider/context';
 import { FieldScope, useFormField } from '../form/form';
 import { InputControl as Input } from '../input/input';
 import { classes } from '../shared/classes';
+import { ClearButton } from '../shared/clear-button';
 import { FormValue, useFieldValue } from '../shared/field';
 import {
   FloatingPanel,
@@ -275,19 +276,17 @@ export function SolidColorPicker({
           )}
         </ColorPickerTrigger>
         {clearable && (
-          <button
-            type="button"
-            className="leaf-color-picker__clear"
-            aria-label={messages.colorPicker.clear}
-            onClick={() => {
+          <ClearButton
+            inline={!showText || Boolean(children)}
+            alwaysVisible={!showText || Boolean(children)}
+            label={messages.colorPicker.clear}
+            onClear={() => {
               setCurrent('');
               onChange?.('');
               onChangeComplete?.('');
               trigger.current?.focus();
             }}
-          >
-            <X size={14} aria-hidden="true" />
-          </button>
+          />
         )}
         <FormValue
           value={current}

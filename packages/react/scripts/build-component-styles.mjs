@@ -13,7 +13,6 @@ const common = [
   "@use 'scrollbar/scrollbar';",
 ];
 const dependencies = {
-  button: ['dropdown'],
   inputnumber: ['input'],
   autocomplete: ['input', 'select'],
   datepicker: ['timepicker'],
@@ -27,7 +26,7 @@ const dependencies = {
   cascader: ['input', 'checkbox', 'scrollbar'],
   colorpicker: ['input', 'inputnumber', 'slider', 'tooltip', 'tabs'],
   form: [],
-  modal: ['scrollbar', 'tabs'],
+  modal: ['scrollbar'],
   confirm: ['modal', 'alert'],
   drawer: ['modal'],
   message: ['alert'],
@@ -54,7 +53,7 @@ const dependencies = {
   popover: [],
   popconfirm: ['popover', 'alert'],
   tabs: ['dropdown'],
-  menu: ['dropdown'],
+  menu: ['dropdown', 'tooltip'],
   card: ['skeleton', 'tabs'],
 };
 const resolveStyles = (name, visited = new Set()) => {

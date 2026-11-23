@@ -2,7 +2,7 @@
 
 @layer leaf-ui {
   .leaf-steps {
-    @include mixins.control-size;
+    @include mixins.control-size(steps, $with-radius: false);
     display: flex;
     padding: var(--leaf-component-steps-padding, 0);
     margin: 0;
@@ -10,8 +10,9 @@
     color: var(--leaf-component-steps-color, var(--leaf-color-text));
     font: var(--leaf-component-steps-font-size, var(--leaf-current-font-size)) /
       var(--leaf-line-height) var(--leaf-font-family);
-    // Indicators occupy less space than controls, with a whole-pixel floor.
-    --leaf-steps-icon-size: max(24px, calc(var(--leaf-current-control-height) * 0.7));
+    --leaf-steps-icon-size: 24px;
+    --leaf-steps-icon-half: 12px;
+    --leaf-steps-title-offset: 2px;
     --leaf-steps-gap: 10px;
     &__item {
       display: grid;
@@ -32,12 +33,12 @@
     &__item:not(:last-child)::after {
       content: '';
       grid-area: 1 / 2;
-      margin-block-start: calc(var(--leaf-steps-icon-size) / 2);
+      margin-block-start: var(--leaf-steps-icon-half);
       height: 1px;
       background: var(--leaf-color-border);
     }
     &__item:not(:last-child)::after {
-      background: var(--leaf-color-primary);
+      background: var(--leaf-color-text);
       transform: scaleX(0);
       transform-origin: left;
       transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
@@ -82,14 +83,10 @@
       border-radius: 50%;
       background: var(--leaf-color-surface-muted);
       color: var(--leaf-color-text-muted);
-      transition:
-        background-color var(--leaf-motion-duration),
-        color var(--leaf-motion-duration),
-        border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-        box-shadow var(--leaf-motion-slow) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
       svg {
-        width: calc(var(--leaf-steps-icon-size) * 0.5);
-        height: calc(var(--leaf-steps-icon-size) * 0.5);
+        width: var(--leaf-steps-icon-half);
+        height: var(--leaf-steps-icon-half);
       }
     }
     &__copy {
@@ -97,7 +94,7 @@
     }
     &__title {
       display: inline-block;
-      padding-block: calc((var(--leaf-steps-icon-size) - var(--leaf-line-height)) / 2);
+      padding-block: var(--leaf-steps-title-offset);
       padding-inline-end: 10px;
     }
     &__description {
@@ -107,17 +104,17 @@
     }
     [data-status='process'] &__icon {
       background: var(--leaf-color-surface);
-      border-color: var(--leaf-color-primary);
-      color: var(--leaf-color-primary);
-      border-width: 1.5px;
+      border-color: var(--leaf-color-text);
+      color: var(--leaf-color-text);
+      border-width: 2px;
     }
     [data-status='process'] &__title {
       font-weight: var(--leaf-font-weight);
     }
     [data-status='finish'] &__icon {
-      background: var(--leaf-color-primary);
-      border-color: var(--leaf-color-primary);
-      color: var(--leaf-color-on-primary);
+      background: var(--leaf-color-text);
+      border-color: var(--leaf-color-text);
+      color: var(--leaf-color-surface);
     }
     [data-status='error'] &__icon {
       border-color: var(--leaf-color-danger);
@@ -147,7 +144,7 @@
         margin-block-start: 0;
         top: calc(var(--leaf-steps-icon-size) + 6px);
         bottom: -14px;
-        inset-inline-start: calc(var(--leaf-steps-icon-size) / 2);
+        inset-inline-start: var(--leaf-steps-icon-half);
         width: 1px;
         height: auto;
       }
@@ -164,13 +161,16 @@
     .leaf-steps--horizontal {
       gap: 8px;
       .leaf-steps__item {
+        display: block;
         padding-inline-end: 4px;
       }
       .leaf-steps__item::before,
       .leaf-steps__item::after {
         position: absolute;
+        top: var(--leaf-steps-icon-half);
+        margin-block-start: 0;
         inset-inline-start: calc(var(--leaf-steps-icon-size) + 8px);
-        inset-inline-end: 0;
+        inset-inline-end: 4px;
       }
       .leaf-steps__content {
         flex-direction: column;
@@ -179,18 +179,6 @@
       .leaf-steps__description {
         font-size: var(--leaf-font-size-sm);
       }
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-steps__icon {
-      transition: none;
-    }
-    .leaf-steps__item::after,
-    .leaf-steps__progress circle {
-      transition: none;
-    }
-    .leaf-steps__spinner {
-      animation: none;
     }
   }
 
@@ -204,20 +192,27 @@
   .leaf-steps--dot .leaf-steps__icon {
     border: 0;
     background: transparent;
-    width: 24px;
+    width: var(--leaf-steps-icon-size);
     height: var(--leaf-steps-icon-size);
     color: var(--leaf-color-text-muted);
   }
   .leaf-steps--dot.leaf-steps--vertical {
     .leaf-steps__item::before,
     .leaf-steps__item::after {
-      inset-inline-start: 12px;
+      inset-inline-start: var(--leaf-steps-icon-half);
     }
   }
   .leaf-steps--dot [data-status='process'] .leaf-steps__icon,
-  .leaf-steps--dot [data-status='finish'] .leaf-steps__icon {
-    color: var(--leaf-color-primary);
+  .leaf-steps--dot [data-status='finish'] .leaf-steps__icon,
+  .leaf-steps--dot [data-status='error'] .leaf-steps__icon {
     background: transparent;
+  }
+  .leaf-steps--dot [data-status='process'] .leaf-steps__icon,
+  .leaf-steps--dot [data-status='finish'] .leaf-steps__icon {
+    color: var(--leaf-color-text);
+  }
+  .leaf-steps--dot [data-status='error'] .leaf-steps__icon {
+    color: var(--leaf-color-danger);
   }
   .leaf-steps__icon > .leaf-steps__progress {
     position: absolute;
@@ -225,7 +220,7 @@
     width: calc(100% + 8px);
     height: calc(100% + 8px);
     fill: none;
-    stroke: var(--leaf-color-primary);
+    stroke: var(--leaf-color-text);
     stroke-width: 2;
     transform: rotate(-90deg);
     pointer-events: none;
@@ -243,22 +238,43 @@
     position: relative;
   }
 
-  .leaf-steps {
-    --leaf-current-control-height: var(--leaf-component-steps-height, var(--leaf-control-height));
-    --leaf-current-font-size: var(--leaf-component-steps-font-size, var(--leaf-font-size));
-  }
   .leaf-steps--sm {
-    --leaf-current-control-height: var(
-      --leaf-component-steps-height-sm,
-      var(--leaf-control-height-sm)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-sm);
+    --leaf-steps-icon-size: 24px;
+    --leaf-steps-icon-half: 12px;
+    --leaf-steps-title-offset: 3px;
+    --leaf-steps-gap: 8px;
+    .leaf-steps__item:not(:last-child) {
+      padding-inline-end: 16px;
+    }
+    .leaf-steps__icon svg {
+      width: 11px;
+      height: 11px;
+    }
   }
+
   .leaf-steps--lg {
-    --leaf-current-control-height: var(
-      --leaf-component-steps-height-lg,
-      var(--leaf-control-height-lg)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-lg);
+    --leaf-steps-icon-size: 28px;
+    --leaf-steps-icon-half: 14px;
+    --leaf-steps-title-offset: 3px;
+  }
+
+  @media (forced-colors: active) {
+    .leaf-steps__item:not(:last-child)::before,
+    .leaf-steps__item:not(:last-child)::after {
+      background: CanvasText;
+    }
+    .leaf-steps__icon {
+      border-color: CanvasText;
+    }
+    .leaf-steps [data-status='process'] .leaf-steps__icon,
+    .leaf-steps [data-status='error'] .leaf-steps__icon {
+      border-color: Highlight;
+      color: Highlight;
+    }
+    .leaf-steps [data-status='finish'] .leaf-steps__icon {
+      border-color: Highlight;
+      background: Highlight;
+      color: HighlightText;
+    }
   }
 }

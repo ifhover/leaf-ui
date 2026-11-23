@@ -97,19 +97,18 @@
       ) {
       width: 100%;
     }
-    &__description {
-      margin-top: 6px;
+    &__description,
+    &__summary-description {
       color: var(--leaf-color-text-muted);
       font-size: var(--leaf-font-size-sm);
       line-height: var(--leaf-line-height-sm);
       overflow-wrap: anywhere;
     }
+    &__description {
+      margin-top: 6px;
+    }
     &__summary-description {
       margin-top: 4px;
-      color: var(--leaf-color-text-muted);
-      font-size: var(--leaf-font-size-sm);
-      line-height: var(--leaf-line-height-sm);
-      overflow-wrap: anywhere;
     }
     &__error {
       color: var(--leaf-color-danger-ink);
@@ -163,7 +162,7 @@
       margin-block-start: var(--leaf-component-form-gap, var(--leaf-density-form-gap));
     }
     > .leaf-form-field--settings-row {
-      padding-block: var(--leaf-component-form-gap, calc(var(--leaf-density-form-gap) * 0.75));
+      padding-block: var(--leaf-component-form-gap, var(--leaf-density-row-padding));
       + .leaf-form-field--settings-row {
         border-block-start: 1px dashed var(--leaf-color-divider);
       }

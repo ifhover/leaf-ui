@@ -22,9 +22,9 @@
       display: inline-flex;
       width: var(--leaf-rate-size);
       height: var(--leaf-rate-size);
-      transition: transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
       &:has(.leaf-rate__option:active:not(:disabled):not([aria-disabled='true'])) {
-        transform: scale(0.94);
+        opacity: 0.78;
       }
       &:has(.leaf-rate__option:focus-visible) {
         border-radius: var(--leaf-radius-sm);
@@ -80,10 +80,16 @@
       opacity: 0.5;
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-rate__fill,
-    .leaf-rate__star {
-      transition: none;
+  @media (forced-colors: active) {
+    .leaf-rate__empty {
+      color: GrayText;
+      fill: transparent;
+    }
+    .leaf-rate__fill {
+      color: Highlight;
+    }
+    .leaf-rate__star:has(.leaf-rate__option:focus-visible) {
+      outline-color: Highlight;
     }
   }
 }

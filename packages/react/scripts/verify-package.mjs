@@ -148,7 +148,7 @@ const components = [
   ],
   ['Carousel', {}, ['A', 'B'], /aria-roledescription="轮播"/],
   ['FloatButton', { label: 'Help' }, null, /<button/],
-  ['FloatButtonGroup', {}, 'Actions', /<fieldset/],
+  ['FloatButtonGroup', {}, 'Actions', /role="group"/],
   ['Mentions', { options: [{ value: 'alice' }] }, null, /<textarea/],
   ['Avatar', { alt: 'Leaf' }, 'LF', /leaf-avatar/],
   ['Card', { title: 'Project' }, 'Details', /leaf-card/],
@@ -175,6 +175,10 @@ const components = [
   ['Tree', { data: [{ key: 'leaf', title: 'Leaf' }] }, null, /role="tree"/],
   ['TreeSelect', { options: [{ value: 'leaf', label: 'Leaf' }] }, null, /role="combobox"/],
   ['Skeleton', { rows: 2 }, null, /role="status"/],
+  ['SkeletonAvatar', {}, null, /role="status"/],
+  ['SkeletonButton', {}, null, /role="status"/],
+  ['SkeletonInput', {}, null, /role="status"/],
+  ['SkeletonImage', {}, null, /role="status"/],
   ['Slider', { defaultValue: 20 }, null, /type="range"/],
   ['Rate', { defaultValue: 3 }, null, /role="radiogroup"/],
   [
@@ -184,7 +188,7 @@ const components = [
     /aria-haspopup="dialog"/,
     false,
   ],
-  ['Button', { danger: true }, 'Leaf UI', /<button/],
+  ['Button', { variant: 'danger' }, 'Leaf UI', /<button/],
   ['Input', { name: 'title' }, null, /<input/],
   ['InputNumber', { name: 'count', defaultValue: 2 }, null, /role="spinbutton"/],
   ['Steps', { items: [{ title: 'Create' }, { title: 'Review' }] }, null, /<ol/],
@@ -308,7 +312,6 @@ const components = [
   ['FileList', { items: [{ url: '/report.pdf' }] }, null, /leaf-file-list/],
   ['Upload', {}, null, /leaf-upload/],
   ['ButtonGroup', {}, createElement('button', { type: 'button' }, 'Save'), /<fieldset/],
-  ['SplitButton', { items: [{ key: 'copy', label: 'Copy' }] }, 'Save', /leaf-button-group/],
   ['CheckboxGroup', { options: ['A', 'B'] }, null, /leaf-checkbox-group/],
   ['AvatarGroup', {}, 'Team', /leaf-avatar-group/],
   ['TagGroup', { options: [{ value: 'design', label: 'Design' }] }, null, /leaf-tag-group/],
@@ -580,7 +583,7 @@ const foundationCss = await readFile(
   new URL('dist/esm/styles/foundation.css', packageRoot),
   'utf8',
 );
-assert.match(foundationCss, /--leaf-control-height:\s*34px/);
+assert.match(foundationCss, /--leaf-control-height:\s*32px/);
 assert.match(foundationCss, /--leaf-font-size:\s*14px/);
 assert.match(foundationCss, /@layer\s+leaf-ui\b/);
 for (const fileName of await readdir(new URL('dist/esm/styles/components/', packageRoot))) {
@@ -601,7 +604,7 @@ assert.match(baseCss, /components\/modal\.css/);
 assert.ok(!baseCss.includes('.leaf-table'), 'Base styles do not include ordinary component styles');
 const css = await readFile(new URL(manifest.exports['./styles/all.css'], packageRoot), 'utf8');
 assert.match(css, /@layer\s+leaf-ui\b/);
-assert.match(css, /--leaf-control-height:\s*34px/);
+assert.match(css, /--leaf-control-height:\s*32px/);
 assert.match(css, /--leaf-color-danger/);
 assert.doesNotMatch(css, /\.leaf-org-chart|\.leaf-list[\s.{:_-]|\.leaf-segmented/);
 for (const name of ['List', 'ListItem', 'OrgChart', 'Segmented']) {
@@ -809,7 +812,7 @@ for (const [format, extension] of [
 }
 
 for (const [specifier, expected, excluded] of [
-  ['button', ['button', 'dropdown'], ['table', 'modal', 'input']],
+  ['button', ['button'], ['dropdown', 'table', 'modal', 'input']],
   ['table', ['table', 'scrollbar', 'loading', 'checkbox', 'pagination'], ['color-picker']],
   ['table/tanstack', ['table', 'checkbox', 'pagination'], ['color-picker']],
   ['date-picker', ['date-picker', 'calendar', 'time-picker'], ['color-picker']],
@@ -830,7 +833,7 @@ for (const [specifier, expected, excluded] of [
   const styles = result.outputFiles.find((file) => file.path.endsWith('.css'))?.text ?? '';
   assert.match(
     styles,
-    /--leaf-control-height:\s*34px/,
+    /--leaf-control-height:\s*32px/,
     `${specifier} automatically loads theme defaults`,
   );
   for (const name of expected)
@@ -855,7 +858,7 @@ assert.ok(
     (file) =>
       file.path.endsWith('.css') &&
       file.text.includes('.leaf-button') &&
-      /--leaf-control-height:\s*34px/.test(file.text),
+      /--leaf-control-height:\s*32px/.test(file.text),
   ),
 );
 console.log(

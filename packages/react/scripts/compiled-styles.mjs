@@ -16,6 +16,27 @@ const flattenLayerRules = (ruleList) =>
       : [rule],
   );
 
+// 仅按顶层逗号拆分选择器列表，避免把 :is(a, b) / [attr="a,b"] 括号内的逗号误切开
+function splitTopLevelSelectors(selectorText) {
+  const selectors = [];
+  let start = 0;
+  let parenDepth = 0;
+  let bracketDepth = 0;
+  for (let i = 0; i < selectorText.length; i++) {
+    const ch = selectorText[i];
+    if (ch === '(') parenDepth++;
+    else if (ch === ')' && parenDepth > 0) parenDepth--;
+    else if (ch === '[') bracketDepth++;
+    else if (ch === ']' && bracketDepth > 0) bracketDepth--;
+    else if (ch === ',' && parenDepth === 0 && bracketDepth === 0) {
+      selectors.push(selectorText.slice(start, i).trim());
+      start = i + 1;
+    }
+  }
+  selectors.push(selectorText.slice(start).trim());
+  return selectors;
+}
+
 export function styleDeclarations(css, label = 'stylesheet') {
   const dom = new JSDOM('<style></style>');
   const element = dom.window.document.querySelector('style');
@@ -25,7 +46,7 @@ export function styleDeclarations(css, label = 'stylesheet') {
     .filter((rule) => rule.selectorText)
     .map((rule) => ({
       selector: rule.selectorText,
-      selectors: rule.selectorText.split(',').map((item) => item.trim()),
+      selectors: splitTopLevelSelectors(rule.selectorText),
       declarations: Object.fromEntries(
         Array.from({ length: rule.style.length }, (_, index) => {
           const property = rule.style[index];

@@ -18,7 +18,7 @@ export const leafDoc = { component: 'Pagination', primaryApi: 'PaginationProps' 
 
 `total` 是完整结果的总条数，而不是当前页条数。页码从 1 开始，非受控用法由组件管理当前页。
 
-<ComponentExample exampleId="basic" preview={<PaginationBasic />} width={600} fileName="basic.tsx">
+<ComponentExample exampleId="basic" preview={<PaginationBasic />} width="fit-content" fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/pagination/basic.tsx"
 ```
@@ -35,7 +35,7 @@ export const leafDoc = { component: 'Pagination', primaryApi: 'PaginationProps' 
 
 通过 `variant` 选择描边或无边框的分页按钮。
 
-<ComponentExample exampleId="variants" preview={<PaginationVariants />} width={600} fileName="variants.tsx">
+<ComponentExample exampleId="variants" preview={<PaginationVariants />} width="fit-content" fileName="variants.tsx">
 
 ```tsx lineNumbers file="../../src/examples/pagination/variants.tsx"
 ```
@@ -46,7 +46,7 @@ export const leafDoc = { component: 'Pagination', primaryApi: 'PaginationProps' 
 
 通过 `size` 设置分页按钮尺寸。
 
-<ComponentExample exampleId="sizes" preview={<PaginationSizes />} width={600} fileName="sizes.tsx">
+<ComponentExample exampleId="sizes" preview={<PaginationSizes />} width="fit-content" fileName="sizes.tsx">
 
 ```tsx lineNumbers file="../../src/examples/pagination/sizes.tsx"
 ```
@@ -57,7 +57,7 @@ export const leafDoc = { component: 'Pagination', primaryApi: 'PaginationProps' 
 
 加载远程数据时，同时控制 `current` 和 `pageSize`，在 `onChange` 中一起更新。数据请求由应用发起；下面用当前页和数据范围展示状态变化。
 
-<ComponentExample exampleId="controlled" preview={<PaginationControlled />} width={600} fileName="controlled.tsx">
+<ComponentExample exampleId="controlled" preview={<PaginationControlled />} width="fit-content" fileName="controlled.tsx">
 
 ```tsx lineNumbers file="../../src/examples/pagination/controlled.tsx"
 ```
@@ -70,7 +70,7 @@ export const leafDoc = { component: 'Pagination', primaryApi: 'PaginationProps' 
 
 设置 `simple`，只显示当前页和前后翻页操作。
 
-<ComponentExample exampleId="simple" preview={<PaginationSimple />} width={600} fileName="simple.tsx">
+<ComponentExample exampleId="simple" preview={<PaginationSimple />} width="fit-content" fileName="simple.tsx">
 
 ```tsx lineNumbers file="../../src/examples/pagination/simple.tsx"
 ```
@@ -81,7 +81,7 @@ export const leafDoc = { component: 'Pagination', primaryApi: 'PaginationProps' 
 
 通过 `disabled` 禁止切换分页。
 
-<ComponentExample exampleId="states" preview={<PaginationStates />} width={600} fileName="states.tsx">
+<ComponentExample exampleId="states" preview={<PaginationStates />} width="fit-content" fileName="states.tsx">
 
 ```tsx lineNumbers file="../../src/examples/pagination/states.tsx"
 ```
@@ -105,13 +105,13 @@ export const leafDoc = { component: 'Pagination', primaryApi: 'PaginationProps' 
 | `defaultPageSize` | `number` | `10` | 非受控初始每页条数 |
 | `onChange` | `(page: number, pageSize: number) => void` | — | 页码或条数实际变化时调用一次，同时返回两者 |
 | `showSizeChanger` | `boolean` | `false` | 展示每页条数选择器 |
-| `pageSizeOptions` | `readonly number[]` | `[10, 20, 50, 100]` | 可选每页条数；自动包含当前条数，忽略无效值并去重 |
+| `pageSizeOptions` | `readonly number[]` | `[10, 20, 50, 100]` | 可选每页条数；自动加入并保留未在列表中的每页条数，忽略无效值并去重 |
 | `showQuickJumper` | `boolean` | `false` | 回车或离开分页区域时跳转；点击其他分页控件时以该操作为准 |
 | `showTotal` | `boolean \| ((total: number, range: readonly [number, number]) => ReactNode)` | `false` | true 展示默认统计，也可传入函数自定义；range 为当前页首末条目的序号 |
 | `simple` | `boolean` | `false` | 只展示前后翻页和当前页 / 总页数 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `hideOnSinglePage` | `boolean` | `false` | 总页数不足两页时隐藏 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 页码按钮、条数选择器和跳转输入框的尺寸 |
-| `variant` | `'outline' \| 'ghost'` | `'outline'` | 按钮样式：描边 / 无边框 |
+| `variant` | `'outline' \| 'ghost'` | `'ghost'` | 按钮样式：无边框（默认，当前页直接切换为描边方框） / 描边（当前页为无边框纯文字） |
 
 组件同时支持 `aria-label`、`className`、`style` 等原生 `<nav>` 属性。

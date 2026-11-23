@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createRef, type FormEvent } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -156,5 +156,135 @@ describe('controlled menus', () => {
     expect(screen.queryByRole('menu')).toBeNull();
     rerender(example(false));
     expect(screen.queryByRole('menu')).toBeNull();
+  });
+
+  it('positions submenus flush against the parent trigger edge with vertical alignment', async () => {
+    const clientWidthSpy = vi
+      .spyOn(document.documentElement, 'clientWidth', 'get')
+      .mockReturnValue(1024);
+    const clientHeightSpy = vi
+      .spyOn(document.documentElement, 'clientHeight', 'get')
+      .mockReturnValue(768);
+    const rectSpy = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        if (this.dataset.key === 'more') {
+          return {
+            x: 40,
+            y: 80,
+            left: 40,
+            top: 80,
+            right: 200,
+            bottom: 108,
+            width: 160,
+            height: 28,
+            toJSON: () => ({}),
+          } as DOMRect;
+        }
+        if (this.tagName === 'BUTTON') {
+          return {
+            x: 40,
+            y: 40,
+            left: 40,
+            top: 40,
+            right: 120,
+            bottom: 72,
+            width: 80,
+            height: 32,
+            toJSON: () => ({}),
+          } as DOMRect;
+        }
+        return {
+          x: 0,
+          y: 0,
+          left: 0,
+          top: 0,
+          right: 120,
+          bottom: 90,
+          width: 120,
+          height: 90,
+          toJSON: () => ({}),
+        } as DOMRect;
+      });
+    try {
+      render(
+        <Dropdown
+          items={[{ key: 'more', label: 'More', children: [{ key: 'copy', label: 'Copy' }] }]}
+        >
+          <Button>Menu</Button>
+        </Dropdown>,
+      );
+      await userEvent.click(screen.getByRole('button', { name: 'Menu' }));
+      const parentItem = screen.getByRole('menuitem', { name: 'More' });
+      fireEvent.pointerEnter(parentItem, { pointerType: 'mouse' });
+      await waitFor(() => {
+        const floatingPanels = Array.from(document.querySelectorAll<HTMLElement>('.leaf-dropdown'));
+        expect(floatingPanels).toHaveLength(2);
+        const [rootPanel, subPanel] = floatingPanels;
+        // 主菜单相对触发按钮下移 6px（72 + 6 = 78px）
+        expect(rootPanel?.style.top).toBe('78px');
+        // 子菜单紧贴父触发项右缘（200px）且顶边与父触发项（80px）平齐
+        expect(subPanel?.style.left).toBe('200px');
+        expect(subPanel?.style.top).toBe('80px');
+      });
+    } finally {
+      rectSpy.mockRestore();
+      clientWidthSpy.mockRestore();
+      clientHeightSpy.mockRestore();
+    }
+  });
+
+  it('pins hover-opened menus on click, avoids redundant global listener churn, and keeps submenus open across diagonal pointer travel', async () => {
+    const addSpy = vi.spyOn(document, 'addEventListener');
+    render(
+      <Dropdown
+        trigger={['hover', 'click']}
+        mouseEnterDelay={0}
+        mouseLeaveDelay={20}
+        items={[
+          { key: 'more', label: 'More', children: [{ key: 'copy', label: 'Copy' }] },
+          { key: 'other', label: 'Other' },
+        ]}
+      >
+        <Button>Menu</Button>
+      </Dropdown>,
+    );
+    const triggerButton = screen.getByRole('button', { name: 'Menu' });
+    fireEvent.pointerEnter(triggerButton, { pointerType: 'mouse' });
+    await waitFor(() => expect(screen.getByRole('menu')).toBeInTheDocument());
+
+    const afterOpenAdds = addSpy.mock.calls.filter(
+      ([type]) => type === 'pointerdown' || type === 'focusin',
+    ).length;
+
+    const more = screen.getByRole('menuitem', { name: 'More' });
+    fireEvent.pointerEnter(more, { pointerType: 'mouse' });
+    await waitFor(() => expect(screen.getAllByRole('menu')).toHaveLength(2));
+
+    // 点击刚悬停展开的父菜单项或主按钮应保持展开而非立即反选关闭
+    fireEvent.click(more);
+    expect(screen.getAllByRole('menu')).toHaveLength(2);
+    expect(
+      addSpy.mock.calls.filter(([type]) => type === 'pointerdown' || type === 'focusin').length,
+    ).toBe(afterOpenAdds);
+
+    // 指针斜向路过兄弟项并立刻移入子菜单面板时应保住子菜单
+    fireEvent.pointerEnter(screen.getByRole('menuitem', { name: 'Other' }), {
+      pointerType: 'mouse',
+    });
+    const menus = screen.getAllByRole('menu');
+    fireEvent.pointerEnter(menus[1] as HTMLElement, { pointerType: 'mouse' });
+    await new Promise((resolve) => setTimeout(resolve, 160));
+    expect(screen.getAllByRole('menu')).toHaveLength(2);
+
+    // 悬停打开后点击触发按钮将其固定，再移出鼠标也不会自动关闭，再次点击才关闭
+    fireEvent.click(triggerButton);
+    fireEvent.pointerLeave(triggerButton, { pointerType: 'mouse' });
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(screen.getByRole('menuitem', { name: 'More' })).toBeInTheDocument();
+
+    fireEvent.click(triggerButton);
+    expect(screen.queryByRole('menu')).toBeNull();
+    addSpy.mockRestore();
   });
 });

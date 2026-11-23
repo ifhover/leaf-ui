@@ -1,14 +1,16 @@
-import { DatePicker, Form, FormField } from '@ifhover/leaf-ui';
+import { DatePicker, Flex, Text } from '@ifhover/leaf-ui';
 
 export function DatePickerCard() {
   return (
-    <Form layout="vertical">
-      <FormField label="Date">
-        <DatePicker panelVariant="card" defaultValue={new Date(2026, 9, 15)} />
-      </FormField>
-      <FormField label="Time">
-        <DatePicker picker="time" panelVariant="card" defaultValue="10:30" />
-      </FormField>
-    </Form>
+    <Flex direction="column" gap="md">
+      <Flex direction="column" gap="sm" align="start">
+        <Text tone="muted">Date</Text>
+        <DatePicker aria-label="Date" panelVariant="card" defaultValue={new Date(2026, 9, 15)} />
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text tone="muted">Time</Text>
+        <DatePicker aria-label="Time" picker="time" panelVariant="card" defaultValue="10:30" />
+      </Flex>
+    </Flex>
   );
 }

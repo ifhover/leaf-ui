@@ -1,26 +1,27 @@
-import { Button, Flex, Grid, Text } from '@ifhover/leaf-ui';
-import { Fragment } from 'react';
+import { Button, ButtonGroup, Dropdown, Flex } from '@ifhover/leaf-ui';
+import { ChevronDown, Trash2 } from 'lucide-react';
 
-const options = [
-  { value: 'outline', label: '描边' },
-  { value: 'solid', label: '实底' },
-  { value: 'text', label: '文字' },
-  { value: 'link', label: '链接' },
-] as const;
+const items = [
+  { key: 'trash', label: '移至回收站' },
+  { key: 'purge', label: '彻底删除', danger: true },
+];
 
 export function ButtonDanger() {
   return (
-    <Grid columns={{ xs: 1, sm: 2 }} gap={16} align="center">
-      {options.map(({ value, label }) => (
-        <Fragment key={value}>
-          <Text tone="muted">{label}</Text>
-          <Flex align="center" wrap>
-            <Button danger variant={value}>
-              删除
-            </Button>
-          </Flex>
-        </Fragment>
-      ))}
-    </Grid>
+    <Flex align="center" gap={12} wrap>
+      <Button variant="danger">删除项目</Button>
+      <Button variant="danger">
+        <Trash2 />
+        删除
+      </Button>
+      <ButtonGroup variant="danger">
+        <Button>删除</Button>
+        <Dropdown items={items}>
+          <Button size="icon" aria-label="更多删除操作">
+            <ChevronDown />
+          </Button>
+        </Dropdown>
+      </ButtonGroup>
+    </Flex>
   );
 }

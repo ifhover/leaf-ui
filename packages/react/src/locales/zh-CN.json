@@ -86,11 +86,12 @@
     "nextPage": "下一页",
     "page": "页",
     "pageSize": "每页条数",
+    "pageSizeOption": "{count} 条/页",
     "jumpTo": "跳至",
     "pageBack": "向前跳 5 页",
     "pageForward": "向后跳 5 页",
     "pageLabel": "页 {page}",
-    "pageSizeOption": "{count} 条/页",
+    "rowsPerPage": "每页显示",
     "total": "共 {total} 条"
   },
   "input": {
@@ -251,7 +252,8 @@
   },
   "qrCode": {
     "qrCode": "二维码",
-    "refreshCode": "刷新二维码"
+    "refreshCode": "刷新二维码",
+    "expired": "二维码已过期"
   },
   "scrollbar": {
     "verticalScrollbar": "纵向滚动条",
@@ -274,8 +276,6 @@
     "collapseRow": "收起行: {label}",
     "expandRow": "展开行: {label}",
     "expandRows": "展开行",
-    "expandDetails": "展开详情",
-    "collapseDetails": "收起详情",
     "sortAscending": "升序排序",
     "sortDescending": "降序排序",
     "clearSorting": "取消排序"
@@ -334,5 +334,8 @@
     "dropped": "已放置 {label}",
     "cancelled": "已取消排序",
     "outside": "没有可放置的目标"
+  },
+  "drawer": {
+    "resize": "调整抽屉大小"
   }
 }

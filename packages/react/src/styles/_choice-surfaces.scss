@@ -1,5 +1,22 @@
 @use './mixins';
 
+@mixin -control-title-align {
+  margin-block-start: max(0px, calc((var(--leaf-line-height) - 18px) / 2));
+}
+
+@mixin -card-hover-surface {
+  border-color: var(--leaf-color-border-hover);
+  background: var(--leaf-color-surface-muted);
+}
+
+@mixin -card-selected-surface($component, $checked-border) {
+  border-color: $checked-border;
+  background: var(--leaf-color-primary-soft);
+  .leaf-#{$component}__icon {
+    background: var(--leaf-color-surface);
+  }
+}
+
 @mixin item(
   $component,
   $checked-border: var(--leaf-color-primary),
@@ -45,29 +62,31 @@
   &--described:not(.leaf-#{$component}--card) {
     align-items: flex-start;
     .leaf-#{$component}__control {
-      margin-block-start: 2px;
+      @include -control-title-align;
     }
   }
   &--card {
     width: 100%;
+    align-items: flex-start;
     gap: var(--leaf-component-#{$component}-gap, 12px);
-    min-height: calc(var(--leaf-current-control-height) + 24px);
-    padding: var(--leaf-component-#{$component}-padding, calc(var(--leaf-spacing) * 1.75));
+    min-height: var(--leaf-current-control-height);
+    padding: var(--leaf-component-#{$component}-padding, 10px 12px);
     border: var(--leaf-component-#{$component}-border-width, var(--leaf-border-width, 1px)) solid
       var(
         --leaf-component-#{$component}-border-color,
         var(--leaf-frame-border-color, var(--leaf-color-border))
       );
-    border-radius: var(--leaf-component-#{$component}-radius, var(--leaf-radius-md));
+    border-radius: var(
+      --leaf-component-#{$component}-radius,
+      var(--leaf-current-radius, var(--leaf-radius))
+    );
     color: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
     background: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
     box-shadow: var(--leaf-component-#{$component}-shadow, var(--leaf-surface-shadow, none));
-    transition:
-      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+    transition: var(--leaf-field-transition);
     .leaf-#{$component}__icon {
       order: 1;
+      transition: var(--leaf-action-transition);
     }
     .leaf-#{$component}__copy {
       flex: 1;
@@ -78,17 +97,24 @@
     }
     .leaf-#{$component}__control {
       order: 4;
-    }
-    &:hover:not([data-disabled]) {
-      border-color: var(--leaf-color-border-hover);
-      background: var(--leaf-color-surface-muted);
-    }
-    &:has(.leaf-#{$component}__input:checked) {
-      border-color: $checked-border;
+      @include -control-title-align;
     }
     @if $supports-indeterminate {
+      &:hover:not([data-disabled]):not(:has(.leaf-#{$component}__input:checked)):not(
+          :has(.leaf-#{$component}__input:indeterminate)
+        ) {
+        @include -card-hover-surface;
+      }
+      &:has(.leaf-#{$component}__input:checked),
       &:has(.leaf-#{$component}__input:indeterminate) {
-        border-color: $checked-border;
+        @include -card-selected-surface($component, $checked-border);
+      }
+    } @else {
+      &:hover:not([data-disabled]):not(:has(.leaf-#{$component}__input:checked)) {
+        @include -card-hover-surface;
+      }
+      &:has(.leaf-#{$component}__input:checked) {
+        @include -card-selected-surface($component, $checked-border);
       }
     }
     &:has(.leaf-#{$component}__input:focus-visible) {
@@ -101,11 +127,13 @@
   @media (forced-colors: active) {
     &--card {
       border-color: ButtonBorder;
-      &:has(.leaf-#{$component}__input:checked) {
-        border-color: Highlight;
-      }
       @if $supports-indeterminate {
+        &:has(.leaf-#{$component}__input:checked),
         &:has(.leaf-#{$component}__input:indeterminate) {
+          border-color: Highlight;
+        }
+      } @else {
+        &:has(.leaf-#{$component}__input:checked) {
           border-color: Highlight;
         }
       }
@@ -147,14 +175,14 @@
         --leaf-component-#{$component}-border-color,
         var(--leaf-frame-border-color, var(--leaf-color-border))
       );
-    border-radius: var(--leaf-component-#{$component}-radius, var(--leaf-radius-md));
+    border-radius: var(--leaf-component-#{$component}-radius, var(--leaf-radius));
     background: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
     > .leaf-#{$component} {
       width: 100%;
       min-width: 0;
       padding: var(--leaf-component-#{$component}-padding, 12px 16px);
       gap: var(--leaf-component-#{$component}-gap, 12px);
-      transition: background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
       &:first-child {
         border-start-start-radius: inherit;
         border-start-end-radius: inherit;

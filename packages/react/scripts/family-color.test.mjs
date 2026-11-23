@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 import { test } from 'node:test';
 import { resolveBaselinePath, resolvePackageRoot, scanColorContract } from './color-contract.mjs';
-import { styleDeclarations } from './compiled-styles.mjs';
+import { compiledStyles, styleDeclarations } from './compiled-styles.mjs';
 
 const root = resolvePackageRoot();
 const require = createRequire(path.join(root, 'package.json'));
@@ -15,7 +15,6 @@ const compile = (source) =>
 test('family recipes compile supported semantic variants', async () => {
   const result = await compile(`@use 'mixins' as colors;
     .sample {
-      @include colors.accent-soft-feedback-family;
       @include colors.danger-soft-feedback-family;
       @include colors.panel-canvas-family;
       @include colors.segmented-surface-family;
@@ -30,8 +29,8 @@ test('family recipes compile supported semantic variants', async () => {
     .field-error { @include colors.field-status(error); }
     .field-warning { @include colors.field-status(warning); }
   `);
-  assert.match(result.css, /--leaf-accent-soft-background:/u);
-  assert.match(result.css, /--leaf-accent-soft-background: var\(--leaf-color-primary-soft\)/u);
+  assert.match(result.css, /--leaf-accent-halo-focus-color:/u);
+  assert.match(result.css, /--leaf-segmented-selected-background: var\(--leaf-color-surface\)/u);
   assert.match(result.css, /--leaf-danger-soft-background: var\(--leaf-color-danger-soft\)/u);
   assert.match(
     result.css,
@@ -61,25 +60,81 @@ test('recipes reject invented visual variants instead of silently picking a colo
   }
 });
 
-test('fields default to primary focus while retaining validation and explicit neutral variants', async () => {
+test('fields default to neutral focus while retaining validation and explicit primary variants', async () => {
   const { css } = await compile(`@use 'mixins' as colors;
     .default { @include colors.field(example); }
-    .explicit { @include colors.field(example, primary); }
-    .neutral { @include colors.field(example, neutral); }
+    .explicit { @include colors.field(example, neutral); }
+    .primary { @include colors.field(example, primary); }
   `);
   const styles = styleDeclarations(css);
   assert.deepEqual(styles('.default'), styles('.explicit'));
-  assert.equal(styles('.default')['--leaf-field-color'], 'var(--leaf-color-primary)');
+  assert.equal(styles('.default')['--leaf-field-color'], 'var(--leaf-color-text-muted)');
   assert.equal(
-    styles('.neutral')['--leaf-field-color'],
-    'color-mix(in srgb,var(--leaf-color-text)45%,var(--leaf-color-border))',
+    styles('.default')['--leaf-field-ring'],
+    'color-mix(in srgb,var(--leaf-field-color)20%,transparent)',
   );
+  assert.equal(styles('.default')['--leaf-field-focus-shadow'], '0 0 0 3px var(--leaf-field-ring)');
+  assert.equal(styles('.primary')['--leaf-field-color'], 'var(--leaf-color-primary)');
   assert.equal(
     styles('.default[data-status=error]')['--leaf-field-color'],
     'var(--leaf-color-danger)',
   );
   assert.equal(
+    styles('.default[data-status=error]')['--leaf-field-hover-border'],
+    'var(--leaf-field-color)',
+  );
+  assert.equal(
     styles('.default[data-status=warning]')['--leaf-field-color'],
+    'var(--leaf-color-warning)',
+  );
+  assert.equal(
+    styles('.default[data-status=warning]')['--leaf-field-hover-border'],
+    'var(--leaf-field-color)',
+  );
+  assert.equal(
+    styles(
+      '.default:hover:not([data-disabled]):not(:disabled):where(:not(:focus-within):not([data-open]))',
+    )['border-color'],
+    'var(--leaf-component-example-hover-border-color,var(--leaf-field-hover-border))',
+  );
+  assert.equal(
+    styles('.default:is(:focus-within, [data-open]):not([data-disabled]):not(:disabled)')[
+      'box-shadow'
+    ],
+    'var(--leaf-component-example-focus-shadow,var(--leaf-field-focus-shadow))',
+  );
+
+  const input = await compiledStyles('input/input.scss');
+  assert.equal(
+    input('.leaf-input:focus-within:not([data-disabled]) .leaf-input__affix').color,
+    'var(--leaf-color-text)',
+  );
+
+  const otp = await compiledStyles('inputotp/inputotp.scss');
+  const slot = otp('.leaf-input-otp__slot');
+  assert.equal(slot['--leaf-otp-focus-color'], 'var(--leaf-color-text-muted)');
+  assert.equal(
+    slot['--leaf-field-ring'],
+    'color-mix(in srgb,var(--leaf-otp-focus-color)20%,transparent)',
+  );
+  assert.equal(
+    slot['box-shadow'],
+    'var(--leaf-component-input-otp-shadow,var(--leaf-control-shadow,0 0 0 0 transparent))',
+  );
+  assert.equal(
+    otp('.leaf-input-otp__slot[data-active]')['border-color'],
+    'var(--leaf-otp-focus-color)',
+  );
+  assert.equal(
+    otp('.leaf-input-otp__slot[data-active]')['box-shadow'],
+    'var(--leaf-component-input-otp-focus-shadow,var(--leaf-field-focus-shadow))',
+  );
+  assert.equal(
+    otp('.leaf-input-otp[data-status=error] .leaf-input-otp__slot')['--leaf-otp-focus-color'],
+    'var(--leaf-color-danger)',
+  );
+  assert.equal(
+    otp('.leaf-input-otp[data-status=warning] .leaf-input-otp__slot')['--leaf-otp-focus-color'],
     'var(--leaf-color-warning)',
   );
 });
@@ -119,4 +174,43 @@ test('every public component export has a color responsibility in the inventory'
     assert.ok(documented.includes(`\`${entry.slice(2)}\``), `${entry}: missing color review`);
   // Table's core and adapter paths intentionally share one implementation row.
   assert.equal(rows.length, entries.length - 1);
+});
+
+test('dialog overlays avoid light-dark() and root tokens default color-scheme to light', async () => {
+  const { css } = await compile(`@use 'mixins' as colors;
+    .backdrop { @include colors.overlay-family; }
+    .spotlight { @include colors.overlay-family(spotlight); }
+  `);
+  const rules = styleDeclarations(css, 'overlay-family');
+  const light = rules('.backdrop');
+  assert.ok(!light['--leaf-overlay-background'].includes('light-dark('));
+  assert.ok(!light['--leaf-overlay-fallback-background'].includes('light-dark('));
+  assert.match(light['--leaf-overlay-background'], /28%/u);
+  assert.match(light['--leaf-overlay-fallback-background'], /36%/u);
+
+  const dark = rules(
+    '[data-leaf-theme=dark] .backdrop:not([data-leaf-theme=dark] [data-leaf-theme=light] .backdrop)',
+  );
+  assert.match(dark['--leaf-overlay-background'], /55%/u);
+  assert.match(dark['--leaf-overlay-fallback-background'], /62%/u);
+
+  assert.match(rules('.spotlight')['--leaf-overlay-background'], /45%/u);
+  assert.match(
+    rules(
+      '[data-leaf-theme=dark] .spotlight:not([data-leaf-theme=dark] [data-leaf-theme=light] .spotlight)',
+    )['--leaf-overlay-background'],
+    /68%/u,
+  );
+
+  for (const file of ['modal/modal.scss', 'drawer/drawer.scss']) {
+    const compiled = await compiledStyles(file);
+    const backdrop = compiled(
+      file.startsWith('modal/') ? '.leaf-modal-backdrop' : '.leaf-drawer-backdrop',
+    );
+    assert.ok(!backdrop['--leaf-overlay-background'].includes('light-dark('), file);
+  }
+
+  const tokens = await compiledStyles('styles/tokens.scss');
+  assert.equal(tokens(':root')['color-scheme'], 'light');
+  assert.equal(tokens('[data-leaf-theme=dark]')['color-scheme'], 'dark');
 });

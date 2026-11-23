@@ -184,10 +184,10 @@ export const leafDoc = { component: 'ConfigProvider', primaryApi: 'ConfigProvide
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `primaryColor` | `string` | `'#007aff'` | 主题基色，浅深外观共用；交互色自动派生。 |
+| `primaryColor` | `string` | `'#007aff'` | 主题基色，浅深外观共用；支持 `'neutral'` 自适应黑白单色对比，交互色自动派生。 |
 | `appearance` | `'light' \| 'dark'` | `'light'` | 浅色或深色；嵌套时继承显式配置 |
 | `borderRadius` | `number \| string` | `10` | 基础圆角；数字为 px，小标签按 0.5、sm/lg 控件按 0.8/1.2、内容面与浮层按 1.4/1.6 倍生成。 |
-| `controlHeight` | `number \| string` | `34` | 基础控件高度；小 / 大尺寸分别减 / 加 6px |
+| `controlHeight` | `number \| string` | `32` | 基础控件高度；小 / 大尺寸分别减 / 加 6px |
 | `fontSize` | `number \| string` | `14` | 基础字号；小字号减 1px，大字号加 2px |
 | `fontFamily` | `string` | 系统无衬线字体 | 字体族 |
 | `motion` | `boolean` | `true` | 启用当前区域的交互动效；系统减少动态效果优先，浮层继承此设置。 |

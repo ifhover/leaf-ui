@@ -3,6 +3,7 @@ import { SkeletonBasic } from '../../../src/examples/en/skeleton/basic';
 import { SkeletonContent } from '../../../src/examples/en/skeleton/content';
 import { SkeletonShapes } from '../../../src/examples/en/skeleton/shapes';
 import { SkeletonRows } from '../../../src/examples/en/skeleton/rows';
+import { SkeletonElements } from '../../../src/examples/en/skeleton/elements';
 
 export const leafDoc = { component: 'Skeleton', primaryApi: 'SkeletonProps' };
 
@@ -60,6 +61,17 @@ Set `rows` for the number of body rows and `rowWidths` for their widths. Unspeci
 
 </ComponentExample>
 
+### Individual placeholder elements
+
+Combine `Skeleton.Avatar`, `Skeleton.Button`, `Skeleton.Input`, and `Skeleton.Image` to mirror individual controls or toolbar regions.
+
+<ComponentExample exampleId="elements" preview={<SkeletonElements />} fileName="elements.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/skeleton/elements.tsx"
+```
+
+</ComponentExample>
+
 {/* leaf:section api */}
 
 ## API
@@ -79,3 +91,43 @@ Configure placeholder rows, shapes and animation.
 | `rowWidths` | `readonly (number \| string)[]` | — | Widths of each row |
 | `round` | `boolean` | `false` | Use pill-shaped title and body placeholders; the avatar is unchanged. |
 | `children` | `ReactNode` | — | Content shown after loading finishes. |
+
+### SkeletonAvatar API
+
+Standalone avatar placeholder element.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg' \| number` | `'md'` | Avatar placeholder size as a preset or pixel number. |
+| `shape` | `'circle' \| 'square'` | `'circle'` | Avatar placeholder shape. |
+| `active` | `boolean` | `true` | Animate the placeholder. |
+
+### SkeletonButton API
+
+Standalone button placeholder element.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Button placeholder height size. |
+| `shape` | `'default' \| 'circle' \| 'round'` | `'default'` | Button placeholder shape. |
+| `block` | `boolean` | `false` | Stretch the placeholder to the container width. |
+| `active` | `boolean` | `true` | Animate the placeholder. |
+
+### SkeletonInput API
+
+Standalone input placeholder element.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Input placeholder height size. |
+| `block` | `boolean` | `false` | Stretch the placeholder to the container width. |
+| `active` | `boolean` | `true` | Animate the placeholder. |
+
+### SkeletonImage API
+
+Standalone image placeholder element.
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `size` | `number` | — | Square pixel size of the image placeholder. |
+| `active` | `boolean` | `true` | Animate the placeholder. |

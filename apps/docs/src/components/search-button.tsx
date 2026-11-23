@@ -19,18 +19,20 @@ export function SearchButton({ setFocused }: SearchButtonProps) {
         variant="outline"
         aria-label={label}
         aria-keyshortcuts="Control+K Meta+K"
-        startIcon={<Search />}
-        endIcon={<kbd>{shortcut}</kbd>}
         onClick={() => setFocused(true)}
       >
+        <Search aria-hidden="true" />
         <span className="leaf-docs-search-label">{label}</span>
+        <kbd>{shortcut}</kbd>
       </Button>
       <Button
         className="leaf-docs-search-mobile"
+        size="icon"
         aria-label={label}
-        startIcon={<Search />}
         onClick={() => setFocused(true)}
-      />
+      >
+        <Search aria-hidden="true" />
+      </Button>
     </>
   );
 }

@@ -17,7 +17,7 @@
 
   &__tagline {
     margin: 0;
-    color: var(--leaf-color-primary);
+    color: var(--leaf-site-muted);
     font-size: 15px;
     font-weight: 500;
     line-height: 1.6;
@@ -62,7 +62,7 @@
 
   &__icon {
     flex-shrink: 0;
-    color: var(--leaf-site-accent);
+    color: var(--leaf-site-text);
   }
 
   &__description {

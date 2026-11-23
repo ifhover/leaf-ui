@@ -1,9 +1,9 @@
-import { Inbox } from 'lucide-react';
 import {
   type CSSProperties,
   createContext,
   forwardRef,
   type HTMLAttributes,
+  isValidElement,
   type ReactNode,
   type Ref,
   type TableHTMLAttributes,
@@ -15,7 +15,7 @@ import {
 } from 'react';
 import { ButtonControl } from '../button/button';
 import { LoadingControl as Loading } from '../loading/loading';
-import { ResultControl as Result } from '../result/result';
+import { Result as PublicResult, ResultControl as Result } from '../result/result';
 import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
@@ -69,7 +69,7 @@ export interface TableErrorProps extends TableStateProps {
 
 const TableRootControl = forwardRef<HTMLTableElement, TableRootProps>(function TableRootControl(
   {
-    size = 'lg',
+    size = 'md',
     bordered = false,
     striped = false,
     maxHeight,
@@ -351,60 +351,62 @@ export const TableColumnHeaderControl = forwardRef<HTMLTableCellElement, TableCo
   },
 );
 
-export function TableEmptyControl({ colSpan = 1, children }: TableStateProps) {
-  const t = useText();
+function isResultElement(children: ReactNode) {
+  return isValidElement(children) && (children.type === Result || children.type === PublicResult);
+}
+
+function TableStateRow({ colSpan, children }: { colSpan: number; children: ReactNode }) {
   return (
     <TableRowControl className="leaf-table__state-row">
       <TableCellControl colSpan={colSpan} className="leaf-table__state-cell">
-        <div className="leaf-table__state-content">
-          <div className="leaf-table__state" role="status">
-            <Inbox size={28} aria-hidden="true" />
-            {children ?? t('common.noData')}
-          </div>
-        </div>
+        <div className="leaf-table__state-content">{children}</div>
       </TableCellControl>
     </TableRowControl>
   );
+}
+
+export function TableEmptyControl({ colSpan = 1, children }: TableStateProps) {
+  const t = useText();
+  const title = typeof children === 'boolean' ? undefined : children;
+  const content = isResultElement(children) ? (
+    children
+  ) : (
+    <Result status="empty" role="status" title={title ?? t('common.noData')} />
+  );
+  return <TableStateRow colSpan={colSpan}>{content}</TableStateRow>;
 }
 
 export function TableLoadingControl({ colSpan = 1, children }: TableStateProps) {
   const t = useText();
   return (
-    <TableRowControl className="leaf-table__state-row">
-      <TableCellControl colSpan={colSpan} className="leaf-table__state-cell">
-        <div className="leaf-table__state-content">
-          <div className="leaf-table__state">
-            <Loading tip={children ?? t('common.loading')} />
-          </div>
-        </div>
-      </TableCellControl>
-    </TableRowControl>
+    <TableStateRow colSpan={colSpan}>
+      <div className="leaf-table__state">
+        <Loading tip={children ?? t('common.loading')} />
+      </div>
+    </TableStateRow>
   );
 }
 
 export function TableErrorControl({ colSpan = 1, children, onRetry }: TableErrorProps) {
   const t = useText();
-  return (
-    <TableRowControl className="leaf-table__state-row">
-      <TableCellControl colSpan={colSpan} className="leaf-table__state-cell">
-        <div className="leaf-table__state-content">
-          <Result
-            status="danger"
-            size="sm"
-            role="alert"
-            title={children ?? t('table.loadError')}
-            extra={
-              onRetry && (
-                <ButtonControl size="sm" variant="outline" onClick={onRetry}>
-                  {t('common.retry')}
-                </ButtonControl>
-              )
-            }
-          />
-        </div>
-      </TableCellControl>
-    </TableRowControl>
+  const title = typeof children === 'boolean' ? undefined : children;
+  const content = isResultElement(children) ? (
+    children
+  ) : (
+    <Result
+      status="danger"
+      role="alert"
+      title={title ?? t('table.loadError')}
+      extra={
+        onRetry && (
+          <ButtonControl size="sm" variant="outline" onClick={onRetry}>
+            {t('common.retry')}
+          </ButtonControl>
+        )
+      }
+    />
   );
+  return <TableStateRow colSpan={colSpan}>{content}</TableStateRow>;
 }
 
 export const TableControl = Object.assign(TableRootControl, {

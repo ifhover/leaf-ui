@@ -1,4 +1,4 @@
-import { ChevronRight, Ellipsis } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Ellipsis } from 'lucide-react';
 import type { AnchorHTMLAttributes, HTMLAttributes, ReactNode } from 'react';
 import { ButtonControl } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
@@ -25,7 +25,7 @@ export interface BreadcrumbProps extends HTMLAttributes<HTMLElement> {
 export function Breadcrumb(rawProps: BreadcrumbProps) {
   const {
     items,
-    separator = <ChevronRight size={13} />,
+    separator: separatorProp,
     maxItems = Infinity,
     itemsBeforeCollapse = 1,
     itemsAfterCollapse = 1,
@@ -34,7 +34,9 @@ export function Breadcrumb(rawProps: BreadcrumbProps) {
     'aria-label': label,
     ...props
   } = useComponentProps('Breadcrumb', rawProps);
-  const { messages } = useLeafConfig();
+  const { messages, direction } = useLeafConfig();
+  const separator =
+    separatorProp ?? (direction === 'rtl' ? <ChevronLeft size={13} /> : <ChevronRight size={13} />);
   const before = Math.max(1, itemsBeforeCollapse),
     after = Math.max(1, itemsAfterCollapse);
   const hidden =
@@ -56,12 +58,9 @@ export function Breadcrumb(rawProps: BreadcrumbProps) {
                   : undefined,
               }))}
             >
-              <ButtonControl
-                variant="text"
-                size="sm"
-                aria-label={messages.tree.expand}
-                startIcon={<Ellipsis size={16} />}
-              />
+              <ButtonControl variant="text" size="icon-sm" aria-label={messages.tree.expand}>
+                <Ellipsis aria-hidden="true" />
+              </ButtonControl>
             </Dropdown>
           ),
           key: 'leaf-collapse',

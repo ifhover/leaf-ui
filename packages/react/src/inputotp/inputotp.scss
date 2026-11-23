@@ -2,7 +2,6 @@
 
 @layer leaf-ui {
   .leaf-input-otp {
-    @include mixins.accent-halo-family;
     position: relative;
     display: inline-flex;
     max-width: 100%;
@@ -12,11 +11,11 @@
     font: var(--leaf-component-input-otp-font-size, var(--leaf-font-size)) var(--leaf-font-family);
     &--sm {
       --leaf-otp-size: var(--leaf-component-input-otp-height-sm, var(--leaf-control-height-sm));
-      --leaf-otp-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
+      --leaf-otp-radius: var(--leaf-control-radius-sm);
     }
     &--lg {
       --leaf-otp-size: var(--leaf-component-input-otp-height-lg, var(--leaf-control-height-lg));
-      --leaf-otp-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
+      --leaf-otp-radius: var(--leaf-control-radius-lg);
     }
   }
   .leaf-input-otp__input {
@@ -48,6 +47,8 @@
     gap: var(--leaf-component-input-otp-gap, 8px);
   }
   .leaf-input-otp__slot {
+    --leaf-otp-focus-color: var(--leaf-color-text-muted);
+    @include mixins.field-ring-variables(var(--leaf-otp-focus-color));
     position: relative;
     box-sizing: border-box;
     width: var(--leaf-otp-size);
@@ -67,48 +68,40 @@
     background: var(--leaf-component-input-otp-background, var(--leaf-color-surface));
     box-shadow: var(
       --leaf-component-input-otp-shadow,
-      var(--leaf-control-shadow, var(--leaf-shadow-xs))
+      var(--leaf-control-shadow, 0 0 0 0 transparent)
     );
     font-variant-numeric: tabular-nums;
     font-weight: 500;
-    transition:
-      border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing);
+    transition: var(--leaf-field-transition);
     &[data-filled] {
-      border-color: var(--leaf-color-border-hover);
+      border-color: var(
+        --leaf-component-input-otp-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-border-hover))
+      );
+    }
+    &[data-selected] {
+      background: var(--leaf-color-surface-muted);
+      border-color: var(--leaf-otp-focus-color);
     }
     &[data-active] {
-      border-color: var(--leaf-color-primary);
-      box-shadow: var(
-        --leaf-component-input-otp-focus-shadow,
-        0 0 0 2px var(--leaf-color-focus, var(--leaf-accent-halo-focus-color)),
-        var(--leaf-component-input-otp-shadow, var(--leaf-control-shadow, var(--leaf-shadow-xs)))
-      );
+      border-color: var(--leaf-otp-focus-color);
+      box-shadow: var(--leaf-component-input-otp-focus-shadow, var(--leaf-field-focus-shadow));
     }
     &[data-active]:not([data-filled])::after {
       content: '';
       position: absolute;
-      width: 1.5px;
+      width: 2px;
       height: 45%;
       border-radius: 1px;
-      background: var(--leaf-color-primary);
+      background: var(--leaf-color-text);
       animation: var(--leaf-motion-animation, leaf-otp-caret 1s steps(1) infinite);
     }
   }
   .leaf-input-otp__character {
     animation: var(
       --leaf-motion-animation,
-      leaf-otp-enter var(--leaf-motion-duration) var(--leaf-motion-easing)
+      leaf-fade-in var(--leaf-motion-duration) var(--leaf-motion-easing)
     );
-  }
-  @keyframes leaf-otp-enter {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
   }
   @keyframes leaf-otp-caret {
     0%,
@@ -120,27 +113,30 @@
       opacity: 0;
     }
   }
+  .leaf-input-otp:not([data-disabled]):not([data-status]):hover
+    .leaf-input-otp__slot:not([data-active]) {
+    border-color: var(
+      --leaf-component-input-otp-border-color,
+      var(--leaf-frame-border-color, var(--leaf-color-border-hover))
+    );
+  }
   .leaf-input-otp[data-status='error'] .leaf-input-otp__slot {
-    border-color: var(--leaf-color-danger);
+    --leaf-otp-focus-color: var(--leaf-color-danger);
+    border-color: var(--leaf-otp-focus-color);
   }
   .leaf-input-otp[data-status='warning'] .leaf-input-otp__slot {
-    border-color: var(--leaf-color-warning);
+    --leaf-otp-focus-color: var(--leaf-color-warning);
+    border-color: var(--leaf-otp-focus-color);
+  }
+  @media (forced-colors: active) {
+    .leaf-input-otp__slot[data-active] {
+      outline: 2px solid Highlight;
+    }
   }
   .leaf-input-otp[data-disabled] {
     opacity: 0.55;
     .leaf-input-otp__input {
       cursor: not-allowed;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-input-otp__slot {
-      transition: none;
-    }
-    .leaf-input-otp__slot::after {
-      animation: none;
-    }
-    .leaf-input-otp__character {
-      animation: none;
     }
   }
 }

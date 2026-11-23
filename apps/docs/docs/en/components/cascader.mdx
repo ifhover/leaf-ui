@@ -27,6 +27,7 @@ Select hierarchical options such as regions or categories.
 <ComponentExample exampleId="basic" preview={<CascaderBasic />} fileName="basic.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -42,6 +43,7 @@ Select hierarchical options such as regions or categories.
 <ComponentExample exampleId="controlled" preview={<CascaderControlled />} fileName="controlled.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/controlled.tsx"
+
 ```
 
 </ComponentExample>
@@ -53,6 +55,7 @@ Select hierarchical options such as regions or categories.
 <ComponentExample exampleId="search" preview={<CascaderSearch />} fileName="search.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/search.tsx"
+
 ```
 
 </ComponentExample>
@@ -64,6 +67,7 @@ With `multiple`, `value` is a `string[][]` containing complete paths. Selecting 
 <ComponentExample exampleId="multiple" preview={<CascaderMultiple />} fileName="multiple.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/multiple.tsx"
+
 ```
 
 </ComponentExample>
@@ -75,6 +79,7 @@ With `multiple`, `value` is a `string[][]` containing complete paths. Selecting 
 <ComponentExample exampleId="single-line" preview={<CascaderSingleLine />} fileName="single-line.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/single-line.tsx"
+
 ```
 
 </ComponentExample>
@@ -86,6 +91,7 @@ With `multiple`, `value` is a `string[][]` containing complete paths. Selecting 
 <ComponentExample exampleId="states" preview={<CascaderStates />} fileName="states.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/states.tsx"
+
 ```
 
 </ComponentExample>
@@ -99,6 +105,7 @@ With `multiple`, `value` is a `string[][]` containing complete paths. Selecting 
 <ComponentExample exampleId="intermediate" preview={<CascaderIntermediate />} fileName="intermediate.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/intermediate.tsx"
+
 ```
 
 </ComponentExample>
@@ -112,6 +119,7 @@ Respect `AbortSignal`: changing the options, loader or `cacheKey`, or unmounting
 <ComponentExample exampleId="lazy" preview={<CascaderLazy />} fileName="lazy.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/lazy.tsx"
+
 ```
 
 </ComponentExample>
@@ -123,17 +131,19 @@ Update `cacheKey` when the data version changes to clear loaded children and can
 <ComponentExample exampleId="cache" preview={<CascaderCache />} fileName="cache.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/cache.tsx"
+
 ```
 
 </ComponentExample>
 
 ### Popup width
 
-`popupWidth="auto"` fits the content, and `popupMaxWidth` caps its width. Without a width override, the popup matches the trigger. See [shared popup options](/en/api/popup-options) for other popup settings.
+The popup fits its expanded columns by default (`popupWidth="auto"`). Set `popupWidth="trigger"` to match the trigger, or use `popupMaxWidth` to cap expansion while scrolling overflow columns horizontally. See [shared popup options](/en/api/popup-options) for other popup settings.
 
 <ComponentExample exampleId="popup" preview={<CascaderPopup />} fileName="popup.tsx" width={360}>
 
 ```tsx lineNumbers file="../../../src/examples/en/cascader/popup.tsx"
+
 ```
 
 </ComponentExample>
@@ -173,7 +183,7 @@ Other native `button` and `aria-*` attributes reach the trigger. `className` / `
 | `open` | `boolean` | — | Controlled open state. |
 | `defaultOpen` | `boolean` | `false` | Initial open state for uncontrolled usage. |
 | `onOpenChange` | `(open: boolean) => void` | — | Panel open-state changes |
-| `popupWidth` | `number \| string` | `'trigger'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
+| `popupWidth` | `number \| string` | `'auto'` | Popup width; trigger matches the trigger, auto fits content (and may be narrower), numbers specify fixed pixels; CSS lengths are also supported. |
 | `popupMaxWidth` | `number \| string` | — | Optional maximum popup width; no additional limit when unset, still bounded by the viewport. |
 | `name` | `string` | — | Native FormData field name; nonempty values submit JSON paths and empty values submit an empty string. |
 | `form` | `string` | — | ID of the associated native form. |
@@ -205,7 +215,9 @@ Use `mapCascaderOptions(records, fields)` to convert records to `CascaderOption[
 ```ts
 import { mapCascaderOptions } from '@ifhover/leaf-ui';
 
-const records = [{ id: 'design', name: 'Design', nodes: [{ id: 'interface', name: 'Interface design' }] }];
+const records = [
+  { id: 'design', name: 'Design', nodes: [{ id: 'interface', name: 'Interface design' }] },
+];
 const options = mapCascaderOptions(records, {
   value: 'id',
   label: 'name',

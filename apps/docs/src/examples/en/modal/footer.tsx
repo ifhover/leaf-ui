@@ -1,4 +1,4 @@
-import { Button, Modal, Paragraph, Space } from '@ifhover/leaf-ui';
+import { Button, Modal, Paragraph } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function ModalFooter() {
@@ -12,13 +12,13 @@ export function ModalFooter() {
         title="About drafts"
         onClose={() => setOpen(false)}
         footer={({ cancelButton, confirmButton }) => (
-          <Space size="sm" wrap>
+          <>
             <Button variant="text" onClick={() => setDetails(!details)}>
               {details ? 'Hide details' : 'View details'}
             </Button>
             {cancelButton}
             {confirmButton}
-          </Space>
+          </>
         )}
       >
         <Paragraph>New documents are saved as drafts and can be edited later.</Paragraph>

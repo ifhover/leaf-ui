@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { StrictMode, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import { ConfirmDialog } from '../confirm/confirm';
-import { Button, ConfigProvider, Select, Space, useConfirm } from '../index';
+import { Button, ConfigProvider, Select, useConfirm } from '../index';
 import { Modal } from './modal';
 
 describe('Modal and Confirm', () => {
@@ -20,7 +20,7 @@ describe('Modal and Confirm', () => {
       'leaf-button--outline',
     );
   });
-  it('allows disabling modal dividers without adding them to confirmations', () => {
+  it('allows disabling modal dividers while keeping confirmations on divided mini layout', () => {
     const { rerender } = render(
       <Modal open title="Undivided" divided={false}>
         Content
@@ -28,24 +28,25 @@ describe('Modal and Confirm', () => {
     );
     expect(screen.getByRole('dialog')).not.toHaveClass('leaf-modal--divided');
     rerender(
-      <ConfigProvider components={{ Modal: { divided: true } }}>
+      <ConfigProvider components={{ Modal: { divided: false } }}>
         <ConfirmDialog open title="Confirm" onClose={() => {}}>
           Notice
         </ConfirmDialog>
       </ConfigProvider>,
     );
-    expect(screen.getByRole('alertdialog')).not.toHaveClass('leaf-modal--divided');
+    const confirm = screen.getByRole('alertdialog');
+    expect(confirm).toHaveClass('leaf-modal--mini', 'leaf-modal--divided');
   });
-  it('groups only built-in footer actions and leaves Confirm footer structure unchanged', () => {
+  it('places built-in footer actions directly inside the footer without an extra wrapper', () => {
     const { rerender } = render(
       <Modal open title="Default actions">
         Content
       </Modal>,
     );
     const footer = screen.getByRole('dialog').querySelector('.leaf-modal__footer');
-    const actions = footer?.querySelector('.leaf-modal__actions');
-    expect(footer?.children).toHaveLength(1);
-    expect(actions?.querySelectorAll('button')).toHaveLength(2);
+    expect(footer?.querySelector('.leaf-modal__actions')).toBeNull();
+    expect(footer?.children).toHaveLength(2);
+    expect(footer?.querySelectorAll('button')).toHaveLength(2);
     rerender(
       <ConfirmDialog open title="Confirm" onClose={() => {}}>
         Notice
@@ -55,30 +56,37 @@ describe('Modal and Confirm', () => {
     expect(confirmFooter?.querySelector('.leaf-modal__actions')).toBeNull();
     expect(confirmFooter?.children).toHaveLength(2);
   });
-  it('defaults confirmations to info and keeps default and hidden icons explicit', () => {
+  it('defaults confirmations to a neutral icon tray while supporting hidden and custom icons', () => {
     const { rerender } = render(
       <ConfirmDialog open title="Continue" onClose={() => {}}>
         Notice
       </ConfirmDialog>,
     );
     const dialog = screen.getByRole('alertdialog', { name: 'Continue' });
-    expect(dialog).toHaveClass('leaf-confirm--info', 'leaf-confirm--titled-icon');
-    expect(dialog.querySelector('.leaf-modal__header .leaf-confirm__icon svg')).not.toBeNull();
+    expect(dialog).toHaveClass('leaf-confirm--default', 'leaf-modal--mini');
+    expect(dialog).toHaveStyle({ width: '340px' });
+    expect(
+      dialog.querySelector('.leaf-modal__header > .leaf-modal__icon .lucide-info'),
+    ).not.toBeNull();
+    expect(dialog.querySelector('.leaf-modal__header > .leaf-modal__icon')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    );
     expect(dialog).toHaveAccessibleDescription('Notice');
     rerender(
-      <ConfirmDialog open title="Continue" type="default" onClose={() => {}}>
+      <ConfirmDialog open title="Continue" icon={<span>Lock</span>} onClose={() => {}}>
         Notice
       </ConfirmDialog>,
     );
     expect(dialog).toHaveClass('leaf-confirm--default');
-    expect(dialog.querySelector('.leaf-confirm__icon')).toBeNull();
+    expect(screen.getByText('Lock').closest('.leaf-modal__icon')).not.toBeNull();
     rerender(
       <ConfirmDialog open title="Continue" icon={null} onClose={() => {}}>
         Notice
       </ConfirmDialog>,
     );
-    expect(dialog).toHaveClass('leaf-confirm--info');
-    expect(dialog.querySelector('.leaf-confirm__icon')).toBeNull();
+    expect(dialog).toHaveClass('leaf-confirm--default');
+    expect(dialog.querySelector('.leaf-modal__icon')).toBeNull();
   });
   it('associates supporting text with the dialog and keeps decorative icons outside its name', () => {
     render(
@@ -99,9 +107,24 @@ describe('Modal and Confirm', () => {
       'Changes take effect immediately Choose the services this agent may access',
     );
     expect(dialog.querySelector('.leaf-modal__icon')).toHaveAttribute('aria-hidden', 'true');
+    expect(dialog.querySelector('.leaf-modal__header > .leaf-modal__close')).toBeNull();
+    expect(dialog).toHaveClass('leaf-modal--closable');
+    expect(dialog.querySelector(':scope > .leaf-modal__close')).not.toBeNull();
     expect(dialog).not.toHaveAttribute('divided');
   });
-  it('places a custom confirmation icon beside the title, outside its accessible name', () => {
+  it('omits empty header shells on untitled modals while keeping the floating close action', () => {
+    render(
+      <Modal open aria-label="Frameless notice" footer={null}>
+        Notice body
+      </Modal>,
+    );
+    const dialog = screen.getByRole('dialog', { name: 'Frameless notice' });
+    expect(dialog).toHaveClass('leaf-modal--closable');
+    expect(dialog.querySelector('.leaf-modal__header')).toBeNull();
+    expect(dialog.querySelector(':scope > .leaf-modal__close')).not.toBeNull();
+    expect(screen.getByText('Notice body')).toBeInTheDocument();
+  });
+  it('places a custom confirmation icon in the header tray, outside its accessible name', () => {
     render(
       <ConfirmDialog
         open
@@ -113,36 +136,33 @@ describe('Modal and Confirm', () => {
         This cannot be undone.
       </ConfirmDialog>,
     );
-    expect(screen.getByRole('alertdialog', { name: 'Delete project' })).toHaveAccessibleDescription(
-      'This cannot be undone.',
-    );
-    expect(screen.getByText('Lock').closest('.leaf-confirm__icon')).toHaveAttribute(
+    const dialog = screen.getByRole('alertdialog', { name: 'Delete project' });
+    expect(dialog).toHaveAccessibleDescription('This cannot be undone.');
+    expect(dialog).toHaveClass('leaf-modal--mini', 'leaf-modal--danger', 'leaf-modal--divided');
+    expect(screen.getByText('Lock').closest('.leaf-modal__icon')).toHaveAttribute(
       'aria-hidden',
       'true',
     );
     expect(screen.getByText('Lock').closest('.leaf-modal__header')).not.toBeNull();
-    expect(screen.getByText('Lock').closest('.leaf-confirm__body')).toBeNull();
-    expect(screen.getByRole('alertdialog')).not.toHaveClass('leaf-modal--divided');
-    expect(screen.getByRole('alertdialog').querySelector('.leaf-modal__close')).toBeNull();
+    expect(dialog.querySelector('.leaf-modal__close')).toBeNull();
   });
-  it('keeps an untitled confirmation icon beside its content and supports hiding it', () => {
+  it('keeps an untitled confirmation icon in the centered header tray and supports hiding it', () => {
     const { rerender } = render(
       <ConfirmDialog open type="warning" onClose={() => {}}>
         Continue with these settings?
       </ConfirmDialog>,
     );
     const dialog = screen.getByRole('alertdialog');
-    expect(dialog.querySelector('.leaf-confirm__body > .leaf-confirm__icon')).not.toBeNull();
-    expect(dialog.querySelector('.leaf-modal__header')).toBeNull();
+    expect(dialog.querySelector('.leaf-modal__header > .leaf-modal__icon svg')).not.toBeNull();
     rerender(
       <ConfirmDialog open type="warning" title="Continue" icon={null} onClose={() => {}}>
         Continue with these settings?
       </ConfirmDialog>,
     );
     expect(screen.getByRole('alertdialog', { name: 'Continue' })).not.toHaveClass(
-      'leaf-confirm--titled-icon',
+      'leaf-modal--danger',
     );
-    expect(dialog.querySelector('.leaf-confirm__icon')).toBeNull();
+    expect(dialog.querySelector('.leaf-modal__icon')).toBeNull();
   });
   it.each(['modal', 'confirm'] as const)(
     'ignores a stale async %s error after closing and reopening',
@@ -181,11 +201,11 @@ describe('Modal and Confirm', () => {
           onClose={close}
           confirmButtonProps={{ type: 'submit', form: 'edit-form' }}
           footer={({ cancelButton, confirmButton }) => (
-            <Space size="sm" wrap>
+            <>
               <Button>Help</Button>
               {cancelButton}
               {confirmButton}
-            </Space>
+            </>
           )}
         >
           <form id="edit-form" onSubmit={submit}>
@@ -203,9 +223,39 @@ describe('Modal and Confirm', () => {
     expect(submit).toHaveBeenCalledOnce();
     expect(close).not.toHaveBeenCalled();
   });
-  it('hides a null footer and keeps rejected async modal actions open', async () => {
+  it('hides a null or false footer, skips boolean shells, and propagates custom aria-labelledby to the scrollable region', async () => {
     const close = vi.fn();
-    const { rerender } = render(<Modal open title="Edit" footer={null} onClose={close} />);
+    const { rerender } = render(
+      <>
+        <h2 id="external-modal-heading">External heading</h2>
+        <Modal
+          open
+          title={false}
+          aria-labelledby="external-modal-heading"
+          footer={false}
+          onClose={close}
+        >
+          {false}
+        </Modal>
+      </>,
+    );
+    const externalDialog = screen.getByRole('dialog', { name: 'External heading' });
+    expect(externalDialog.querySelector('.leaf-modal__header')).toBeNull();
+    expect(externalDialog.querySelector('.leaf-modal__body')).toBeNull();
+    expect(externalDialog.querySelector('.leaf-modal__footer')).toBeNull();
+
+    rerender(
+      <>
+        <h2 id="external-modal-heading">External heading</h2>
+        <Modal open aria-labelledby="external-modal-heading" footer={() => false} onClose={close}>
+          Scrollable details
+        </Modal>
+      </>,
+    );
+    expect(screen.getByRole('region', { name: 'External heading' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog').querySelector('.leaf-modal__footer')).toBeNull();
+
+    rerender(<Modal open title="Edit" footer={null} onClose={close} />);
     expect(screen.queryByRole('button', { name: '确定' })).toBeNull();
     rerender(
       <Modal
@@ -216,10 +266,11 @@ describe('Modal and Confirm', () => {
       />,
     );
     await userEvent.click(screen.getByRole('button', { name: '确定' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Save failed');
+    await waitFor(() => expect(screen.getByRole('button', { name: '确定' })).toBeEnabled());
+    expect(screen.queryByRole('alert')).toBeNull();
     expect(close).not.toHaveBeenCalled();
   });
-  it.each(['default', 'info', 'success', 'warning', 'danger'] as const)(
+  it.each(['default', 'success', 'warning', 'danger'] as const)(
     'renders %s confirmation actions and icons',
     (type) => {
       render(
@@ -230,14 +281,17 @@ describe('Modal and Confirm', () => {
         </ConfigProvider>,
       );
       const dialog = screen.getByRole('alertdialog');
-      expect(dialog.querySelector('.leaf-modal__header .leaf-confirm__icon svg') !== null).toBe(
-        type !== 'default',
-      );
-      if (type === 'danger')
-        expect(dialog.querySelector('.leaf-confirm__icon .lucide-circle-alert')).not.toBeNull();
-      expect(dialog.querySelector('.leaf-modal__header .leaf-modal__icon')).toBeNull();
+      expect(dialog).toHaveClass('leaf-modal--mini', 'leaf-modal--divided');
+      expect(dialog.classList.contains('leaf-modal--danger')).toBe(type === 'danger');
+      expect(dialog.querySelector('.leaf-modal__header > .leaf-modal__icon svg')).not.toBeNull();
+      const iconSelector = {
+        default: '.lucide-info',
+        success: '.lucide-check',
+        warning: '.lucide-triangle-alert',
+        danger: '.lucide-circle-alert',
+      }[type];
+      expect(dialog.querySelector(`.leaf-modal__icon ${iconSelector}`)).not.toBeNull();
       const title = screen.getByRole('heading', { name: 'Continue' });
-      expect(title.querySelector('svg') !== null).toBe(type !== 'default');
       expect(title.closest('.leaf-modal__header')).not.toBeNull();
       expect(screen.getByText('Notice').closest('.leaf-modal__body')).not.toBeNull();
       expect(dialog).toHaveAccessibleName('Continue');
@@ -282,13 +336,13 @@ describe('Modal and Confirm', () => {
     await userEvent.keyboard('{Escape}');
     expect(close).toHaveBeenCalledOnce();
   });
-  it('keeps rejected confirmations visible and handles async success in StrictMode', async () => {
+  it('closes standalone rejected confirmations cleanly and handles async success in StrictMode', async () => {
     const close = vi.fn();
     const confirm = vi
       .fn()
       .mockRejectedValueOnce(new Error('Try again'))
       .mockResolvedValueOnce(undefined);
-    render(
+    const { rerender } = render(
       <StrictMode>
         <ConfigProvider locale="en-US">
           <ConfirmDialog open title="Delete" onConfirm={confirm} onClose={close}>
@@ -298,10 +352,20 @@ describe('Modal and Confirm', () => {
       </StrictMode>,
     );
     await userEvent.click(screen.getByRole('button', { name: 'OK' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Try again');
-    expect(close).not.toHaveBeenCalled();
+    await waitFor(() => expect(close).toHaveBeenCalledTimes(1));
+    expect(screen.queryByRole('alert')).toBeNull();
+
+    rerender(
+      <StrictMode>
+        <ConfigProvider locale="en-US">
+          <ConfirmDialog open title="Delete" onConfirm={confirm} onClose={close}>
+            Delete this item?
+          </ConfirmDialog>
+        </ConfigProvider>
+      </StrictMode>,
+    );
     await userEvent.click(screen.getByRole('button', { name: 'OK' }));
-    await waitFor(() => expect(close).toHaveBeenCalledOnce());
+    await waitFor(() => expect(close).toHaveBeenCalledTimes(2));
   });
   it('resolves hook requests independently and preserves content during dismissal', async () => {
     let result: Promise<boolean> | undefined;
@@ -326,83 +390,6 @@ describe('Modal and Confirm', () => {
     await userEvent.click(screen.getByRole('button', { name: '确定' }));
     await expect(result).resolves.toBe(true);
     await act(async () => {});
-  });
-  it('embeds top line tabs outside the scrolling body and preserves visited state', async () => {
-    const tabItems = [
-      { key: 'general', label: 'General', children: <input aria-label="Workspace name" /> },
-      { key: 'members', label: 'Members', children: 'Member list' },
-    ];
-    render(
-      <Modal open title="Workspace" divided={false} tabs={{ items: tabItems }}>
-        Shared footer note
-      </Modal>,
-    );
-    const dialog = screen.getByRole('dialog', { name: 'Workspace' });
-    expect(dialog).toHaveClass('leaf-modal--tabbed');
-    expect(dialog).not.toHaveClass('leaf-modal--divided');
-    const tablist = screen.getByRole('tablist', { name: 'Workspace' });
-    const tabsRoot = tablist.closest('.leaf-modal__tabs');
-    const body = dialog.querySelector('.leaf-modal__body');
-    expect(tabsRoot).toHaveClass('leaf-tabs--line', 'leaf-tabs--top');
-    expect(body?.contains(tablist)).toBe(false);
-    expect(body?.contains(screen.getByRole('tabpanel', { name: 'General' }))).toBe(true);
-    expect(screen.getByText('Shared footer note').closest('.leaf-modal__content')).not.toBeNull();
-
-    await userEvent.type(screen.getByRole('textbox', { name: 'Workspace name' }), 'Leaf');
-    await userEvent.click(screen.getByRole('tab', { name: 'Members' }));
-    expect(screen.getByRole('tabpanel', { name: 'Members' })).toHaveTextContent('Member list');
-    await userEvent.click(screen.getByRole('tab', { name: 'General' }));
-    expect(screen.getByRole('textbox', { name: 'Workspace name' })).toHaveValue('Leaf');
-  });
-  it('supports header-only tabs as a body switcher and moves close action onto untitled tabs', async () => {
-    const close = vi.fn();
-    function Example() {
-      const [view, setView] = useState('info');
-      return (
-        <Modal
-          open
-          aria-label="Details"
-          onClose={close}
-          tabs={{
-            activeKey: view,
-            onChange: setView,
-            items: [
-              { key: 'info', label: 'Info' },
-              { key: 'logs', label: 'Logs' },
-            ],
-          }}
-        >
-          {view === 'info' ? 'Info body' : 'Logs body'}
-        </Modal>
-      );
-    }
-    render(<Example />);
-    const dialog = screen.getByRole('dialog');
-    expect(dialog.querySelector('.leaf-modal__header')).toBeNull();
-    expect(dialog.querySelector('.leaf-tabs__panels')).toBeNull();
-    expect(screen.queryByRole('tabpanel')).toBeNull();
-    expect(screen.getByRole('tab', { name: 'Info' })).not.toHaveAttribute('aria-controls');
-    expect(dialog.querySelector('.leaf-modal__tab-extra > .leaf-modal__close')).not.toBeNull();
-
-    await userEvent.click(screen.getByRole('tab', { name: 'Logs' }));
-    expect(screen.getByText('Logs body')).toBeInTheDocument();
-    await userEvent.click(dialog.querySelector('.leaf-modal__close') as HTMLButtonElement);
-    expect(close).toHaveBeenCalledOnce();
-  });
-  it('resets embedded tab selection when destroyOnClose unmounts the modal', async () => {
-    const tabItems = [
-      { key: 'one', label: 'One', children: 'First tab' },
-      { key: 'two', label: 'Two', children: 'Second tab' },
-    ];
-    const { rerender } = render(
-      <Modal open title="Tabs reset" destroyOnClose tabs={{ items: tabItems }} />,
-    );
-    await userEvent.click(screen.getByRole('tab', { name: 'Two' }));
-    expect(screen.getByRole('tab', { name: 'Two' })).toHaveAttribute('aria-selected', 'true');
-    rerender(<Modal open={false} title="Tabs reset" destroyOnClose tabs={{ items: tabItems }} />);
-    await waitFor(() => expect(document.querySelector('.leaf-modal')).toBeNull());
-    rerender(<Modal open title="Tabs reset" destroyOnClose tabs={{ items: tabItems }} />);
-    expect(screen.getByRole('tab', { name: 'One' })).toHaveAttribute('aria-selected', 'true');
   });
   it('allocates monotonic layers across hook confirmations, out-of-order close, and theme tokens', async () => {
     function Example({ firstOpen }: { firstOpen: boolean }) {
@@ -465,5 +452,87 @@ describe('Modal and Confirm', () => {
       .getByRole('dialog', { name: 'Third modal' })
       .closest<HTMLElement>('.leaf-modal-mask');
     expect(thirdMask?.style.zIndex).toBe('calc(var(--leaf-z-index-modal, 1100) + 4)');
+  });
+
+  it('supports uniform and section-level padding overrides including ConfigProvider defaults', () => {
+    const { rerender } = render(
+      <Modal open title="Default spacing" padding={{ body: 'none', footer: 12 }}>
+        Content
+      </Modal>,
+    );
+    const dialog = screen.getByRole('dialog', { name: 'Default spacing' });
+    expect(dialog).toHaveClass('leaf-modal--divided');
+    expect(dialog).not.toHaveAttribute('data-header-padding');
+    expect(dialog).toHaveAttribute('data-body-padding', '');
+    expect(dialog).toHaveAttribute('data-footer-padding', '');
+    expect(dialog.style.getPropertyValue('--leaf-modal-header-padding')).toBe('');
+    expect(dialog.style.getPropertyValue('--leaf-modal-body-padding')).toBe('0px');
+    expect(dialog.style.getPropertyValue('--leaf-modal-footer-padding')).toBe('12px');
+
+    rerender(
+      <ConfigProvider components={{ Modal: { padding: 28 } }}>
+        <Modal open title="Configured" padding="10px 18px">
+          Content
+        </Modal>
+      </ConfigProvider>,
+    );
+    const configured = screen.getByRole('dialog', { name: 'Configured' });
+    expect(configured).not.toHaveAttribute('data-header-padding');
+    expect(configured).not.toHaveAttribute('data-body-padding');
+    expect(configured).not.toHaveAttribute('data-footer-padding');
+    expect(configured.style.getPropertyValue('--leaf-modal-shell-padding-top')).toBe('10px');
+    expect(configured.style.getPropertyValue('--leaf-modal-shell-padding-right')).toBe('18px');
+    expect(configured.style.getPropertyValue('--leaf-modal-header-padding')).toBe('10px 18px');
+    expect(configured.style.getPropertyValue('--leaf-modal-body-padding')).toBe('10px 18px');
+    expect(configured.style.getPropertyValue('--leaf-modal-footer-padding')).toBe('10px 18px');
+    expect(configured.style.getPropertyValue('--leaf-modal-close-inset-top')).toBe('10px');
+    expect(configured.style.getPropertyValue('--leaf-modal-close-inset-right')).toBe('18px');
+    expect(configured.style.getPropertyValue('--leaf-modal-close-inset-left')).toBe('18px');
+  });
+
+  it('supports mini size narrowing default width while keeping manual widths and danger actions', () => {
+    const { rerender } = render(
+      <ConfigProvider locale="en-US">
+        <Modal
+          open
+          size="mini"
+          danger
+          icon={<span>Trash</span>}
+          title="Delete chat?"
+          description="This will permanently delete this chat conversation."
+          confirmText="Delete"
+        />
+      </ConfigProvider>,
+    );
+    const mini = screen.getByRole('dialog', { name: 'Delete chat?' });
+    expect(mini).toHaveClass('leaf-modal--mini', 'leaf-modal--danger', 'leaf-modal--divided');
+    expect(mini).toHaveStyle({ width: '340px' });
+    expect(mini).toHaveAccessibleDescription(
+      'This will permanently delete this chat conversation.',
+    );
+    expect(screen.getByRole('button', { name: 'Delete' })).toHaveClass('leaf-button--danger');
+    expect(screen.getByRole('button', { name: 'Cancel' })).toHaveClass('leaf-button--outline');
+
+    rerender(
+      <ConfigProvider locale="en-US" components={{ Modal: { width: 520 } }}>
+        <Modal
+          open
+          size="mini"
+          danger
+          confirmButtonProps={{ variant: 'solid' }}
+          title="Configured width"
+        />
+      </ConfigProvider>,
+    );
+    const configured = screen.getByRole('dialog', { name: 'Configured width' });
+    expect(configured).toHaveStyle({ width: '520px' });
+    expect(screen.getByRole('button', { name: 'OK' })).toHaveClass('leaf-button--solid');
+
+    rerender(
+      <ConfigProvider locale="en-US">
+        <Modal open size="mini" width={400} title="Explicit width" />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('dialog', { name: 'Explicit width' })).toHaveStyle({ width: '400px' });
   });
 });

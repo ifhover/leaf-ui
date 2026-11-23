@@ -201,6 +201,7 @@ describe('DataTable TanStack adapter', () => {
       'onRowReorder',
       'toolbar',
       'bleed',
+      'renderRowHeader',
     ] as const) {
       expectTypeOf<DataTableProps<Person>>().not.toHaveProperty(property);
     }
@@ -220,6 +221,7 @@ describe('DataTable TanStack adapter', () => {
       columnDividers: true,
       toolbar: 'Obsolete toolbar',
       bleed: true,
+      renderRowHeader: () => <p>Obsolete header</p>,
     };
     const view = render(<DataTable {...legacy} data={data} columns={columns} rowKey="id" />);
     const assertAutomaticContent = () => {
@@ -227,6 +229,7 @@ describe('DataTable TanStack adapter', () => {
       expect(screen.getByRole('navigation')).toBeInTheDocument();
       expect(screen.queryByText('Obsolete composition')).not.toBeInTheDocument();
       expect(screen.queryByText('Obsolete toolbar')).not.toBeInTheDocument();
+      expect(screen.queryByText('Obsolete header')).not.toBeInTheDocument();
       for (const property of Object.keys(legacy)) expect(root).not.toHaveAttribute(property);
       expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--bordered');
       expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
@@ -297,7 +300,7 @@ describe('DataTable TanStack adapter', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Age: Sort descending' }));
     expect(bodyNames()).toEqual(['Charlie', 'Alice']);
     await userEvent.click(screen.getByRole('checkbox', { name: 'Select row: alice' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(bodyNames()).toEqual(['Dana', 'Bob']);
     expect(screen.getByRole('checkbox', { name: 'Select row: bob' })).toBeDisabled();
   });
@@ -533,7 +536,7 @@ describe('DataTable TanStack adapter', () => {
         <ApplicationTable />
       </ConfigProvider>,
     );
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(bodyNames()).toEqual(['Charlie', 'Dana']);
     await userEvent.click(screen.getByRole('button', { name: 'Toggle slicing' }));
     await userEvent.click(screen.getByRole('button', { name: 'Filter Alice' }));
@@ -644,6 +647,7 @@ describe('DataTable TanStack adapter', () => {
       pagination: false,
     } as const;
     const { rerender } = render(<DataTable {...props} />);
+    expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--md');
     expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass('leaf-table--striped');
     expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
       'leaf-table--bordered',
@@ -726,13 +730,47 @@ describe('DataTable TanStack adapter', () => {
         pagination={{ pageSizeOptions: [2, 4] }}
       />,
     );
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(instance?.getState().pagination.pageIndex).toBe(1);
     expect(bodyNames()).toEqual(['Charlie', 'Dana']);
     await userEvent.click(screen.getByRole('combobox', { name: 'Page size' }));
     await userEvent.click(screen.getByRole('option', { name: '4 / page' }));
     expect(instance?.getState().pagination).toEqual({ pageIndex: 0, pageSize: 4 });
     expect(bodyNames()).toEqual(['Alice', 'Bob', 'Charlie', 'Dana']);
+  });
+
+  it('retains initial out-of-list pageSize in DataTable after switching page size', async () => {
+    const manyPeople: Person[] = Array.from({ length: 12 }, (_, index) => ({
+      id: `p-${index + 1}`,
+      name: `Person ${index + 1}`,
+      age: 20 + index,
+      team: 'Core',
+    }));
+    render(
+      <ConfigProvider locale="en-US">
+        <DataTable
+          data={manyPeople}
+          columns={columns}
+          rowKey="id"
+          options={{ initialState: { pagination: { pageSize: 5 } } }}
+        />
+      </ConfigProvider>,
+    );
+    expect(bodyNames()).toHaveLength(5);
+    const sizeSelect = screen.getByRole('combobox', { name: 'Page size' });
+    await userEvent.click(sizeSelect);
+    await userEvent.click(screen.getByRole('option', { name: '10 / page' }));
+    expect(bodyNames()).toHaveLength(10);
+    await userEvent.click(sizeSelect);
+    expect(screen.getAllByRole('option').map((option) => option.textContent)).toEqual([
+      '5 / page',
+      '10 / page',
+      '20 / page',
+      '50 / page',
+      '100 / page',
+    ]);
+    await userEvent.click(screen.getByRole('option', { name: '5 / page' }));
+    expect(bodyNames()).toHaveLength(5);
   });
 
   it('selects only selectable page rows and preserves selection across pagination', async () => {
@@ -748,10 +786,10 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByRole('checkbox', { name: 'Select row: Bob' })).toBeDisabled();
     await userEvent.click(screen.getByRole('checkbox', { name: 'Select all rows on this page' }));
     expect(instance?.getState().rowSelection).toEqual({ alice: true });
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     await userEvent.click(screen.getByRole('checkbox', { name: 'Select row: Dana' }));
     expect(instance?.getState().rowSelection).toEqual({ alice: true, dana: true });
-    await userEvent.click(screen.getByRole('button', { name: 'Previous page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Previous' }));
     expect(screen.getByRole('checkbox', { name: 'Select row: Alice' })).toBeChecked();
   });
 
@@ -776,8 +814,7 @@ describe('DataTable TanStack adapter', () => {
       </ConfigProvider>,
     );
     const opener = screen.getByRole('button', { name: 'Expand row: Alice' });
-    expect(opener).toHaveClass('leaf-button', 'leaf-button--text', 'leaf-button--sm');
-    expect(opener).toHaveClass('leaf-button--icon-only');
+    expect(opener).toHaveClass('leaf-button', 'leaf-button--text', 'leaf-button--icon-sm');
     expect(opener).toHaveAttribute('type', 'button');
     expect(opener).toBeEnabled();
     const target = opener.getAttribute('aria-controls');
@@ -791,127 +828,6 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByRole('textbox', { name: 'Note Alice' })).toBe(note);
     expect(note).toHaveValue('Draft saved');
     expect(submit).not.toHaveBeenCalled();
-  });
-
-  it('selects logical page records when their selection cells span information and data rows', async () => {
-    let instance: TanStackTable<Person> | undefined;
-    render(
-      <Harness
-        selection="multiple"
-        renderRowHeader={(row) => `Summary ${row.original.name}`}
-        onState={(table) => {
-          instance = table;
-        }}
-      />,
-    );
-    const table = screen.getByRole('table');
-    expect([...table.querySelectorAll('tbody tr')].map((row) => row.textContent)).toEqual([
-      'Summary Alice',
-      'Alice32Design',
-      'Summary Bob',
-      'Bob21Engineering',
-    ]);
-    expect(screen.getAllByRole('checkbox')).toHaveLength(3);
-    const checkbox = screen.getByRole('checkbox', { name: 'Select row: Alice' });
-    expect(checkbox.closest('td')).toHaveAttribute('rowspan', '2');
-    expect(screen.getByText('Summary Alice').closest('td')).toHaveAttribute('colspan', '3');
-    expect(screen.queryByRole('button', { name: /Expand row/ })).not.toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: 'Select row: Bob' })).toBeDisabled();
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Select all rows on this page' }));
-    expect(instance?.getState().rowSelection).toEqual({ alice: true });
-    const header = screen.getByText('Summary Alice').closest('tr');
-    expect(header).toHaveAttribute('data-selected');
-    expect(header?.nextElementSibling).toHaveAttribute('data-selected');
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
-    expect(bodyNames()).toEqual(['Charlie', 'Dana']);
-    expect(screen.getByText('Summary Charlie')).toBeInTheDocument();
-    expect(screen.queryByText('Summary Alice')).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Select row: Dana' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Previous page' }));
-    expect(checkbox).not.toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: 'Select row: Alice' })).toBeChecked();
-    expect(instance?.getState().rowSelection).toEqual({ alice: true, dana: true });
-  });
-
-  it('keeps information rows paired after sorting, filtering and changing visible columns', async () => {
-    function Records() {
-      const table = useDataTable({
-        data,
-        columns,
-        rowKey: 'id',
-        options: {
-          enableSorting: true,
-          sortDescFirst: false,
-          initialState: { pagination: { pageIndex: 0, pageSize: 2 } },
-        },
-      });
-      return (
-        <ConfigProvider locale="en-US">
-          <button type="button" onClick={() => table.getColumn('team')?.setFilterValue('Design')}>
-            Design only
-          </button>
-          <button type="button" onClick={() => table.getColumn('team')?.toggleVisibility(false)}>
-            Hide team
-          </button>
-          <DataTable table={table} renderRowHeader={(row) => `Summary ${row.original.name}`} />
-        </ConfigProvider>
-      );
-    }
-    render(<Records />);
-    await userEvent.click(screen.getByRole('button', { name: 'Age: Sort ascending' }));
-    expect(bodyNames()).toEqual(['Bob', 'Dana']);
-    for (const name of ['Bob', 'Dana']) {
-      expect(screen.getByText(`Summary ${name}`).closest('tr')?.nextElementSibling).toHaveAttribute(
-        'data-row-id',
-        name.toLowerCase(),
-      );
-    }
-    await userEvent.click(screen.getByRole('button', { name: 'Design only' }));
-    expect(bodyNames()).toEqual(['Alice', 'Charlie']);
-    expect(screen.queryByText('Summary Bob')).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Hide team' }));
-    expect(screen.getByText('Summary Alice').closest('td')).toHaveAttribute('colspan', '2');
-    expect(screen.getByText('Summary Charlie').closest('td')).toHaveAttribute('colspan', '2');
-  });
-
-  it('moves optional details into the information row and retains collapsed input state', async () => {
-    render(
-      <ConfigProvider locale="en-US">
-        <DataTable
-          data={data.slice(0, 2)}
-          columns={columns}
-          rowKey="id"
-          selection="multiple"
-          pagination={false}
-          getRowLabel={(row) => row.original.name}
-          renderRowHeader={(row) => `Summary ${row.original.name}`}
-          options={{ getRowCanExpand: (row) => !row.original.disabled }}
-          renderExpandedRow={(row) => <input aria-label={`Note ${row.original.name}`} />}
-        />
-      </ConfigProvider>,
-    );
-    const table = screen.getByRole('table');
-    expect(table.querySelectorAll('col')).toHaveLength(4);
-    expect(table.querySelectorAll('.leaf-data-table__expansion')).toHaveLength(0);
-    const opener = screen.getByRole('button', { name: 'Expand row: Alice' });
-    expect(opener).toHaveTextContent('Expand details');
-    expect(opener.closest('tr')).toHaveAttribute('data-row-header', 'alice');
-    expect(screen.queryByRole('button', { name: 'Expand row: Bob' })).not.toBeInTheDocument();
-    const details = document.getElementById(opener.getAttribute('aria-controls') ?? '');
-    expect(details).toHaveAttribute('hidden');
-    await userEvent.click(opener);
-    expect(opener).toHaveAttribute('aria-expanded', 'true');
-    expect(opener).toHaveTextContent('Collapse details');
-    expect(details).not.toHaveAttribute('hidden');
-    expect(details?.querySelector('td')).toHaveAttribute('colspan', '4');
-    const note = screen.getByRole('textbox', { name: 'Note Alice' });
-    await userEvent.type(note, 'Keep this draft');
-    await userEvent.click(opener);
-    expect(details).toHaveAttribute('hidden');
-    expect(bodyNames()).toEqual(['Alice', 'Bob']);
-    await userEvent.click(opener);
-    expect(screen.getByRole('textbox', { name: 'Note Alice' })).toBe(note);
-    expect(note).toHaveValue('Keep this draft');
   });
 
   it('expands hierarchical rows through the supplied row model', async () => {
@@ -955,7 +871,7 @@ describe('DataTable TanStack adapter', () => {
         }}
       />,
     );
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(instance?.getState().pagination.pageIndex).toBe(1);
     expect(bodyNames()).toEqual(['Charlie', 'Alice']);
     await userEvent.click(screen.getByRole('button', { name: 'Name: Sort ascending' }));
@@ -976,7 +892,7 @@ describe('DataTable TanStack adapter', () => {
       />,
     );
     expect(screen.queryByRole('combobox', { name: 'Page size' })).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(instance?.getState().pagination.pageIndex).toBe(1);
   });
 
@@ -988,8 +904,8 @@ describe('DataTable TanStack adapter', () => {
         pagination={{ hasNextPage: false, variant: 'ghost', size: 'sm' }}
       />,
     );
-    expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Next page' })).toHaveClass(
+    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Next' })).toHaveClass(
       'leaf-button--text',
       'leaf-button--sm',
     );
@@ -1011,7 +927,7 @@ describe('DataTable TanStack adapter', () => {
       wrapper: ({ children }) => <ConfigProvider locale="en-US">{children}</ConfigProvider>,
     });
     await userEvent.click(screen.getByRole('checkbox', { name: 'Select row: alice' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(bodyNames()).toEqual(['Charlie', 'Dana']);
     rerender(<DataTable {...props} pagination={false} />);
     expect(bodyNames()).toEqual(['Alice', 'Bob', 'Charlie', 'Dana']);
@@ -1069,7 +985,7 @@ describe('DataTable TanStack adapter', () => {
     expect(nav).not.toHaveAttribute('showTotal');
     expect(nav).not.toHaveAttribute('showSizeChanger');
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Next page' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(onClick).toHaveBeenCalledOnce();
   });
 
@@ -1279,7 +1195,7 @@ describe('DataTable TanStack adapter', () => {
       'aria-disabled',
       'true',
     );
-    expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
     expect(bodyNames()).toEqual(['Alice', 'Bob']);
   });
 
@@ -1317,7 +1233,7 @@ describe('DataTable TanStack adapter', () => {
     expect(markup).not.toContain('role="grid"');
   });
 
-  it('hides both rows of retained grouped records when a group collapses', async () => {
+  it('hides retained grouped rows when a group collapses', async () => {
     function Grouped() {
       const table = useReactTable({
         data,
@@ -1330,29 +1246,22 @@ describe('DataTable TanStack adapter', () => {
       });
       return (
         <ConfigProvider locale="en-US">
-          <DataTable
-            table={table}
-            pagination={false}
-            renderRowHeader={(row) => `Summary ${row.id}`}
-          />
+          <DataTable table={table} pagination={false} />
         </ConfigProvider>
       );
     }
-    render(<Grouped />);
-    const header = screen.getByText('Summary alice').closest('tr');
-    const record = header?.nextElementSibling;
-    expect(header).not.toHaveAttribute('hidden');
+    const { container } = render(<Grouped />);
+    const record = container.querySelector('[data-row-id="alice"]');
+    expect(record).not.toHaveAttribute('hidden');
     await userEvent.click(screen.getByRole('button', { name: 'Collapse row: team:Design' }));
-    expect(header).toHaveAttribute('hidden');
     expect(record).toHaveAttribute('hidden');
-    expect(header).toHaveAttribute('aria-hidden', 'true');
+    expect(record).toHaveAttribute('aria-hidden', 'true');
     await userEvent.click(screen.getByRole('button', { name: 'Expand row: team:Design' }));
-    expect(screen.getByText('Summary alice').closest('tr')).toBe(header);
-    expect(header).not.toHaveAttribute('hidden');
+    expect(container.querySelector('[data-row-id="alice"]')).toBe(record);
     expect(record).not.toHaveAttribute('hidden');
   });
 
-  it('counts information, data and visible detail rows in virtual table semantics', () => {
+  it('counts data and visible detail rows in virtual table semantics', () => {
     const markup = renderToString(
       <DataTable
         data={data}
@@ -1361,47 +1270,41 @@ describe('DataTable TanStack adapter', () => {
         virtual
         pagination={false}
         selection="single"
-        renderRowHeader={(row) => `Summary ${row.original.name}`}
         renderExpandedRow={() => 'Details'}
         options={{ initialState: { expanded: { alice: true } } }}
       />,
     );
     const container = document.createElement('div');
     container.innerHTML = markup;
-    expect(container.querySelector('table')).toHaveAttribute('aria-rowcount', '10');
-    expect(container.querySelector('[data-row-header="alice"]')).toHaveAttribute(
-      'aria-rowindex',
-      '2',
-    );
-    expect(container.querySelector('[data-row-id="alice"]')).toHaveAttribute('aria-rowindex', '3');
+    expect(container.querySelector('table')).toHaveAttribute('aria-rowcount', '6');
+    expect(container.querySelector('[data-row-id="alice"]')).toHaveAttribute('aria-rowindex', '2');
     expect(container.querySelector('[data-detail-row="alice"]')).toHaveAttribute(
       'aria-rowindex',
-      '4',
+      '3',
     );
-    expect(container.querySelector('[data-row-header="bob"]')).toHaveAttribute(
-      'aria-rowindex',
-      '5',
-    );
-    expect(container.querySelector('[data-row-id="bob"]')).toHaveAttribute('aria-rowindex', '6');
+    expect(container.querySelector('[data-row-id="bob"]')).toHaveAttribute('aria-rowindex', '4');
     expect(container.querySelectorAll('input[type="radio"]')).toHaveLength(4);
-    expect(container.querySelector('input[type="radio"]')?.closest('td')).toHaveAttribute(
+    expect(container.querySelector('input[type="radio"]')?.closest('td')).not.toHaveAttribute(
       'rowspan',
-      '2',
     );
   });
 
   it('keeps pagination at md for lg and md tables and uses sm for sm tables', () => {
     const view = render(<DataTable data={data} columns={columns} rowKey="id" size="lg" />);
+    const tableRoot = () => screen.getByRole('table').closest('.leaf-table');
     const nav = () => screen.getByRole('navigation');
+    expect(tableRoot()).toHaveClass('leaf-table--lg');
     expect(nav()).toHaveClass('leaf-pagination--md');
     expect(nav()).not.toHaveClass('leaf-pagination--lg');
     view.rerender(<DataTable data={data} columns={columns} rowKey="id" size="md" />);
+    expect(tableRoot()).toHaveClass('leaf-table--md');
     expect(nav()).toHaveClass('leaf-pagination--md');
     view.rerender(<DataTable data={data} columns={columns} rowKey="id" size="sm" />);
+    expect(tableRoot()).toHaveClass('leaf-table--sm');
     expect(nav()).toHaveClass('leaf-pagination--sm');
   });
 
-  it('sizes the selection column to fit its inline padding, control width and bordered end rule', () => {
+  it('sizes the selection column to 34px regardless of bordered mode and marks the final visible row', async () => {
     const clientWidth = vi.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(1000);
     try {
       const pinnedColumns: ColumnDef<Person>[] = [
@@ -1433,14 +1336,10 @@ describe('DataTable TanStack adapter', () => {
         />,
       );
       cols = [...screen.getByRole('table').querySelectorAll('col')];
-      expect(cols.map((col) => col.style.width)).toEqual([
-        'calc(34px + var(--leaf-table-border-width))',
-        '825px',
-        '140px',
-      ]);
+      expect(cols.map((col) => col.style.width)).toEqual(['34px', '826px', '140px']);
 
       view.rerender(
-        <ConfigProvider theme={{ components: { Table: { borderWidth: 2 } } }}>
+        <ConfigProvider locale="en-US" theme={{ components: { Table: { borderWidth: 2 } } }}>
           <DataTable
             data={data}
             columns={pinnedColumns}
@@ -1448,18 +1347,58 @@ describe('DataTable TanStack adapter', () => {
             pagination={false}
             selection="multiple"
             bordered
+            getRowLabel={(row) => row.original.name}
+            renderExpandedRow={(row) => `Detail ${row.original.name}`}
             options={{ initialState: { columnPinning: { right: ['team'] } } }}
           />
         </ConfigProvider>,
       );
       cols = [...screen.getByRole('table').querySelectorAll('col')];
-      expect(cols.map((col) => col.style.width)).toEqual([
-        'calc(34px + var(--leaf-table-border-width))',
-        '824px',
-        '140px',
-      ]);
+      expect(cols.map((col) => col.style.width)).toEqual(['34px', '48px', '778px', '140px']);
+      expect(view.container.querySelector('[data-row-id="dana"]')).toHaveAttribute(
+        'data-last-visible',
+        'true',
+      );
+      await userEvent.click(screen.getByRole('button', { name: 'Expand row: Dana' }));
+      expect(view.container.querySelector('[data-row-id="dana"]')).not.toHaveAttribute(
+        'data-last-visible',
+      );
+      expect(view.container.querySelector('[data-detail-row="dana"]')).toHaveAttribute(
+        'data-last-visible',
+        'true',
+      );
     } finally {
       clientWidth.mockRestore();
     }
+  });
+
+  it('tracks single-arrow sort direction state and marks ellipsis cells in fixed layout', async () => {
+    const { container } = render(
+      <ConfigProvider locale="en-US">
+        <DataTable
+          data={data}
+          columns={[
+            { accessorKey: 'name', header: 'Name', meta: { ellipsis: true } },
+            { accessorKey: 'age', header: 'Age', meta: { align: 'end' } },
+          ]}
+          rowKey="id"
+          pagination={false}
+          options={{ enableSorting: true }}
+        />
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('table')).toHaveStyle({ tableLayout: 'fixed' });
+    expect(screen.getByText('Alice').closest('td')).toHaveAttribute('data-ellipsis', 'true');
+    expect(screen.getByText('32').closest('td')).not.toHaveAttribute('data-ellipsis');
+    const ageButton = screen.getByRole('button', { name: 'Age: Sort descending' });
+    const arrow = () => ageButton.querySelector('.leaf-data-table__sort-arrow');
+    expect(container.querySelectorAll('.leaf-data-table__sort-arrow')).toHaveLength(2);
+    expect(arrow()).not.toHaveAttribute('data-direction');
+    await userEvent.click(ageButton);
+    expect(arrow()).toHaveAttribute('data-direction', 'desc');
+    await userEvent.click(screen.getByRole('button', { name: 'Age: Sort ascending' }));
+    expect(arrow()).toHaveAttribute('data-direction', 'asc');
+    await userEvent.click(screen.getByRole('button', { name: 'Age: Clear sorting' }));
+    expect(arrow()).not.toHaveAttribute('data-direction');
   });
 });

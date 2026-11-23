@@ -7,6 +7,7 @@ import { useLeafConfig } from '../config-provider/context';
 import { FieldScope, useFormField } from '../form/form';
 import { InputNumberControl as InputNumber } from '../inputnumber/inputnumber';
 import { classes } from '../shared/classes';
+import { ClearButton } from '../shared/clear-button';
 import { FormValue, useFieldValue } from '../shared/field';
 import { FloatingPanel, useFloatingDismiss, usePopupState } from '../shared/floating';
 import { useFormattedText } from '../shared/use-formatted-text';
@@ -209,19 +210,17 @@ export function GradientColorPicker({
           )}
         </ColorPickerTrigger>
         {allowClear && current && !disabled && !readOnly && (
-          <button
-            type="button"
-            className="leaf-color-picker__clear"
-            aria-label={messages.colorPicker.clear}
-            onClick={() => {
+          <ClearButton
+            inline={!showText || Boolean(children)}
+            alwaysVisible={!showText || Boolean(children)}
+            label={messages.colorPicker.clear}
+            onClear={() => {
               setCurrent('');
               onChange?.('');
               onChangeComplete?.('');
               trigger.current?.focus();
             }}
-          >
-            <X size={14} aria-hidden="true" />
-          </button>
+          />
         )}
         <FormValue
           name={name}
@@ -263,10 +262,9 @@ export function GradientColorPicker({
               />
             ))}
             <ButtonControl
-              size="sm"
+              size="icon-sm"
               variant="text"
               aria-label={t('colorPicker.addColorStop')}
-              startIcon={<Plus size={14} />}
               disabled={model.stops.length >= 10}
               onClick={() => {
                 change(
@@ -281,12 +279,13 @@ export function GradientColorPicker({
                 );
                 setActive(model.stops.length);
               }}
-            />
+            >
+              <Plus aria-hidden="true" />
+            </ButtonControl>
             <ButtonControl
-              size="sm"
+              size="icon-sm"
               variant="text"
               aria-label={t('colorPicker.removeColorStop')}
-              startIcon={<X size={14} />}
               disabled={model.stops.length <= 2}
               onClick={() => {
                 change(
@@ -295,7 +294,9 @@ export function GradientColorPicker({
                 );
                 setActive(0);
               }}
-            />
+            >
+              <X aria-hidden="true" />
+            </ButtonControl>
           </div>
           <div className="leaf-color-picker__gradient-field">
             <span>{t('colorPicker.color')}</span>

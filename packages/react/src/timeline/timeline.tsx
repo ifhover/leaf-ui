@@ -66,7 +66,13 @@ export function Timeline(rawProps: TimelineProps) {
               } as LeafThemeStyle
             }
           >
-            <div className="leaf-timeline__dot" aria-hidden="true">
+            <div
+              className={classes(
+                'leaf-timeline__dot',
+                item.dot != null && 'leaf-timeline__dot--custom',
+              )}
+              aria-hidden="true"
+            >
               {item.dot}
             </div>
             <div className="leaf-timeline__content">

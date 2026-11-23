@@ -31,7 +31,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual';
-import { ChevronRight } from 'lucide-react';
+import { ArrowDown, ChevronRight } from 'lucide-react';
 import {
   createContext,
   Fragment,
@@ -68,6 +68,8 @@ import { useRowMotion } from './row-motion';
 export interface DataTableColumnMeta {
   label?: string;
   align?: 'start' | 'center' | 'end';
+  /** Truncate overflowing cell content onto a single line with an ellipsis. */
+  ellipsis?: boolean;
   cellClassName?: string;
   headerClassName?: string;
   /** Positive weight for sharing available width; ignored on pinned or manually resized columns. */
@@ -86,15 +88,6 @@ function warnDevelopment(key: string, message: string) {
 }
 
 const SELECTION_CONTENT_WIDTH = 34; // 左右各 8px 内边距 + 18px 选择框本身宽度
-
-function resolvePx(value: number | string | undefined, fallback: number) {
-  if (typeof value === 'number') return Number.isFinite(value) && value >= 0 ? value : fallback;
-  if (typeof value === 'string') {
-    const match = /^\s*(?:0+(?:\.0+)?|(\d+(?:\.\d+)?)\s*px)\s*$/iu.exec(value);
-    if (match) return Number(match[1] ?? 0);
-  }
-  return fallback;
-}
 
 function hasSortingModel(table: TanStackTable<unknown>) {
   return Boolean(table.options.getSortedRowModel || table.options.manualSorting);
@@ -137,8 +130,6 @@ interface DataTableInstanceProps<TData> extends DataTablePresentationProps {
   localPagination?: never;
 
   getRowLabel?: (row: Row<TData>) => string;
-  /** Render a full-width information row above each record's normal cells. */
-  renderRowHeader?: (row: Row<TData>) => ReactNode;
   renderExpandedRow?: (row: Row<TData>) => ReactNode;
   getRowProps?: (row: Row<TData>) => DataTableRowProps;
   getCellProps?: (cell: Cell<TData, unknown>) => DataTableCellProps;
@@ -174,7 +165,7 @@ function useDataTableContext() {
 
 function DataTableRoot<TData>({
   table,
-  size = 'lg',
+  size = 'md',
   bordered = false,
   striped = false,
   maxHeight,
@@ -185,7 +176,6 @@ function DataTableRoot<TData>({
   onRetry,
   selection = false,
   getRowLabel,
-  renderRowHeader,
   renderExpandedRow,
   getRowProps,
   getCellProps,
@@ -220,7 +210,6 @@ function DataTableRoot<TData>({
     onRetry,
     selection,
     getRowLabel: getRowLabel ? (row) => getRowLabel(row as Row<TData>) : undefined,
-    renderRowHeader: renderRowHeader ? (row) => renderRowHeader(row as Row<TData>) : undefined,
     renderExpandedRow: renderExpandedRow
       ? (row) => renderExpandedRow(row as Row<TData>)
       : undefined,
@@ -421,21 +410,12 @@ function DataRow({
   lastVisible?: boolean;
 }) {
   const config = useDataTableContext();
-  const {
-    id,
-    selection,
-    loading,
-    getRowLabel,
-    renderRowHeader,
-    renderExpandedRow,
-    getRowProps,
-    getCellProps,
-  } = config;
-  const t = useText();
+  const { id, selection, loading, getRowLabel, renderExpandedRow, getRowProps, getCellProps } =
+    config;
   const format = useFormattedText();
   const detailsId = `${id}-detail-${encodeURIComponent(row.id)}`;
   const label = getRowLabel?.(row) ?? row.id;
-  const expandable = config.expandable && !renderRowHeader;
+  const expandable = config.expandable;
   const detail = Boolean(
     !collapsed && renderExpandedRow && row.getIsExpanded() && !row.subRows.length,
   );
@@ -447,28 +427,22 @@ function DataRow({
   const utilityCount = Number(Boolean(selection)) + Number(expandable);
   const custom = getRowProps?.(row);
   const element = useRef<HTMLTableRowElement>(null);
-  // Native row spans must open/close as a whole; do not animate half a record.
-  const hidden = useRowMotion(element, collapsed, animate && !renderRowHeader);
-  const Cell = animate && !renderRowHeader ? MotionCell : Table.Cell;
+  const hidden = useRowMotion(element, collapsed, animate);
+  const Cell = animate ? MotionCell : Table.Cell;
   useEffect(() => {
     const node = element.current;
     if (!node || !measureRef) return;
     const measure = () => measureRef(node);
-    const header = renderRowHeader ? node.previousElementSibling : null;
     const detail = renderExpandedRow ? node.nextElementSibling : null;
     const observer =
       typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
-    if (header?.hasAttribute('data-row-header')) observer?.observe(header);
     if (detail?.hasAttribute('data-detail-row')) observer?.observe(detail);
     measure();
     return () => observer?.disconnect();
-  }, [measureRef, renderRowHeader, renderExpandedRow]);
+  }, [measureRef, renderExpandedRow]);
   const selected = selection ? row.getIsSelected() : custom?.selected;
   const selectionCell = selection ? (
-    <Cell
-      rowSpan={renderRowHeader ? 2 : undefined}
-      className="leaf-data-table__utility leaf-data-table__selection"
-    >
+    <Cell className="leaf-data-table__utility leaf-data-table__selection">
       {selection === 'single' ? (
         <Radio
           name={`${id}-selection`}
@@ -493,9 +467,8 @@ function DataRow({
     config.expandable && row.getCanExpand() ? (
       <ButtonControl
         variant="text"
-        size="sm"
+        size="icon-sm"
         className="leaf-data-table__expand"
-        startIcon={<ChevronRight className="leaf-data-table__expand-icon" />}
         aria-label={format(row.getIsExpanded() ? 'dataTable.collapseRow' : 'dataTable.expandRow', {
           label,
         })}
@@ -503,34 +476,13 @@ function DataRow({
         aria-controls={renderExpandedRow && !row.subRows.length ? detailsId : undefined}
         disabled={loading}
         onClick={row.getToggleExpandedHandler()}
-        style={renderRowHeader ? undefined : { marginInlineStart: row.depth * 12 }}
+        style={{ marginInlineStart: row.depth * 12 }}
       >
-        {renderRowHeader
-          ? t(row.getIsExpanded() ? 'dataTable.collapseDetails' : 'dataTable.expandDetails')
-          : undefined}
+        <ChevronRight className="leaf-data-table__expand-icon" aria-hidden="true" />
       </ButtonControl>
     ) : null;
   return (
     <Fragment>
-      {renderRowHeader && (
-        <Table.Row
-          className="leaf-data-table__record-header"
-          data-row-header={row.id}
-          hidden={hidden || undefined}
-          aria-hidden={collapsed || undefined}
-          {...inertProps(collapsed)}
-          aria-rowindex={ariaRowIndex}
-          selected={selected}
-        >
-          {selectionCell}
-          <Table.Cell colSpan={Math.max(1, cells.length)} className="leaf-data-table__record-cell">
-            <div className="leaf-data-table__record-heading">
-              <div className="leaf-data-table__record-summary">{renderRowHeader(row)}</div>
-              {expandControl}
-            </div>
-          </Table.Cell>
-        </Table.Row>
-      )}
       <Table.Row
         {...custom}
         ref={(node) => {
@@ -540,14 +492,14 @@ function DataRow({
         data-index={rowIndex}
         data-row-id={row.id}
         data-striped={(config.striped && stripeIndex % 2 === 1) || undefined}
-        data-last-visible={lastVisible || undefined}
+        data-last-visible={(lastVisible && !detail) || undefined}
         hidden={hidden || undefined}
         aria-hidden={collapsed || undefined}
         {...inertProps(collapsed)}
-        aria-rowindex={ariaRowIndex ? ariaRowIndex + Number(Boolean(renderRowHeader)) : undefined}
+        aria-rowindex={ariaRowIndex}
         selected={selected}
       >
-        {!renderRowHeader && selectionCell}
+        {selectionCell}
         {expandable && (
           <Cell className="leaf-data-table__utility leaf-data-table__expansion">
             {expandControl}
@@ -564,6 +516,7 @@ function DataRow({
               {...props}
               {...pinProps(cell.column)}
               data-sorted={cell.column.getIsSorted() || undefined}
+              data-ellipsis={meta?.ellipsis || undefined}
               className={classes(meta?.cellClassName, props?.className)}
             >
               {cell.getIsPlaceholder()
@@ -586,9 +539,8 @@ function DataRow({
           className="leaf-data-table__detail"
           id={detailsId}
           data-detail-row={row.id}
-          aria-rowindex={
-            ariaRowIndex && detail ? ariaRowIndex + 1 + Number(Boolean(renderRowHeader)) : undefined
-          }
+          data-last-visible={(lastVisible && detail) || undefined}
+          aria-rowindex={ariaRowIndex && detail ? ariaRowIndex + 1 : undefined}
           hidden={!detail}
         >
           <Table.Cell colSpan={Math.max(1, cells.length + utilityCount)}>
@@ -636,11 +588,9 @@ function VirtualRows({
         : [...new Set([...visible, focusedIndex])].sort((first, second) => first - second);
     },
     measureElement: (element) => {
-      const header = element.previousElementSibling;
       const detail = element.nextElementSibling;
       return (
         element.getBoundingClientRect().height +
-        (header?.hasAttribute('data-row-header') ? header.getBoundingClientRect().height : 0) +
         (detail?.hasAttribute('data-detail-row') ? detail.getBoundingClientRect().height : 0)
       );
     },
@@ -685,6 +635,7 @@ function VirtualRows({
               rowIndex={item.index}
               ariaRowIndex={rowIndexes[item.index]}
               measureRef={virtualizer.measureElement}
+              lastVisible={item.index === rows.length - 1 && bottom === 0}
             />
           </Fragment>
         ) : null;
@@ -727,7 +678,6 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
   const config = useDataTableContext();
   const { table, tableRef, loading, error, emptyContent, onRetry, selection, resizable, virtual } =
     config;
-  const { theme } = useLeafConfig();
   const t = useText();
   const viewport = useRef<HTMLDivElement>(null);
   const [availableWidth, setAvailableWidth] = useState(0);
@@ -757,18 +707,13 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
   ];
   const headers = table.getHeaderGroups();
   const sortingAvailable = hasSortingModel(table);
-  const expandable = config.expandable && !config.renderRowHeader;
+  const expandable = config.expandable;
   const utilityCount = Number(Boolean(selection)) + Number(expandable);
   const colSpan = Math.max(1, columns.length + utilityCount);
-  // 开启 bordered 时单元格右边框占去内部空间，需要一并计入选择列宽度
-  const selectionBorderWidth = config.bordered
-    ? resolvePx(theme.components?.Table?.borderWidth ?? theme.tokens?.borderWidth, 1)
-    : 0;
-  const selectionWidth = SELECTION_CONTENT_WIDTH + selectionBorderWidth;
   const layout = getColumnLayout(table, columns, {
     forceFixed: Boolean(resizable || virtual || columns.some((column) => column.getIsPinned())),
     availableWidth,
-    utilityWidth: (selection ? selectionWidth : 0) + (expandable ? 48 : 0),
+    utilityWidth: (selection ? SELECTION_CONTENT_WIDTH : 0) + (expandable ? 48 : 0),
   });
   const status =
     error != null && error !== false
@@ -785,13 +730,12 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
     let count = headers.length;
     const indexes = rows.map((row) => {
       const index = ++count;
-      if (config.renderRowHeader) count++;
       if (expanded && config.renderExpandedRow && row.getIsExpanded() && !row.subRows.length)
         count++;
       return index;
     });
     return { indexes, count };
-  }, [virtual, rows, headers.length, expanded, config.renderExpandedRow, config.renderRowHeader]);
+  }, [virtual, rows, headers.length, expanded, config.renderExpandedRow]);
   return (
     <div {...props} className={classes('leaf-data-table__content', className)}>
       <Table
@@ -819,15 +763,7 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
         loading={loading && Boolean(rows.length) && status !== 'error'}
       >
         <colgroup>
-          {selection && (
-            <col
-              style={{
-                width: config.bordered
-                  ? `calc(${SELECTION_CONTENT_WIDTH}px + var(--leaf-table-border-width))`
-                  : SELECTION_CONTENT_WIDTH,
-              }}
-            />
-          )}
+          {selection && <col style={{ width: SELECTION_CONTENT_WIDTH }} />}
           {expandable && <col style={{ width: 48 }} />}
           {columns.map((column) => (
             <col
@@ -904,13 +840,11 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
                         >
                           <span>{flexRender(column.columnDef.header, header.getContext())}</span>
                           <span className="leaf-data-table__sort-icons" aria-hidden="true">
-                            <SortTriangle
-                              className="leaf-data-table__sort-up"
-                              active={sorted === 'asc'}
-                            />
-                            <SortTriangle
-                              className="leaf-data-table__sort-down"
-                              active={sorted === 'desc'}
+                            <ArrowDown
+                              size={14}
+                              strokeWidth={1.75}
+                              className="leaf-data-table__sort-arrow"
+                              data-direction={sorted || undefined}
                             />
                           </span>
                         </button>
@@ -937,12 +871,9 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
           onFocusCapture={
             virtual
               ? (event) => {
-                  const row = (event.target as Element).closest(
-                    '[data-row-id], [data-detail-row], [data-row-header]',
-                  );
+                  const row = (event.target as Element).closest('[data-row-id], [data-detail-row]');
                   setFocusedRowId(
                     row?.getAttribute('data-row-id') ??
-                      row?.getAttribute('data-row-header') ??
                       row?.getAttribute('data-detail-row') ??
                       undefined,
                   );
@@ -995,21 +926,6 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
   );
 }
 
-function SortTriangle({ className, active }: { className: string; active: boolean }) {
-  return (
-    <svg
-      width="10"
-      height="5"
-      viewBox="0 0 10 5"
-      className={className}
-      data-active={active || undefined}
-      aria-hidden="true"
-    >
-      <path d="M4.4 1.0 Q5 0.35 5.6 1.0 L8.7 4.1 Q9.15 4.65 8.4 4.65 L1.6 4.65 Q0.85 4.65 1.3 4.1 Z" />
-    </svg>
-  );
-}
-
 function DataTablePaginationControl({
   className,
   hasNextPage,
@@ -1044,7 +960,7 @@ function DataTablePaginationControl({
       >
         <ButtonControl
           size={props.size ?? paginationSize}
-          variant={props.variant === 'ghost' ? 'text' : (props.variant ?? 'outline')}
+          variant={props.variant === 'outline' ? 'outline' : 'text'}
           disabled={props.disabled || loading || !table.getCanPreviousPage()}
           onClick={() => table.previousPage()}
         >
@@ -1053,7 +969,7 @@ function DataTablePaginationControl({
         <span>{pageIndex + 1}</span>
         <ButtonControl
           size={props.size ?? paginationSize}
-          variant={props.variant === 'ghost' ? 'text' : (props.variant ?? 'outline')}
+          variant={props.variant === 'outline' ? 'outline' : 'text'}
           disabled={props.disabled || loading || !(hasNextPage ?? table.getCanNextPage())}
           onClick={() => table.nextPage()}
         >
@@ -1166,6 +1082,7 @@ function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
     selectAllMode: _selectAllMode,
     columnReordering: _columnReordering,
     onRowReorder: _onRowReorder,
+    renderRowHeader: _renderRowHeader,
     ...props
   } = merged as typeof merged & {
     stickyHeader?: unknown;
@@ -1179,6 +1096,7 @@ function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
     selectAllMode?: unknown;
     columnReordering?: unknown;
     onRowReorder?: unknown;
+    renderRowHeader?: unknown;
   };
   return props.table ? (
     <DataTableRoot {...(props as DataTableInstanceProps<TData>)} />

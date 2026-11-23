@@ -3,7 +3,13 @@ import { CalendarDays, Check, ChevronDown, ChevronRight, Clock3, Search } from '
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-const colors = { green: '#1e964f', border: '#e5e5e8', text: '#202024', muted: '#68686f' };
+const colors = {
+  green: '#1e964f',
+  border: '#e5e5e5',
+  text: '#0d0d0d',
+  muted: '#6c6c6c',
+  mutedSurface: '#f5f5f5',
+};
 const rect = (x, y, width, height, fill = '#fff', stroke = colors.border, radius = 6) =>
   `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${radius}" fill="${fill}" stroke="${stroke}"/>`;
 const text = (x, y, value, color = colors.text, fontSize = 10) =>
@@ -13,16 +19,16 @@ const icon = (Component, x, y, color = colors.muted, size = 13) =>
 const image = (title, content) =>
   `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="128" viewBox="0 0 240 128" fill="none"><title>${title}</title>${content}</svg>\n`;
 const field = (label, Icon = ChevronDown) =>
-  rect(25, 8, 190, 26, '#fff', colors.green) +
+  rect(25, 8, 190, 26, '#fff', colors.text) +
   text(36, 25, label) +
-  icon(Icon, 193, 14, colors.green);
+  icon(Icon, 193, 14, colors.text);
 
 const select =
   field('Design studio') +
   rect(25, 39, 190, 80) +
-  rect(30, 44, 180, 23, '#eaf4ed', 'none', 4) +
-  text(38, 60, 'Design studio', colors.green) +
-  icon(Check, 190, 49, colors.green) +
+  rect(30, 44, 180, 23, colors.mutedSurface, 'none', 4) +
+  text(38, 60, 'Design studio', colors.text) +
+  icon(Check, 190, 49, colors.text) +
   text(38, 83, 'Product team') +
   text(38, 106, 'Engineering');
 
@@ -46,36 +52,36 @@ const time =
   rect(49, 39, 142, 80) +
   text(80, 53, 'HH', colors.muted, 8) +
   text(145, 53, 'mm', colors.muted, 8) +
-  rect(55, 70, 57, 22, '#eaf4ed', 'none', 4) +
-  rect(128, 70, 57, 22, '#eaf4ed', 'none', 4) +
+  rect(55, 70, 57, 22, colors.mutedSurface, 'none', 4) +
+  rect(128, 70, 57, 22, colors.mutedSurface, 'none', 4) +
   text(78, 67, '13') +
-  text(78, 85, '14', colors.green) +
+  text(78, 85, '14', colors.text) +
   text(150, 67, '15') +
-  text(150, 85, '30', colors.green) +
-  text(58, 110, 'Now', colors.green, 8) +
+  text(150, 85, '30', colors.text) +
+  text(58, 110, 'Now', colors.text, 8) +
   rect(143, 99, 36, 15, colors.green, 'none', 3) +
   text(154, 110, 'OK', '#fff', 8);
 
 const autocomplete =
   field('Leaf', Search) +
   rect(25, 39, 190, 80) +
-  rect(30, 44, 180, 23, '#eaf4ed', 'none', 4) +
-  text(38, 60, 'Leaf Garden', colors.green) +
+  rect(30, 44, 180, 23, colors.mutedSurface, 'none', 4) +
+  text(38, 60, 'Leaf Garden', colors.text) +
   text(38, 83, 'Leaf Studio') +
   text(38, 106, 'Leaf Notes');
 
 const cascader =
   field('Design / Interface') +
   rect(17, 39, 206, 80) +
-  '<path d="M119 43V115" stroke="#e5e5e8"/>' +
-  rect(23, 45, 89, 24, '#eaf4ed', 'none', 4) +
-  rect(125, 45, 92, 24, '#eaf4ed', 'none', 4) +
-  text(30, 61, 'Design', colors.green) +
-  icon(ChevronRight, 94, 51, colors.green, 11) +
+  `<path d="M119 43V115" stroke="${colors.border}"/>` +
+  rect(23, 45, 89, 24, colors.mutedSurface, 'none', 4) +
+  rect(125, 45, 92, 24, colors.mutedSurface, 'none', 4) +
+  text(30, 61, 'Design', colors.text) +
+  icon(ChevronRight, 94, 51, colors.text, 11) +
   text(30, 85, 'Engineering') +
   icon(ChevronRight, 94, 75, colors.muted, 11) +
-  text(133, 61, 'Interface', colors.green) +
-  icon(Check, 199, 51, colors.green, 11) +
+  text(133, 61, 'Interface', colors.text) +
+  icon(Check, 199, 51, colors.text, 11) +
   text(133, 85, 'Brand') +
   text(30, 109, 'Archived', colors.muted);
 

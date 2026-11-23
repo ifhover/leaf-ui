@@ -1,60 +1,98 @@
+@use '../styles/mixins' as mixins;
+
 @layer leaf-ui {
   .leaf-result {
-    --leaf-result-color: var(--leaf-color-text-muted);
-    padding: var(--leaf-component-result-padding, 36px 20px);
+    --leaf-result-color: var(--leaf-color-text);
+    --leaf-result-icon-bg: var(--leaf-color-surface-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--leaf-component-result-padding, 20px 16px);
     text-align: center;
     color: var(--leaf-component-result-color, var(--leaf-color-text));
     font: var(--leaf-component-result-font-size, var(--leaf-font-size)) / var(--leaf-line-height)
       var(--leaf-font-family);
-    &--success {
-      --leaf-result-color: var(--leaf-color-success);
+    &--success,
+    &--warning,
+    &--danger,
+    &--error {
+      // 与 Confirm 一致：语义图标直接消费未加深的基色配合减淡背景。
+      --leaf-result-color: var(--leaf-status-label-base);
+      --leaf-result-icon-bg: var(--leaf-status-label-background);
     }
-    &--warning {
-      --leaf-result-color: var(--leaf-color-warning);
+    @each $class, $tone in (success, success), (warning, warning) {
+      &--#{$class} {
+        @include mixins.status-label-family($tone);
+      }
     }
     &--danger,
     &--error {
-      --leaf-result-color: var(--leaf-color-danger);
-    }
-    &--info {
-      --leaf-result-color: var(--leaf-color-info);
+      @include mixins.status-label-family(danger);
     }
     &__icon {
       display: grid;
       place-items: center;
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 20px;
+      flex-shrink: 0;
+      margin: 0 auto var(--leaf-spacing-md);
       color: var(--leaf-result-color);
       box-sizing: border-box;
-      svg {
-        width: 48px;
-        height: 48px;
-        stroke-width: 1.75;
+      &:not(:has(> img)) {
+        width: 32px;
+        height: 32px;
+        border: 0;
+        border-radius: var(--leaf-radius);
+        background: var(--leaf-result-icon-bg);
+        > svg {
+          width: 16px;
+          height: 16px;
+          stroke-width: 1.75;
+        }
+      }
+      > img {
+        display: block;
+        max-width: 100%;
+        height: auto;
       }
     }
-    &:not(.leaf-result--empty) &__icon > svg {
+    &:not(.leaf-result--empty) &__icon:not(:has(> img)) > svg {
       animation: var(
         --leaf-motion-animation,
         leaf-result-icon-enter var(--leaf-motion-slow) var(--leaf-motion-easing)
       );
     }
+    &.leaf-empty &__title {
+      color: var(--leaf-color-text-muted);
+      font-size: var(--leaf-font-size);
+      font-weight: 400;
+    }
     &__title {
-      font-size: var(--leaf-font-size-lg);
+      font-size: var(--leaf-font-size);
+      line-height: var(--leaf-line-height);
       font-weight: var(--leaf-font-weight);
-      letter-spacing: -0.01em;
+      letter-spacing: -0.015em;
     }
     &__description {
-      margin-top: 8px;
-      font-size: var(--leaf-font-size-sm);
+      font-size: var(--leaf-font-size);
+      line-height: var(--leaf-line-height);
       color: var(--leaf-color-text-muted);
-      max-width: 46ch;
+      max-width: 42ch;
       margin-inline: auto;
+      text-wrap: balance;
+    }
+    &__title + &__description {
+      margin-top: var(--leaf-spacing-sm);
     }
     &__content {
-      margin-top: 20px;
+      width: 100%;
+      max-width: 440px;
+      box-sizing: border-box;
+      margin-top: var(--leaf-spacing-lg);
+      margin-inline: auto;
       text-align: start;
-      padding: 16px;
+      padding: 12px 16px;
+      font-size: var(--leaf-font-size-sm);
+      border: 1px solid var(--leaf-color-border);
       background: var(--leaf-color-surface-muted);
       border-radius: var(--leaf-radius-md);
     }
@@ -63,25 +101,10 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 24px;
+      margin-top: var(--leaf-spacing-lg);
     }
-    &--sm {
-      padding: 20px 12px;
-      .leaf-result__icon {
-        width: 48px;
-        height: 48px;
-        margin-bottom: 12px;
-        svg {
-          width: 36px;
-          height: 36px;
-        }
-      }
-      .leaf-result__title {
-        font-size: var(--leaf-font-size);
-      }
-      .leaf-result__extra {
-        margin-top: 16px;
-      }
+    &__content + &__extra {
+      margin-top: var(--leaf-spacing-md);
     }
   }
   @keyframes leaf-result-icon-enter {
@@ -94,9 +117,9 @@
       transform: translateY(0);
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-result:not(.leaf-result--empty) .leaf-result__icon > svg {
-      animation: none;
+  @media (forced-colors: active) {
+    .leaf-result__icon:not(:has(> img)) {
+      border: 1px solid CanvasText;
     }
   }
 }

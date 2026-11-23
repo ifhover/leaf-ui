@@ -230,34 +230,27 @@ describe('Card variants', () => {
     expect(card).toHaveClass('leaf-card--shadowless');
   });
 
-  it('supports visual selection without adding an interactive role or forwarding selected to the DOM', () => {
+  it('shows a divided footer by default and lets instances or ConfigProvider disable it', () => {
     const { rerender } = render(
-      <Card data-testid="card" selected bordered={false}>
+      <Card data-testid="card" footer="Actions">
         Content
       </Card>,
     );
     const card = screen.getByTestId('card');
-    expect(card).toHaveClass('leaf-card--selected');
-    expect(card).not.toHaveAttribute('selected');
-    expect(card).not.toHaveAttribute('role');
-    expect(card).not.toHaveAttribute('tabindex');
-    rerender(<Card data-testid="card">Content</Card>);
-    expect(card).not.toHaveClass('leaf-card--selected');
-  });
+    expect(card).toHaveClass('leaf-card--divided');
 
-  it('inherits the selection default and lets instances opt out', () => {
-    render(
-      <ConfigProvider components={{ Card: { selected: true } }}>
-        <Card data-testid="selected-card" variant="layered">
-          Selected
-        </Card>
-        <Card data-testid="plain-card" selected={false}>
+    rerender(
+      <ConfigProvider components={{ Card: { divided: false } }}>
+        <Card data-testid="plain-card" footer="Actions">
           Plain
+        </Card>
+        <Card data-testid="divided-card" divided footer="Actions">
+          Divided
         </Card>
       </ConfigProvider>,
     );
-    expect(screen.getByTestId('selected-card')).toHaveClass('leaf-card--selected');
-    expect(screen.getByTestId('plain-card')).not.toHaveClass('leaf-card--selected');
+    expect(screen.getByTestId('plain-card')).not.toHaveClass('leaf-card--divided');
+    expect(screen.getByTestId('divided-card')).toHaveClass('leaf-card--divided');
   });
 
   it('keeps the heading and footer on the canvas and hides layered descriptions', () => {
@@ -336,5 +329,26 @@ describe('Card variants', () => {
     expect(document.querySelector('.leaf-card__panel > .leaf-card__footer')).toHaveTextContent(
       'Default footer',
     );
+  });
+
+  it('supports uniform, none, and section-level padding overrides with ConfigProvider defaults', () => {
+    const { rerender } = render(
+      <Card title="Flush body" footer="Footer" padding={{ body: 'none', footer: '8px 16px' }}>
+        Body
+      </Card>,
+    );
+    const card = document.querySelector<HTMLElement>('.leaf-card');
+    expect(card?.style.getPropertyValue('--leaf-card-header-padding')).toBe('');
+    expect(card?.style.getPropertyValue('--leaf-card-body-padding')).toBe('0px');
+    expect(card?.style.getPropertyValue('--leaf-card-footer-padding')).toBe('8px 16px');
+
+    rerender(
+      <ConfigProvider components={{ Card: { padding: { body: 12 } } }}>
+        <Card title="Defaulted">Body</Card>
+      </ConfigProvider>,
+    );
+    const configured = document.querySelector<HTMLElement>('.leaf-card');
+    expect(configured?.style.getPropertyValue('--leaf-card-body-padding')).toBe('12px');
+    expect(configured?.style.getPropertyValue('--leaf-card-header-padding')).toBe('');
   });
 });

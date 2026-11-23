@@ -39,13 +39,13 @@ export function CopyButton({
 
   return (
     <Button
-      size="sm"
+      size={iconOnly ? 'icon-sm' : 'sm'}
       onClick={copy}
-      startIcon={<Icon name={status === 'copied' ? 'check' : 'copy'} />}
       aria-live="polite"
       aria-label={iconOnly ? description : undefined}
       title={iconOnly ? description : undefined}
     >
+      <Icon name={status === 'copied' ? 'check' : 'copy'} />
       {iconOnly ? undefined : description}
     </Button>
   );

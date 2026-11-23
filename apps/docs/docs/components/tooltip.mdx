@@ -29,7 +29,7 @@ export const leafDoc = { component: 'Tooltip', primaryApi: 'TooltipProps' };
 
 ### 提示位置
 
-通过 `placement` 设置期望位置，空间不足时会自动调整。
+支持 `top`、`bottom`、`left`、`right` 以及各自搭配 `-start`、`-end` 的共 12 个方向（如右上角触发常用 `bottom-end`），空间不足时会自动调整；箭头默认自动指向触发元素，可通过 `arrow={false}` 隐藏。
 
 <ComponentExample exampleId="placements" preview={<TooltipPlacements />} fileName="placements.tsx" width="fit-content">
 

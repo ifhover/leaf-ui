@@ -67,14 +67,25 @@ export function Transfer(rawProps: TransferProps) {
     className,
     ...props
   } = useComponentProps('Transfer', rawProps);
-  const { theme, density } = useLeafConfig();
+  const { theme, density, direction } = useLeafConfig();
   const field = useFormField();
   const disabled = disabledProp || field?.disabled;
+  const rtl = (props.dir ?? direction) === 'rtl';
   const t = useText();
   const id = useId();
-  const trigger = useRef<HTMLButtonElement>(null);
   const root = useRef<HTMLDivElement>(null);
-  const [current, setCurrent] = useFieldValue(value, defaultValue, trigger, form);
+  const focusTarget = useMemo(
+    () => ({
+      get current() {
+        return (
+          root.current?.querySelector<HTMLElement>('input:not(:disabled), button:not(:disabled)') ??
+          null
+        );
+      },
+    }),
+    [],
+  );
+  const [current, setCurrent] = useFieldValue(value, defaultValue, root, form);
   const [internal, setInternal] = useState<readonly string[]>([]);
   const selected = selectedKeys ?? internal;
   const [queries, setQueries] = useState(['', '']);
@@ -215,7 +226,7 @@ export function Transfer(rawProps: TransferProps) {
               estimateSize={(item) =>
                 Math.max(estimateControlHeight(theme, density), item.description ? 44 : 0) + 14
               }
-              emptyContent={<Result size="sm" icon={null} title={t('transfer.noItems')} />}
+              emptyContent={<Result icon={null} title={t('transfer.noItems')} />}
             />
           ) : (
             <ScrollbarControl
@@ -228,7 +239,7 @@ export function Transfer(rawProps: TransferProps) {
               {list.length ? (
                 list.map((item) => <div key={item.key}>{row(item)}</div>)
               ) : (
-                <Result size="sm" icon={null} title={t('transfer.noItems')} />
+                <Result icon={null} title={t('transfer.noItems')} />
               )}
             </ScrollbarControl>
           )}
@@ -240,17 +251,16 @@ export function Transfer(rawProps: TransferProps) {
     <div
       {...props}
       ref={root}
+      dir={props.dir ?? direction}
       className={classes('leaf-transfer', className)}
       data-disabled={disabled ? '' : undefined}
     >
       <FieldScope>{panel(0)}</FieldScope>
       <div className="leaf-transfer__actions">
         <ButtonControl
-          ref={trigger}
           id={props.id ?? field?.id}
-          size="sm"
+          size="icon-sm"
           variant="solid"
-          startIcon={<ArrowRight size={16} />}
           aria-label={t('transfer.moveToSelected')}
           disabled={
             disabled ||
@@ -259,12 +269,13 @@ export function Transfer(rawProps: TransferProps) {
             )
           }
           onClick={() => move('right')}
-        />
+        >
+          {rtl ? <ArrowLeft aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
+        </ButtonControl>
         {!oneWay && (
           <ButtonControl
-            size="sm"
+            size="icon-sm"
             variant="outline"
-            startIcon={<ArrowLeft size={16} />}
             aria-label={t('transfer.moveToAvailable')}
             disabled={
               disabled ||
@@ -273,7 +284,9 @@ export function Transfer(rawProps: TransferProps) {
               )
             }
             onClick={() => move('left')}
-          />
+          >
+            {rtl ? <ArrowRight aria-hidden="true" /> : <ArrowLeft aria-hidden="true" />}
+          </ButtonControl>
         )}
       </div>
       <FieldScope>{panel(1)}</FieldScope>
@@ -283,7 +296,7 @@ export function Transfer(rawProps: TransferProps) {
         value={current.length ? JSON.stringify(current) : ''}
         required={required ?? field?.required}
         disabled={disabled}
-        triggerRef={trigger}
+        triggerRef={focusTarget}
       />
     </div>
   );

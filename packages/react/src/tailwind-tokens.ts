@@ -1,34 +1,20 @@
-import { semanticColorShadeSteps } from './color-shades';
+const borderFamilies = new Set(['primary', 'danger', 'warning']);
 
-const semanticScaleColors = Object.fromEntries(
-  ['primary', 'success', 'danger', 'warning', 'info'].flatMap((family) =>
-    semanticColorShadeSteps.map((shade) => [
-      `leaf-${family}-${shade}`,
-      `var(--leaf-color-${family}-${shade})`,
-    ]),
-  ),
-);
-const neutralScaleColors = Object.fromEntries(
-  [100, 200, 300, 400, 500, 600, 700, 800, 900].map((step) => [
-    `leaf-neutral-${step}`,
-    `var(--leaf-color-neutral-${step})`,
-  ]),
-);
 const semanticRoles = Object.fromEntries(
-  ['primary', 'success', 'danger', 'warning', 'info'].flatMap((family) => [
+  (['primary', 'success', 'danger', 'warning', 'info'] as const).flatMap((family) => [
     [`leaf-on-${family}`, `var(--leaf-color-on-${family})`],
-    ...['soft', 'soft-hover', 'soft-active', 'ink', 'border'].map((role) => [
-      `leaf-${family}-${role}`,
-      `var(--leaf-color-${family}-${role})`,
-    ]),
+    [`leaf-${family}-soft`, `var(--leaf-color-${family}-soft)`],
+    [`leaf-${family}-soft-hover`, `var(--leaf-color-${family}-soft-hover)`],
+    ...(family === 'primary' ? [] : [[`leaf-${family}-ink`, `var(--leaf-color-${family}-ink)`]]),
+    ...(borderFamilies.has(family)
+      ? [[`leaf-${family}-border`, `var(--leaf-color-${family}-border)`]]
+      : []),
   ]),
 );
 
 /** Shared by the Tailwind 3 preset and the generated Tailwind 4 CSS theme. */
 export const leafTailwindTokens = {
   colors: {
-    ...semanticScaleColors,
-    ...neutralScaleColors,
     ...semanticRoles,
     'leaf-primary': 'var(--leaf-color-primary)',
     'leaf-primary-hover': 'var(--leaf-color-primary-hover)',
@@ -38,7 +24,6 @@ export const leafTailwindTokens = {
     'leaf-warning': 'var(--leaf-color-warning)',
     'leaf-on-warning': 'var(--leaf-color-on-warning)',
     'leaf-danger': 'var(--leaf-color-danger)',
-    'leaf-danger-hover': 'var(--leaf-color-danger-hover)',
     'leaf-danger-active': 'var(--leaf-color-danger-active)',
     'leaf-on-danger': 'var(--leaf-color-on-danger)',
     'leaf-info': 'var(--leaf-color-info)',

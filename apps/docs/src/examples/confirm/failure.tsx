@@ -1,28 +1,27 @@
 import { Button, Space, Text, useConfirm } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
-export function ConfirmRetry() {
+export function ConfirmFailure() {
   const { confirm } = useConfirm();
   const [result, setResult] = useState('');
   return (
     <Space direction="vertical" align="start">
       <Button
         onClick={async () => {
-          let attempts = 0;
           setResult('');
           const accepted = await confirm({
             type: 'warning',
-            title: 'Submit changes?',
-            children: 'The first attempt simulates a failure. Confirm again to retry.',
+            title: '提交配置变更？',
+            children: '此示例会模拟请求失败：确认框自动关闭并弹出失败提示。',
             onConfirm: async () => {
               await new Promise<void>((resolve) => setTimeout(resolve, 600));
-              if (++attempts === 1) throw new Error('Unable to submit. Please try again.');
+              throw new Error('无法连接服务器，请检查网络后重试。');
             },
           });
-          setResult(accepted ? 'Changes submitted' : 'Submission cancelled');
+          setResult(accepted ? '变更已提交' : '操作未完成');
         }}
       >
-        Submit with retry
+        提交（模拟失败）
       </Button>
       {result && (
         <Text tone="muted" role="status">

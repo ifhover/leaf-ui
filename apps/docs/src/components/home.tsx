@@ -20,8 +20,8 @@ export function HomeLayout() {
       icon: 'leaf',
       title: t('安静一致，内容优先。', 'Quiet by default. Content first.'),
       text: t(
-        '中性的表面、细边框和轻阴影构成层次，让数据和内容成为主角。主题色只标记主要操作与选中状态，接入品牌色后结构依然一致。',
-        'Neutral surfaces, fine borders and light shadows build the hierarchy and keep data in focus. Brand color marks primary actions and selection, and the structure stays consistent when it changes.',
+        '纯净的中性表面、实体细边框和轻阴影构成层次，让数据和内容成为主角。主题色收敛于主要操作与少数状态控件，标签页、菜单与表格默认保持黑白灰层级，接入品牌色后结构依然一致。',
+        'Clean neutral surfaces, crisp borders and light shadows build the hierarchy and keep data in focus. Primary color stays focused on key actions and stateful controls, leaving tabs, menus and tables in quiet monochrome while keeping the structure consistent.',
       ),
     },
     {
@@ -66,12 +66,9 @@ export function HomeLayout() {
           )}
         </p>
         <div className="leaf-hero__actions">
-          <ButtonLink
-            size="lg"
-            href={url('/guide/getting-started.html')}
-            endIcon={<Icon name="arrow" />}
-          >
+          <ButtonLink size="lg" href={url('/guide/getting-started.html')}>
             {t('开始构建', 'Start building')}
+            <Icon name="arrow" data-icon="inline-end" />
           </ButtonLink>
           <ButtonLink size="lg" variant="outline" href={url('/components/index.html')}>
             {t('探索组件', 'Explore components')}
@@ -90,8 +87,9 @@ export function HomeLayout() {
             <h2>{feature.title}</h2>
             <p>{feature.text}</p>
             {'href' in feature && (
-              <ButtonLink variant="link" href={feature.href} endIcon={<Icon name="arrow" />}>
+              <ButtonLink variant="link" href={feature.href}>
                 {t('了解组件默认值', 'Explore component defaults')}
+                <Icon name="arrow" />
               </ButtonLink>
             )}
           </article>
@@ -110,12 +108,9 @@ export function HomeLayout() {
             )}
           </p>
         </div>
-        <ButtonLink
-          variant="outline"
-          href={url('/components/index.html')}
-          endIcon={<Icon name="arrow" />}
-        >
+        <ButtonLink variant="outline" href={url('/components/index.html')}>
           {t('查看全部组件', 'Explore all components')}
+          <Icon name="arrow" data-icon="inline-end" />
         </ButtonLink>
       </section>
       <footer className="leaf-home-footer">

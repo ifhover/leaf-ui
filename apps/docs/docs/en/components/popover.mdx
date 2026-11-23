@@ -14,11 +14,12 @@ Show details or actions next to an element.
 
 ## Basic usage
 
-Click the trigger to open. Escape, an outside click or focus leaving dismisses the panel.
+Click the trigger to open. Escape, an outside click or focus leaving dismisses the panel. For plain short text hints, use [Tooltip](tooltip) instead.
 
 <ComponentExample exampleId="basic" preview={<PopoverBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/popover/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -34,6 +35,7 @@ Hover mode is for descriptive content and also supports keyboard focus. Use the 
 <ComponentExample exampleId="hover" preview={<PopoverHover />} fileName="hover.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/popover/hover.tsx"
+
 ```
 
 </ComponentExample>
@@ -45,17 +47,19 @@ Control visibility with `open` and `onOpenChange`. Saving updates the project na
 <ComponentExample exampleId="controlled" preview={<PopoverControlled />} fileName="controlled.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/popover/controlled.tsx"
+
 ```
 
 </ComponentExample>
 
 ### Panel placement
 
-Set the preferred position with `placement`; it adjusts when space is limited.
+Supports 12 placements across `top`, `bottom`, `left`, `right` and their `-start` and `-end` edges (for example, `bottom-end` for a top-right trigger), adjusting automatically when space is limited. The arrow points to the trigger element by default and can be hidden with `arrow={false}`.
 
 <ComponentExample exampleId="placements" preview={<PopoverPlacements />} fileName="placements.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../../src/examples/en/popover/placements.tsx"
+
 ```
 
 </ComponentExample>
@@ -77,6 +81,7 @@ The trigger must forward its ref and events. Provide `aria-label` when there is 
 | `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | Required | Trigger element, with ref and event support |
 | `trigger` | `'click' \| 'hover'` | `'click'` | Trigger mode |
 | `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | Popup placement |
+| `arrow` | `boolean` | `true` | Whether to show the arrow pointing to the trigger. |
 | `disabled` | `boolean` | `false` | Disable interaction. |
 | `open` | `boolean` | — | Controlled open state. |
 | `defaultOpen` | `boolean` | `false` | Initial open state for uncontrolled usage. |

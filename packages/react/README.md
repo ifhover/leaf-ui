@@ -58,7 +58,7 @@ Browser component entries automatically load theme variables, shared popup style
 - Notification / useNotification / Popconfirm / ErrorBoundary / LoadingBar / useLoadingBar: scoped notifications, async confirmations, recovery and concurrent task progress.
 - Upload / FileList: upload progress and cancellation, file metadata, downloads and browser media previews.
 
-Existing families also include ButtonGroup, SplitButton, CheckboxGroup, AvatarGroup, CheckableTag, TagGroup, InputSearch, InputGroup, Textarea auto-sizing, FormList and FormErrorSummary. Select supports groups, creation and virtualization; DatePicker supports year/quarter/month/week; Tree and TreeSelect support async children and virtualization, and Tree and Tabs support reordering.
+Existing families also include ButtonGroup, CheckboxGroup, AvatarGroup, CheckableTag, TagGroup, InputSearch, InputGroup, Textarea auto-sizing, FormList and FormErrorSummary. Select supports groups, creation and virtualization; DatePicker supports year/quarter/month/week; Tree and TreeSelect support async children and virtualization, and Tree and Tabs support reordering.
 
 Single-line controls share sm / md / lg sizes of **28 / 34 / 40px**. The default **34px** is the form alignment baseline. Checkbox, Radio and Switch use these values for the label container's minimum height.
 

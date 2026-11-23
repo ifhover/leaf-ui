@@ -1,5 +1,9 @@
 @layer leaf-ui {
   .leaf-timeline {
+    --leaf-rtl: 1;
+    &:dir(rtl) {
+      --leaf-rtl: -1;
+    }
     list-style: none;
     margin: 0;
     padding: var(--leaf-component-timeline-padding, 0);
@@ -15,7 +19,7 @@
         content: '';
         position: absolute;
         inset-inline-start: 5px;
-        top: 16px;
+        top: 21px;
         bottom: 0;
         width: 1px;
         background: var(--leaf-color-divider);
@@ -32,43 +36,57 @@
       border-radius: 50%;
       color: var(--leaf-timeline-color);
       background: var(--leaf-color-surface);
-      box-shadow: 0 0 0 4px var(--leaf-color-surface);
-      transition:
-        border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-        color var(--leaf-motion-duration) var(--leaf-motion-easing),
-        background-color var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
       display: grid;
       place-items: center;
       svg {
         width: 16px;
         height: 16px;
       }
+      &--custom,
       &:has(svg) {
+        top: 3px;
+        inset-inline-start: 5.5px;
+        width: auto;
+        height: auto;
+        min-width: 16px;
+        min-height: 16px;
         border: 0;
+        border-radius: 0;
+        background: transparent;
+        transform: translateX(calc(var(--leaf-dot-shift, -50%) * var(--leaf-rtl)));
       }
     }
     &__label {
       color: var(--leaf-color-text-subtle);
       font-size: var(--leaf-font-size-sm);
-      margin-bottom: 2px;
+      margin-block-end: 2px;
     }
-    &--right &__item {
-      padding-inline: 0 26px;
-      text-align: end;
-      &::before {
-        inset-inline-start: auto;
-        inset-inline-end: 5px;
+    &--right {
+      --leaf-dot-shift: 50%;
+      .leaf-timeline__item {
+        padding-inline: 0 26px;
+        text-align: end;
+        &::before {
+          inset-inline-start: auto;
+          inset-inline-end: 5px;
+        }
       }
-    }
-    &--right &__dot {
-      inset-inline-start: auto;
-      inset-inline-end: 0;
+      .leaf-timeline__dot {
+        inset-inline-start: auto;
+        inset-inline-end: 0;
+        &--custom,
+        &:has(svg) {
+          inset-inline-end: 5.5px;
+        }
+      }
     }
     &--alternate &__item {
       width: 50%;
       box-sizing: border-box;
       margin-inline-start: 50%;
       &[data-side='left'] {
+        --leaf-dot-shift: 50%;
         margin-inline-start: 0;
         padding-inline: 0 26px;
         text-align: end;
@@ -79,14 +97,23 @@
         .leaf-timeline__dot {
           inset-inline-start: auto;
           inset-inline-end: -6px;
+          &--custom,
+          &:has(svg) {
+            inset-inline-end: -0.5px;
+          }
         }
       }
       &[data-side='right'] {
+        --leaf-dot-shift: -50%;
         &::before {
           inset-inline-start: -1px;
         }
         .leaf-timeline__dot {
           inset-inline-start: -6px;
+          &--custom,
+          &:has(svg) {
+            inset-inline-start: -0.5px;
+          }
         }
       }
     }
@@ -94,9 +121,17 @@
       border-style: dashed;
     }
   }
-  @media (prefers-reduced-motion: reduce) {
+  @media (forced-colors: active) {
+    .leaf-timeline__item:not(:last-child)::before {
+      background: CanvasText;
+    }
     .leaf-timeline__dot {
-      transition: none;
+      border-color: CanvasText;
+      background: Canvas;
+      &--custom,
+      &:has(svg) {
+        background: transparent;
+      }
     }
   }
 }

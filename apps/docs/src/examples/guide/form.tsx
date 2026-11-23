@@ -25,7 +25,8 @@ export function GettingStartedForm() {
           ]}
         />
       </FormField>
-      <Button type="submit" startIcon={<Plus />}>
+      <Button type="submit">
+        <Plus />
         创建项目
       </Button>
       {result && (

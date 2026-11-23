@@ -125,8 +125,7 @@ function TextContent({
       {copyable && (
         <ButtonControl
           variant="text"
-          size="sm"
-          startIcon={copied ? <Check size={14} /> : <Copy size={14} />}
+          size="icon-sm"
           aria-label={t('typography.copyText')}
           onClick={async () => {
             const value =
@@ -139,20 +138,23 @@ function TextContent({
               if (typeof copyable === 'object') copyable.onError?.(error);
             }
           }}
-        />
+        >
+          {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
+        </ButtonControl>
       )}
       {editable && (
         <ButtonControl
           variant="text"
-          size="sm"
-          startIcon={<Pencil size={14} />}
+          size="icon-sm"
           aria-label={t('typography.editText')}
           onClick={() => {
             setDraft(editable.text ?? visibleText());
             session.current = true;
             setEditing(true);
           }}
-        />
+        >
+          <Pencil aria-hidden="true" />
+        </ButtonControl>
       )}
     </>
   );

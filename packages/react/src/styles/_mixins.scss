@@ -1,6 +1,6 @@
-// Menu appearance fallbacks and choice rows share this neutral overlay.
+// 选项交互叠层使用随外观自适应的 option-hover 角色，保证深浅背景均有可见对比度。
 @function neutral-option-background() {
-  @return rgb(0 0 0 / 8%);
+  @return color-mix(in srgb, var(--leaf-color-option-hover) 55%, transparent);
 }
 
 @function neutral-option-color($strength: 80%) {
@@ -8,7 +8,7 @@
 }
 
 @function choice-option-background() {
-  @return color-mix(in srgb, #{neutral-option-background()} 50%, transparent);
+  @return color-mix(in srgb, var(--leaf-color-option-hover) 32%, transparent);
 }
 
 // Choice rows fade their own feedback; saved values are marked separately by checks.
@@ -29,18 +29,17 @@
     pointer-events: none;
     transition: background-color var(--leaf-motion-color) var(--leaf-motion-easing);
   }
-  &:is([aria-selected='true'], [aria-checked='true'], [data-selected]) {
-    color: inherit;
-    background: transparent;
-  }
+  &:is([aria-selected='true'], [aria-checked='true'], [data-selected]),
   &:is(:hover, :focus-visible, :active, [data-highlighted='true']):not(:disabled):not(
       [aria-disabled='true']
     ):not([data-disabled]) {
     color: inherit;
     background: transparent;
-    &::before {
-      background: choice-option-background();
-    }
+  }
+  &:is(:hover, :focus-visible, :active, [data-highlighted='true']):not(:disabled):not(
+      [aria-disabled='true']
+    ):not([data-disabled])::before {
+    background: choice-option-background();
   }
   @if $candidate {
     &[aria-selected='true']:not(:disabled):not([aria-disabled='true']) {
@@ -52,21 +51,12 @@
   &:is(:disabled, [aria-disabled='true'], [data-disabled]) {
     color: var(--leaf-color-text-muted);
   }
-  @media (prefers-reduced-motion: reduce) {
-    &,
-    &::before {
-      transition: none;
-    }
-  }
 }
 
 @mixin choice-option-size($height: var(--leaf-current-control-height, var(--leaf-control-height))) {
   min-height: $height;
   margin: 0;
-  padding-block: min(
-    var(--leaf-density-option-padding),
-    max(0px, calc((#{$height} - var(--leaf-line-height-sm)) / 2))
-  );
+  padding-block: max(2px, calc(var(--leaf-density-option-padding) - 2px));
 }
 
 // Form popups use the same theme slot as their field, not the generic dialog radius.
@@ -82,13 +72,7 @@
 
 // Button appearances and compact actions use one reversible paint transition.
 @mixin action-transition {
-  transition:
-    background-color var(--leaf-motion-color) var(--leaf-motion-easing),
-    border-color var(--leaf-motion-color) var(--leaf-motion-easing),
-    color var(--leaf-motion-color) var(--leaf-motion-easing),
-    box-shadow var(--leaf-motion-color) var(--leaf-motion-easing),
-    opacity var(--leaf-motion-color) var(--leaf-motion-easing),
-    scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+  transition: var(--leaf-action-transition);
 }
 
 @mixin text-action-family {
@@ -109,11 +93,9 @@
   cursor: pointer;
   @include action-transition;
   &:hover:not(:disabled) {
-    color: var(--leaf-text-action-color);
     background: var(--leaf-text-action-background);
   }
   &:active:not(:disabled) {
-    color: var(--leaf-text-action-color);
     background: var(--leaf-text-action-active-background);
   }
   &:focus-visible {
@@ -122,37 +104,64 @@
   &:disabled {
     cursor: not-allowed;
   }
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
 }
 
 // Shared compact spacing for action footers, with explicit component padding taking precedence.
 @mixin action-footer-padding($component) {
-  padding-block: var(--leaf-component-#{$component}-padding-top, calc(var(--leaf-spacing) * 1.5))
-    var(--leaf-component-#{$component}-padding-bottom, calc(var(--leaf-spacing) * 1.5));
+  padding-block: var(--leaf-component-#{$component}-padding-top, var(--leaf-density-row-padding))
+    var(--leaf-component-#{$component}-padding-bottom, var(--leaf-density-row-padding));
 }
 
-@mixin control-size {
-  --leaf-current-font-size: var(--leaf-font-size);
-  --leaf-current-control-height: var(--leaf-control-height, 34px);
-  --leaf-current-radius: var(--leaf-radius);
+@mixin control-size($component: null, $with-radius: true) {
+  @if $component {
+    --leaf-current-control-height: var(
+      --leaf-component-#{$component}-height,
+      var(--leaf-control-height)
+    );
+    --leaf-current-font-size: var(--leaf-component-#{$component}-font-size, var(--leaf-font-size));
+  } @else {
+    --leaf-current-control-height: var(--leaf-control-height, 32px);
+    --leaf-current-font-size: var(--leaf-font-size);
+  }
+  @if $with-radius {
+    --leaf-current-radius: var(--leaf-radius);
+  }
 
   &--sm {
-    --leaf-current-control-height: var(--leaf-control-height-sm, 28px);
-    --leaf-current-font-size: var(--leaf-font-size-sm, 13px);
-    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
+    @if $component {
+      --leaf-current-control-height: var(
+        --leaf-component-#{$component}-height-sm,
+        var(--leaf-control-height-sm)
+      );
+      --leaf-current-font-size: var(--leaf-font-size-sm);
+    } @else {
+      --leaf-current-control-height: var(--leaf-control-height-sm, 26px);
+      --leaf-current-font-size: var(--leaf-font-size-sm, 13px);
+    }
+    @if $with-radius {
+      --leaf-current-radius: var(--leaf-control-radius-sm);
+    }
   }
 
   &--lg {
-    --leaf-current-control-height: var(--leaf-control-height-lg, 40px);
-    --leaf-current-font-size: var(--leaf-font-size-lg, 16px);
-    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
+    @if $component {
+      --leaf-current-control-height: var(
+        --leaf-component-#{$component}-height-lg,
+        var(--leaf-control-height-lg)
+      );
+      --leaf-current-font-size: var(--leaf-font-size-lg);
+    } @else {
+      --leaf-current-control-height: var(--leaf-control-height-lg, 38px);
+      --leaf-current-font-size: var(--leaf-font-size-lg, 16px);
+    }
+    @if $with-radius {
+      --leaf-current-radius: var(--leaf-control-radius-lg);
+    }
   }
 }
 
 @mixin focus-ring($color: var(--leaf-color-text-muted)) {
-  outline: 2px solid var(--leaf-color-focus, var(--leaf-focus-color, var(--leaf-color-text-muted)));
+  outline: var(--leaf-focus-outline);
   outline-offset: 2px;
 }
 
@@ -161,24 +170,9 @@
   box-shadow: var(--leaf-component-#{$component}-shadow, var(--leaf-surface-shadow, #{$fallback}));
 }
 
-// Frame borders are intentionally lighter than standalone dividers.
-@mixin softened-frame-color($component, $surface, $divider-weight: 70%) {
-  --leaf-#{$component}-frame-color: color-mix(
-    in srgb,
-    var(--leaf-color-divider) #{$divider-weight},
-    #{$surface}
-  );
-}
-
-// Branded soft cues for selections and actions, never ordinary neutral option feedback.
-@mixin accent-soft-feedback-family {
-  --leaf-accent-soft-background: var(--leaf-color-primary-soft);
-  --leaf-accent-soft-border: var(--leaf-color-primary-border);
-}
-
 @mixin danger-soft-feedback-family {
   --leaf-danger-soft-background: var(--leaf-color-danger-soft);
-  --leaf-danger-soft-active-background: var(--leaf-color-danger-soft-active);
+  --leaf-danger-soft-active-background: var(--leaf-color-danger-soft-hover);
 }
 
 // Base status colors paint primary indicators and text; other semantic text uses contrast-aware ink roles.
@@ -227,19 +221,26 @@
 }
 
 @mixin segmented-surface-family {
-  --leaf-segmented-border: var(--leaf-color-divider);
-  --leaf-segmented-background: var(--leaf-color-surface);
-  --leaf-segmented-selected-background: var(--leaf-color-primary-soft);
+  --leaf-segmented-border: transparent;
+  --leaf-segmented-background: var(--leaf-color-surface-muted);
+  --leaf-segmented-selected-background: var(--leaf-color-surface);
   --leaf-segmented-muted-color: var(--leaf-color-text-muted);
 }
 
-// A spotlight must obscure the surrounding page more than a blurred dialog.
+// 聚光遮罩需要比带模糊的弹窗遮罩更明显地压暗周边页面；直接按主题属性切换而不依赖 light-dark()，避免被打包器改写后在 Portal 中失效。
 @mixin overlay-family($kind: dialog) {
   @if $kind == dialog {
-    --leaf-overlay-background: rgb(0 0 0 / 10%);
-    --leaf-overlay-fallback-background: rgb(0 0 0 / 24%);
+    --leaf-overlay-background: rgb(0 0 0 / 28%);
+    --leaf-overlay-fallback-background: rgb(0 0 0 / 36%);
+    [data-leaf-theme='dark'] &:not([data-leaf-theme='dark'] [data-leaf-theme='light'] &) {
+      --leaf-overlay-background: rgb(0 0 0 / 55%);
+      --leaf-overlay-fallback-background: rgb(0 0 0 / 62%);
+    }
   } @else if $kind == spotlight {
     --leaf-overlay-background: rgb(0 0 0 / 45%);
+    [data-leaf-theme='dark'] &:not([data-leaf-theme='dark'] [data-leaf-theme='light'] &) {
+      --leaf-overlay-background: rgb(0 0 0 / 68%);
+    }
   } @else {
     @error "Unknown overlay family: #{$kind}.";
   }
@@ -252,10 +253,8 @@
   --leaf-calendar-selected-hover-background: var(--leaf-color-primary-soft-hover);
 }
 
-// Halo intensity is shared by discrete inputs, draggable handles and drop targets.
+// Halo intensity is shared by focus-ring controls that still show a branded halo.
 @mixin accent-halo-family {
-  --leaf-accent-halo-color: var(--leaf-color-primary-alpha-12);
-  --leaf-accent-halo-active-color: var(--leaf-color-primary-alpha-16);
   --leaf-accent-halo-focus-color: var(--leaf-color-primary-alpha-20);
 }
 
@@ -266,34 +265,29 @@
   --leaf-table-text: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
   --leaf-table-header-background: var(
     --leaf-component-#{$component}-background,
-    #{subtle-action-background(var(--leaf-table-surface))}
+    var(--leaf-table-surface)
   );
-  --leaf-table-header-color: var(--leaf-table-text);
+  --leaf-table-header-color: var(
+    --leaf-component-#{$component}-color,
+    var(--leaf-color-text-muted)
+  );
   --leaf-table-hover-background: color-mix(
     in srgb,
-    var(--leaf-table-text) 4%,
+    var(--leaf-color-option-hover) 25%,
     var(--leaf-table-surface)
   );
-  --leaf-table-header-sort-background: var(
-    --leaf-component-#{$component}-background,
-    var(--leaf-color-surface-muted)
-  );
-  --leaf-table-body-sort-background: var(--leaf-table-header-background);
-  --leaf-table-striped-background: color-mix(
+  --leaf-table-header-sort-background: color-mix(
     in srgb,
-    var(--leaf-table-text) 2%,
+    var(--leaf-color-surface-muted) 55%,
     var(--leaf-table-surface)
   );
-  --leaf-table-selected-background: color-mix(
+  --leaf-table-body-sort-background: color-mix(
     in srgb,
-    var(--leaf-color-primary) 6%,
+    var(--leaf-color-surface-muted) 35%,
     var(--leaf-table-surface)
   );
-  --leaf-table-selected-hover-background: color-mix(
-    in srgb,
-    var(--leaf-color-primary) 10%,
-    var(--leaf-table-surface)
-  );
+  --leaf-table-striped-background: var(--leaf-table-hover-background);
+  --leaf-table-selected-background: var(--leaf-color-surface-muted);
   // Retain the historical optional compatibility variable; its default is local to this family.
   --leaf-table-overlay-background: var(
     --leaf-color-surface-alpha-80,
@@ -338,17 +332,36 @@
   );
 }
 
-// Shared rounded arrow for floating panels that point at their trigger.
-@mixin floating-arrow {
+// 浮层与触发元素之间共用的带边框圆角箭头，随面板动态坐标定位并继承容器外观。
+@mixin floating-arrow($bordered: true) {
+  @if $bordered {
+    --leaf-floating-arrow-size: 10px;
+    --leaf-floating-arrow-border-width: var(--leaf-surface-border, 1px);
+  } @else {
+    --leaf-floating-arrow-size: 8px;
+    --leaf-floating-arrow-border-width: 0px;
+  }
+
   &.leaf-floating.leaf-scrollbar {
     overflow: visible;
+  }
+  &[data-arrow='true'] {
+    &[data-side='top'],
+    &[data-side='bottom'] {
+      --leaf-popup-origin-x: var(--leaf-floating-arrow-x, center);
+    }
+    &[data-side='left'],
+    &[data-side='right'] {
+      --leaf-popup-origin-y: var(--leaf-floating-arrow-y, center);
+    }
   }
   &::before {
     position: absolute;
     z-index: 1;
-    width: 16px;
-    height: 5px;
-    border-radius: 3px;
+    box-sizing: border-box;
+    width: var(--leaf-floating-arrow-size);
+    height: var(--leaf-floating-arrow-size);
+    border: var(--leaf-floating-arrow-border-width) solid transparent;
     background: inherit;
     pointer-events: none;
     content: '';
@@ -357,89 +370,58 @@
     display: none;
   }
   &[data-side='top']::before {
-    bottom: -4px;
-    left: 50%;
-    transform: translateX(-50%);
-    clip-path: polygon(
-      8% 0,
-      92% 0,
-      86% 18%,
-      62% 78%,
-      56% 94%,
-      52% 100%,
-      48% 100%,
-      44% 94%,
-      38% 78%,
-      14% 18%
-    );
+    bottom: 0;
+    left: var(--leaf-floating-arrow-x, 50%);
+    border-right-color: inherit;
+    border-bottom-color: inherit;
+    border-bottom-right-radius: 2px;
+    transform: translate(-50%, 50%) rotate(45deg);
+    clip-path: polygon(100% 100%, 0 100%, 0 82%, 82% 0, 100% 0);
   }
   &[data-side='bottom']::before {
-    top: -4px;
-    left: 50%;
-    transform: translateX(-50%);
-    clip-path: polygon(
-      8% 100%,
-      92% 100%,
-      86% 82%,
-      62% 22%,
-      56% 6%,
-      52% 0,
-      48% 0,
-      44% 6%,
-      38% 22%,
-      14% 82%
-    );
+    top: 0;
+    left: var(--leaf-floating-arrow-x, 50%);
+    border-top-color: inherit;
+    border-left-color: inherit;
+    border-top-left-radius: 2px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    clip-path: polygon(0 0, 100% 0, 100% 18%, 18% 100%, 0 100%);
   }
   &[data-side='left']::before {
-    top: 50%;
-    right: -4px;
-    width: 5px;
-    height: 16px;
-    transform: translateY(-50%);
-    clip-path: polygon(
-      0 8%,
-      0 92%,
-      18% 86%,
-      78% 62%,
-      94% 56%,
-      100% 52%,
-      100% 48%,
-      94% 44%,
-      78% 38%,
-      18% 14%
-    );
+    top: var(--leaf-floating-arrow-y, 50%);
+    right: 0;
+    border-top-color: inherit;
+    border-right-color: inherit;
+    border-top-right-radius: 2px;
+    transform: translate(50%, -50%) rotate(45deg);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 82% 100%, 0 18%);
   }
   &[data-side='right']::before {
-    top: 50%;
-    left: -4px;
-    width: 5px;
-    height: 16px;
-    transform: translateY(-50%);
-    clip-path: polygon(
-      100% 8%,
-      100% 92%,
-      82% 86%,
-      22% 62%,
-      6% 56%,
-      0 52%,
-      0 48%,
-      6% 44%,
-      22% 38%,
-      82% 14%
-    );
+    top: var(--leaf-floating-arrow-y, 50%);
+    left: 0;
+    border-bottom-color: inherit;
+    border-left-color: inherit;
+    border-bottom-left-radius: 2px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    clip-path: polygon(0 0, 18% 0, 100% 82%, 100% 100%, 0 100%);
   }
 }
 
+// 字段家族（含 InputOTP）共用的 3px 聚焦外环变量，在聚焦边框色外侧按 20% 透明混合，适配浅深背景与校验状态。
+@mixin field-ring-variables($color: var(--leaf-field-color)) {
+  --leaf-field-ring: color-mix(in srgb, #{$color} 20%, transparent);
+  --leaf-field-focus-shadow: 0 0 0 3px var(--leaf-field-ring);
+}
+
 @mixin field-states($component) {
-  // Hover and press keep the resting paint by default. Explicit component
-  // overrides still apply, while only focus or an open popup deepens the border.
+  // 静止时保持轻边框，悬停略微加深边框提示可交互，聚焦或展开时呈现清晰边框与克制外环。
   &:hover:not([data-disabled]):not(:disabled):where(:not(:focus-within):not([data-open])) {
     @include state-paint(
       $component,
       hover,
       var(--leaf-field-text),
       var(--leaf-field-background),
-      var(--leaf-field-rest-border),
+      var(--leaf-field-hover-border),
       var(--leaf-field-shadow)
     );
   }
@@ -451,9 +433,8 @@
       var(--leaf-field-text),
       var(--leaf-field-background),
       var(--leaf-field-color),
-      var(--leaf-field-shadow)
+      var(--leaf-field-focus-shadow)
     );
-    // Focus is expressed by the existing border, without adding an outer halo.
     outline: none;
   }
   &:active:not([data-disabled]):not(:disabled):where(:not(:focus-within):not([data-open])) {
@@ -462,12 +443,14 @@
       active,
       var(--leaf-field-text),
       var(--leaf-field-background),
-      var(--leaf-field-rest-border),
+      var(--leaf-field-hover-border),
       var(--leaf-field-shadow)
     );
   }
   &[data-disabled],
   &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
     @include state-paint(
       $component,
       disabled,
@@ -485,20 +468,28 @@
 }
 
 @mixin field-status($status) {
-  --leaf-field-rest-border: var(--leaf-field-color);
   @if $status == error {
     --leaf-field-color: var(--leaf-color-danger);
-
-    --leaf-field-color-border-30: var(--leaf-color-danger-border);
   } @else if $status == warning {
     --leaf-field-color: var(--leaf-color-warning);
-
-    --leaf-field-color-border-30: var(--leaf-color-warning-border);
   } @else {
     @error "Unknown field validation status: #{$status}.";
   }
+}
 
-  border-color: var(--leaf-field-color);
+// 仅供需要按字段状态混合内部分隔线边框的组件（如 InputNumber）按需引入，避免在所有字段切片重复输出。
+@mixin field-color-border-30 {
+  --leaf-field-color-border-30: color-mix(
+    in srgb,
+    var(--leaf-field-color) 30%,
+    var(--leaf-color-border)
+  );
+  &[data-status='error'] {
+    --leaf-field-color-border-30: var(--leaf-color-danger-border);
+  }
+  &[data-status='warning'] {
+    --leaf-field-color-border-30: var(--leaf-color-warning-border);
+  }
 }
 
 /* 默认宽度通过 :where() 降权并读取局部宽度变量，方便组件扩展或外部样式覆盖 */
@@ -510,21 +501,17 @@
   }
 }
 
-@mixin field($component: field, $focus: primary) {
-  @include control-size;
+@mixin field($component: field, $focus: neutral) {
+  @include control-size($component);
   @if $focus == primary {
     --leaf-field-color: var(--leaf-color-primary);
   } @else if $focus == neutral {
-    --leaf-field-color: color-mix(in srgb, var(--leaf-color-text) 45%, var(--leaf-color-border));
+    --leaf-field-color: var(--leaf-color-text-muted);
   } @else {
     @error "Unknown field focus variant: #{$focus}.";
   }
 
-  --leaf-field-color-border-30: color-mix(
-    in srgb,
-    var(--leaf-field-color) 30%,
-    var(--leaf-color-border)
-  );
+  @include field-ring-variables;
 
   --leaf-field-border-width: var(
     --leaf-component-#{$component}-border-width,
@@ -534,6 +521,10 @@
   --leaf-field-rest-border: var(
     --leaf-component-#{$component}-border-color,
     var(--leaf-frame-border-color, var(--leaf-color-border))
+  );
+  --leaf-field-hover-border: var(
+    --leaf-component-#{$component}-border-color,
+    var(--leaf-frame-border-color, var(--leaf-color-border-hover))
   );
   --leaf-field-background: var(
     --leaf-component-#{$component}-background,
@@ -545,26 +536,22 @@
   );
   box-sizing: border-box;
   @include field-width;
-  border: var(--leaf-field-border-width) solid
-    var(
-      --leaf-component-#{$component}-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
-    );
-  border-radius: var(
-    --leaf-component-#{$component}-radius,
-    var(--leaf-current-radius, var(--leaf-radius))
-  );
-  color: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
-  background: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
+  border: var(--leaf-field-border-width) solid var(--leaf-field-rest-border);
+  border-radius: var(--leaf-component-#{$component}-radius, var(--leaf-current-radius));
+  color: var(--leaf-field-text);
+  background: var(--leaf-field-background);
   box-shadow: var(--leaf-field-shadow);
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-component-#{$component}-font-size, var(--leaf-current-font-size));
   line-height: var(--leaf-line-height);
-  transition:
-    border-color var(--leaf-motion-color) var(--leaf-motion-easing),
-    background-color var(--leaf-motion-color) var(--leaf-motion-easing),
-    box-shadow var(--leaf-motion-color) var(--leaf-motion-easing);
+  transition: var(--leaf-field-transition);
 
+  &[data-status='error'],
+  &[data-status='warning'] {
+    --leaf-field-rest-border: var(--leaf-field-color);
+    --leaf-field-hover-border: var(--leaf-field-color);
+    border-color: var(--leaf-field-color);
+  }
   &[data-status='error'] {
     @include field-status(error);
   }
@@ -573,17 +560,7 @@
     @include field-status(warning);
   }
 
-  &[data-disabled],
-  &:disabled {
-    opacity: 0.55;
-    cursor: not-allowed;
-  }
-
   @include field-states($component);
-
-  @media (prefers-reduced-motion: reduce) {
-    transition: none;
-  }
 }
 
 // Native radios match :indeterminate when their group has no checked option;
@@ -601,7 +578,8 @@
   gap: 8px;
   min-height: var(--leaf-current-control-height);
   max-width: 100%;
-  color: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
+  --leaf-choice-color: var(--leaf-component-#{$component}-color, var(--leaf-color-text));
+  color: var(--leaf-choice-color);
   font-family: var(--leaf-font-family);
   font-size: var(--leaf-current-font-size);
   line-height: var(--leaf-line-height);
@@ -633,18 +611,16 @@
     background: var(--leaf-component-#{$component}-background, var(--leaf-color-surface));
     appearance: none;
     cursor: inherit;
-    transition:
-      border-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      background-color var(--leaf-motion-fast) var(--leaf-motion-easing),
-      box-shadow var(--leaf-motion-fast) var(--leaf-motion-easing),
-      scale var(--leaf-motion-fast) var(--leaf-motion-easing);
+    transition: var(--leaf-field-transition);
 
-    &:checked {
-      border-color: $checked-border;
-      background: var(--leaf-color-primary);
-    }
     @if $supports-indeterminate {
+      &:checked,
       &:indeterminate {
+        border-color: $checked-border;
+        background: var(--leaf-color-primary);
+      }
+    } @else {
+      &:checked {
         border-color: $checked-border;
         background: var(--leaf-color-primary);
       }
@@ -652,12 +628,6 @@
 
     &:focus-visible {
       @include focus-ring;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    &__input,
-    &__mark {
-      transition: none;
     }
   }
 
@@ -676,7 +646,7 @@
 @mixin choice-states(
   $component,
   $checked-border: var(--leaf-frame-border-color, var(--leaf-color-primary)),
-  $feedback-border: var(--leaf-color-primary),
+  $feedback-border: var(--leaf-color-text-muted),
   $supports-indeterminate: false
 ) {
   @include choice-label-states($component);
@@ -687,21 +657,25 @@
     );
     --leaf-choice-border: var(
       --leaf-component-#{$component}-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
+      var(--leaf-frame-border-color, var(--leaf-color-border-hover))
     );
     --leaf-choice-shadow: var(
       --leaf-component-#{$component}-shadow,
       var(--leaf-control-shadow, var(--leaf-shadow-xs))
     );
     box-shadow: var(--leaf-choice-shadow);
-    &:checked {
-      --leaf-choice-background: var(--leaf-color-primary);
-      --leaf-choice-border: #{$checked-border};
-    }
     @if $supports-indeterminate {
+      &:checked,
       &:indeterminate {
         --leaf-choice-background: var(--leaf-color-primary);
         --leaf-choice-border: #{$checked-border};
+        --leaf-choice-hover-border: var(--leaf-choice-border);
+      }
+    } @else {
+      &:checked {
+        --leaf-choice-background: var(--leaf-color-primary);
+        --leaf-choice-border: #{$checked-border};
+        --leaf-choice-hover-border: var(--leaf-choice-border);
       }
     }
     &:focus-visible:not(:disabled) {
@@ -726,12 +700,14 @@
         var(--leaf-choice-shadow)
       );
     }
-    &:disabled:checked {
-      --leaf-choice-background: var(--leaf-color-border);
-      --leaf-choice-border: var(--leaf-color-border);
-    }
     @if $supports-indeterminate {
+      &:disabled:checked,
       &:disabled:indeterminate {
+        --leaf-choice-background: var(--leaf-color-border);
+        --leaf-choice-border: var(--leaf-color-border);
+      }
+    } @else {
+      &:disabled:checked {
         --leaf-choice-background: var(--leaf-color-border);
         --leaf-choice-border: var(--leaf-color-border);
       }
@@ -743,7 +719,7 @@
       hover,
       inherit,
       var(--leaf-choice-background),
-      $feedback-border,
+      var(--leaf-choice-hover-border, #{$feedback-border}),
       var(--leaf-choice-shadow)
     );
   }
@@ -753,7 +729,7 @@
       active,
       inherit,
       var(--leaf-choice-background),
-      $feedback-border,
+      var(--leaf-choice-hover-border, #{$feedback-border}),
       var(--leaf-choice-shadow)
     );
   }
@@ -761,28 +737,16 @@
 
 @mixin choice-label-states($component) {
   &:hover:not([data-disabled]):where(:not(:has(input:focus-visible))) {
-    color: var(
-      --leaf-component-#{$component}-hover-color,
-      var(--leaf-component-#{$component}-color, var(--leaf-color-text))
-    );
+    color: var(--leaf-component-#{$component}-hover-color, var(--leaf-choice-color));
   }
   &:active:not([data-disabled]) {
-    color: var(
-      --leaf-component-#{$component}-active-color,
-      var(--leaf-component-#{$component}-color, var(--leaf-color-text))
-    );
+    color: var(--leaf-component-#{$component}-active-color, var(--leaf-choice-color));
   }
   &:where(:has(input:focus-visible)):not([data-disabled]) {
-    color: var(
-      --leaf-component-#{$component}-focus-color,
-      var(--leaf-component-#{$component}-color, var(--leaf-color-text))
-    );
+    color: var(--leaf-component-#{$component}-focus-color, var(--leaf-choice-color));
   }
   &[data-disabled] {
-    color: var(
-      --leaf-component-#{$component}-disabled-color,
-      var(--leaf-component-#{$component}-color, var(--leaf-color-text))
-    );
+    color: var(--leaf-component-#{$component}-disabled-color, var(--leaf-choice-color));
   }
 }
 
@@ -800,5 +764,19 @@
 @mixin pressable($scale: 0.97) {
   &:active:not(:disabled):not([aria-disabled='true']) {
     opacity: 0.8;
+  }
+}
+
+// 供 Card 与 Modal / Drawer 内嵌线形标签栏复用的全宽底部分割线。
+@mixin line-header-divider($color) {
+  position: relative;
+  &::before {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    border-block-end: 1px solid;
+    border-block-end-color: #{$color};
+    content: '';
+    pointer-events: none;
   }
 }

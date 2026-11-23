@@ -20,47 +20,18 @@
     "--leaf-color-border",
     "--leaf-color-border-hover",
     "--leaf-color-danger",
-    "--leaf-color-danger-dark-1",
-    "--leaf-color-danger-dark-3",
-    "--leaf-color-danger-dark-7",
-    "--leaf-color-danger-dark-9",
-    "--leaf-color-danger-light-3",
-    "--leaf-color-danger-light-7",
-    "--leaf-color-danger-light-9",
     "--leaf-color-danger-active",
     "--leaf-color-danger-border",
-    "--leaf-color-danger-hover",
     "--leaf-color-danger-ink",
-    "--leaf-color-danger-link-hover",
-    "--leaf-color-danger-link-active",
     "--leaf-color-danger-soft",
-    "--leaf-color-danger-soft-active",
     "--leaf-color-danger-soft-hover",
     "--leaf-color-divider",
     "--leaf-color-focus",
     "--leaf-color-info",
-    "--leaf-color-info-dark-1",
-    "--leaf-color-info-dark-3",
-    "--leaf-color-info-dark-7",
-    "--leaf-color-info-dark-9",
-    "--leaf-color-info-light-3",
-    "--leaf-color-info-light-7",
-    "--leaf-color-info-light-9",
-    "--leaf-color-info-border",
     "--leaf-color-info-ink",
     "--leaf-color-info-soft",
-    "--leaf-color-info-soft-active",
     "--leaf-color-info-soft-hover",
     "--leaf-color-neutral",
-    "--leaf-color-neutral-100",
-    "--leaf-color-neutral-200",
-    "--leaf-color-neutral-300",
-    "--leaf-color-neutral-400",
-    "--leaf-color-neutral-500",
-    "--leaf-color-neutral-600",
-    "--leaf-color-neutral-700",
-    "--leaf-color-neutral-800",
-    "--leaf-color-neutral-900",
     "--leaf-color-on-danger",
     "--leaf-color-on-info",
     "--leaf-color-on-primary",
@@ -68,45 +39,18 @@
     "--leaf-color-on-warning",
     "--leaf-color-option-hover",
     "--leaf-color-primary",
-    "--leaf-color-primary-dark-1",
-    "--leaf-color-primary-dark-3",
-    "--leaf-color-primary-dark-7",
-    "--leaf-color-primary-dark-9",
-    "--leaf-color-primary-light-3",
-    "--leaf-color-primary-light-7",
-    "--leaf-color-primary-light-9",
     "--leaf-color-primary-active",
-    "--leaf-color-primary-alpha-10",
-    "--leaf-color-primary-alpha-12",
-    "--leaf-color-primary-alpha-16",
     "--leaf-color-primary-alpha-20",
     "--leaf-color-primary-alpha-4",
-    "--leaf-color-primary-alpha-55",
     "--leaf-color-primary-border",
-    "--leaf-color-primary-fill-border",
-    "--leaf-color-primary-focus",
     "--leaf-color-primary-hover",
-    "--leaf-color-primary-indicator",
-    "--leaf-color-primary-ink",
-    "--leaf-color-primary-ink-active",
-    "--leaf-color-primary-ink-hover",
-    "--leaf-color-primary-link-hover",
     "--leaf-color-primary-link-active",
+    "--leaf-color-primary-link-hover",
     "--leaf-color-primary-soft",
-    "--leaf-color-primary-soft-active",
     "--leaf-color-primary-soft-hover",
     "--leaf-color-success",
-    "--leaf-color-success-dark-1",
-    "--leaf-color-success-dark-3",
-    "--leaf-color-success-dark-7",
-    "--leaf-color-success-dark-9",
-    "--leaf-color-success-light-3",
-    "--leaf-color-success-light-7",
-    "--leaf-color-success-light-9",
-    "--leaf-color-success-border",
     "--leaf-color-success-ink",
     "--leaf-color-success-soft",
-    "--leaf-color-success-soft-active",
     "--leaf-color-success-soft-hover",
     "--leaf-color-surface",
     "--leaf-color-surface-alpha-55",
@@ -118,27 +62,15 @@
     "--leaf-color-text-subtle",
     "--leaf-color-text-subtle-alpha-9",
     "--leaf-color-warning",
-    "--leaf-color-warning-dark-1",
-    "--leaf-color-warning-dark-3",
-    "--leaf-color-warning-dark-7",
-    "--leaf-color-warning-dark-9",
-    "--leaf-color-warning-light-3",
-    "--leaf-color-warning-light-7",
-    "--leaf-color-warning-light-9",
     "--leaf-color-warning-alpha-16",
     "--leaf-color-warning-border",
     "--leaf-color-warning-ink",
     "--leaf-color-warning-soft",
-    "--leaf-color-warning-soft-active",
     "--leaf-color-warning-soft-hover"
   ],
   "recipeFormulas": {
-    "--leaf-color-primary-alpha-10": ["primary", "alpha", 10],
-    "--leaf-color-primary-alpha-12": ["primary", "alpha", 12],
-    "--leaf-color-primary-alpha-16": ["primary", "alpha", 16],
     "--leaf-color-primary-alpha-20": ["primary", "alpha", 20],
     "--leaf-color-primary-alpha-4": ["primary", "alpha", 4],
-    "--leaf-color-primary-alpha-55": ["primary", "alpha", 55],
     "--leaf-color-surface-alpha-55": ["surface", "alpha", 55],
     "--leaf-color-surface-alpha-90": ["surface", "alpha", 90],
     "--leaf-color-text-subtle-alpha-9": ["text-subtle", "alpha", 9],
@@ -193,7 +125,8 @@
       "textarea/textarea.scss",
       "treeselect/treeselect.scss"
     ],
-    "primaryFocusConsumers": {
+    "primaryFocusConsumers": {},
+    "neutralFocusConsumers": {
       "autocomplete/autocomplete.scss": "auto-complete",
       "cascader/cascader.scss": "cascader",
       "colorpicker/colorpicker.scss": "color-picker",
@@ -207,21 +140,26 @@
   },
   "debt": {},
   "exceptions": {
+    "alert/alert.scss": {
+      "mixFormulas": [
+        {
+          "expression": "color-mix(in srgb,var(--leaf-feedback-soft)50%,var(--leaf-color-surface))",
+          "count": 1,
+          "reason": "Alert softens each semantic soft background toward the active surface instead of emitting new per-status lighter background tokens."
+        },
+        {
+          "expression": "color-mix(in srgb,var(--leaf-feedback-color)25%,var(--leaf-color-border))",
+          "count": 1,
+          "reason": "Alert tints its neutral border with each semantic feedback color without reintroducing global success-border or info-border tokens."
+        }
+      ]
+    },
     "upload/upload.scss": {
       "hardcodedColors": [
         {
           "expression": "#fff",
           "count": 1,
           "reason": "头像照片上的深色媒体遮罩固定使用白字，与区域主题和品牌前景色独立；遮罩背景复用 spotlight 家族，强制颜色模式使用系统前景。"
-        }
-      ]
-    },
-    "card/card.scss": {
-      "hardcodedColors": [
-        {
-          "expression": "#000",
-          "count": 1,
-          "reason": "Card headings retain the requested black ink in light appearance; dark appearance uses the regional text role, and the existing Card color override remains authoritative."
         }
       ]
     },
@@ -291,7 +229,7 @@
       "fieldFamilyBorders": [
         {
           "expression": "border:0",
-          "count": 2,
+          "count": 1,
           "reason": "Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe."
         },
         {
@@ -400,9 +338,9 @@
     "cascader/cascader.scss": {
       "fieldFamilyBorders": [
         {
-          "expression": "border-inline-start:1px solid var(--leaf-color-border)",
+          "expression": "border-inline-start:1px solid var(--leaf-color-divider)",
           "count": 1,
-          "reason": "Internal column/control separator using the existing border or shared field state role; not an independently chosen outer field border."
+          "reason": "Internal column separator inside the portaled popup consuming the shared divider role; not an independently chosen outer field border."
         },
         {
           "expression": "border:0",
@@ -487,6 +425,16 @@
           "expression": "color-mix(in srgb,var(--leaf-button-on-color)32%,transparent)",
           "count": 1,
           "reason": "Solid split-action separator follows its own on-fill foreground; not an ordinary border or standalone action color."
+        },
+        {
+          "expression": "color-mix(in srgb,var(--leaf-danger-soft-active-background)30%,var(--leaf-danger-soft-background))",
+          "count": 1,
+          "reason": "Restrained danger button hover blends 30% of danger-soft-active-background into danger-soft-background so base --leaf-color-danger text stays clear instead of jumping to 3x concentration."
+        },
+        {
+          "expression": "color-mix(in srgb,var(--leaf-danger-soft-active-background)50%,var(--leaf-danger-soft-background))",
+          "count": 1,
+          "reason": "Restrained danger button press blends 50% of danger-soft-active-background into danger-soft-background alongside press scaling."
         }
       ]
     },
@@ -509,23 +457,6 @@
       ]
     },
     "menu/menu.scss": {
-      "hardcodedColors": [
-        {
-          "expression": "rgb(241 241 242)",
-          "count": 1,
-          "reason": "User-specified exact light-mode fill for the neutral Menu appearance, shared by hover, selection and press; dark mode retains its existing neutral overlay. This is a local appearance exception, not a shared option role."
-        },
-        {
-          "expression": "rgb(0 0 0/0.08)",
-          "count": 1,
-          "reason": "Bottom-only raised-selection shadow is part of the established Menu appearance and clipping contract."
-        },
-        {
-          "expression": "rgba(0,0,0,0.04)",
-          "count": 1,
-          "reason": "Raised Menu press uses a lighter transient layer than neutral feedback, preserving its established motion/paint contract."
-        }
-      ],
       "mixFormulas": [
         {
           "expression": "color-mix(in srgb,var(--leaf-color-primary)5%,transparent)",
@@ -650,11 +581,6 @@
   "sharedRecipeExpressions": {
     "hardcodedColors": [
       {
-        "expression": "rgb(0 0 0/8%)",
-        "count": 1,
-        "reason": "Menu appearance fallbacks retain this neutral overlay, which also supplies the half-strength shared choice-row feedback. Both remain borderless and shadowless."
-      },
-      {
         "expression": "rgb(0 0 0/0.04)",
         "count": 1,
         "reason": "Shared Card/Table secondary resting shadow."
@@ -665,36 +591,56 @@
         "reason": "Shared Card/Table primary resting shadow."
       },
       {
-        "expression": "rgb(0 0 0/10%)",
+        "expression": "rgb(0 0 0/28%)",
         "count": 1,
-        "reason": "Shared blurred-dialog backdrop."
+        "reason": "Shared light-mode blurred-dialog backdrop scrim."
       },
       {
-        "expression": "rgb(0 0 0/24%)",
+        "expression": "rgb(0 0 0/36%)",
         "count": 1,
-        "reason": "Shared dialog backdrop fallback when blur is unavailable."
+        "reason": "Shared light-mode dialog backdrop fallback when blur is unavailable."
       },
       {
         "expression": "rgb(0 0 0/45%)",
         "count": 1,
         "reason": "Spotlight mask must obscure non-target content."
+      },
+      {
+        "expression": "rgb(0 0 0/55%)",
+        "count": 1,
+        "reason": "Shared dark-mode blurred-dialog backdrop scrim."
+      },
+      {
+        "expression": "rgb(0 0 0/62%)",
+        "count": 1,
+        "reason": "Shared dark-mode dialog backdrop fallback when blur is unavailable."
+      },
+      {
+        "expression": "rgb(0 0 0/68%)",
+        "count": 1,
+        "reason": "Dark-mode spotlight overlay must remain stronger than the dark-mode dialog backdrop."
       }
     ],
     "mixFormulas": [
+      {
+        "expression": "color-mix(in srgb,var(--leaf-color-option-hover)32%,transparent)",
+        "count": 1,
+        "reason": "Choice rows share subtle adaptive neutral feedback without shifting brightness in dark mode."
+      },
       {
         "expression": "color-mix(in srgb,var(--leaf-color-option-hover)50%,transparent)",
         "count": 1,
         "reason": "Text actions share a half-strength neutral hover overlay; pressed feedback retains the full option-hover role."
       },
       {
+        "expression": "color-mix(in srgb,var(--leaf-color-option-hover)55%,transparent)",
+        "count": 1,
+        "reason": "Menu appearance fallbacks share an adaptive option-hover overlay for light and dark surfaces."
+      },
+      {
         "expression": "color-mix(in srgb,currentColor #{$strength},var(--leaf-color-surface))",
         "count": 1,
         "reason": "Menu retains its independent 80% inherited ink recipe; choice rows use full inherited ink in both unselected and selected states."
-      },
-      {
-        "expression": "color-mix(in srgb,#{neutral-option-background()} 50%,transparent)",
-        "count": 1,
-        "reason": "Choice rows share Select's half-strength neutral feedback on their own background layer, without moving geometry or persistent selected fill."
       },
       {
         "expression": "color-mix(in srgb,#{$surface},var(--leaf-color-surface-muted))",
@@ -707,14 +653,9 @@
         "reason": "Status-label close and checkable feedback share a foreground-relative tint."
       },
       {
-        "expression": "color-mix(in srgb,var(--leaf-color-divider)#{$divider-weight},#{$surface})",
+        "expression": "color-mix(in srgb,#{$color} 20%,transparent)",
         "count": 1,
-        "reason": "Card uses a lighter 50% divider blend while other softened frames keep the 70% divider blend; both follow their actual local surface."
-      },
-      {
-        "expression": "color-mix(in srgb,var(--leaf-color-text)45%,var(--leaf-color-border))",
-        "count": 1,
-        "reason": "Neutral-focus field variant preserves existing interactions."
+        "reason": "Field family and InputOTP slots share a restrained 20% translucent 3px outer focus ring following the active focus or validation border color."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-field-color)30%,var(--leaf-color-border))",
@@ -722,46 +663,31 @@
         "reason": "Shared field internal separator follows semantic validation color."
       },
       {
-        "expression": "color-mix(in srgb,var(--leaf-color-primary)6%,var(--leaf-table-surface))",
+        "expression": "color-mix(in srgb,var(--leaf-color-option-hover)25%,var(--leaf-table-surface))",
         "count": 1,
-        "reason": "Table selected rows blend a restrained 6% primary tint into the local table surface."
+        "reason": "Table row hover and zebra stripes share a light 25% option-hover neutral step over the local table surface."
       },
       {
-        "expression": "color-mix(in srgb,var(--leaf-color-primary)10%,var(--leaf-table-surface))",
+        "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)35%,var(--leaf-table-surface))",
         "count": 1,
-        "reason": "Table selected-row hover steps smoothly from 6% to 10% primary tint over the local table surface."
+        "reason": "Table sorted body cells blend a subtle neutral muted surface step without accent leakage."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)55%,var(--leaf-table-surface))",
+        "count": 1,
+        "reason": "Table sorted header cells use a restrained neutral muted step."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-table-surface)80%,transparent)",
         "count": 1,
         "reason": "Table loading scrim follows the actual table surface with a compatibility override."
-      },
-      {
-        "expression": "color-mix(in srgb,var(--leaf-table-text)2%,var(--leaf-table-surface))",
-        "count": 1,
-        "reason": "Table stripes follow component-local text and surface."
-      },
-      {
-        "expression": "color-mix(in srgb,var(--leaf-table-text)4%,var(--leaf-table-surface))",
-        "count": 1,
-        "reason": "Table row hover follows component-local text and surface with a restrained 4% neutral step."
       }
     ],
     "derivedTokenUsages": [
       {
-        "expression": "var(--leaf-color-primary-alpha-12)",
-        "count": 1,
-        "reason": "Shared control halo is a transparent optical effect, not a soft selection surface."
-      },
-      {
-        "expression": "var(--leaf-color-primary-alpha-16)",
-        "count": 1,
-        "reason": "Shared active control halo."
-      },
-      {
         "expression": "var(--leaf-color-primary-alpha-20)",
         "count": 1,
-        "reason": "Shared keyboard control halo."
+        "reason": "Shared keyboard control halo for Slider."
       },
       {
         "expression": "var(--leaf-color-surface-alpha-80)",

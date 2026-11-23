@@ -1,34 +1,32 @@
-import { type HTMLAttributes, type ReactNode, useEffect, useLayoutEffect, useRef } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 import type { ButtonProps } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
-import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
-import { classes } from '../shared/classes';
 import type { DialogFocusOptions } from '../shared/dialog';
-import { type TabsProps, useTabsParts } from '../tabs/tabs';
-import { ModalBase, type ModalTabsRenderProps } from './base';
-
-const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
+import type { ContainerPadding } from '../shared/types';
+import { ModalBase } from './base';
 
 export interface ModalFooterActions {
   confirmButton: ReactNode;
   cancelButton: ReactNode;
 }
-/** Tabs controls integrated with the modal; Modal fixes the line type and top placement. */
-export interface ModalTabsProps extends Omit<TabsProps, 'type' | 'placement' | 'children'> {}
 
 export interface ModalProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'title'>,
     DialogFocusOptions {
   open: boolean;
   title?: ReactNode;
+  /** Size variant; `mini` uses a compact centered confirmation layout with equal-width footer actions. */
+  size?: 'md' | 'mini';
+  /** Highlight primary confirmation action and header icon with danger styling. */
+  danger?: boolean;
   /** Supporting text displayed below the title. */
   description?: ReactNode;
   /** Decorative header icon. */
   icon?: ReactNode;
-  /** Separate the header and footer with subtle borders. */
+  /** Separate the footer action bar with a top border. */
   divided?: boolean;
-  /** Embedded tabs placed below the heading, or replacing it when no title is supplied. */
-  tabs?: ModalTabsProps;
+  /** Customize inner padding for the modal or individual header/body/footer regions. */
+  padding?: ContainerPadding;
   footer?: ReactNode | ((actions: ModalFooterActions) => ReactNode);
   confirmText?: ReactNode;
   cancelText?: ReactNode;
@@ -49,92 +47,11 @@ export interface ModalProps
   container?: Element | DocumentFragment | (() => Element | DocumentFragment);
 }
 
-function ModalTabsLayout({
-  open,
-  tabs,
-  title,
-  titleId,
-  hasHeading,
-  closeButton,
-  contentRef,
-  snapHeight,
-  ariaLabel,
-  ariaLabelledBy,
-  scrollbarLabel,
-  scrollbarLabelledBy,
-  error,
-  children,
-}: ModalTabsRenderProps) {
-  const tabExtra =
-    !hasHeading && closeButton != null ? (
-      <div className="leaf-dialog-tab-extra leaf-modal__tab-extra">
-        {tabs.extra}
-        {closeButton}
-      </div>
-    ) : (
-      tabs.extra
-    );
-  const tabLabel = tabs['aria-label'] ?? (typeof title === 'string' ? title : ariaLabel);
-  const tabLabelledBy =
-    tabs['aria-labelledby'] ??
-    (tabs['aria-label'] == null && title != null
-      ? titleId
-      : tabs['aria-label'] == null
-        ? ariaLabelledBy
-        : undefined);
-  const parts = useTabsParts({
-    ...tabs,
-    type: 'line',
-    placement: 'top',
-    size: tabs.size ?? 'md',
-    'aria-label': tabLabel,
-    'aria-labelledby': tabLabelledBy,
-    extra: tabExtra,
-    className: classes(
-      'leaf-dialog-tabs',
-      hasHeading && 'leaf-dialog-tabs--headed',
-      'leaf-modal__tabs',
-      tabs.className,
-    ),
-    panelsClassName: 'leaf-dialog-panels',
-    visibilityKey: open,
-  });
-  const previousSelected = useRef(parts?.selected);
-  useBrowserLayoutEffect(() => {
-    if (previousSelected.current === parts?.selected) return;
-    previousSelected.current = parts?.selected;
-    snapHeight();
-  }, [parts?.selected, snapHeight]);
-
-  return (
-    <>
-      {parts && <div {...parts.rootProps}>{parts.header}</div>}
-      {(parts?.hasPanels || (children != null && children !== false) || error != null) && (
-        <Scrollbar
-          className="leaf-modal__body"
-          viewportClassName="leaf-modal__viewport"
-          orientation="vertical"
-          aria-labelledby={scrollbarLabelledBy}
-          aria-label={scrollbarLabel}
-        >
-          <div ref={contentRef} className="leaf-modal__content">
-            {parts?.panels}
-            {children}
-            {error && (
-              <p role="alert" className="leaf-confirm-error">
-                {error}
-              </p>
-            )}
-          </div>
-        </Scrollbar>
-      )}
-    </>
-  );
-}
-
 type ModalControlProps = ModalProps;
 
 function ModalControl({
+  size = 'md',
+  danger = false,
   divided = true,
   confirmLoading = false,
   width = 480,
@@ -148,6 +65,8 @@ function ModalControl({
   return (
     <ModalBase
       {...props}
+      size={size}
+      danger={danger}
       divided={divided}
       confirmLoading={confirmLoading}
       width={width}
@@ -156,12 +75,13 @@ function ModalControl({
       keyboard={keyboard}
       forceRender={forceRender}
       destroyOnClose={destroyOnClose}
-      renderTabsLayout={ModalTabsLayout}
     />
   );
 }
 
 export function Modal(rawProps: ModalProps) {
   const props = useComponentProps('Modal', rawProps);
-  return <ModalControl {...props} />;
+  return (
+    <ModalControl {...props} width={props.width ?? (props.size === 'mini' ? 340 : undefined)} />
+  );
 }

@@ -62,12 +62,11 @@ Configuration for floating-action tooltips, positioning and button state.
 | --- | --- | --- | --- |
 | `tooltip` | `ReactNode` | — | Tooltip content shown on hover or focus. |
 | `fixed` | `boolean` | `true` | Fix to a viewport corner; false keeps it in layout. |
-| `variant` | `'solid' \| 'outline' \| 'text' \| 'link'` | `'solid'` | Button appearance; solid by default. |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
-| `danger` | `boolean` | `false` | Use destructive-action colors without changing button behavior. |
+| `placement` | `'bottom-end' \| 'bottom-start' \| 'top-end' \| 'top-start' \| 'bottom-right' \| 'bottom-left' \| 'top-right' \| 'top-left'` | `'bottom-end'` | Viewport corner used when fixed positioning is active. |
+| `variant` | `'solid' \| 'outline' \| 'text' \| 'link' \| 'danger'` | `'solid'` | Button appearance; solid by default. |
+| `size` | `'sm' \| 'md' \| 'lg' \| 'icon' \| 'icon-sm' \| 'icon-lg'` | `'md'` | Presentation size. |
+| `danger` | `boolean` | `false` | Deprecated; use `variant="danger"`. Falls back to the danger appearance when set. |
 | `loading` | `boolean` | `false` | Show a loading state. |
-| `startIcon` | `ReactNode` | — | Icon before the label; icon-only buttons also need aria-label. |
-| `endIcon` | `ReactNode` | — | Icon after the label. |
 | `fullWidth` | `boolean` | `false` | Stretch the button to its container width. |
 
 ### FloatButtonGroup API
@@ -82,6 +81,7 @@ Set `expandable={false}` to keep the actions visible without an expansion trigge
 | `onOpenChange` | `(open: boolean) => void` | — | Called when the trigger, outside pointer, Escape or an action requests an expanded-state change. |
 | `expandable` | `boolean` | `true` | Provide a button to expand the action group. |
 | `fixed` | `boolean` | `true` | Fix to a viewport corner; false keeps it in layout. |
+| `placement` | `'bottom-end' \| 'bottom-start' \| 'top-end' \| 'top-start' \| 'bottom-right' \| 'bottom-left' \| 'top-right' \| 'top-left'` | `'bottom-end'` | Viewport corner used when fixed positioning is active. |
 | `icon` | `ReactNode` | — | Icon content. |
 | `className` | `string` | — | CSS class added to the component root. |
 

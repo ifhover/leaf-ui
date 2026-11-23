@@ -18,11 +18,12 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 
 ## 基础用法
 
-通过 `items` 定义标签和内容，点击标签切换当前面板。线形标签未选中时使用正文色，悬停和按下时分别使用主题亮色和深色，默认颜色过渡为 300ms；选中标签使用主题色和铺满标签宽度的下划线，标签栏底部显示完整分割线。
+通过 `items` 定义标签和内容，点击标签切换当前面板。线形标签未选中时使用次要文字色，悬停、按下和选中时快速呈现清晰对比；选中标签底部显示铺满项宽度的渐显下划线，不显示多余整行底边框。
 
 <ComponentExample exampleId="basic" preview={<TabsBasic />} fileName="basic.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -33,22 +34,24 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 
 ### 不同尺寸
 
-通过 `size` 设置标签控件尺寸。线形标签的小、默认尺寸使用相同字号，通过上下间距区分高度；大尺寸同时增大字号和上下间距。每行展示一种形态，每列对比小、默认和大三种尺寸。窄屏下可横向滚动查看。
+通过 `size` 设置标签控件尺寸（`sm` / `md` / `lg`）；线形标签默认高度跟随统一控件高度加 2 px（含大号内容时可自然撑高）。每行展示一种形态，每列对比小、默认和大三种尺寸。窄屏下可横向滚动查看。
 
 <ComponentExample exampleId="sizes" preview={<TabsSizes />} fileName="sizes.tsx" width="100%">
 
 ```tsx lineNumbers file="../../src/examples/tabs/sizes.tsx"
+
 ```
 
 </ComponentExample>
 
 ### 不同形态
 
-通过 `type` 选择标签页外观；卡片（`card`）和分段（`segmented`）形态可通过 `tone` 切换主题浅底或实底，通过 `shape` 切换圆角矩形与胶囊形态。
+通过 `type` 选择线形（`line`）、卡片（`card`）或分段（`segmented`）三种标签页外观，均保持中性灰阶反馈。
 
 <ComponentExample exampleId="appearances" preview={<TabsAppearances />} fileName="appearances.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/appearances.tsx"
+
 ```
 
 </ComponentExample>
@@ -62,6 +65,7 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 <ComponentExample exampleId="view-switcher" preview={<TabsViewSwitcher />} fileName="view-switcher.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/view-switcher.tsx"
+
 ```
 
 </ComponentExample>
@@ -73,6 +77,7 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 <ComponentExample exampleId="preserved" preview={<TabsPreserved />} fileName="preserved.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/preserved.tsx"
+
 ```
 
 </ComponentExample>
@@ -84,6 +89,7 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 <ComponentExample exampleId="closable" preview={<TabsClosable />} fileName="closable.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/closable.tsx"
+
 ```
 
 </ComponentExample>
@@ -95,6 +101,7 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 <ComponentExample exampleId="extensions" preview={<ExtensionDemo />} fileName="extensions.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/extensions.tsx"
+
 ```
 
 </ComponentExample>
@@ -106,6 +113,7 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 <ComponentExample exampleId="capabilities" preview={<Capabilities />} fileName="capabilities.tsx">
 
 ```tsx lineNumbers file="../../src/examples/tabs/capabilities.tsx"
+
 ```
 
 </ComponentExample>
@@ -125,8 +133,6 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 | `defaultActiveKey` | `string` | 首个可用项 | 非受控模式的初始标签 key，后续变化不重置选中项。 |
 | `onChange` | `(key: string) => void` | — | 激活项变化 |
 | `type` | `'line' \| 'card' \| 'segmented'` | `'line'` | 标签形态 |
-| `tone` | `'soft' \| 'solid'` | `'soft'` | 卡片或分段形态的选中高亮风格：soft 为主题浅底，solid 为主题实底。 |
-| `shape` | `'default' \| 'pill'` | `'default'` | 卡片或分段形态的标签圆角：default 为圆角矩形，pill 为胶囊形。 |
 | `placement` | `'top' \| 'bottom'` | `'top'` | 标签栏位置 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 标签尺寸。 |
 | `block` | `boolean` | `false` | 标签等宽铺满可用宽度 |

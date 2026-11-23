@@ -4,52 +4,33 @@
 
 @layer leaf-ui {
   .leaf-drawer-mask {
+    // 四边保留轻量悬浮留白，贴近屏幕边缘同时维持圆角卡片边界。
+    --leaf-drawer-offset: var(--leaf-spacing-sm);
+    box-sizing: border-box;
     position: fixed;
     inset: 0;
     z-index: var(--leaf-z-index-modal, 1100);
     display: flex;
+    overflow: clip;
+    padding: var(--leaf-drawer-offset);
     &[data-state='closing'] {
       pointer-events: none;
     }
     &--right {
       justify-content: flex-end;
-      --leaf-drawer-enter: translateX(100%);
-      .leaf-drawer {
-        border-radius: var(
-          --leaf-component-drawer-radius,
-          var(--leaf-radius-lg) 0 0 var(--leaf-radius-lg)
-        );
-      }
+      --leaf-drawer-enter: translate3d(calc(100% + var(--leaf-drawer-offset)), 0, 0);
     }
     &--left {
       justify-content: flex-start;
-      --leaf-drawer-enter: translateX(-100%);
-      .leaf-drawer {
-        border-radius: var(
-          --leaf-component-drawer-radius,
-          0 var(--leaf-radius-lg) var(--leaf-radius-lg) 0
-        );
-      }
+      --leaf-drawer-enter: translate3d(calc(-100% - var(--leaf-drawer-offset)), 0, 0);
     }
     &--top {
       align-items: flex-start;
-      --leaf-drawer-enter: translateY(-100%);
-      .leaf-drawer {
-        border-radius: var(
-          --leaf-component-drawer-radius,
-          0 0 var(--leaf-radius-lg) var(--leaf-radius-lg)
-        );
-      }
+      --leaf-drawer-enter: translate3d(0, calc(-100% - var(--leaf-drawer-offset)), 0);
     }
     &--bottom {
       align-items: flex-end;
-      --leaf-drawer-enter: translateY(100%);
-      .leaf-drawer {
-        border-radius: var(
-          --leaf-component-drawer-radius,
-          var(--leaf-radius-lg) var(--leaf-radius-lg) 0 0
-        );
-      }
+      --leaf-drawer-enter: translate3d(0, calc(100% + var(--leaf-drawer-offset)), 0);
     }
   }
   .leaf-drawer-backdrop {
@@ -62,6 +43,8 @@
     padding: 0;
     background: var(--leaf-overlay-background);
     @include backdrop.blur('.leaf-drawer-mask');
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+    transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
     cursor: default;
   }
   .leaf-drawer {
@@ -73,12 +56,13 @@
     flex-direction: column;
     max-width: 100%;
     max-height: 100%;
-    color: var(--leaf-component-drawer-color, var(--leaf-color-text));
     border: var(--leaf-component-drawer-border-width, var(--leaf-border-width, 1px)) solid
       var(
         --leaf-component-drawer-border-color,
-        var(--leaf-frame-border-color, var(--leaf-color-divider))
+        var(--leaf-frame-border-color, var(--leaf-color-border))
       );
+    border-radius: var(--leaf-component-drawer-radius, var(--leaf-radius-lg));
+    color: var(--leaf-component-drawer-color, var(--leaf-color-text));
     background: var(--leaf-component-drawer-background, var(--leaf-color-surface));
     font: var(--leaf-component-drawer-font-size, var(--leaf-font-size)) / var(--leaf-line-height)
       var(--leaf-font-family);
@@ -87,85 +71,129 @@
       var(--leaf-surface-shadow, var(--leaf-shadow-lg))
     );
     outline: none;
-    transform: translate(0);
+    will-change: transform;
+    transform: var(--leaf-drawer-swipe-transform, translate3d(0, 0, 0));
     opacity: 1;
-    transition:
-      transform var(--leaf-motion-slow) var(--leaf-motion-easing),
-      opacity var(--leaf-motion-slow) var(--leaf-motion-easing);
+    // 参考 shadcn / Vaul Drawer 的长减速曲线与纯位移动效，避免半透明渐隐破坏滑入质感。
+    transition: transform calc(var(--leaf-motion-duration) * 2.5) cubic-bezier(0.32, 0.72, 0, 1);
     @starting-style {
-      opacity: 0;
       transform: var(--leaf-drawer-enter);
     }
+    &[data-swiping='true'] {
+      transition: none;
+      user-select: none;
+    }
     &__header > &__extra {
-      margin-inline-start: auto;
-    }
-    &__footer {
-      gap: 8px;
-    }
-    &__body {
-      flex: 1;
-      padding: 0;
-      overflow: hidden;
-      border-radius: 0;
-    }
-    &__viewport {
-      overscroll-behavior: contain;
-    }
-    &__content {
-      box-sizing: border-box;
-      padding: var(
-        --leaf-component-drawer-padding,
-        var(--leaf-density-dialog-block) var(--leaf-density-dialog-inline)
-      );
-    }
-    &__heading h2 {
-      font-size: var(--leaf-component-drawer-font-size, var(--leaf-font-size-lg));
-      font-weight: var(--leaf-heading-weight);
-      line-height: var(--leaf-line-height-lg);
-    }
-    &__close {
-      box-sizing: border-box;
-      align-self: center;
-      margin-inline-start: auto;
-      margin-inline-end: -4px;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      align-self: flex-start;
+      height: var(--leaf-line-height-lg);
       flex-shrink: 0;
-      width: 32px;
-      height: 32px;
-      padding: 8px;
-      border: 0;
-      border-radius: var(--leaf-radius);
-
-      @include mixins.text-action;
-
-      > svg {
-        width: 16px;
-        height: 16px;
-      }
+      margin-inline-start: auto;
     }
-    &__extra + &__close {
-      margin-inline-start: 0;
+    &--closable > &__header > &__extra {
+      margin-inline-end: var(--leaf-dialog-close-clearance);
     }
-    @include dialog-sections.tabs(drawer);
+    &--swipeable#{&}--placement-bottom {
+      --leaf-dialog-padding-block: max(
+        24px,
+        var(
+          --leaf-drawer-shell-padding-top,
+          var(--leaf-component-drawer-padding-top, var(--leaf-density-dialog-block))
+        )
+      );
+    }
+    &--swipeable#{&}--placement-top {
+      --leaf-dialog-padding-bottom: max(
+        24px,
+        var(
+          --leaf-drawer-shell-padding-bottom,
+          var(--leaf-component-drawer-padding-bottom, var(--leaf-density-dialog-block))
+        )
+      );
+    }
+    &--swipeable#{&}--placement-right {
+      --leaf-dialog-padding-left: max(
+        24px,
+        var(
+          --leaf-drawer-shell-padding-left,
+          var(--leaf-component-drawer-padding-left, var(--leaf-density-dialog-inline))
+        )
+      );
+    }
+    &--swipeable#{&}--placement-left {
+      --leaf-dialog-padding-right: max(
+        24px,
+        var(
+          --leaf-drawer-shell-padding-right,
+          var(--leaf-component-drawer-padding-right, var(--leaf-density-dialog-inline))
+        )
+      );
+    }
   }
   .leaf-drawer-mask[data-state='closing'] .leaf-drawer {
-    opacity: 0;
     transform: var(--leaf-drawer-enter);
-    transition-duration: var(--leaf-motion-duration);
-    transition-timing-function: var(--leaf-motion-easing);
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-drawer,
-    .leaf-drawer__close,
-    .leaf-drawer__resize::after {
-      transition: none;
-    }
+  .leaf-drawer-mask[data-state='closing'] .leaf-drawer-backdrop,
+  .leaf-drawer-mask[data-state='closing'] .leaf-drawer {
+    transition-duration: calc(var(--leaf-motion-duration) * 1.5);
+    transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
   }
 
   .leaf-drawer-mask[hidden] {
     display: none;
+  }
+  .leaf-drawer__swipe-handle {
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+    cursor: grab;
+    &:active {
+      cursor: grabbing;
+    }
+    &--bottom,
+    &--top {
+      height: 24px;
+    }
+    &--bottom {
+      inset: 0 48px auto;
+    }
+    &--top {
+      inset: auto 48px 0;
+    }
+    &--right,
+    &--left {
+      width: 24px;
+    }
+    &--right {
+      inset: 48px auto 48px 0;
+    }
+    &--left {
+      inset: 48px 0 48px auto;
+    }
+  }
+  .leaf-drawer__swipe-bar {
+    border-radius: 999px;
+    background: var(--leaf-color-text);
+    opacity: 0.2;
+    transition: var(--leaf-action-transition);
+    .leaf-drawer__swipe-handle--bottom > &,
+    .leaf-drawer__swipe-handle--top > & {
+      width: 48px;
+      height: 4px;
+    }
+    .leaf-drawer__swipe-handle--left > &,
+    .leaf-drawer__swipe-handle--right > & {
+      width: 4px;
+      height: 48px;
+    }
+    .leaf-drawer__swipe-handle:hover > &,
+    .leaf-drawer[data-swiping='true'] .leaf-drawer__swipe-handle > & {
+      opacity: 0.35;
+    }
   }
   .leaf-drawer__resize {
     position: absolute;
@@ -175,37 +203,40 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: var(--leaf-color-primary);
+      border-radius: 999px;
+      background: var(--leaf-color-text);
       opacity: 0;
-      transition: opacity var(--leaf-motion-fast) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
     }
     &:hover::after,
     &:focus-visible::after {
       opacity: 0.12;
     }
     &:focus-visible {
-      outline: 2px solid var(--leaf-color-primary);
+      @include mixins.focus-ring;
       outline-offset: -2px;
     }
   }
-  .leaf-drawer-mask--right .leaf-drawer__resize {
-    inset: 0 auto 0 0;
+  .leaf-drawer-mask--right .leaf-drawer__resize,
+  .leaf-drawer-mask--left .leaf-drawer__resize {
     width: 8px;
     cursor: ew-resize;
+  }
+  .leaf-drawer-mask--right .leaf-drawer__resize {
+    inset: 10px auto 10px 0;
   }
   .leaf-drawer-mask--left .leaf-drawer__resize {
-    inset: 0 0 0 auto;
-    width: 8px;
-    cursor: ew-resize;
+    inset: 10px 0 10px auto;
+  }
+  .leaf-drawer-mask--top .leaf-drawer__resize,
+  .leaf-drawer-mask--bottom .leaf-drawer__resize {
+    height: 8px;
+    cursor: ns-resize;
   }
   .leaf-drawer-mask--top .leaf-drawer__resize {
-    inset: auto 0 0;
-    height: 8px;
-    cursor: ns-resize;
+    inset: auto 10px 0;
   }
   .leaf-drawer-mask--bottom .leaf-drawer__resize {
-    inset: 0 0 auto;
-    height: 8px;
-    cursor: ns-resize;
+    inset: 0 10px auto;
   }
 }

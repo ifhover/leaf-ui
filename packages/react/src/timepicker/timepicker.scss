@@ -53,23 +53,24 @@
     &__column .leaf-floating__option + .leaf-floating__option {
       margin-top: 0;
     }
-    // Same saved-value mark and motion as .leaf-select__check.
+    // 与 .leaf-select__check 保持一致的已保存勾选绘制动效。
     &__check {
       flex: 0 0 auto;
       opacity: 0;
-      transform: scale(0.6) rotate(-12deg);
-      transition:
-        opacity var(--leaf-motion-color) var(--leaf-motion-easing),
-        transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
+      path,
+      polyline {
+        stroke-dasharray: 24;
+        stroke-dashoffset: 24;
+        transition: stroke-dashoffset var(--leaf-motion-duration) var(--leaf-motion-easing);
+      }
     }
     [aria-selected='true'] > &__check {
       opacity: 1;
-      transform: scale(1) rotate(0);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-time-picker__check {
-      transition: none;
+      path,
+      polyline {
+        stroke-dashoffset: 0;
+      }
     }
   }
 

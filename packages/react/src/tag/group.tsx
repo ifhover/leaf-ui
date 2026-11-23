@@ -1,7 +1,13 @@
-import { type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode, useRef } from 'react';
+import {
+  type ButtonHTMLAttributes,
+  forwardRef,
+  type HTMLAttributes,
+  type ReactNode,
+  useRef,
+} from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
-import { FormValue, useFieldValue } from '../shared/field';
+import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
 import { useListMotion } from '../shared/motion';
 import type { ControlSize } from '../shared/types';
 import { useControllable } from '../shared/use-controllable';
@@ -12,7 +18,10 @@ export interface CheckableTagProps
   onChange?: (checked: boolean) => void;
   size?: ControlSize;
 }
-export function CheckableTag(rawProps: CheckableTagProps) {
+export const CheckableTag = forwardRef<HTMLButtonElement, CheckableTagProps>(function CheckableTag(
+  rawProps: CheckableTagProps,
+  ref,
+) {
   const {
     checked,
     defaultChecked = false,
@@ -27,6 +36,7 @@ export function CheckableTag(rawProps: CheckableTagProps) {
   return (
     <button
       {...props}
+      ref={ref}
       type={props.type ?? 'button'}
       className={classes(
         'leaf-tag',
@@ -45,7 +55,8 @@ export function CheckableTag(rawProps: CheckableTagProps) {
       {children}
     </button>
   );
-}
+});
+CheckableTag.displayName = 'CheckableTag';
 export interface TagOption {
   value: string;
   label: ReactNode;
@@ -63,7 +74,10 @@ export interface TagGroupProps
   form?: string;
   required?: boolean;
 }
-export function TagGroup(rawProps: TagGroupProps) {
+export const TagGroup = forwardRef<HTMLDivElement, TagGroupProps>(function TagGroup(
+  rawProps: TagGroupProps,
+  forwardedRef,
+) {
   const {
     options,
     value,
@@ -79,6 +93,7 @@ export function TagGroup(rawProps: TagGroupProps) {
   } = useComponentProps('TagGroup', rawProps);
   const trigger = useRef<HTMLButtonElement>(null);
   const root = useRef<HTMLDivElement>(null);
+  const ref = useMergedRef(root, forwardedRef);
   const [current, setCurrent] = useFieldValue(value, defaultValue, trigger, form);
   useListMotion(
     root,
@@ -86,7 +101,7 @@ export function TagGroup(rawProps: TagGroupProps) {
     '.leaf-checkable-tag[data-motion-key]',
   );
   return (
-    <div {...props} ref={root} className={classes('leaf-tag-group', className)}>
+    <div {...props} ref={ref} className={classes('leaf-tag-group', className)}>
       {options.map((option, index) => {
         const selected = current.includes(option.value);
         return (
@@ -126,4 +141,5 @@ export function TagGroup(rawProps: TagGroupProps) {
       />
     </div>
   );
-}
+});
+TagGroup.displayName = 'TagGroup';

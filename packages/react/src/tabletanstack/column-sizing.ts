@@ -71,7 +71,7 @@ export function getColumnLayout<TData>(
         : column.getSize(),
       max: column.columnDef.maxSize ?? Number.MAX_SAFE_INTEGER,
       weight,
-      configured: specified || bounded || resized || explicitFlex,
+      configured: specified || bounded || resized || explicitFlex || Boolean(meta?.ellipsis),
     };
   });
   const fixed = forceFixed || items.some((item) => item.configured);

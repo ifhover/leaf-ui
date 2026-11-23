@@ -91,13 +91,13 @@ export function ThemeColors() {
               {
                 key: 'surface',
                 label: 'Content surface',
-                children: 'The active tab tint and inset content keep using the content surface.',
+                children: 'The active tab pill and inset content keep using the content surface.',
               },
               {
                 key: 'muted',
                 label: 'Muted surface',
                 children:
-                  'Outer layered canvases use mutedSurfaceColor without tinting the clean rail.',
+                  'Outer layered canvases and segmented tracks share mutedSurfaceColor without tinting the clean pill.',
               },
             ]}
           />

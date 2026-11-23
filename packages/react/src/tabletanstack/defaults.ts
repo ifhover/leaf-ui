@@ -19,7 +19,7 @@ export interface DataTableVirtualOptions {
 export interface DataTablePresentationProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   size?: ControlSize;
-  /** Add an outer frame and separators between columns and rows. */
+  /** Add an outer frame around the table without changing internal dividers. */
   bordered?: boolean;
   /** Alternating row backgrounds; disabled by default. */
   striped?: boolean;

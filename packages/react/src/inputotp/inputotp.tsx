@@ -63,12 +63,15 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
   const [current, setCurrent] = useFieldValue(value, normalize(defaultValue), input, props.form);
   const [focused, setFocused] = useState(false);
   const [active, setActive] = useState(0);
+  const [selection, setSelection] = useState<[number, number]>([0, 0]);
+  const [compositionText, setCompositionText] = useState<string | null>(null);
+  const composing = useRef(false);
   const completed = useRef('');
   useEffect(() => {
     if (current.length < count) completed.current = '';
   }, [current, count]);
   const disabled = disabledProp || field?.disabled;
-  const update = (text: string) => {
+  const update = (text: string, caret?: number | null) => {
     const next = normalize(text);
     setCurrent(next);
     if (next !== current) onChange?.(next);
@@ -77,7 +80,9 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
       onComplete?.(next);
     }
     if (next.length < count) completed.current = '';
-    setActive(Math.min(next.length, count - 1));
+    const resolved = caret == null ? next.length : normalize(text.slice(0, caret)).length;
+    setActive(Math.max(0, Math.min(resolved, count - 1)));
+    setSelection([resolved, resolved]);
   };
   return (
     <div
@@ -90,7 +95,7 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
       <input
         {...props}
         ref={merged}
-        type="text"
+        type={mask ? 'password' : 'text'}
         className="leaf-input-otp__input"
         id={props.id ?? field?.id}
         aria-label={props['aria-label'] ?? t('inputOTP.verificationCode')}
@@ -105,9 +110,26 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
         }
         required={props.required ?? field?.required}
         maxLength={count}
-        value={current}
+        value={compositionText ?? current}
         disabled={disabled}
-        onChange={(event) => update(event.target.value)}
+        onCompositionStart={(event) => {
+          composing.current = true;
+          setCompositionText(current);
+          props.onCompositionStart?.(event);
+        }}
+        onCompositionEnd={(event) => {
+          composing.current = false;
+          setCompositionText(null);
+          props.onCompositionEnd?.(event);
+          update(event.currentTarget.value, event.currentTarget.selectionStart);
+        }}
+        onChange={(event) => {
+          if (composing.current || (event.nativeEvent as InputEvent).isComposing) {
+            setCompositionText(event.target.value);
+            return;
+          }
+          update(event.target.value, event.target.selectionStart);
+        }}
         onPaste={(event) => {
           props.onPaste?.(event);
           if (event.defaultPrevented || props.readOnly) return;
@@ -116,17 +138,16 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
           const selectionEnd = event.currentTarget.selectionEnd ?? selectionStart;
           const pasted = normalize(event.clipboardData.getData('text'));
           const next = current.slice(0, selectionStart) + pasted + current.slice(selectionEnd);
-          update(next);
-          queueMicrotask(() =>
-            input.current?.setSelectionRange(
-              Math.min(count, selectionStart + pasted.length),
-              Math.min(count, selectionStart + pasted.length),
-            ),
-          );
+          const caret = Math.min(count, selectionStart + pasted.length);
+          update(next, caret);
+          queueMicrotask(() => input.current?.setSelectionRange(caret, caret));
         }}
         onFocus={(event) => {
           setFocused(true);
-          setActive(Math.min(count - 1, event.currentTarget.selectionStart ?? 0));
+          const start = event.currentTarget.selectionStart ?? 0;
+          const end = event.currentTarget.selectionEnd ?? start;
+          setActive(Math.min(count - 1, start));
+          setSelection([start, end]);
           onFocus?.(event);
         }}
         onBlur={(event) => {
@@ -134,7 +155,10 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
           onBlur?.(event);
         }}
         onSelect={(event) => {
-          setActive(Math.min(count - 1, event.currentTarget.selectionStart ?? 0));
+          const start = event.currentTarget.selectionStart ?? 0;
+          const end = event.currentTarget.selectionEnd ?? start;
+          setActive(Math.min(count - 1, start));
+          setSelection([start, end]);
           onSelect?.(event);
         }}
         onClick={(event) => {
@@ -149,8 +173,10 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
             : -1;
           if (index >= 0) {
             const position = Math.min(index, current.length);
-            input.current?.setSelectionRange(position, Math.min(current.length, position + 1));
+            const end = Math.min(current.length, position + 1);
+            input.current?.setSelectionRange(position, end);
             setActive(position);
+            setSelection([position, end]);
           }
         }}
       />
@@ -161,6 +187,14 @@ export const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(function Inp
             <span
               data-otp-slot=""
               data-active={focused && active === index ? '' : undefined}
+              data-selected={
+                focused &&
+                selection[1] > selection[0] &&
+                index >= selection[0] &&
+                index < selection[1]
+                  ? ''
+                  : undefined
+              }
               data-filled={current[index] ? '' : undefined}
               className="leaf-input-otp__slot"
             >

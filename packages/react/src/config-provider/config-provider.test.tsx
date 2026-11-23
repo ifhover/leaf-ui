@@ -104,7 +104,7 @@ describe('ConfigProvider', () => {
     );
     expect(screen.getByTestId('compact')).toHaveAttribute('data-leaf-density', 'compact');
     expect(screen.getByTestId('compact').style.getPropertyValue('--leaf-control-height')).toBe(
-      '30px',
+      '28px',
     );
     expect(screen.getByTestId('compact').style.getPropertyValue('--leaf-density-form-gap')).toBe(
       '12px',
@@ -121,7 +121,7 @@ describe('ConfigProvider', () => {
       </ConfigProvider>,
     );
     expect(screen.getByTestId('compact').style.getPropertyValue('--leaf-control-height')).toBe(
-      '34px',
+      '32px',
     );
     expect(screen.getByText('comfortable')).toBeInTheDocument();
   });

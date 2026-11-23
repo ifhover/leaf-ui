@@ -6,7 +6,10 @@ export function ColorPickerCustomTrigger() {
   const [color, setColor] = useState('#1677ff');
   return (
     <ColorPicker value={color} onChange={setColor}>
-      <Button startIcon={<Palette />}>Choose color {color}</Button>
+      <Button>
+        <Palette />
+        Choose color {color}
+      </Button>
     </ColorPicker>
   );
 }

@@ -27,8 +27,9 @@ export function DropdownSizes() {
               { key: 'copy', label: '复制链接', icon: <Copy />, extra: 'Ctrl C' },
             ]}
           >
-            <Button variant="outline" endIcon={<ChevronDown size={16} />}>
+            <Button variant="outline">
               更多操作
+              <ChevronDown />
             </Button>
           </Dropdown>
         </Grid>

@@ -93,6 +93,8 @@ export type SelectProps = SelectBaseProps &
       }
   );
 const empty: readonly string[] = [];
+// 为触发器对齐和自适应内容模式提供内部最小宽度下限，避免窄控件或短选项挤压浮层内容。
+const popupMinWidthFallback = 'min(120px, calc(100vw - 24px))';
 const searchText = (option: SelectOption) =>
   option.searchLabel ??
   (typeof option.label === 'string' || typeof option.label === 'number'
@@ -158,6 +160,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
   } = props;
   const format = useFormattedText();
   const showSearch = searchProp || allowCreate;
+  const searchable = showSearch && !inputProps.readOnly && !inputReadOnly;
   const [created, setCreated] = useState<SelectOption[]>([]);
   const baseOptions = useMemo(
     () => suppliedOptions.flatMap((entry) => ('options' in entry ? [...entry.options] : [entry])),
@@ -325,7 +328,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
   const restoreSelectionHighlight = () =>
     setHighlighted((previous) => (previous === selectionIndex() ? previous : selectionIndex()));
   const beginSearch = () => {
-    if (!showSearch || disabled || inputProps.readOnly || inputReadOnly) return;
+    if (!searchable || disabled) return;
     if (!multiple && query === null) input.current?.select();
     if (!open) openMenu();
   };
@@ -406,8 +409,12 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
   const clearable = allowClear && values.length > 0 && !disabled && !inputProps.readOnly;
   const controlOptionHeight =
     optionHeightProp === undefined
-      ? 'var(--leaf-current-control-height, 34px)'
+      ? 'var(--leaf-current-control-height, 32px)'
       : `${Math.max(24, optionHeightProp)}px`;
+  const automaticPopupWidth = popupWidth === 'trigger' || popupWidth === 'auto';
+  const popupMinWidth =
+    popupStyle?.minWidth ??
+    (automaticPopupWidth && popupStyle?.width === undefined ? popupMinWidthFallback : undefined);
   const listboxProps = {
     id: panelId,
     role: 'listbox' as const,
@@ -432,7 +439,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
       data-disabled={disabled ? '' : undefined}
       data-open={open ? '' : undefined}
       data-clearable={clearable ? '' : undefined}
-      data-searchable={showSearch ? '' : undefined}
+      data-searchable={searchable ? '' : undefined}
       onMouseDown={(event) => {
         if (
           !disabled &&
@@ -458,7 +465,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
         tagClassName="leaf-select__tag"
         tagWrap={tagWrap}
         maxTagCount={maxTagCount}
-        searchable={showSearch && !inputProps.readOnly && !inputReadOnly}
+        searchable={searchable}
         query={searchQuery}
         removeLabel={messages.common.remove}
         items={
@@ -496,7 +503,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
             type="text"
             className="leaf-select__input"
             disabled={disabled}
-            readOnly={!showSearch || inputProps.readOnly || inputReadOnly}
+            readOnly={!searchable}
             value={inputValue}
             placeholder={values.length ? '' : (placeholder ?? messages.select.placeholder)}
             autoComplete="off"
@@ -504,7 +511,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
             aria-expanded={open}
             aria-haspopup="listbox"
             aria-controls={panelId}
-            aria-autocomplete={showSearch ? 'list' : undefined}
+            aria-autocomplete={searchable ? 'list' : undefined}
             aria-activedescendant={
               open && filtered[highlighted] ? `${panelId}-${highlighted}` : undefined
             }
@@ -517,7 +524,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
             onClick={(event) => {
               onClick?.(event);
               if (!event.defaultPrevented) {
-                if (open && !showSearch) close();
+                if (open && !searchable) close();
                 else if (!open) openMenu();
               }
             }}
@@ -561,7 +568,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
                 event.preventDefault();
                 if (!open) openMenu();
                 else move(event.key === 'ArrowDown' ? 1 : -1);
-              } else if ((event.key === 'Home' || event.key === 'End') && open && !showSearch) {
+              } else if ((event.key === 'Home' || event.key === 'End') && open && !searchable) {
                 event.preventDefault();
                 const candidates = filtered
                   .map((option, index) => ({ option, index }))
@@ -569,7 +576,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
                 setHighlighted(
                   (event.key === 'Home' ? candidates[0] : candidates.at(-1))?.index ?? -1,
                 );
-              } else if (event.key === 'Enter' || (event.key === ' ' && !showSearch)) {
+              } else if (event.key === 'Enter' || (event.key === ' ' && !searchable)) {
                 event.preventDefault();
                 if (!open) openMenu();
                 else {
@@ -660,6 +667,7 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
         width={
           popupWidth === 'trigger' ? undefined : popupWidth === 'auto' ? 'max-content' : popupWidth
         }
+        minWidth={popupMinWidth}
         maxWidth={popupMaxWidth}
         {...(filtered.length ? listboxProps : {})}
         className={classes('leaf-floating', 'leaf-select__panel', popupClassName)}

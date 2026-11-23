@@ -15,10 +15,10 @@ $selected-border: var(--leaf-component-radio-border-color, var(--leaf-color-prim
     }
     &__mark {
       opacity: 0;
-      transform: scale(0);
+      clip-path: circle(0% at 50% 50%);
       transition:
         opacity calc(var(--leaf-motion-duration) * 1.5) cubic-bezier(0.78, 0.14, 0.15, 0.86),
-        transform calc(var(--leaf-motion-duration) * 1.5) cubic-bezier(0.78, 0.14, 0.15, 0.86);
+        clip-path calc(var(--leaf-motion-duration) * 1.5) cubic-bezier(0.78, 0.14, 0.15, 0.86);
       position: absolute;
       width: 7px;
       height: 7px;
@@ -28,13 +28,7 @@ $selected-border: var(--leaf-component-radio-border-color, var(--leaf-color-prim
     }
     &__input:checked ~ &__mark {
       opacity: 1;
-      transform: scale(1);
-    }
-    @media (prefers-reduced-motion: reduce) {
-      &__input,
-      &__mark {
-        transition: none;
-      }
+      clip-path: circle(75% at 50% 50%);
     }
   }
   .leaf-radio-group {
@@ -63,6 +57,6 @@ $selected-border: var(--leaf-component-radio-border-color, var(--leaf-color-prim
   }
 
   .leaf-radio {
-    @include mixins.choice-states(radio, $selected-border, $selected-border);
+    @include mixins.choice-states(radio, $selected-border);
   }
 }

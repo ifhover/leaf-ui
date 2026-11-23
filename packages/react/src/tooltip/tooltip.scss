@@ -5,7 +5,13 @@
     --leaf-tooltip-radius: var(--leaf-component-tooltip-radius, var(--leaf-radius));
     --leaf-surface-radius: var(--leaf-tooltip-radius);
     max-width: min(300px, calc(100vw - 24px));
-    padding: var(--leaf-component-tooltip-padding, 7px 10px);
+    padding: var(
+      --leaf-component-tooltip-padding,
+      var(--leaf-component-tooltip-padding-top, 7px)
+        var(--leaf-component-tooltip-padding-right, 10px)
+        var(--leaf-component-tooltip-padding-bottom, 7px)
+        var(--leaf-component-tooltip-padding-left, 10px)
+    );
     border: 0;
     border-radius: var(--leaf-tooltip-radius);
     & > .leaf-floating__viewport {
@@ -21,7 +27,7 @@
       --leaf-component-tooltip-shadow,
       var(--leaf-surface-shadow, var(--leaf-shadow-md))
     );
-    @include mixins.floating-arrow;
+    @include mixins.floating-arrow($bordered: false);
     transition-duration:
       var(--leaf-motion-fast), var(--leaf-motion-duration), var(--leaf-motion-duration);
     &[data-state='closing'] {

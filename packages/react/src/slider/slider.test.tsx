@@ -72,4 +72,23 @@ describe('Slider', () => {
     );
     expect(new Set(screen.getAllByRole('slider').map((node) => node.id)).size).toBe(4);
   });
+  it('raises the start thumb at the upper boundary, preserves focus on readOnly pointerDown, and supports aria-labelledby in range mode', () => {
+    render(
+      <>
+        <span id="vol-label">Volume Range</span>
+        <Slider range defaultValue={[100, 100]} aria-labelledby="vol-label" />
+        <Slider defaultValue={30} readOnly aria-label="Locked" />
+      </>,
+    );
+    const startThumb = screen.getByRole('slider', { name: 'Volume Range 开始' });
+    const endThumb = screen.getByRole('slider', { name: 'Volume Range 结束' });
+    expect(startThumb.style.zIndex).toBe('2');
+    expect(endThumb.style.zIndex).toBe('');
+
+    const locked = screen.getByRole('slider', { name: 'Locked' });
+    const down = new MouseEvent('pointerdown', { bubbles: true, cancelable: true });
+    locked.dispatchEvent(down);
+    expect(down.defaultPrevented).toBe(true);
+    expect(locked).toHaveFocus();
+  });
 });

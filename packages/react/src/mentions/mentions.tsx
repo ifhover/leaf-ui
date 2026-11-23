@@ -69,16 +69,23 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
     } | null>(null),
     [active, setActive] = useState(0);
   const disabled = props.disabled || field?.disabled || props.readOnly;
-  const find = (value: string, cursor: number) => {
-    const before = value.slice(0, cursor);
+  const lastMatchKey = useRef<string | null>(null);
+  if (!match) lastMatchKey.current = null;
+  const find = (value: string, cursor: number | null) => {
+    const pos = cursor ?? value.length;
+    const before = value.slice(0, pos);
     let found: typeof match = null;
     for (const prefix of prefixes) {
       const start = before.lastIndexOf(prefix);
-      if (start < 0 || (start > 0 && !/\s/.test(before[start - 1] ?? ''))) continue;
+      // 仅阻止紧邻邮箱或英文标识字符时的误触发，允许中文、标点、括号和行首直接唤醒提及
+      if (start < 0 || (start > 0 && /[A-Za-z0-9._-]/.test(before[start - 1] ?? ''))) continue;
       const query = before.slice(start + prefix.length);
       if (/\s/.test(query)) continue;
-      if (!found || start > found.start) found = { start, end: cursor, prefix, query };
+      if (!found || start > found.start) found = { start, end: pos, prefix, query };
     }
+    const key = found ? `${found.start}:${found.end}:${found.prefix}:${found.query}` : null;
+    if (key === lastMatchKey.current) return;
+    lastMatchKey.current = key;
     setMatch(found);
     setActive(0);
     if (found) onSearch?.(found.query, found.prefix);
@@ -92,20 +99,27 @@ export const Mentions = forwardRef<HTMLTextAreaElement, MentionsProps>(function 
     if (!match || disabled || option.disabled) return;
     const insertion = match.prefix + option.value + split;
     const next = text.slice(0, match.start) + insertion + text.slice(match.end);
+    const caret = match.start + insertion.length;
+    lastMatchKey.current = null;
     setText(next);
     onChange?.(next);
     onSelect?.(option, match.prefix);
     setMatch(null);
     requestAnimationFrame(() => {
       input.current?.focus();
-      input.current?.setSelectionRange(
-        match.start + insertion.length,
-        match.start + insertion.length,
-      );
+      input.current?.setSelectionRange(caret, caret);
     });
   };
   const open = !!match && !disabled;
-  useFloatingDismiss(open, () => setMatch(null), input, panel);
+  useFloatingDismiss(
+    open,
+    () => {
+      lastMatchKey.current = null;
+      setMatch(null);
+    },
+    input,
+    panel,
+  );
   return (
     <>
       <Textarea

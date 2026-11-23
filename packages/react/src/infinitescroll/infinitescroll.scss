@@ -20,9 +20,4 @@
       );
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-infinite-scroll__feedback {
-      animation: none;
-    }
-  }
 }

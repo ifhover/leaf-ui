@@ -436,4 +436,24 @@ describe('Form', () => {
     await act(async () => {});
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
+
+  it('preserves native customValidity messages instead of overwriting them with generic text', () => {
+    render(
+      <ConfigProvider locale="en-US">
+        <Form>
+          <FormField label="Port">
+            <Input />
+          </FormField>
+        </Form>
+      </ConfigProvider>,
+    );
+    const input = screen.getByRole('textbox', { name: 'Port' }) as HTMLInputElement;
+    input.setCustomValidity('Port must be between 1024 and 65535');
+    fireEvent.invalid(input);
+    expect(screen.getByRole('alert')).toHaveTextContent('Port must be between 1024 and 65535');
+
+    input.setCustomValidity('');
+    fireEvent.input(input, { target: { value: '8080' } });
+    expect(screen.queryByRole('alert')).toBeNull();
+  });
 });

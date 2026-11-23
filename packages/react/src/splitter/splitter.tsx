@@ -72,20 +72,21 @@ export function Splitter(rawProps: SplitterProps) {
     latest.current = next;
     setCurrent(next);
   };
-  const toggle = (index: number) => {
-    const next = [...latest.current],
-      size = next[index] ?? 0;
+  const toggle = (targetIndex: number) => {
+    const next = [...latest.current];
+    const neighbor = targetIndex === panels.length - 1 ? targetIndex - 1 : targetIndex + 1;
+    const size = next[targetIndex] ?? 0;
     if (size) {
-      collapsed.current.set(index, size);
-      next[index + 1] = (next[index + 1] ?? 0) + size;
-      next[index] = 0;
+      collapsed.current.set(targetIndex, size);
+      next[neighbor] = (next[neighbor] ?? 0) + size;
+      next[targetIndex] = 0;
     } else {
       const restore = Math.min(
-        collapsed.current.get(index) ?? 25,
-        Math.max(0, (next[index + 1] ?? 0) - (panels[index + 1]?.min ?? 5)),
+        collapsed.current.get(targetIndex) ?? 25,
+        Math.max(0, (next[neighbor] ?? 0) - (panels[neighbor]?.min ?? 5)),
       );
-      next[index] = restore;
-      next[index + 1] = (next[index + 1] ?? 0) - restore;
+      next[targetIndex] = restore;
+      next[neighbor] = (next[neighbor] ?? 0) - restore;
     }
     latest.current = next;
     setCurrent(next);
@@ -110,85 +111,113 @@ export function Splitter(rawProps: SplitterProps) {
           >
             {panel.children}
           </ScrollbarControl>
-          {index < panels.length - 1 && (
-            // biome-ignore lint/a11y/useSemanticElements: An adjustable, focusable splitter follows the ARIA window-splitter pattern; a static hr cannot contain its collapse button.
-            <div
-              role="separator"
-              tabIndex={panel.resizable === false ? -1 : 0}
-              aria-label={format('splitter.resizePanel', { index: index + 1 })}
-              aria-orientation={horizontal ? 'vertical' : 'horizontal'}
-              aria-valuenow={Math.round(current[index] ?? 0)}
-              aria-valuemin={panel.min ?? 0}
-              aria-valuemax={panel.max ?? 100}
-              className="leaf-splitter__handle"
-              onPointerDown={(event) => {
-                if (panel.resizable === false || !root.current) return;
-                stopDragging.current?.();
-                event.preventDefault();
-                event.currentTarget.setPointerCapture(event.pointerId);
-                const start = horizontal ? event.clientX : event.clientY;
-                const source = [...latest.current];
-                const rect = root.current.getBoundingClientRect();
-                const length = horizontal ? rect.width : rect.height;
-                const move = (event: PointerEvent) =>
-                  pair(
-                    index,
-                    (((horizontal ? event.clientX : event.clientY) - start) / Math.max(1, length)) *
-                      100 *
-                      (horizontal && config.direction === 'rtl' ? -1 : 1),
-                    source,
-                  );
-                const cleanup = () => {
-                  window.removeEventListener('pointermove', move);
-                  window.removeEventListener('pointerup', end);
-                  window.removeEventListener('pointercancel', end);
-                };
-                const end = () => {
-                  cleanup();
-                  onResizeEnd?.([...latest.current]);
-                };
-                stopDragging.current = cleanup;
-                window.addEventListener('pointermove', move);
-                window.addEventListener('pointerup', end, { once: true });
-                window.addEventListener('pointercancel', end, { once: true });
-              }}
-              onDoubleClick={() => {
-                if (panel.collapsible) toggle(index);
-              }}
-              onKeyDown={(event) => {
-                const plus = horizontal
-                  ? config.direction === 'rtl'
-                    ? 'ArrowLeft'
-                    : 'ArrowRight'
-                  : 'ArrowDown';
-                const minus = horizontal
-                  ? config.direction === 'rtl'
-                    ? 'ArrowRight'
-                    : 'ArrowLeft'
-                  : 'ArrowUp';
-                if (event.key === plus || event.key === minus) {
-                  event.preventDefault();
-                  pair(index, (event.key === plus ? 1 : -1) * (event.shiftKey ? 10 : 2));
-                  onResizeEnd?.([...latest.current]);
-                }
-                if (event.key === 'Enter' && panel.collapsible) {
-                  event.preventDefault();
-                  toggle(index);
-                }
-              }}
-            >
-              {panel.collapsible && (
-                <button
-                  type="button"
-                  aria-label={t('splitter.togglePanel')}
-                  onPointerDown={(event) => event.stopPropagation()}
-                  onClick={() => toggle(index)}
+          {index < panels.length - 1 &&
+            (() => {
+              const canResize = panel.resizable !== false && panels[index + 1]?.resizable !== false;
+              const canToggleStart = Boolean(panel.collapsible);
+              const canToggleEnd =
+                index === panels.length - 2 && Boolean(panels[index + 1]?.collapsible);
+              return (
+                // biome-ignore lint/a11y/useSemanticElements: An adjustable, focusable splitter follows the ARIA window-splitter pattern; a static hr cannot contain its collapse button.
+                <div
+                  role="separator"
+                  tabIndex={canResize || canToggleStart || canToggleEnd ? 0 : -1}
+                  aria-label={format('splitter.resizePanel', { index: index + 1 })}
+                  aria-orientation={horizontal ? 'vertical' : 'horizontal'}
+                  aria-valuenow={Math.round(normalized[index] ?? 0)}
+                  aria-valuemin={panel.min ?? 0}
+                  aria-valuemax={panel.max ?? 100}
+                  className="leaf-splitter__handle"
+                  onPointerDown={(event) => {
+                    if (!canResize || !root.current) return;
+                    stopDragging.current?.();
+                    event.preventDefault();
+                    event.currentTarget.setPointerCapture(event.pointerId);
+                    const start = horizontal ? event.clientX : event.clientY;
+                    const source = [...latest.current];
+                    const rect = root.current.getBoundingClientRect();
+                    const length = horizontal ? rect.width : rect.height;
+                    const move = (event: PointerEvent) =>
+                      pair(
+                        index,
+                        (((horizontal ? event.clientX : event.clientY) - start) /
+                          Math.max(1, length)) *
+                          100 *
+                          (horizontal && config.direction === 'rtl' ? -1 : 1),
+                        source,
+                      );
+                    const cleanup = () => {
+                      window.removeEventListener('pointermove', move);
+                      window.removeEventListener('pointerup', end);
+                      window.removeEventListener('pointercancel', end);
+                    };
+                    const end = () => {
+                      cleanup();
+                      onResizeEnd?.([...latest.current]);
+                    };
+                    stopDragging.current = cleanup;
+                    window.addEventListener('pointermove', move);
+                    window.addEventListener('pointerup', end, { once: true });
+                    window.addEventListener('pointercancel', end, { once: true });
+                  }}
+                  onDoubleClick={() => {
+                    if (canToggleStart) toggle(index);
+                    else if (canToggleEnd) toggle(index + 1);
+                  }}
+                  onKeyDown={(event) => {
+                    const plus = horizontal
+                      ? config.direction === 'rtl'
+                        ? 'ArrowLeft'
+                        : 'ArrowRight'
+                      : 'ArrowDown';
+                    const minus = horizontal
+                      ? config.direction === 'rtl'
+                        ? 'ArrowRight'
+                        : 'ArrowLeft'
+                      : 'ArrowUp';
+                    if (canResize && (event.key === plus || event.key === minus)) {
+                      event.preventDefault();
+                      pair(index, (event.key === plus ? 1 : -1) * (event.shiftKey ? 10 : 2));
+                      onResizeEnd?.([...latest.current]);
+                    }
+                    if (event.key === 'Enter') {
+                      if (canToggleStart) {
+                        event.preventDefault();
+                        toggle(index);
+                      } else if (canToggleEnd) {
+                        event.preventDefault();
+                        toggle(index + 1);
+                      }
+                    }
+                  }}
                 >
-                  {current[index] === 0 ? '+' : '−'}
-                </button>
-              )}
-            </div>
-          )}
+                  {(canToggleStart || canToggleEnd) && (
+                    <span className="leaf-splitter__toggles">
+                      {canToggleStart && (
+                        <button
+                          type="button"
+                          aria-label={t('splitter.togglePanel')}
+                          onPointerDown={(event) => event.stopPropagation()}
+                          onClick={() => toggle(index)}
+                        >
+                          {normalized[index] === 0 ? '+' : '−'}
+                        </button>
+                      )}
+                      {canToggleEnd && (
+                        <button
+                          type="button"
+                          aria-label={t('splitter.togglePanel')}
+                          onPointerDown={(event) => event.stopPropagation()}
+                          onClick={() => toggle(index + 1)}
+                        >
+                          {normalized[index + 1] === 0 ? '+' : '−'}
+                        </button>
+                      )}
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
         </div>
       ))}
     </div>

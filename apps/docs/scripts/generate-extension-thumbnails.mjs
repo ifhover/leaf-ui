@@ -28,7 +28,7 @@ const t = (x, y, label, size = 11, color = '#202024') =>
   '" font-family="system-ui,sans-serif">' +
   label +
   '</text>';
-const line = (x, y, w) => r(x, y, w, 5, '#e2ebe5', 'none', 2);
+const line = (x, y, w) => r(x, y, w, 5, '#eaeaea', 'none', 2);
 const panel = (label) =>
   r(58, 23, 184, 112) +
   t(72, 45, label) +
@@ -56,8 +56,8 @@ const images = {
     .join(''),
   'scroll-area':
     panel('Scrollable content') +
-    r(235, 49, 3, 65, '#e9efeb', 'none') +
-    r(235, 52, 3, 23, '#8aa693', 'none'),
+    r(235, 49, 3, 65, '#f5f5f5', 'none') +
+    r(235, 52, 3, 23, '#a1a1a1', 'none'),
   masonry: [0, 1, 2]
     .map((col) =>
       [0, 1]
@@ -74,12 +74,12 @@ const images = {
     )
     .join(''),
   menu:
-    r(50, 20, 200, 120) +
-    r(62, 48, 176, 26, '#eaf4ed', 'none') +
-    t(76, 38, 'Workspace') +
-    t(76, 66, 'Dashboard', 11, '#1e964f') +
-    t(76, 94, 'Projects') +
-    t(76, 122, 'Settings'),
+    r(50, 20, 200, 120, '#fff', '#e5e5e5', 8) +
+    r(62, 48, 176, 26, '#f5f5f5', 'none') +
+    t(76, 38, 'Workspace', 11, '#0d0d0d') +
+    t(76, 66, 'Dashboard', 11, '#0d0d0d') +
+    t(76, 94, 'Projects', 11, '#0d0d0d') +
+    t(76, 122, 'Settings', 11, '#0d0d0d'),
   'back-top':
     line(30, 35, 230) +
     line(30, 55, 190) +
@@ -88,12 +88,12 @@ const images = {
     r(226, 106, 34, 34, '#1e964f', 'none') +
     t(237, 131, '↑', 23, 'white'),
   descriptions:
-    r(25, 25, 250, 108) +
-    t(42, 49, 'Project details', 13) +
-    t(42, 76, 'Name', 10, '#718078') +
-    t(145, 76, 'Leaf UI') +
-    t(42, 103, 'Status', 10, '#718078') +
-    t(145, 103, 'Published', 11, '#1e964f'),
+    r(25, 25, 250, 108, '#fff', '#e5e5e5', 8) +
+    t(42, 49, 'Project details', 13, '#0d0d0d') +
+    t(42, 76, 'Name', 10, '#6c6c6c') +
+    t(145, 76, 'Leaf UI', 11, '#0d0d0d') +
+    t(42, 103, 'Status', 10, '#6c6c6c') +
+    t(145, 103, 'Published', 11, '#0d0d0d'),
   image:
     r(40, 24, 220, 104, '#d9eddf', 'none') +
     '<path d="M40 128L110 56L165 111L210 71L260 128Z" fill="#81b58f"/><circle cx="210" cy="48" r="13" fill="#fff3b9"/>' +
@@ -153,8 +153,8 @@ const images = {
   'input-otp': [0, 1, 2, 3, 4, 5]
     .map(
       (i) =>
-        r(32 + i * 40, 53, 32, 40, i === 3 ? '#eaf4ed' : '#fff', i === 3 ? '#1e964f' : '#e5e5e8') +
-        t(43 + i * 40, 80, i < 3 ? String(i + 2) : ' ', 18),
+        r(32 + i * 40, 53, 32, 40, '#fff', i === 3 ? '#0d0d0d' : '#e5e5e5') +
+        t(43 + i * 40, 80, i < 3 ? String(i + 2) : ' ', 18, '#0d0d0d'),
     )
     .join(''),
   'time-range-picker':
@@ -174,7 +174,7 @@ const images = {
   popconfirm: panel('Remove this item?'),
   'error-boundary': panel('Unable to display content'),
   'loading-bar':
-    r(28, 25, 244, 3, '#e9efeb', 'none') +
+    r(28, 25, 244, 3, '#eaeaea', 'none') +
     r(28, 25, 169, 3, '#1e964f', 'none') +
     line(40, 58, 100) +
     line(40, 79, 215) +
@@ -184,9 +184,9 @@ const images = {
     [0, 1, 2].map((i) => line(67, 38 + i * 23, 155)).join('') +
     t(113, 116, 'Loading…', 11, '#1e964f'),
   upload:
-    r(38, 26, 224, 106, '#f4f7f5') +
-    '<path d="M112 82V97H188V82M150 45V82M139 56L150 45L161 56" stroke="#1e964f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>' +
-    t(108, 117, 'Upload files', 11),
+    r(38, 26, 224, 106, '#f5f5f5', '#e5e5e5', 8) +
+    '<path d="M112 82V97H188V82M150 45V82M139 56L150 45L161 56" stroke="#0d0d0d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>' +
+    t(108, 117, 'Upload files', 11, '#0d0d0d'),
   'file-list':
     r(24, 21, 252, 114, '#fff', '#e5e5e8', 8) +
     [
@@ -208,7 +208,9 @@ const images = {
       .join('') +
     '<path d="M68 59H275M68 97H275" stroke="#eeeef0"/>',
 };
+const selected = new Set(process.argv.slice(2));
 for (const [name, content] of Object.entries(images)) {
+  if (selected.size && !selected.has(name)) continue;
   const svg =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 156" fill="none" role="img" aria-label="' +
     name +

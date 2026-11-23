@@ -1,8 +1,10 @@
-import { render, waitFor } from '@testing-library/react';
-import type { CSSProperties } from 'react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { type CSSProperties, createRef } from 'react';
 import { describe, expect, it } from 'vitest';
 import { generateColorShades, resolveColorRoles } from '../colors';
 import { ConfigProvider } from '../config-provider/config-provider';
+import { Tooltip } from '../tooltip';
+import { CheckableTag, TagGroup } from './group';
 import { Tag } from './tag';
 
 describe('Tag', () => {
@@ -103,5 +105,27 @@ describe('Tag', () => {
     expect(tag?.style.getPropertyValue('--leaf-tag-color-surface-8')).toBe(
       generateColorShades('#ff6900')['dark-9'],
     );
+  });
+
+  it('forwards refs for Tag, CheckableTag, and TagGroup so Tooltip triggers attach cleanly', async () => {
+    const tagRef = createRef<HTMLSpanElement>();
+    const checkableRef = createRef<HTMLButtonElement>();
+    const groupRef = createRef<HTMLDivElement>();
+    const { container } = render(
+      <>
+        <Tooltip content="标签提示" enterDelay={0}>
+          <Tag ref={tagRef}>Beta</Tag>
+        </Tooltip>
+        <CheckableTag ref={checkableRef}>Switch</CheckableTag>
+        <TagGroup ref={groupRef} options={[{ value: 'a', label: 'A' }]} />
+      </>,
+    );
+    expect(tagRef.current).toBe(container.querySelector('.leaf-tag'));
+    expect(checkableRef.current).toBe(container.querySelector('.leaf-checkable-tag'));
+    expect(groupRef.current).toBe(container.querySelector('.leaf-tag-group'));
+    fireEvent.pointerEnter(tagRef.current as HTMLElement, { pointerType: 'mouse' });
+    await waitFor(() => {
+      expect(screen.getByRole('tooltip')).toHaveTextContent('标签提示');
+    });
   });
 });

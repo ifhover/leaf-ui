@@ -63,6 +63,7 @@ function DefaultFallback({ reset }: { reset: () => void }) {
     <Result
       className="leaf-error-boundary"
       status="error"
+      role="alert"
       title={t('errorBoundary.title')}
       description={t('errorBoundary.description')}
       extra={

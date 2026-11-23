@@ -36,7 +36,7 @@ describe('Managed confirmations', () => {
     });
     expect(screen.getAllByRole('alertdialog')).toHaveLength(1);
     expect(screen.getByRole('alertdialog')).toHaveAccessibleName('First');
-    expect(screen.getByRole('alertdialog')).toHaveClass('leaf-confirm--info');
+    expect(screen.getByRole('alertdialog')).toHaveClass('leaf-confirm--default');
     expect(renders).toHaveBeenCalledTimes(before);
     const mask = screen.getByRole('alertdialog').closest('.leaf-modal-mask');
     if (mask instanceof HTMLElement) mask.style.transitionDuration = '160ms';
@@ -50,15 +50,21 @@ describe('Managed confirmations', () => {
     await expect(secondResult).resolves.toBe(true);
   });
 
-  it('retains rejected actions and blocks duplicate submissions until an async action finishes', async () => {
-    let finish: () => void = () => {};
+  it('closes rejected actions, queues a danger failure notice, and blocks duplicate submissions while pending', async () => {
+    let rejectFirst: (reason: Error) => void = () => {};
+    let finishSecond: () => void = () => {};
     const submit = vi
       .fn()
-      .mockRejectedValueOnce(new Error('Try again'))
+      .mockImplementationOnce(
+        () =>
+          new Promise<void>((_resolve, reject) => {
+            rejectFirst = reject;
+          }),
+      )
       .mockImplementationOnce(
         () =>
           new Promise<void>((resolve) => {
-            finish = resolve;
+            finishSecond = resolve;
           }),
       );
     const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -67,20 +73,85 @@ describe('Managed confirmations', () => {
       </StrictMode>
     );
     const { result } = renderHook(() => useConfirm(), { wrapper });
+    let firstAnswer: Promise<boolean> | undefined;
+    let secondAnswer: Promise<boolean> | undefined;
+    act(() => {
+      firstAnswer = result.current.confirm({ title: 'Save', onConfirm: submit });
+      secondAnswer = result.current.confirm({ title: 'Next step', onConfirm: submit });
+    });
+
+    const firstDialog = screen.getByRole('alertdialog', { name: 'Save' });
+    const firstMask = firstDialog.closest('.leaf-modal-mask');
+    if (firstMask instanceof HTMLElement) firstMask.style.transitionDuration = '160ms';
+
+    fireEvent.click(within(firstDialog).getByRole('button', { name: 'OK' }));
+    fireEvent.click(within(firstDialog).getByRole('button', { name: 'OK' }));
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(submit).toHaveBeenCalledTimes(1);
+    expect(within(firstDialog).getByRole('button', { name: 'Cancel' })).toBeDisabled();
+
+    await act(async () => rejectFirst(new Error('Unable to save changes')));
+    await expect(firstAnswer).resolves.toBe(false);
+    expect(screen.queryByRole('alert')).toBeNull();
+    if (firstMask) fireEvent.transitionEnd(firstMask, { propertyName: 'opacity' });
+
+    const failureDialog = await screen.findByRole('alertdialog', { name: 'Something went wrong' });
+    expect(failureDialog).toHaveClass('leaf-confirm--danger', 'leaf-modal--danger');
+    expect(failureDialog.querySelector('.leaf-modal__icon .lucide-circle-x')).not.toBeNull();
+    expect(failureDialog).toHaveAccessibleDescription('Unable to save changes');
+    expect(within(failureDialog).queryByRole('button', { name: 'Cancel' })).toBeNull();
+    const okButton = within(failureDialog).getByRole('button', { name: 'OK' });
+    expect(okButton).toHaveClass('leaf-button--danger');
+
+    const failureMask = failureDialog.closest('.leaf-modal-mask');
+    if (failureMask instanceof HTMLElement) failureMask.style.transitionDuration = '160ms';
+    fireEvent.click(okButton);
+    if (failureMask) fireEvent.transitionEnd(failureMask, { propertyName: 'opacity' });
+
+    const nextDialog = await screen.findByRole('alertdialog', { name: 'Next step' });
+    fireEvent.click(within(nextDialog).getByRole('button', { name: 'OK' }));
+    expect(submit).toHaveBeenCalledTimes(2);
+    await act(async () => finishSecond());
+    await expect(secondAnswer).resolves.toBe(true);
+  });
+
+  it('does not queue a failure notice after the caller unmounts', async () => {
+    let api: ConfirmApi | undefined;
+    let rejectPending: (reason: Error) => void = () => {};
+    function Caller() {
+      api = useConfirm();
+      return null;
+    }
+    function Stay() {
+      useConfirm();
+      return null;
+    }
+    const app = (mounted: boolean) => (
+      <ConfigProvider locale="en-US">
+        {mounted && <Caller />}
+        <Stay />
+      </ConfigProvider>
+    );
+    const { rerender } = render(app(true));
     let answer: Promise<boolean> | undefined;
     act(() => {
-      answer = result.current.confirm({ title: 'Save', onConfirm: submit });
+      answer = api?.confirm({
+        title: 'Save',
+        onConfirm: () =>
+          new Promise<void>((_resolve, reject) => {
+            rejectPending = reject;
+          }),
+      });
     });
-    fireEvent.click(screen.getByRole('button', { name: 'OK' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Try again');
-    expect(screen.getByRole('alertdialog')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'OK' }));
-    fireEvent.click(screen.getByRole('button', { name: 'OK' }));
-    fireEvent.keyDown(document, { key: 'Escape' });
-    expect(submit).toHaveBeenCalledTimes(2);
-    expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
-    await act(async () => finish());
-    await expect(answer).resolves.toBe(true);
+    const dialog = screen.getByRole('alertdialog', { name: 'Save' });
+    const mask = dialog.closest('.leaf-modal-mask');
+    if (mask instanceof HTMLElement) mask.style.transitionDuration = '160ms';
+    fireEvent.click(within(dialog).getByRole('button', { name: 'OK' }));
+    rerender(app(false));
+    await expect(answer).resolves.toBe(false);
+    await act(async () => rejectPending(new Error('Ignored error')));
+    if (mask) fireEvent.transitionEnd(mask, { propertyName: 'opacity' });
+    expect(screen.queryByRole('alertdialog')).toBeNull();
   });
 
   it('inherits and updates regional theme and language without replacing the API', async () => {

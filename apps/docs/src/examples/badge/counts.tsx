@@ -7,13 +7,17 @@ export function BadgeCounts() {
       <Text tone="muted">数量上限</Text>
       <Flex align="center" wrap>
         <Badge count={120} aria-label="120 条未读通知">
-          <Button startIcon={<Bell />} aria-label="通知" />
+          <Button size="icon" aria-label="通知">
+            <Bell />
+          </Button>
         </Badge>
       </Flex>
       <Text tone="muted">显示零值</Text>
       <Flex align="center" wrap>
         <Badge count={0} showZero aria-label="0 条未读通知">
-          <Button startIcon={<Bell />} aria-label="通知" />
+          <Button size="icon" aria-label="通知">
+            <Bell />
+          </Button>
         </Badge>
       </Flex>
     </Grid>

@@ -1,7 +1,11 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ConfigProvider, Tree, type TreeNode } from '../index';
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 const data: readonly TreeNode[] = [
   {
@@ -106,5 +110,42 @@ describe('Tree', () => {
     ]);
     expect(data[0]?.children?.map((node) => node.key)).toEqual(['design', 'code', 'locked']);
     expect(select).not.toHaveBeenCalled();
+  });
+
+  it('renders vertical dashed indent lines for nested rows in virtual showLine mode', () => {
+    vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(240);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(240);
+    vi.spyOn(HTMLElement.prototype, 'scrollHeight', 'get').mockReturnValue(240);
+    const deepData: readonly TreeNode[] = [
+      {
+        key: 'root',
+        title: 'Root',
+        children: [
+          {
+            key: 'branch',
+            title: 'Branch',
+            children: [{ key: 'leaf', title: 'Leaf' }],
+          },
+        ],
+      },
+    ];
+    const { container } = render(
+      <Tree data={deepData} defaultExpandAll showLine virtual height={240} itemHeight={32} />,
+    );
+    const rootLines = screen
+      .getByRole('treeitem', { name: 'Root' })
+      .querySelectorAll('.leaf-tree__indent-line');
+    const branchLines = screen
+      .getByRole('treeitem', { name: 'Branch' })
+      .querySelectorAll('.leaf-tree__indent-line');
+    const leafLines = screen
+      .getByRole('treeitem', { name: 'Leaf' })
+      .querySelectorAll<HTMLElement>('.leaf-tree__indent-line');
+    expect(container.querySelector('.leaf-tree')).toHaveClass('leaf-tree--lines');
+    expect(rootLines).toHaveLength(0);
+    expect(branchLines).toHaveLength(1);
+    expect(leafLines).toHaveLength(2);
+    expect(leafLines[0]?.style.getPropertyValue('--leaf-tree-line-left')).toBe('14px');
+    expect(leafLines[1]?.style.getPropertyValue('--leaf-tree-line-left')).toBe('34px');
   });
 });

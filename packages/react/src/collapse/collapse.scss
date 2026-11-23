@@ -2,11 +2,7 @@
 
 @layer leaf-ui {
   .leaf-collapse {
-    @include mixins.control-size;
-    @include mixins.softened-frame-color(
-      collapse,
-      var(--leaf-component-collapse-background, var(--leaf-color-surface))
-    );
+    @include mixins.control-size(collapse, $with-radius: false);
     min-width: 0;
     overflow: clip;
     border-radius: var(--leaf-component-collapse-radius, var(--leaf-radius-md));
@@ -26,7 +22,7 @@
       );
     }
     &__item + &__item {
-      border-top: 1px solid var(--leaf-collapse-frame-color);
+      border-top: 1px solid var(--leaf-color-divider);
     }
     &__item:first-child {
       border-start-start-radius: inherit;
@@ -52,7 +48,7 @@
       box-sizing: border-box;
       padding: var(
         --leaf-component-collapse-padding,
-        max(0px, calc((var(--leaf-current-control-height) - var(--leaf-line-height)) / 2)) 12px
+        var(--leaf-collapse-padding-block, var(--leaf-density-option-padding)) 12px
       );
       border: 0;
       border-radius: inherit;
@@ -62,9 +58,7 @@
       line-height: var(--leaf-line-height);
       text-align: start;
       cursor: pointer;
-      transition:
-        color var(--leaf-motion-fast) var(--leaf-motion-easing),
-        background-color var(--leaf-motion-fast) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
       > svg {
         flex: 0 0 auto;
         color: var(--leaf-color-text-muted);
@@ -117,40 +111,17 @@
       transform: translateY(0);
     }
   }
-  :dir(rtl) .leaf-collapse__trigger > svg {
+  :where(:dir(rtl)) .leaf-collapse__trigger > svg {
     transform: rotate(180deg);
-  }
-  :dir(rtl) .leaf-collapse__item[data-open='true'] .leaf-collapse__trigger > svg {
-    transform: rotate(90deg);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-collapse__panel,
-    .leaf-collapse__trigger,
-    .leaf-collapse__body,
-    .leaf-collapse__trigger > svg {
-      transition: none;
-    }
   }
 
   .leaf-collapse {
-    --leaf-current-control-height: var(
-      --leaf-component-collapse-height,
-      var(--leaf-control-height)
-    );
-    --leaf-current-font-size: var(--leaf-component-collapse-font-size, var(--leaf-font-size));
+    --leaf-collapse-padding-block: var(--leaf-density-option-padding);
   }
   .leaf-collapse--sm {
-    --leaf-current-control-height: var(
-      --leaf-component-collapse-height-sm,
-      var(--leaf-control-height-sm)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-sm);
+    --leaf-collapse-padding-block: max(2px, calc(var(--leaf-density-option-padding) - 3px));
   }
   .leaf-collapse--lg {
-    --leaf-current-control-height: var(
-      --leaf-component-collapse-height-lg,
-      var(--leaf-control-height-lg)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-lg);
+    --leaf-collapse-padding-block: calc(var(--leaf-density-option-padding) + 2px);
   }
 }

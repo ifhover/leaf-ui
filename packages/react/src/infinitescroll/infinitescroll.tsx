@@ -58,6 +58,23 @@ export function InfiniteScroll(rawProps: InfiniteScrollProps) {
       setLoading(false);
     }
   }, [hasMore]);
+  const previousDataLength = useRef(dataLength);
+  const previousHasMore = useRef(hasMore);
+  useEffect(() => {
+    const shrunk = dataLength < previousDataLength.current;
+    const reopened = !previousHasMore.current && hasMore;
+    previousDataLength.current = dataLength;
+    previousHasMore.current = hasMore;
+    if (shrunk || reopened) {
+      // 列表被清空重置或重新开启加载时清除去重游标并终止过时请求，防止 key 重复造成死锁
+      requested.current = undefined;
+      if (controller.current) {
+        controller.current.abort();
+        controller.current = null;
+        setLoading(false);
+      }
+    }
+  }, [dataLength, hasMore]);
   useEffect(() => {
     if (!hasMore || error || loading) return;
     const element = sentinel.current;

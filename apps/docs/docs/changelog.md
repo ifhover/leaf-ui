@@ -7,6 +7,45 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.18.0 - 2026-11-23
+
+### 新增功能
+
+- **Loading 扩展加载动画变体**：新增 12 种预设 `variant`（`spinner`、`ring`、`dual`、`orbit`、`chase`、`dots`、`wave`、`bars`、`pulse`、`grid`、`blocks`、`flip`），支持通过 `ConfigProvider` 的 `components.Loading.variant` 统一配置默认加载动画。
+- **Skeleton 独立骨架元素**：导出 `Skeleton.Avatar`、`Skeleton.Button`、`Skeleton.Input`、`Skeleton.Image`（及独立具名组件 `SkeletonAvatar`、`SkeletonButton`、`SkeletonInput`、`SkeletonImage`）以按需组合骨架占位。
+- **InputNumber 分体步进**：新增 `variant="split"`，将减少与增加步进按钮分置于输入框两侧。
+- **Checkbox 选项描述**：`CheckboxGroup` 选项（`CheckboxOption`）新增 `description` 辅助说明文案，并兼容默认、`card` 与 `list` 外观下的首行居中对齐。
+- **Confirm 队列、图标与失败续播**：支持连续调用 `useConfirm().confirm()` 按队列顺序弹出、自定义 `icon`（传入 `null` 可隐藏图标）、`showCancel={false}` 单按钮提示；当异步 `onConfirm` 抛出异常时自动关闭当前框（返回 `false`）并顺位弹出单按钮 `danger` 失败提示框。
+- **DataTable 斑马纹与单行省略**：新增 `striped` 斑马条纹与列配置 `meta.ellipsis` 单行截断省略支持；`Card`、`Modal`、`Drawer` 新增统一/分区域 `padding`（`number | string | 'none' | { header?, body?, footer? }`）与 `Card` `divided` 控制。
+- **单色主题预设**：`ConfigProvider` 新增 `primaryColor="neutral"` 自适应黑白灰单色主色，深浅色模式下自动反转 `--leaf-color-primary` 与 `--leaf-color-on-primary`。
+
+### 改进与修复
+
+- **浮层箭头与定位**：优化 `Tooltip` 与 `Popover` 在 `top` / `bottom` / `left` / `right` 及 `-start` / `-end` 12 个方位下的箭头坐标对齐，使箭头紧随触发元素中线指向而不因偏移裁切，同时收紧组件示例按钮组间距。
+- **多层级与交互细节**：优化 `Cascader` 默认 `popupWidth="auto"` 展开适配、列区间滚动与搜索键盘导航；折叠态 `Menu` 叶子项补充 `Tooltip` 提示；`Drawer` 在底部方向默认启用滑动关闭手柄（`showSwipeHandle`），统一圆角留白并保持纯白/表面净面。
+- **工程质量与样式体积**：补充全库交互、无障碍与高密度测试覆盖，并通过复用语义过渡 token 与去除重复规则进一步压缩核心 CSS 产物体积。
+
+### 破坏性变更与迁移说明
+
+- **中性黑白灰默认外观与零消费颜色变量退役**：
+  - 主题默认回归以中性灰阶与干净白底为主的界面层次：`Tabs`、`Menu`（`variant` 默认由 `'primary'` 调整为 `'neutral'`）、`Table` / `DataTable`（表头还原 `surface` 背景与 `text-muted` 500 字重）、`Pagination`、`Transfer`、`Steps`、`Anchor`、`Breadcrumb`、`Splitter`、`Carousel`、`Collapse`、`Descriptions`、`Empty`、`Upload` 拖拽区、`InputOTP` 与字段家族聚焦态均默认使用中性色反馈（保留通过 `variant="primary"` 或 `ConfigProvider` 局部覆盖主色的能力）。
+  - 调整中性明度阶梯并停止向全局 CSS 与 Tailwind 输出 64 个零消费中间色阶与废弃推导变量（如 `--leaf-color-neutral-100`~`-900`、`--leaf-color-*-light-N/-dark-N`、`primary-indicator`、`primary-focus`、`primary-fill-border`、`primary-ink*`、`danger-hover`、`*-soft-active` 等），同时从 `LeafThemeTokens` 移除无消费的 `primarySoftActiveColor` 与 `dangerHoverColor`（`generateColorScale`、`neutralColorScale`、`generateColorShades` JS 工具函数继续保留导出）；输入与选择字段家族悬停加固为 `--leaf-color-border-hover`，聚焦统一呈现 `--leaf-color-text-muted` 边框与 `3px` 柔光外环。
+- **默认基准控件高度调整为 `32px`**：`comfortable` 默认单行控件高度由 `34px` 调整为 `32px`（`compact` 由 `30px` 调整为 `28px`）；如需延续旧高度，请配置 `ConfigProvider theme={{ controlHeight: 34 }}`。
+- **Button 收敛与 SplitButton 迁移**：
+  - `ButtonVariant` 新增 `'danger'`，危险按钮收敛为单一浅底红字外观（移除危险描边/文字/链接组合）；旧 `ButtonProps.danger` 标记为 `@deprecated` 并回退至 `variant="danger"`。默认 `outline` 改为无静止阴影的纯边框实现。
+  - `ButtonSize` 扩展为 `'sm' | 'md' | 'lg' | 'icon' | 'icon-sm' | 'icon-lg'`，移除 `ButtonProps` 与 `FloatButtonProps` 的 `startIcon` / `endIcon`（图标直接作为 `children` 传入，`loading` 与图标紧邻的边侧自动收窄内边距），并移除多余内部 `.leaf-button__content` / `__icon` / `__label` DOM 包裹节点。
+  - 移除 `SplitButton`、`SplitButtonProps` 与 `.leaf-split-button`，统一改用 `<ButtonGroup><Button>...</Button><Dropdown ...><Button size="icon"><ChevronDown /></Button></Dropdown></ButtonGroup>` 组合实现；`ButtonGroup` 新增 `variant` 并自动向后代 `Button` / `Dropdown` 同步尺寸、变体与禁用态。
+- **Modal / Confirm / Drawer / Tabs / Card 接口收敛**：
+  - 移除 `Modal` 与 `Drawer` 的头部底线（`divided` 仅控制底栏顶线）及内嵌 `tabs` 属性（`ModalTabsProps` / `DrawerTabsProps`），请在正文内直接组合 `Tabs`；同步将 `Modal` / `Drawer` 关闭按钮统一固定于右上角与标题首行居中对齐。
+  - `Modal` 新增 `size?: 'md' | 'mini'` 与 `danger?: boolean`，移除 `ModalBase` 内部 `.leaf-confirm-error` 错误条；`ConfirmOptions.type` 移除 `'info'`（默认 `'default'` 展示中性信息图标），`Confirm` 复用 `340px` `mini` 结构并调整 `footer` / 标题描述间距与 `Card` 对齐（移除 `CardProps.selected` 与 `.leaf-card--selected`）。
+  - `TabsProps` 移除 `tone`（`'solid'`）与 `shape`（`'pill'`），仅保留 `type?: 'line' | 'card' | 'segmented'`，自定义滑块颜色或圆角请使用 `indicatorBackground` / `radius` 等组件 token。
+- **Pagination / Result / Empty / Alert / Radio / Checkbox / Table 默认行为迁移**：
+  - `Pagination` `variant` 默认由 `'outline'` 调整为 `'ghost'`（无边框当前页配白底黑框）；上/下一页新增文字标签并优化 `showSizeChanger` / `showQuickJumper` 紧凑排版。
+  - `ResultProps` 与 `EmptyProps` 移除 `size` 及 `ResultProps.status` 中的 `'info'`，统一为紧凑单一尺寸与无框柔底图标底座。
+  - `AlertProps.type` 移除 `'info'` 并新增默认 `'default'`（白底黑字配中性边框），统一 `14px` 标题与 `10px 12px` 内边距配减淡语义底色。
+  - `Radio` / `Checkbox` 的 `variant="card"` 与 `list` 调整为 `--leaf-radius`（`10px`）与 `10px 12px` 紧凑留白，卡片选中项切换为 `primary-soft` 底色并将控件与首行标题居中对齐。
+  - `Table` / `DataTable` 默认 `size` 由 `'lg'` 调整为 `'md'`（如需原宽松行高请显式传入 `size="lg"`）；移除 `DataTableProps.renderRowHeader` 及对应本地化词条；`bordered` 收敛为仅保留外框与四角圆角，空数据态统一复用 `Result` 渲染并保留选中行悬停静默。
+
 ## 0.17.3 - 2026-11-18
 
 ### 修复

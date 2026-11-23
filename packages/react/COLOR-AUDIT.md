@@ -22,17 +22,17 @@ Snapshot: 0.9.0 development sources, generated from a static source scan. The ch
 | Numeric derived-token debt | 0 | 0 |
 | Color-scale step debt | 0 | 0 |
 | Field-family border debt | 0 | 0 |
-| Legal hardcoded-color exceptions | 43 | 57 |
-| Legal color-mix exceptions | 2 | 2 |
+| Legal hardcoded-color exceptions | 39 | 53 |
+| Legal color-mix exceptions | 6 | 6 |
 | Reviewed derived-token exceptions | 5 | 5 |
 | Reviewed color-scale step exceptions | 0 | 0 |
-| Reviewed field-structure exceptions | 16 | 26 |
+| Reviewed field-structure exceptions | 16 | 25 |
 
 Registered undefined-token risk occurrences: 0.
 
-Global color tokens: 114. Color recipes: 10. Field-family consumers: 9.
+Global color tokens: 50. Color recipes: 6. Field-family consumers: 9.
 
-Definition source counts (a token may have multiple sources): override 28, palette 113, recipe 10.
+Definition source counts (a token may have multiple sources): override 26, palette 49, recipe 6.
 
 ## Migration accounting
 
@@ -62,7 +62,7 @@ All field shells must use the shared primary focus default via `mixins.field(com
 
 ### Override-only global tokens
 
-- `--leaf-color-focus`: 2 component files, 1 shared/infrastructure files, 3 occurrences.
+- `--leaf-color-focus`: 1 component files, 0 shared/infrastructure files, 1 occurrences.
 
 ### Registered undefined risks
 
@@ -71,8 +71,6 @@ All field shells must use the shared primary focus default via `mixins.field(com
 ### Optional-only consumers with fallback
 
 - `calendar/calendar.scss`: `var(--leaf-color-focus, ...)`
-- `inputotp/inputotp.scss`: `var(--leaf-color-focus, ...)`
-- `styles/_mixins.scss`: `var(--leaf-color-focus, ...)`
 
 ### Unknown consumers with fallback
 
@@ -84,193 +82,73 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 
 | Token | Component files | Shared/infrastructure files | Occurrences |
 | --- | ---: | ---: | ---: |
-| `--leaf-color-border` | 25 | 4 | 54 |
-| `--leaf-color-border-hover` | 6 | 1 | 7 |
-| `--leaf-color-danger` | 9 | 1 | 12 |
-| `--leaf-color-danger-active` | 1 | 0 | 1 |
-| `--leaf-color-danger-border` | 1 | 1 | 4 |
-| `--leaf-color-danger-dark-1` | 0 | 0 | 0 |
-| `--leaf-color-danger-dark-3` | 0 | 0 | 0 |
-| `--leaf-color-danger-dark-7` | 0 | 0 | 0 |
-| `--leaf-color-danger-dark-9` | 0 | 0 | 0 |
-| `--leaf-color-danger-hover` | 0 | 0 | 0 |
-| `--leaf-color-danger-ink` | 8 | 1 | 13 |
-| `--leaf-color-danger-light-3` | 0 | 0 | 0 |
-| `--leaf-color-danger-light-7` | 0 | 0 | 0 |
-| `--leaf-color-danger-light-9` | 0 | 0 | 0 |
-| `--leaf-color-danger-link-active` | 1 | 0 | 1 |
-| `--leaf-color-danger-link-hover` | 1 | 0 | 1 |
-| `--leaf-color-danger-soft` | 1 | 1 | 3 |
-| `--leaf-color-danger-soft-active` | 0 | 1 | 1 |
-| `--leaf-color-danger-soft-hover` | 0 | 0 | 0 |
-| `--leaf-color-divider` | 15 | 6 | 35 |
-| `--leaf-color-info` | 4 | 0 | 5 |
-| `--leaf-color-info-border` | 0 | 0 | 0 |
-| `--leaf-color-info-dark-1` | 0 | 0 | 0 |
-| `--leaf-color-info-dark-3` | 0 | 0 | 0 |
-| `--leaf-color-info-dark-7` | 0 | 0 | 0 |
-| `--leaf-color-info-dark-9` | 0 | 0 | 0 |
+| `--leaf-color-border` | 30 | 4 | 64 |
+| `--leaf-color-border-hover` | 8 | 2 | 14 |
+| `--leaf-color-danger` | 7 | 1 | 10 |
+| `--leaf-color-danger-active` | 0 | 0 | 0 |
+| `--leaf-color-danger-border` | 2 | 1 | 5 |
+| `--leaf-color-danger-ink` | 7 | 1 | 12 |
+| `--leaf-color-danger-soft` | 0 | 1 | 2 |
+| `--leaf-color-danger-soft-hover` | 0 | 1 | 1 |
+| `--leaf-color-divider` | 19 | 6 | 36 |
+| `--leaf-color-info` | 2 | 0 | 2 |
 | `--leaf-color-info-ink` | 0 | 1 | 1 |
-| `--leaf-color-info-light-3` | 0 | 0 | 0 |
-| `--leaf-color-info-light-7` | 0 | 0 | 0 |
-| `--leaf-color-info-light-9` | 0 | 0 | 0 |
-| `--leaf-color-info-soft` | 1 | 1 | 2 |
-| `--leaf-color-info-soft-active` | 0 | 0 | 0 |
+| `--leaf-color-info-soft` | 0 | 1 | 1 |
 | `--leaf-color-info-soft-hover` | 0 | 0 | 0 |
 | `--leaf-color-neutral` | 1 | 0 | 1 |
-| `--leaf-color-neutral-100` | 0 | 0 | 0 |
-| `--leaf-color-neutral-200` | 0 | 0 | 0 |
-| `--leaf-color-neutral-300` | 0 | 0 | 0 |
-| `--leaf-color-neutral-400` | 0 | 0 | 0 |
-| `--leaf-color-neutral-500` | 0 | 0 | 0 |
-| `--leaf-color-neutral-600` | 0 | 0 | 0 |
-| `--leaf-color-neutral-700` | 0 | 0 | 0 |
-| `--leaf-color-neutral-800` | 0 | 0 | 0 |
-| `--leaf-color-neutral-900` | 0 | 0 | 0 |
-| `--leaf-color-on-danger` | 3 | 1 | 4 |
+| `--leaf-color-on-danger` | 2 | 1 | 3 |
 | `--leaf-color-on-info` | 2 | 1 | 3 |
-| `--leaf-color-on-primary` | 11 | 1 | 17 |
+| `--leaf-color-on-primary` | 9 | 1 | 13 |
 | `--leaf-color-on-success` | 1 | 1 | 2 |
 | `--leaf-color-on-warning` | 1 | 1 | 2 |
-| `--leaf-color-option-hover` | 4 | 2 | 13 |
-| `--leaf-color-primary` | 32 | 4 | 98 |
-| `--leaf-color-primary-active` | 1 | 0 | 1 |
-| `--leaf-color-primary-alpha-10` | 0 | 0 | 0 |
-| `--leaf-color-primary-alpha-12` | 0 | 1 | 1 |
-| `--leaf-color-primary-alpha-16` | 0 | 1 | 1 |
+| `--leaf-color-option-hover` | 8 | 2 | 21 |
+| `--leaf-color-primary` | 18 | 3 | 54 |
+| `--leaf-color-primary-active` | 4 | 0 | 6 |
 | `--leaf-color-primary-alpha-20` | 0 | 1 | 1 |
 | `--leaf-color-primary-alpha-4` | 1 | 0 | 1 |
-| `--leaf-color-primary-alpha-55` | 0 | 0 | 0 |
-| `--leaf-color-primary-border` | 1 | 1 | 2 |
-| `--leaf-color-primary-dark-1` | 0 | 0 | 0 |
-| `--leaf-color-primary-dark-3` | 0 | 0 | 0 |
-| `--leaf-color-primary-dark-7` | 0 | 0 | 0 |
-| `--leaf-color-primary-dark-9` | 0 | 0 | 0 |
-| `--leaf-color-primary-fill-border` | 0 | 0 | 0 |
-| `--leaf-color-primary-focus` | 0 | 0 | 0 |
-| `--leaf-color-primary-hover` | 2 | 0 | 3 |
-| `--leaf-color-primary-indicator` | 0 | 0 | 0 |
-| `--leaf-color-primary-ink` | 0 | 0 | 0 |
-| `--leaf-color-primary-ink-active` | 0 | 0 | 0 |
-| `--leaf-color-primary-ink-hover` | 0 | 0 | 0 |
-| `--leaf-color-primary-light-3` | 0 | 0 | 0 |
-| `--leaf-color-primary-light-7` | 0 | 0 | 0 |
-| `--leaf-color-primary-light-9` | 0 | 0 | 0 |
-| `--leaf-color-primary-link-active` | 2 | 0 | 2 |
+| `--leaf-color-primary-border` | 0 | 0 | 0 |
+| `--leaf-color-primary-hover` | 1 | 0 | 2 |
+| `--leaf-color-primary-link-active` | 1 | 0 | 1 |
 | `--leaf-color-primary-link-hover` | 2 | 0 | 2 |
-| `--leaf-color-primary-soft` | 1 | 1 | 6 |
-| `--leaf-color-primary-soft-active` | 0 | 0 | 0 |
-| `--leaf-color-primary-soft-hover` | 0 | 1 | 1 |
-| `--leaf-color-success` | 4 | 0 | 6 |
-| `--leaf-color-success-border` | 0 | 0 | 0 |
-| `--leaf-color-success-dark-1` | 0 | 0 | 0 |
-| `--leaf-color-success-dark-3` | 0 | 0 | 0 |
-| `--leaf-color-success-dark-7` | 0 | 0 | 0 |
-| `--leaf-color-success-dark-9` | 0 | 0 | 0 |
+| `--leaf-color-primary-soft` | 0 | 2 | 4 |
+| `--leaf-color-primary-soft-hover` | 1 | 1 | 2 |
+| `--leaf-color-success` | 2 | 0 | 4 |
 | `--leaf-color-success-ink` | 0 | 1 | 1 |
-| `--leaf-color-success-light-3` | 0 | 0 | 0 |
-| `--leaf-color-success-light-7` | 0 | 0 | 0 |
-| `--leaf-color-success-light-9` | 0 | 0 | 0 |
-| `--leaf-color-success-soft` | 1 | 1 | 2 |
-| `--leaf-color-success-soft-active` | 0 | 0 | 0 |
+| `--leaf-color-success-soft` | 0 | 1 | 1 |
 | `--leaf-color-success-soft-hover` | 0 | 0 | 0 |
-| `--leaf-color-surface` | 33 | 4 | 63 |
+| `--leaf-color-surface` | 34 | 5 | 64 |
 | `--leaf-color-surface-alpha-55` | 1 | 0 | 1 |
 | `--leaf-color-surface-alpha-90` | 1 | 0 | 1 |
-| `--leaf-color-surface-muted` | 21 | 4 | 37 |
+| `--leaf-color-surface-muted` | 27 | 4 | 52 |
 | `--leaf-color-surface-raised` | 5 | 2 | 7 |
-| `--leaf-color-text` | 47 | 4 | 92 |
-| `--leaf-color-text-muted` | 43 | 6 | 100 |
+| `--leaf-color-text` | 52 | 4 | 118 |
+| `--leaf-color-text-muted` | 48 | 6 | 115 |
 | `--leaf-color-text-subtle` | 13 | 1 | 18 |
 | `--leaf-color-text-subtle-alpha-9` | 1 | 0 | 1 |
-| `--leaf-color-warning` | 4 | 1 | 6 |
+| `--leaf-color-warning` | 2 | 1 | 3 |
 | `--leaf-color-warning-alpha-16` | 1 | 0 | 1 |
 | `--leaf-color-warning-border` | 0 | 1 | 1 |
-| `--leaf-color-warning-dark-1` | 0 | 0 | 0 |
-| `--leaf-color-warning-dark-3` | 0 | 0 | 0 |
-| `--leaf-color-warning-dark-7` | 0 | 0 | 0 |
-| `--leaf-color-warning-dark-9` | 0 | 0 | 0 |
 | `--leaf-color-warning-ink` | 0 | 1 | 1 |
-| `--leaf-color-warning-light-3` | 0 | 0 | 0 |
-| `--leaf-color-warning-light-7` | 0 | 0 | 0 |
-| `--leaf-color-warning-light-9` | 0 | 0 | 0 |
-| `--leaf-color-warning-soft` | 1 | 1 | 2 |
-| `--leaf-color-warning-soft-active` | 0 | 0 | 0 |
+| `--leaf-color-warning-soft` | 0 | 1 | 1 |
 | `--leaf-color-warning-soft-hover` | 0 | 0 | 0 |
 
 ### Tokens with zero direct component consumers
 
-- `--leaf-color-danger-dark-1`
-- `--leaf-color-danger-dark-3`
-- `--leaf-color-danger-dark-7`
-- `--leaf-color-danger-dark-9`
-- `--leaf-color-danger-hover`
-- `--leaf-color-danger-light-3`
-- `--leaf-color-danger-light-7`
-- `--leaf-color-danger-light-9`
-- `--leaf-color-danger-soft-active`
+- `--leaf-color-danger-active`
+- `--leaf-color-danger-soft`
 - `--leaf-color-danger-soft-hover`
-- `--leaf-color-info-border`
-- `--leaf-color-info-dark-1`
-- `--leaf-color-info-dark-3`
-- `--leaf-color-info-dark-7`
-- `--leaf-color-info-dark-9`
 - `--leaf-color-info-ink`
-- `--leaf-color-info-light-3`
-- `--leaf-color-info-light-7`
-- `--leaf-color-info-light-9`
-- `--leaf-color-info-soft-active`
+- `--leaf-color-info-soft`
 - `--leaf-color-info-soft-hover`
-- `--leaf-color-neutral-100`
-- `--leaf-color-neutral-200`
-- `--leaf-color-neutral-300`
-- `--leaf-color-neutral-400`
-- `--leaf-color-neutral-500`
-- `--leaf-color-neutral-600`
-- `--leaf-color-neutral-700`
-- `--leaf-color-neutral-800`
-- `--leaf-color-neutral-900`
-- `--leaf-color-primary-alpha-10`
-- `--leaf-color-primary-alpha-12`
-- `--leaf-color-primary-alpha-16`
 - `--leaf-color-primary-alpha-20`
-- `--leaf-color-primary-alpha-55`
-- `--leaf-color-primary-dark-1`
-- `--leaf-color-primary-dark-3`
-- `--leaf-color-primary-dark-7`
-- `--leaf-color-primary-dark-9`
-- `--leaf-color-primary-fill-border`
-- `--leaf-color-primary-focus`
-- `--leaf-color-primary-indicator`
-- `--leaf-color-primary-ink`
-- `--leaf-color-primary-ink-active`
-- `--leaf-color-primary-ink-hover`
-- `--leaf-color-primary-light-3`
-- `--leaf-color-primary-light-7`
-- `--leaf-color-primary-light-9`
-- `--leaf-color-primary-soft-active`
-- `--leaf-color-primary-soft-hover`
-- `--leaf-color-success-border`
-- `--leaf-color-success-dark-1`
-- `--leaf-color-success-dark-3`
-- `--leaf-color-success-dark-7`
-- `--leaf-color-success-dark-9`
+- `--leaf-color-primary-border`
+- `--leaf-color-primary-soft`
 - `--leaf-color-success-ink`
-- `--leaf-color-success-light-3`
-- `--leaf-color-success-light-7`
-- `--leaf-color-success-light-9`
-- `--leaf-color-success-soft-active`
+- `--leaf-color-success-soft`
 - `--leaf-color-success-soft-hover`
 - `--leaf-color-warning-border`
-- `--leaf-color-warning-dark-1`
-- `--leaf-color-warning-dark-3`
-- `--leaf-color-warning-dark-7`
-- `--leaf-color-warning-dark-9`
 - `--leaf-color-warning-ink`
-- `--leaf-color-warning-light-3`
-- `--leaf-color-warning-light-7`
-- `--leaf-color-warning-light-9`
-- `--leaf-color-warning-soft-active`
+- `--leaf-color-warning-soft`
 - `--leaf-color-warning-soft-hover`
 
 ## Existing debt detail
@@ -281,17 +159,20 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 
 These entries are controlled exceptions, not compliance claims. Their exact expression and count are part of the baseline.
 
+### `alert/alert.scss`
+- mixFormulas: `color-mix(in srgb,var(--leaf-feedback-soft)50%,var(--leaf-color-surface))` x1 - Alert softens each semantic soft background toward the active surface instead of emitting new per-status lighter background tokens.
+- mixFormulas: `color-mix(in srgb,var(--leaf-feedback-color)25%,var(--leaf-color-border))` x1 - Alert tints its neutral border with each semantic feedback color without reintroducing global success-border or info-border tokens.
+
 ### `autocomplete/autocomplete.scss`
 - fieldFamilyBorders: `border:0` x1 - Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe.
 
 ### `button/button.scss`
 - mixFormulas: `color-mix(in srgb,var(--leaf-button-on-color)32%,transparent)` x1 - Solid split-action separator follows its own on-fill foreground; not an ordinary border or standalone action color.
-
-### `card/card.scss`
-- hardcodedColors: `#000` x1 - Card headings retain the requested black ink in light appearance; dark appearance uses the regional text role, and the existing Card color override remains authoritative.
+- mixFormulas: `color-mix(in srgb,var(--leaf-danger-soft-active-background)30%,var(--leaf-danger-soft-background))` x1 - Restrained danger button hover blends 30% of danger-soft-active-background into danger-soft-background so base --leaf-color-danger text stays clear instead of jumping to 3x concentration.
+- mixFormulas: `color-mix(in srgb,var(--leaf-danger-soft-active-background)50%,var(--leaf-danger-soft-background))` x1 - Restrained danger button press blends 50% of danger-soft-active-background into danger-soft-background alongside press scaling.
 
 ### `cascader/cascader.scss`
-- fieldFamilyBorders: `border-inline-start:1px solid var(--leaf-color-border)` x1 - Internal column/control separator using the existing border or shared field state role; not an independently chosen outer field border.
+- fieldFamilyBorders: `border-inline-start:1px solid var(--leaf-color-divider)` x1 - Internal column separator inside the portaled popup consuming the shared divider role; not an independently chosen outer field border.
 - fieldFamilyBorders: `border:0` x1 - Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe.
 
 ### `colorpicker/colorpicker.scss`
@@ -307,7 +188,7 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 - hardcodedColors: `rgb(0 0 0/25%)` x4 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
 - hardcodedColors: `rgb(0 0 0/8%)` x1 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
 - hardcodedColors: `rgb(255 255 255/18%)` x1 - ColorPicker spectrum, alpha checkerboard, hue ramp, and swatch contrast require fixed visual colors.
-- fieldFamilyBorders: `border:0` x2 - Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe.
+- fieldFamilyBorders: `border:0` x1 - Native inner control/action border reset or moving-highlight transparency; the outer field is painted by the shared field recipe.
 - fieldFamilyBorders: `border:2px solid #fff` x3 - ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell.
 - fieldFamilyBorders: `border:2px solid var(--leaf-color-surface)` x1 - ColorPicker format-switch frame, spectrum thumb or swatch contrast border, not the outer field shell.
 
@@ -352,9 +233,6 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 - derivedTokenUsages: `var(--leaf-color-surface-alpha-55)` x1 - A busy overlay allows the obscured content to remain visible; not an opaque surface or interactive option.
 
 ### `menu/menu.scss`
-- hardcodedColors: `rgb(241 241 242)` x1 - User-specified exact light-mode fill for the neutral Menu appearance, shared by hover, selection and press; dark mode retains its existing neutral overlay. This is a local appearance exception, not a shared option role.
-- hardcodedColors: `rgb(0 0 0/0.08)` x1 - Bottom-only raised-selection shadow is part of the established Menu appearance and clipping contract.
-- hardcodedColors: `rgba(0,0,0,0.04)` x1 - Raised Menu press uses a lighter transient layer than neutral feedback, preserving its established motion/paint contract.
 - mixFormulas: `color-mix(in srgb,var(--leaf-color-primary)5%,transparent)` x1 - User-requested lighter primary Menu selection uses a 5% translucent theme-color layer; this local persistent-selection recipe is not a shared option role or a new global token.
 - derivedTokenUsages: `var(--leaf-color-primary-alpha-4)` x1 - Primary Menu press clears its persistent layer and uses a lighter transient feedback layer.
 

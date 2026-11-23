@@ -86,4 +86,26 @@ describe('Transfer partitions', () => {
     expect(screen.getByRole('checkbox', { name: 'Ada II' })).toBeInTheDocument();
     expect(screen.queryByRole('checkbox', { name: 'Ada' })).toBeNull();
   });
+
+  it('mirrors direction arrows in RTL and moves focus into enabled controls on required invalid', () => {
+    render(
+      <ConfigProvider direction="rtl" locale="en-US">
+        <form aria-label="Transfer form">
+          <Transfer name="members" required items={items} />
+        </form>
+      </ConfigProvider>,
+    );
+    const toSelected = screen.getByRole('button', { name: 'Move to selected' });
+    const toAvailable = screen.getByRole('button', { name: 'Move to available' });
+    expect(toSelected.querySelector('svg')).toHaveClass('lucide-arrow-left');
+    expect(toAvailable.querySelector('svg')).toHaveClass('lucide-arrow-right');
+    expect(toSelected).toBeDisabled();
+
+    const proxy = document.querySelector('.leaf-form-value') as HTMLInputElement;
+    fireEvent.invalid(proxy);
+    const available = screen.getByRole('region', { name: 'Available' });
+    expect(
+      within(available).getByRole('checkbox', { name: 'Select all visible items' }),
+    ).toHaveFocus();
+  });
 });

@@ -116,7 +116,7 @@ Both versions use the same utility names and extend the theme while keeping Tail
 | ---------------------- | ------------------------------------------------------------------------------ |
 | Primary color          | `bg-leaf-primary`, `text-leaf-primary`, `text-leaf-on-primary`                 |
 | Status colors          | `text-leaf-success`, `text-leaf-warning`, `text-leaf-danger`, `text-leaf-info` |
-| Semantic shades        | `bg-leaf-primary-light-9`, `text-leaf-success-dark-3`, `bg-leaf-neutral-100`   |
+| Soft and ink roles     | `bg-leaf-primary-soft`, `bg-leaf-success-soft`, `text-leaf-success-ink`, `text-leaf-danger-ink` |
 | Text colors            | `text-leaf-text`, `text-leaf-muted`, `text-leaf-subtle`                        |
 | Backgrounds            | `bg-leaf-surface`, `bg-leaf-surface-muted`, `bg-leaf-surface-raised`           |
 | Borders and focus      | `border-leaf-border`, `border-leaf-divider`, `ring-leaf-focus`                 |
@@ -129,7 +129,7 @@ Both versions use the same utility names and extend the theme while keeping Tail
 
 </div>
 
-Each of the five semantic families provides seven shades: `light-3`, `light-7`, `light-9`, `dark-1`, `dark-3`, `dark-7` and `dark-9`. Neutral keeps its nine-step `100`–`900` scale. Color names also work with `border-*`, `ring-*`, `fill-*` and similar utilities. Type size utilities include the theme line height.
+Tailwind tokens map Leaf UI's active purpose roles: `primary` exposes `soft`, `soft-hover`, `border`, `hover`, `active` and `on-primary`; the remaining semantic families expose `soft`, `soft-hover`, `ink` and `on-*` (`danger` and `warning` also include `border`, and `danger` includes `active`). Color names also work with `border-*`, `ring-*`, `fill-*` and similar utilities; type size utilities include the theme line height. Use `generateColorScale` and `generateColorShades` in JS if you need static numeric bands.
 
 <DocsCollapse title="More design variables">
 
@@ -137,9 +137,9 @@ Each of the five semantic families provides seven shades: `light-3`, `light-7`, 
 
 | Design variable         | Utility examples                                                                                                                               |
 | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| Primary interactions    | `hover:bg-leaf-primary-hover`, `active:bg-leaf-primary-active`                                                                                 |
-| Danger interactions     | `hover:bg-leaf-danger-hover`, `active:bg-leaf-danger-active`                                                                                   |
-| Text on status colors   | `text-leaf-on-warning`, `text-leaf-on-danger`                                                                                                  |
+| Primary interactions    | `hover:bg-leaf-primary-hover`, `active:bg-leaf-primary-active`, `border-leaf-primary-border`                                                   |
+| Danger interactions     | `bg-leaf-danger-soft`, `hover:bg-leaf-danger-soft-hover`, `active:bg-leaf-danger-active`                                                       |
+| Text on status colors   | `text-leaf-on-warning`, `text-leaf-on-danger`, `text-leaf-warning-ink`                                                                         |
 | Border and option hover | `hover:border-leaf-border-hover`, `hover:bg-leaf-option-hover`                                                                                 |
 | Choice control radius   | `rounded-leaf-choice`                                                                                                                          |
 | Density spacing         | `gap-leaf-form-gap`, `gap-leaf-label-gap`, `py-leaf-row-padding`, `min-h-leaf-option-height`, `p-leaf-option-padding`, `px-leaf-field-padding` |

@@ -4,20 +4,22 @@ import { createRef } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
+import { Result } from '../result';
 import { TableControl as Table } from './table';
 
 describe('Table', () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it('uses one frameless surface and preserves the table when stripes change', () => {
+  it('uses one frameless surface and preserves the table when stripes or sizes change', () => {
     const { rerender } = render(<Table />);
     const root = screen.getByRole('table').closest('.leaf-table');
     expect(root).not.toHaveClass('leaf-table--striped');
-    expect(root).toHaveClass('leaf-table--lg');
+    expect(root).toHaveClass('leaf-table--md');
     expect(root?.querySelector('.leaf-table__panel')).toBeNull();
-    rerender(<Table striped />);
+    rerender(<Table striped size="lg" />);
     expect(screen.getByRole('table').closest('.leaf-table')).toBe(root);
     expect(root).toHaveClass('leaf-table--striped');
+    expect(root).toHaveClass('leaf-table--lg');
   });
 
   it('preserves native table semantics, header scopes, spans and refs', () => {
@@ -188,7 +190,7 @@ describe('Table', () => {
 
   it('renders localized empty, loading and retryable error rows', async () => {
     const retry = vi.fn();
-    const { rerender } = render(
+    const { rerender, container } = render(
       <ConfigProvider locale="en-US">
         <Table>
           <Table.Body>
@@ -198,7 +200,22 @@ describe('Table', () => {
       </ConfigProvider>,
     );
     expect(screen.getByRole('status')).toHaveTextContent('No data');
+    expect(screen.getByRole('status')).toHaveClass('leaf-result', 'leaf-result--empty');
     expect(screen.getByRole('cell')).toHaveAttribute('colspan', '3');
+    rerender(
+      <ConfigProvider locale="en-US">
+        <Table>
+          <Table.Body>
+            <Table.Empty>
+              <Result status="empty" title="No matches" description="Try another keyword." />
+            </Table.Empty>
+          </Table.Body>
+        </Table>
+      </ConfigProvider>,
+    );
+    expect(container.querySelectorAll('.leaf-result')).toHaveLength(1);
+    expect(screen.getByText('No matches')).toBeInTheDocument();
+    expect(screen.getByText('Try another keyword.')).toBeInTheDocument();
     rerender(
       <ConfigProvider locale="en-US">
         <Table>
@@ -213,7 +230,7 @@ describe('Table', () => {
       <ConfigProvider locale="en-US">
         <Table>
           <Table.Body>
-            <Table.Error onRetry={retry} />
+            <Table.Error onRetry={retry}>{true}</Table.Error>
           </Table.Body>
         </Table>
       </ConfigProvider>,

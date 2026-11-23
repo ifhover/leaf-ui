@@ -1,24 +1,31 @@
 @use '../styles/mixins' as mixins;
-@use '../shared/picker';
+@use '../shared/clear';
 @use '../shared/selection';
 
 @layer leaf-ui {
   .leaf-select {
     @include mixins.field('select');
+    --leaf-select-end-padding: 30px;
     display: inline-flex;
     position: relative;
     align-items: center;
     min-height: var(--leaf-current-control-height);
-    padding: var(--leaf-component-select-padding, 0 30px 0 var(--leaf-density-field-padding));
+    padding: var(
+      --leaf-component-select-padding,
+      0 var(--leaf-select-end-padding) 0 var(--leaf-density-field-padding)
+    );
+    &:where(:dir(rtl)) {
+      padding: var(
+        --leaf-component-select-padding,
+        0 var(--leaf-density-field-padding) 0 var(--leaf-select-end-padding)
+      );
+    }
     cursor: pointer;
     &[data-searchable] {
       cursor: text;
     }
     &[data-disabled] {
       cursor: not-allowed;
-    }
-    &[data-clearable] {
-      padding-inline-end: 54px;
     }
     &__input-wrap {
       position: relative;
@@ -44,9 +51,20 @@
       }
       &:read-only {
         cursor: pointer;
+        caret-color: transparent;
+        user-select: none;
+        &::selection {
+          background: transparent;
+        }
       }
       &:disabled {
         cursor: not-allowed;
+      }
+    }
+    &:not([data-open]) &__input {
+      caret-color: transparent;
+      &::selection {
+        background: transparent;
       }
     }
     &__value {
@@ -86,7 +104,7 @@
     &__panel .leaf-floating__option {
       @include mixins.choice-option;
       @include mixins.choice-option-size(
-        var(--leaf-select-option-height, var(--leaf-current-control-height, 34px))
+        var(--leaf-select-option-height, var(--leaf-current-control-height, 32px))
       );
       height: auto;
       justify-content: space-between;
@@ -110,89 +128,59 @@
     }
     &__check {
       opacity: 0;
-      transform: scale(0.6) rotate(-12deg);
-      transition:
-        opacity var(--leaf-motion-color) var(--leaf-motion-easing),
-        transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
+      path,
+      polyline {
+        stroke-dasharray: 24;
+        stroke-dashoffset: 24;
+        transition: stroke-dashoffset var(--leaf-motion-duration) var(--leaf-motion-easing);
+      }
     }
     &__panel [aria-selected='true'] &__check {
       opacity: 1;
-      transform: scale(1) rotate(0);
+      path,
+      polyline {
+        stroke-dashoffset: 0;
+      }
     }
     &__spinner {
       animation: var(
         --leaf-motion-animation,
-        leaf-select-spin calc(var(--leaf-motion-duration) * 4) linear infinite
+        leaf-spin calc(var(--leaf-motion-duration) * 4) linear infinite
       );
-      animation-play-state: var(--leaf-motion-play-state, running);
+      animation-play-state: var(--leaf-motion-play-state);
     }
     &[data-open] &__arrow > .leaf-select__spinner {
       transform: none;
     }
     &--multiple {
-      @include selection.trigger-padding('select', 30px, var(--leaf-density-field-padding));
+      @include selection.trigger-padding(
+        'select',
+        var(--leaf-select-end-padding),
+        calc(var(--leaf-density-field-padding) / 2)
+      );
     }
     &--multiple &__input {
-      height: max(
-        1px,
-        calc(
-          var(--leaf-current-control-height) - 6px - 2 *
-            var(--leaf-field-border-width, var(--leaf-border-width, 1px))
-        )
-      );
+      height: var(--leaf-selection-tag-height);
       min-width: 0;
-    }
-  }
-  @keyframes leaf-select-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .leaf-select__spinner {
-      animation: none;
-    }
-    .leaf-select__arrow > svg,
-    .leaf-select__check,
-    .leaf-select__tag > button {
-      transition: none;
-    }
-    .leaf-select__panel .leaf-floating__option,
-    .leaf-select__panel .leaf-floating__option::before {
-      transition: none;
     }
   }
 
   .leaf-select__group {
     @include mixins.section-label;
-    padding: 10px 10px 4px;
-  }
-
-  .leaf-select {
-    --leaf-current-control-height: var(--leaf-component-select-height, var(--leaf-control-height));
-    --leaf-current-font-size: var(--leaf-component-select-font-size, var(--leaf-font-size));
-    --leaf-current-radius: var(--leaf-radius);
-  }
-  .leaf-select--sm {
-    --leaf-current-control-height: var(
-      --leaf-component-select-height-sm,
-      var(--leaf-control-height-sm)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-sm);
-    --leaf-current-radius: var(--leaf-control-radius-sm, calc(var(--leaf-radius) * 0.8));
-  }
-  .leaf-select--lg {
-    --leaf-current-control-height: var(
-      --leaf-component-select-height-lg,
-      var(--leaf-control-height-lg)
-    );
-    --leaf-current-font-size: var(--leaf-font-size-lg);
-    --leaf-current-radius: var(--leaf-control-radius-lg, calc(var(--leaf-radius) * 1.2));
+    padding: 6px 10px 2px;
   }
 
   .leaf-floating.leaf-select__panel {
     @include mixins.floating-paint(select);
     @include mixins.field-popup(select);
+    --leaf-surface-padding: var(--leaf-component-floating-padding, 4px);
+    @each $side in top, right, bottom, left {
+      --leaf-surface-padding-#{$side}: var(
+        --leaf-component-floating-padding-#{$side},
+        var(--leaf-surface-padding)
+      );
+    }
     font-size: var(
       --leaf-component-select-font-size,
       var(--leaf-current-font-size, var(--leaf-font-size))

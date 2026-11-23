@@ -1,8 +1,11 @@
 import { ChevronDown } from 'lucide-react';
 import {
+  type CSSProperties,
   forwardRef,
   type HTMLAttributes,
+  isValidElement,
   type ReactNode,
+  type Ref,
   useEffect,
   useId,
   useLayoutEffect,
@@ -17,6 +20,7 @@ import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
 import { useControllable } from '../shared/use-controllable';
 import { useText } from '../shared/use-text';
+import { TooltipControl } from '../tooltip/tooltip';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
@@ -132,7 +136,7 @@ export function Menu(rawProps: MenuProps) {
     defaultOpenKeys = [],
     onOpenChange,
     collapsed = false,
-    variant = 'primary',
+    variant = 'neutral',
     itemRender,
     linkRender,
     itemClassName,
@@ -150,15 +154,21 @@ export function Menu(rawProps: MenuProps) {
     defaultOpenKeys,
     (keys) => onOpenChange?.([...keys]),
   );
+  const [collapsedPopupKey, setCollapsedPopupKey] = useState<string | null>(null);
+  useEffect(() => {
+    if (!collapsed) setCollapsedPopupKey(null);
+  }, [collapsed]);
   const toggle = (key: string) =>
     setOpened(opened.includes(key) ? opened.filter((value) => value !== key) : [...opened, key]);
   const visibleItems: MenuItem[] = [];
-  const collect = (entries: readonly MenuItem[]) => {
+  const itemByKey = new Map<string, MenuItem>();
+  const collect = (entries: readonly MenuItem[], insideVisible = true) => {
     for (const item of entries) {
-      if (item.type === 'group') collect(item.children ?? []);
+      itemByKey.set(item.key, item);
+      if (item.type === 'group') collect(item.children ?? [], insideVisible);
       else if (item.type !== 'divider') {
-        if (!item.disabled) visibleItems.push(item);
-        if (opened.includes(item.key) && !collapsed) collect(item.children ?? []);
+        if (insideVisible && !item.disabled) visibleItems.push(item);
+        collect(item.children ?? [], insideVisible && opened.includes(item.key) && !collapsed);
       }
     }
   };
@@ -166,6 +176,24 @@ export function Menu(rawProps: MenuProps) {
   const focusKey = visibleItems.some((item) => item.key === active)
     ? active
     : (visibleItems.find((item) => item.key === selected)?.key ?? visibleItems[0]?.key);
+  const getOriginal = (entry: DropdownItem): MenuItem =>
+    itemByKey.get(entry.key) ?? (entry as MenuItem);
+  const parentOf = (
+    entries: readonly MenuItem[],
+    targetKey: string,
+    parentItem?: MenuItem,
+  ): MenuItem | undefined => {
+    for (const entry of entries) {
+      if (entry.key === targetKey) return parentItem;
+      const parent = parentOf(
+        entry.children ?? [],
+        targetKey,
+        entry.type === 'group' ? parentItem : entry,
+      );
+      if (parent) return parent;
+    }
+    return undefined;
+  };
   const convert = (entries: readonly MenuItem[]): DropdownItem[] =>
     entries.map((item) => ({
       ...item,
@@ -186,8 +214,9 @@ export function Menu(rawProps: MenuProps) {
             {renderItems(item.children ?? [], depth)}
           </MenuGroupControl>
         );
-      const expanded = opened.includes(item.key);
       const hasChildren = Boolean(item.children?.length);
+      const expanded =
+        collapsed && hasChildren ? collapsedPopupKey === item.key : opened.includes(item.key);
       const originalContent = (
         <>
           {item.icon && (
@@ -228,10 +257,9 @@ export function Menu(rawProps: MenuProps) {
         'data-menu-key': item.key,
         'aria-label': collapsed && typeof item.label === 'string' ? item.label : undefined,
         onFocus: () => setActive(item.key),
-        title: collapsed && typeof item.label === 'string' ? item.label : undefined,
         style: {
-          paddingInlineStart: 12 + depth * 32,
-        },
+          '--leaf-menu-depth': depth,
+        } as CSSProperties,
       };
       const activate = () => {
         if (item.disabled) return;
@@ -250,12 +278,24 @@ export function Menu(rawProps: MenuProps) {
                 selectedKey: selected,
                 title: collapsed ? item.label : undefined,
                 variant,
+                renderLink: linkRender
+                  ? (entry, link) => linkRender(getOriginal(entry), link)
+                  : undefined,
+                renderItem: itemRender
+                  ? (entry, node) => itemRender(getOriginal(entry), node)
+                  : undefined,
+                getItemClassName: itemClassName
+                  ? (entry) =>
+                      typeof itemClassName === 'function'
+                        ? itemClassName(getOriginal(entry))
+                        : itemClassName
+                  : undefined,
               }}
               popupWidth={208}
               popupPlacement={direction === 'rtl' ? 'left-start' : 'right-start'}
               open={expanded}
               disabled={item.disabled}
-              onOpenChange={(next) => setOpened(next ? [item.key] : [])}
+              onOpenChange={(next) => setCollapsedPopupKey(next ? item.key : null)}
             >
               <button
                 {...common}
@@ -266,7 +306,7 @@ export function Menu(rawProps: MenuProps) {
                     event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight')
                   ) {
                     event.preventDefault();
-                    if (!item.disabled) setOpened([item.key]);
+                    if (!item.disabled) setCollapsedPopupKey(item.key);
                   }
                 }}
               >
@@ -275,25 +315,41 @@ export function Menu(rawProps: MenuProps) {
             </Dropdown>
           </div>
         );
+      const triggerNode =
+        item.href && !hasChildren ? (
+          ((link: ReactNode) => linkRender?.(item, link) ?? link)(
+            <a
+              {...common}
+              href={item.disabled ? undefined : item.href}
+              onClick={(event) => {
+                if (item.disabled) event.preventDefault();
+                else activate();
+              }}
+            >
+              {content}
+            </a>,
+          )
+        ) : (
+          <button {...common} type="button" disabled={item.disabled} onClick={activate}>
+            {content}
+          </button>
+        );
       return (
         <div key={item.key} className="leaf-menu__entry">
-          {item.href && !hasChildren ? (
-            ((link: ReactNode) => linkRender?.(item, link) ?? link)(
-              <a
-                {...common}
-                href={item.disabled ? undefined : item.href}
-                onClick={(event) => {
-                  if (item.disabled) event.preventDefault();
-                  else activate();
-                }}
-              >
-                {content}
-              </a>,
-            )
+          {collapsed &&
+          !hasChildren &&
+          isValidElement<
+            HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean }
+          >(triggerNode) ? (
+            <TooltipControl
+              content={item.label}
+              placement={direction === 'rtl' ? 'left' : 'right'}
+              disabled={item.disabled || item.label == null || item.label === ''}
+            >
+              {triggerNode}
+            </TooltipControl>
           ) : (
-            <button {...common} type="button" disabled={item.disabled} onClick={activate}>
-              {content}
-            </button>
+            triggerNode
           )}
           {hasChildren && (
             <MenuSubmenu
@@ -330,11 +386,6 @@ export function Menu(rawProps: MenuProps) {
           )
             return;
           const target = event.target as HTMLElement;
-          if (event.key === 'Escape') {
-            setOpened([]);
-            root.current?.querySelector<HTMLElement>('[role="menuitem"]')?.focus();
-            return;
-          }
           const choices = [
             ...(root.current?.querySelectorAll<HTMLElement>(
               '[role="menuitem"]:not([aria-disabled="true"])',
@@ -352,6 +403,20 @@ export function Menu(rawProps: MenuProps) {
               node?.focus();
             });
           };
+          if (event.key === 'Escape') {
+            if (!collapsed && item) {
+              const parent = parentOf(items, item.key);
+              if (parent && opened.includes(parent.key)) {
+                event.preventDefault();
+                setOpened(opened.filter((value) => value !== parent.key));
+                focusItem(parent.key);
+              } else if (opened.includes(item.key)) {
+                event.preventDefault();
+                setOpened(opened.filter((value) => value !== item.key));
+              }
+            }
+            return;
+          }
           if (!collapsed && item) {
             if (event.key === (direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight')) {
               event.preventDefault();
@@ -377,21 +442,7 @@ export function Menu(rawProps: MenuProps) {
               event.preventDefault();
               if (opened.includes(item.key)) toggle(item.key);
               else {
-                const parentOf = (
-                  entries: readonly MenuItem[],
-                  parentItem?: MenuItem,
-                ): MenuItem | undefined => {
-                  for (const entry of entries) {
-                    if (entry.key === item.key) return parentItem;
-                    const parent = parentOf(
-                      entry.children ?? [],
-                      entry.type === 'group' ? parentItem : entry,
-                    );
-                    if (parent) return parent;
-                  }
-                  return undefined;
-                };
-                const parent = parentOf(items);
+                const parent = parentOf(items, item.key);
                 if (parent) focusItem(parent.key);
               }
               return;

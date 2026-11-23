@@ -1,17 +1,20 @@
-import { DatePicker, Form, FormField } from '@ifhover/leaf-ui';
+import { DatePicker, Flex, Text } from '@ifhover/leaf-ui';
 
 export function DatePickerStates() {
   return (
-    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
-      <FormField label="禁用">
-        <DatePicker defaultValue={new Date(2026, 9, 15)} disabled />
-      </FormField>
-      <FormField label="只读">
-        <DatePicker defaultValue={new Date(2026, 9, 15)} readOnly />
-      </FormField>
-      <FormField label="仅面板选择">
-        <DatePicker defaultValue={new Date(2026, 9, 15)} inputReadOnly />
-      </FormField>
-    </Form>
+    <Flex direction="column" gap="md">
+      <Flex direction="column" gap="sm" align="start">
+        <Text tone="muted">禁用</Text>
+        <DatePicker aria-label="禁用" defaultValue={new Date(2026, 9, 15)} disabled />
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text tone="muted">只读</Text>
+        <DatePicker aria-label="只读" defaultValue={new Date(2026, 9, 15)} readOnly />
+      </Flex>
+      <Flex direction="column" gap="sm" align="start">
+        <Text tone="muted">仅面板选择</Text>
+        <DatePicker aria-label="仅面板选择" defaultValue={new Date(2026, 9, 15)} inputReadOnly />
+      </Flex>
+    </Flex>
   );
 }

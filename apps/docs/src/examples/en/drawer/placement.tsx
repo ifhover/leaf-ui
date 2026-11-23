@@ -30,9 +30,14 @@ export function DrawerPlacement() {
         open={open}
         placement={placement}
         title="Document details"
+        description="Drawers float with edge insets; bottom placement defaults to a swipe-to-close handle."
         onClose={() => setOpen(false)}
       >
-        <Paragraph>View details from the selected edge of the page.</Paragraph>
+        <Paragraph>
+          {placement === 'bottom'
+            ? 'Bottom placement enables showSwipeHandle by default so dragging the top handle downward closes the drawer.'
+            : 'Open details from the selected edge as a floating rounded panel; set showSwipeHandle to enable swipe-to-close on any side.'}
+        </Paragraph>
       </Drawer>
     </>
   );

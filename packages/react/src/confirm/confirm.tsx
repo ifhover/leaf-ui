@@ -1,18 +1,17 @@
-import { CircleAlert } from 'lucide-react';
-import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState } from 'react';
-import { FeedbackIcon } from '../alert/alert';
-import { ButtonControl, type ButtonProps } from '../button/button';
+import { Check, CircleAlert, Info, TriangleAlert } from 'lucide-react';
+import { type CSSProperties, type ReactNode, useId } from 'react';
+import type { ButtonProps } from '../button/button';
 import { useLeafConfig } from '../config-provider/context';
-import { ModalBase } from '../modal/base';
+import { hasRenderableNode, ModalBase } from '../modal/base';
 import type { DialogFocusOptions } from '../shared/dialog';
 
 export interface ConfirmOptions extends DialogFocusOptions {
   title?: ReactNode;
   /** A short explanation of the action being confirmed. */
   children?: ReactNode;
-  /** Bare semantic icon beside the title, or content when untitled. Use null to hide it. */
+  /** Decorative or status icon shown in the centered header tray above the title. Use null to hide it. */
   icon?: ReactNode;
-  type?: 'default' | 'danger' | 'success' | 'warning' | 'info';
+  type?: 'default' | 'success' | 'warning' | 'danger';
   showCancel?: boolean;
   confirmText?: ReactNode;
   cancelText?: ReactNode;
@@ -31,167 +30,71 @@ interface ConfirmDialogProps extends ConfirmOptions {
   open: boolean;
   onClose: () => void;
   afterClose?: () => void;
+  onConfirmError?: (reason: unknown) => void;
 }
 
-// Rendered only by the confirmation queue; consumers call useConfirm().confirm().
+const confirmIcons = {
+  default: Info,
+  success: Check,
+  warning: TriangleAlert,
+  danger: CircleAlert,
+} as const;
+
+// 仅由确认请求队列渲染；外部通过 useConfirm().confirm() 调用。
 export function ConfirmDialog({
   open,
   title,
   icon,
   children,
-  confirmText,
-  cancelText,
-  type = 'info',
+  type = 'default',
   showCancel,
-  confirmButtonProps,
-  cancelButtonProps,
+  width = 340,
+  closable = false,
+  maskClosable = false,
+  keyboard = true,
   onCancel,
-  onConfirm,
   onClose,
+  onConfirmError,
+  className,
   ...props
 }: ConfirmDialogProps) {
   const { messages } = useLeafConfig();
   const contentId = useId();
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string>();
-  const mounted = useRef(true);
-  const busy = useRef(false);
-  const generation = useRef(0);
-  const confirmLoading = confirmButtonProps?.loading ?? false;
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-  useEffect(() => {
-    generation.current++;
-    busy.current = false;
-    setPending(false);
-    if (open) setError(undefined);
-  }, [open]);
-  async function accept() {
-    if (busy.current || confirmLoading) return;
-    busy.current = true;
-    const request = generation.current;
-    setPending(true);
-    setError(undefined);
-    try {
-      await onConfirm?.();
-      if (mounted.current && generation.current === request) onClose?.();
-    } catch (reason) {
-      if (mounted.current && generation.current === request)
-        setError(reason instanceof Error ? reason.message : String(reason));
-    } finally {
-      if (generation.current === request) {
-        busy.current = false;
-        if (mounted.current) setPending(false);
-      }
-    }
-  }
-  const cancel = () => {
-    if (!pending && !confirmLoading) {
-      onCancel?.();
-      onClose?.();
-    }
-  };
-  const contentIcon =
-    icon === undefined && type !== 'default' ? (
-      type === 'danger' ? (
-        <CircleAlert aria-hidden="true" />
-      ) : (
-        <FeedbackIcon type={type} />
-      )
-    ) : (
-      icon
-    );
+  const hasChildren = hasRenderableNode(children);
+  const hasTitle = hasRenderableNode(title);
+  const showCancelAction = showCancel ?? type !== 'success';
+  const StatusIcon = confirmIcons[type];
+  const contentIcon = icon === undefined ? <StatusIcon aria-hidden="true" /> : icon;
+
   return (
     <ModalBase
       {...props}
       open={open}
-      title={
-        title != null && contentIcon != null ? (
-          <>
-            <span className="leaf-confirm__icon" aria-hidden="true">
-              {contentIcon}
-            </span>
-            <span className="leaf-confirm__title">{title}</span>
-          </>
-        ) : (
-          title
-        )
-      }
-      width={props.width ?? 420}
-      divided={false}
-      confirmLoading={pending || confirmLoading}
+      title={title}
+      icon={contentIcon}
+      size="mini"
+      danger={type === 'danger'}
+      width={width}
+      divided
+      closeOnConfirm
+      onConfirmError={onConfirmError ?? (() => onClose())}
       role="alertdialog"
-      aria-label={title == null ? messages.common.confirm : undefined}
-      aria-describedby={children != null ? contentId : undefined}
-      className={[
-        'leaf-confirm',
-        `leaf-confirm--${type}`,
-        title != null && contentIcon != null && 'leaf-confirm--titled-icon',
-        (icon != null || (icon === undefined && type !== 'default')) && 'leaf-confirm--has-icon',
-        props.className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
-      maskClosable={pending ? false : (props.maskClosable ?? false)}
-      closable={!pending && (props.closable ?? false)}
-      keyboard={!pending && (props.keyboard ?? true)}
-      onClose={cancel}
-      onCancel={cancel}
-      footer={
-        <>
-          {(showCancel ?? type !== 'success') && (
-            <ButtonControl
-              type="button"
-              variant="outline"
-              {...cancelButtonProps}
-              disabled={pending || confirmLoading || cancelButtonProps?.disabled}
-              onClick={(event) => {
-                cancelButtonProps?.onClick?.(event);
-                if (!event.defaultPrevented) cancel();
-              }}
-            >
-              {cancelText ?? messages.common.cancel}
-            </ButtonControl>
-          )}
-          <ButtonControl
-            type="button"
-            variant="solid"
-            {...confirmButtonProps}
-            danger={type === 'danger'}
-            loading={pending || confirmLoading || confirmButtonProps?.loading}
-            onClick={(event) => {
-              confirmButtonProps?.onClick?.(event);
-              if (!event.defaultPrevented) void accept();
-            }}
-          >
-            {confirmText ?? messages.common.confirm}
-          </ButtonControl>
-        </>
-      }
+      aria-label={!hasTitle ? messages.common.confirm : undefined}
+      aria-describedby={hasChildren ? contentId : undefined}
+      className={['leaf-confirm', `leaf-confirm--${type}`, className].filter(Boolean).join(' ')}
+      maskClosable={maskClosable}
+      closable={closable}
+      keyboard={keyboard}
+      onClose={onClose}
+      onCancel={() => {
+        onCancel?.();
+        onClose();
+      }}
+      footer={showCancelAction ? undefined : ({ confirmButton }) => confirmButton}
     >
-      {(contentIcon != null || children != null || error != null) && (
-        <div className="leaf-confirm__body">
-          {title == null && contentIcon != null && (
-            <span className="leaf-confirm__icon" aria-hidden="true">
-              {contentIcon}
-            </span>
-          )}
-          <div className="leaf-confirm__content">
-            {children != null && (
-              <div id={contentId} className="leaf-confirm-description">
-                {children}
-              </div>
-            )}
-            {error && (
-              <p role="alert" className="leaf-confirm-error">
-                {error}
-              </p>
-            )}
-          </div>
+      {hasChildren && (
+        <div id={contentId} className="leaf-confirm-description">
+          {children}
         </div>
       )}
     </ModalBase>

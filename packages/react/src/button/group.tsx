@@ -1,83 +1,40 @@
-import { ChevronDown } from 'lucide-react';
-import {
-  Children,
-  cloneElement,
-  type FieldsetHTMLAttributes,
-  isValidElement,
-  type ReactElement,
-} from 'react';
+import { type FieldsetHTMLAttributes, useMemo } from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
-import type { DropdownItem, DropdownProps } from '../dropdown';
-import { DropdownControl as Dropdown } from '../dropdown/dropdown';
 import { classes } from '../shared/classes';
 import type { ControlSize } from '../shared/types';
-import { useText } from '../shared/use-text';
-import { ButtonControl, type ButtonProps } from './button';
+import type { ButtonVariant } from './button';
+import { ButtonGroupContext } from './group-context';
+
 export interface ButtonGroupProps extends FieldsetHTMLAttributes<HTMLFieldSetElement> {
+  /** 统一设置组内按钮尺寸，并将 `size="icon"` 自动适配为对应图标方按钮尺寸。 */
   size?: ControlSize;
+  /** 统一设置组内按钮外观；子按钮显式指定 `variant` 或 `danger` 时以子按钮为准。 */
+  variant?: ButtonVariant;
+  /** 禁用整组控件与组内操作。 */
   disabled?: boolean;
+  /** 相邻按钮紧贴连接。 @default true */
   attached?: boolean;
 }
+
 export function ButtonGroupControl({
   size,
+  variant,
   disabled,
   attached = true,
   children,
   className,
   ...props
 }: ButtonGroupProps) {
+  const contextValue = useMemo(() => ({ size, variant, disabled }), [size, variant, disabled]);
+
   return (
     <fieldset
       {...props}
       disabled={disabled}
       className={classes('leaf-button-group', attached && 'leaf-button-group--attached', className)}
     >
-      {Children.map(children, (child) =>
-        isValidElement<ButtonProps>(child)
-          ? cloneElement(child, {
-              size: child.props.size ?? size,
-              disabled: disabled || child.props.disabled,
-            })
-          : child,
-      )}
+      <ButtonGroupContext.Provider value={contextValue}>{children}</ButtonGroupContext.Provider>
     </fieldset>
-  );
-}
-export interface SplitButtonProps extends ButtonProps {
-  items: readonly DropdownItem[];
-  menuLabel?: string;
-  dropdownProps?: Omit<DropdownProps, 'items' | 'children' | 'disabled'>;
-}
-export function SplitButton(incomingProps: SplitButtonProps): ReactElement {
-  const { items, menuLabel, dropdownProps, ...rawProps } = useComponentProps(
-    'SplitButton',
-    incomingProps,
-  );
-  const {
-    children,
-    className,
-    variant = 'outline',
-    ...props
-  } = useComponentProps('Button', rawProps);
-  const inactive = Boolean(props.disabled || props.loading);
-  const t = useText();
-  return (
-    <ButtonGroupControl className={classes('leaf-split-button', className)}>
-      <ButtonControl {...props} variant={variant}>
-        {children}
-      </ButtonControl>
-      <Dropdown {...dropdownProps} items={items} disabled={inactive}>
-        <ButtonControl
-          type="button"
-          disabled={inactive}
-          variant={variant}
-          size={props.size}
-          danger={props.danger}
-          startIcon={<ChevronDown size={16} />}
-          aria-label={menuLabel ?? t('button.moreActions')}
-        />
-      </Dropdown>
-    </ButtonGroupControl>
   );
 }
 

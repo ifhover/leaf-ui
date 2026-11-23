@@ -1,16 +1,18 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { ConfirmSimple } from '../../src/examples/confirm/simple';
 import { ConfirmStatus } from '../../src/examples/confirm/status';
+import { ConfirmIcon } from '../../src/examples/confirm/icon';
 import { ConfirmBasic } from '../../src/examples/confirm/basic';
-import { ConfirmRetry } from '../../src/examples/confirm/retry';
+import { ConfirmFailure } from '../../src/examples/confirm/failure';
+import { ConfirmQueue } from '../../src/examples/confirm/queue';
 
 export const leafDoc = { component: 'Confirm', primaryApi: 'useConfirm' };
 
 # Confirm 确认框
 
-在执行重要操作前征求确认，并等待用户的选择。
+在执行重要操作前征求确认，或通过单按钮弹窗展示简短的成功与失败提示。
 
-编辑内容使用 [Modal](/components/modal)，希望在触发按钮旁简短确认时使用 [Popconfirm](/components/popconfirm)。
+Confirm 基于 [Modal](/components/modal) 的紧凑确认布局（`size="mini"`）封装了 `useConfirm()` 命令式队列接口与内置状态图标；需要自主管理受控打开状态、内嵌表单或标签页时使用 [Modal](/components/modal)，希望直接在触发按钮旁就近确认时使用 [Popconfirm](/components/popconfirm)。
 
 在应用入口接入 [ConfigProvider](/components/config-provider)，子组件即可调用 `useConfirm()`。确认框沿用调用区域的主题和语言。
 
@@ -32,7 +34,7 @@ export function Root() {
 
 <a id="基础确认"></a>
 
-`confirm()` 返回 `Promise<boolean>`：确认得到 `true`，取消得到 `false`。
+`confirm()` 返回 `Promise<boolean>`：确认得到 `true`，取消或按 `Escape` 得到 `false`。未指定 `type` 时默认使用中性外观与图标。
 
 <ComponentExample exampleId="basic" preview={<ConfirmSimple />} fileName="simple.tsx" width="fit-content">
 
@@ -45,9 +47,9 @@ export function Root() {
 
 ## 示例
 
-### 状态提示
+### 状态与失败提示
 
-通过 `type` 选择提示意图，默认为 `info`。`type="default"` 不显示内置图标，也可用 `icon={null}` 隐藏任意类型的图标。`success` 默认不显示取消按钮，需要时设置 `showCancel`。
+通过 `type` 选择内置状态，支持 `default`（默认）、`success`、`warning` 与 `danger`（已移除 `info`）。`success` 默认隐藏取消按钮；危险操作或结果通知可传入 `type="danger"`，若仅需单按钮失败提示可搭配 `showCancel={false}` 与 `icon` 展示错误说明。
 
 <ComponentExample exampleId="status" preview={<ConfirmStatus />} fileName="status.tsx" width="fit-content">
 
@@ -56,11 +58,22 @@ export function Root() {
 
 </ComponentExample>
 
+### 自定义图标与操作栏
+
+通过 `icon` 替换默认状态图标，传入 `icon={null}` 隐藏图标区域；通过 `showCancel` 可覆盖各类型默认的取消按钮显隐行为，并使用 `confirmText`、`cancelText` 定制按钮文案。
+
+<ComponentExample exampleId="custom-icon" preview={<ConfirmIcon />} fileName="icon.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/confirm/icon.tsx"
+```
+
+</ComponentExample>
+
 ### 异步确认
 
 <a id="进阶用法"></a>
 
-将异步操作放入 `onConfirm`，成功后确认框自动关闭并返回 `true`。等待期间默认按钮显示加载状态，不能重复确认或取消。
+将返回 `Promise` 的异步操作传入 `onConfirm`，成功后确认框自动关闭并返回 `true`。等待期间确认按钮显示加载状态，阻止重复确认、取消按钮及 `Escape` 关闭。
 
 <ComponentExample exampleId="async-confirm" preview={<ConfirmBasic />} fileName="basic.tsx" width="fit-content">
 
@@ -69,13 +82,24 @@ export function Root() {
 
 </ComponentExample>
 
-### 失败与重试
+### 异步失败提示
 
-`onConfirm` 抛出错误时显示错误并保持打开，可再次确认重试。此例每次打开都先失败一次，第二次成功。
+当 `onConfirm` 抛出错误或返回被拒绝的 `Promise` 时，当前确认框会关闭并向调用方返回 `false`，随后自动弹出一个单按钮的 `danger` 失败提示框显示错误信息。
 
-<ComponentExample exampleId="retry" preview={<ConfirmRetry />} fileName="retry.tsx" width="fit-content">
+<ComponentExample exampleId="failure" preview={<ConfirmFailure />} fileName="failure.tsx" width="fit-content">
 
-```tsx lineNumbers file="../../src/examples/confirm/retry.tsx"
+```tsx lineNumbers file="../../src/examples/confirm/failure.tsx"
+```
+
+</ComponentExample>
+
+### 连续确认队列
+
+同一作用域或 `ConfirmProvider` 下连续触发多个请求时，确认框会按调用顺序依次展示，待上一个关闭动画完成后再打开下一个。
+
+<ComponentExample exampleId="queue" preview={<ConfirmQueue />} fileName="queue.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/confirm/queue.tsx"
 ```
 
 </ComponentExample>
@@ -88,11 +112,11 @@ export function Root() {
 
 返回的对象类型是 [`ConfirmApi`](#confirmapi)。同一队列的请求依次展示，上一个完成关闭过渡后才显示下一个；Promise 在作出决定并开始关闭时返回结果，不等待关闭动画。
 
-调用组件或 Provider 卸载时，未结束的请求返回 `false`；这不会中止已经执行的异步操作，也不会触发 `onCancel`。
+调用组件或 Provider 卸载时，未结束的请求返回 `false`；这不会中止已经执行的异步操作，也不会触发 `onCancel` 或弹出自动失败提示。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `confirm` | [`(options: ConfirmOptions) => Promise<boolean>`](#confirmoptions) | — | 确认返回 true；取消或调用区域卸载返回 false。 |
+| `confirm` | [`(options: ConfirmOptions) => Promise<boolean>`](#confirmoptions) | — | 确认返回 true；取消、失败或调用区域卸载返回 false。 |
 
 ### ConfirmApi
 
@@ -100,7 +124,7 @@ export function Root() {
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `confirm` | `(options: `[`ConfirmOptions`](#confirmoptions)`) => Promise<boolean>` | 必填 | 等待决定并返回 boolean；确认成功为 true，取消或调用区域卸载为 false，不等待关闭动画。 |
+| `confirm` | `(options: `[`ConfirmOptions`](#confirmoptions)`) => Promise<boolean>` | 必填 | 等待决定并返回 boolean；确认成功为 true，取消、onConfirm 失败或调用区域卸载为 false，不等待关闭动画。 |
 
 ### ConfirmOptions
 
@@ -110,16 +134,16 @@ export function Root() {
 | --- | --- | --- | --- |
 | `title` | `ReactNode` | — | 确认标题。 |
 | `children` | `ReactNode` | — | 简短说明本次操作的影响。 |
-| `onConfirm` | `() => void \| Promise<void>` | — | 确认操作；等待 Promise 成功后关闭，失败时保留并显示错误。 |
+| `onConfirm` | `() => void \| Promise<void>` | — | 确认操作；成功后自动关闭，抛出错误则关闭当前框（返回 false）并弹出单按钮失败提示。 |
 | `onCancel` | `() => void` | — | 取消时调用。 |
-| `type` | `'default' \| 'danger' \| 'success' \| 'warning' \| 'info'` | `'info'` | 状态图标与颜色；仅 danger 改变确定按钮颜色。 |
-| `icon` | `ReactNode` | — | 标题旁的状态图标；无标题时位于正文旁，传入 null 隐藏。 |
+| `type` | `'default' \| 'success' \| 'warning' \| 'danger'` | `'default'` | 状态图标与语义风格；仅 danger 改变确定按钮样式，success 默认隐藏取消按钮。 |
+| `icon` | `ReactNode` | — | 标题上方居中底座的内置状态或自定义图标；传入 null 隐藏。 |
 | `confirmText` | `ReactNode` | 语言默认值 | 确认按钮文字。 |
 | `cancelText` | `ReactNode` | 语言默认值 | 取消按钮文字。 |
 | `showCancel` | `boolean` | success 为 false，其余 true | 是否展示取消按钮。 |
 | `confirmButtonProps` | [`ButtonProps`](button#button-api) | — | 确认按钮属性。 |
 | `cancelButtonProps` | [`ButtonProps`](button#button-api) | — | 取消按钮属性。 |
-| `width` | `number \| string` | `420` | 确认框宽度，数字为像素。 |
+| `width` | `number \| string` | `340` | 确认框宽度，数字为像素。 |
 | `closable` | `boolean` | `false` | 是否显示右上角关闭按钮。 |
 | `maskClosable` | `boolean` | `false` | 点击遮罩时取消。 |
 | `keyboard` | `boolean` | `true` | 按 Escape 时取消。 |

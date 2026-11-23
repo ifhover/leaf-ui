@@ -1,4 +1,3 @@
-import { ChevronDown, ChevronUp } from 'lucide-react';
 import {
   forwardRef,
   type InputHTMLAttributes,
@@ -11,10 +10,12 @@ import {
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
-import { classes } from '../shared/classes';
-import { FormValue, useFieldValue, useMergedRef } from '../shared/field';
+import { useFieldValue, useMergedRef } from '../shared/field';
 import type { ControlSize, ControlStatus } from '../shared/types';
+import { InputNumberFrame } from './frame';
 import { ExactInputNumber, type StringInputNumberProps } from './string';
+
+export type InputNumberVariant = 'default' | 'split';
 
 export interface NumericInputNumberProps
   extends Omit<
@@ -29,6 +30,8 @@ export interface NumericInputNumberProps
   step?: number;
   precision?: number;
   controls?: boolean;
+  /** 步进按钮样式；`split` 在输入框左右两侧分别展示减少、增加按钮。 @default 'default' */
+  variant?: InputNumberVariant;
   keyboard?: boolean;
   size?: ControlSize;
   status?: ControlStatus;
@@ -64,6 +67,7 @@ const NumericInputNumber = forwardRef<HTMLInputElement, NumericInputNumberProps>
       step = 1,
       precision,
       controls = true,
+      variant = 'default',
       keyboard = true,
       size = 'md',
       status: statusProp,
@@ -190,54 +194,57 @@ const NumericInputNumber = forwardRef<HTMLInputElement, NumericInputNumberProps>
     };
     const number = parseInput(draft);
     return (
-      <div
-        className={classes('leaf-input-number', `leaf-input-number--${size}`, className)}
+      <InputNumberFrame
+        variant={variant}
+        size={size}
+        status={status}
+        disabled={disabled}
+        controls={controls}
+        prefix={prefix}
+        suffix={suffix}
+        className={className}
         style={style}
-        data-status={status}
-        data-disabled={disabled ? '' : undefined}
-      >
-        {prefix && (
-          <span className="leaf-input__affix" aria-hidden="true">
-            {prefix}
-          </span>
-        )}
-        <input
-          {...props}
-          ref={ref}
-          type="text"
-          inputMode={props.inputMode ?? 'decimal'}
-          role="spinbutton"
-          className="leaf-input-number__input"
-          id={props.id ?? field?.id}
-          name={undefined}
-          value={draft}
-          required={props.required ?? field?.required}
-          disabled={disabled}
-          readOnly={readOnly}
-          aria-valuemin={Number.isFinite(min) ? min : undefined}
-          aria-valuemax={Number.isFinite(max) ? max : undefined}
-          aria-valuenow={number ?? undefined}
-          aria-invalid={status === 'error' ? true : props['aria-invalid']}
-          aria-describedby={
-            [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') || undefined
-          }
-          onChange={(event) => {
+        inputRef={ref}
+        triggerRef={input}
+        formName={props.name}
+        form={props.form}
+        formValue={current === null ? '' : String(current)}
+        increaseDisabled={disabled || readOnly || (number !== null && number >= max)}
+        decreaseDisabled={disabled || readOnly || (number !== null && number <= min)}
+        onStep={changeBy}
+        inputProps={{
+          ...props,
+          inputMode: props.inputMode ?? 'decimal',
+          id: props.id ?? field?.id,
+          name: undefined,
+          value: draft,
+          required: props.required ?? field?.required,
+          disabled,
+          readOnly,
+          'aria-valuemin': Number.isFinite(min) ? min : undefined,
+          'aria-valuemax': Number.isFinite(max) ? max : undefined,
+          'aria-valuenow': number ?? undefined,
+          'aria-invalid': status === 'error' ? true : props['aria-invalid'],
+          'aria-describedby':
+            [props['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') ||
+            undefined,
+          onChange: (event) => {
             const text = event.target.value;
             setDraft(text);
             const next = parseInput(text);
             if (!text.trim()) emit(null);
             else if (next !== null && next >= min && next <= max) emit(next);
-          }}
-          onFocus={(event) => {
+          },
+          onFocus: (event) => {
             editing.current = true;
             onFocus?.(event);
-          }}
-          onBlur={(event) => {
+          },
+          onBlur: (event) => {
             editing.current = false;
             commit();
             onBlur?.(event);
-          }}
-          onKeyDown={(event) => {
+          },
+          onKeyDown: (event) => {
             onKeyDown?.(event);
             if (event.defaultPrevented || event.nativeEvent.isComposing) return;
             if (event.key === 'Enter') commit();
@@ -245,45 +252,9 @@ const NumericInputNumber = forwardRef<HTMLInputElement, NumericInputNumberProps>
               event.preventDefault();
               changeBy(event.key === 'ArrowUp' ? 1 : -1);
             }
-          }}
-        />
-        <FormValue
-          name={props.name}
-          form={props.form}
-          value={current === null ? '' : String(current)}
-          disabled={disabled}
-          triggerRef={input}
-        />
-        {suffix && (
-          <span className="leaf-input__affix" aria-hidden="true">
-            {suffix}
-          </span>
-        )}
-        {controls && (
-          <span className="leaf-input-number__controls">
-            <button
-              type="button"
-              tabIndex={-1}
-              aria-label={messages.inputNumber.increase}
-              disabled={disabled || readOnly || (number !== null && number >= max)}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => changeBy(1)}
-            >
-              <ChevronUp size={12} aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              tabIndex={-1}
-              aria-label={messages.inputNumber.decrease}
-              disabled={disabled || readOnly || (number !== null && number <= min)}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => changeBy(-1)}
-            >
-              <ChevronDown size={12} aria-hidden="true" />
-            </button>
-          </span>
-        )}
-      </div>
+          },
+        }}
+      />
     );
   },
 );

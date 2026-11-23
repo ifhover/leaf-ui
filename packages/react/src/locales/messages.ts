@@ -87,11 +87,12 @@ export interface LocaleMessages {
     readonly nextPage: string;
     readonly page: string;
     readonly pageSize: string;
+    readonly pageSizeOption: string;
     readonly jumpTo: string;
     readonly pageBack: string;
     readonly pageForward: string;
     readonly pageLabel: string;
-    readonly pageSizeOption: string;
+    readonly rowsPerPage: string;
     readonly total: string;
   };
   readonly input: {
@@ -253,6 +254,7 @@ export interface LocaleMessages {
   readonly qrCode: {
     readonly qrCode: string;
     readonly refreshCode: string;
+    readonly expired: string;
   };
   readonly scrollbar: {
     readonly verticalScrollbar: string;
@@ -275,8 +277,6 @@ export interface LocaleMessages {
     readonly collapseRow: string;
     readonly expandRow: string;
     readonly expandRows: string;
-    readonly expandDetails: string;
-    readonly collapseDetails: string;
     readonly sortAscending: string;
     readonly sortDescending: string;
     readonly clearSorting: string;
@@ -335,5 +335,8 @@ export interface LocaleMessages {
     readonly dropped: string;
     readonly cancelled: string;
     readonly outside: string;
+  };
+  readonly drawer: {
+    readonly resize: string;
   };
 }

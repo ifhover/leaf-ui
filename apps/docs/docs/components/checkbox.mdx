@@ -1,6 +1,7 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { CheckboxBasic } from '../../src/examples/checkbox/basic';
 import { CheckboxGroupDemo } from '../../src/examples/checkbox/group';
+import { CheckboxDescriptions } from '../../src/examples/checkbox/description';
 import { CheckboxDisabled } from '../../src/examples/checkbox/disabled';
 import { CheckboxCheckAll } from '../../src/examples/checkbox/check-all';
 import { CheckboxCards } from '../../src/examples/checkbox/surfaces';
@@ -21,6 +22,7 @@ export const leafDoc = { component: 'Checkbox', primaryApi: 'CheckboxProps' };
 <ComponentExample exampleId="basic" preview={<CheckboxBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/checkbox/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -38,6 +40,19 @@ export const leafDoc = { component: 'Checkbox', primaryApi: 'CheckboxProps' };
 <ComponentExample exampleId="group" preview={<CheckboxGroupDemo />} fileName="group.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/checkbox/group.tsx"
+
+```
+
+</ComponentExample>
+
+### 选项描述
+
+通过 `CheckboxGroup.options` 中的 `description`（或单个 `Checkbox` 的 `description`）为选项添加补充说明。
+
+<ComponentExample exampleId="description" preview={<CheckboxDescriptions />} fileName="description.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/checkbox/description.tsx"
+
 ```
 
 </ComponentExample>
@@ -49,6 +64,7 @@ export const leafDoc = { component: 'Checkbox', primaryApi: 'CheckboxProps' };
 <ComponentExample exampleId="disabled" preview={<CheckboxDisabled />} fileName="disabled.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/checkbox/disabled.tsx"
+
 ```
 
 </ComponentExample>
@@ -60,6 +76,7 @@ export const leafDoc = { component: 'Checkbox', primaryApi: 'CheckboxProps' };
 <ComponentExample exampleId="check-all" preview={<CheckboxCheckAll />} fileName="check-all.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/checkbox/check-all.tsx"
+
 ```
 
 </ComponentExample>
@@ -68,11 +85,12 @@ export const leafDoc = { component: 'Checkbox', primaryApi: 'CheckboxProps' };
 
 <a id="进阶用法"></a>
 
-设置 `variant="card"`，展示包含图标和说明的选项。
+设置 `variant="card"` 将选项展示为可点击卡片，可搭配图标与描述。
 
 <ComponentExample exampleId="surfaces" preview={<CheckboxCards />} fileName="surfaces.tsx">
 
 ```tsx lineNumbers file="../../src/examples/checkbox/surfaces.tsx"
+
 ```
 
 </ComponentExample>
@@ -84,6 +102,7 @@ export const leafDoc = { component: 'Checkbox', primaryApi: 'CheckboxProps' };
 <ComponentExample exampleId="list" preview={<CheckboxList />} fileName="list.tsx">
 
 ```tsx lineNumbers file="../../src/examples/checkbox/list.tsx"
+
 ```
 
 </ComponentExample>

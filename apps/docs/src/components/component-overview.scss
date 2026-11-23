@@ -33,7 +33,7 @@
     background: var(--leaf-site-soft);
   }
   &:focus-visible {
-    outline: 3px solid color-mix(in srgb, var(--leaf-color-primary) 35%, transparent);
+    outline: 2px solid var(--leaf-color-text);
     outline-offset: 3px;
   }
   &__preview {

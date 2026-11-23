@@ -1,4 +1,11 @@
-import { Children, Fragment, forwardRef, type HTMLAttributes, type ReactNode } from 'react';
+import {
+  Children,
+  Fragment,
+  forwardRef,
+  type HTMLAttributes,
+  isValidElement,
+  type ReactNode,
+} from 'react';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { classes } from '../shared/classes';
 
@@ -33,13 +40,16 @@ export const Space = forwardRef<HTMLDivElement, SpaceProps>(function Space(
     typeof size === 'string'
       ? sizes[size]
       : typeof size === 'object'
-        ? size.map((v) => `${v}px`).join(' ')
-        : size;
+        ? size.map((v) => `${Number.isFinite(v) ? Math.max(0, v) : 0}px`).join(' ')
+        : Number.isFinite(size)
+          ? Math.max(0, size)
+          : 0;
   return (
     <div
       {...props}
       ref={ref}
-      className={classes('leaf-space', className)}
+      className={classes('leaf-space', `leaf-space--${direction}`, className)}
+      data-wrap={wrap || undefined}
       style={{
         display: 'flex',
         flexDirection: direction === 'vertical' ? 'column' : 'row',
@@ -50,9 +60,7 @@ export const Space = forwardRef<HTMLDivElement, SpaceProps>(function Space(
       }}
     >
       {Children.toArray(children).map((child, index) => (
-        <Fragment
-          key={typeof child === 'object' && child !== null && 'key' in child ? child.key : index}
-        >
+        <Fragment key={isValidElement(child) && child.key != null ? child.key : index}>
           {index > 0 && split != null && (
             <span className="leaf-space__split" aria-hidden="true">
               {split}

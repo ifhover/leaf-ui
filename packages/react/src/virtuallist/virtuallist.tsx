@@ -1,4 +1,4 @@
-import { useVirtualizer } from '@tanstack/react-virtual';
+import { elementScroll, useVirtualizer } from '@tanstack/react-virtual';
 import {
   forwardRef,
   type HTMLAttributes,
@@ -14,19 +14,25 @@ import {
   mergeComponentProps,
   useGenericComponentDefaults,
 } from '../config-provider/component-defaults';
+import { useLeafConfig } from '../config-provider/context';
 import { ResultControl as Result } from '../result/result';
 import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
+import { useMotionEnabled } from '../shared/motion';
 export interface VirtualListHandle {
   element: HTMLDivElement | null;
-  scrollToIndex: (index: number, align?: 'auto' | 'start' | 'center' | 'end') => void;
-  scrollToOffset: (offset: number) => void;
+  scrollToIndex: (
+    index: number,
+    align?: 'auto' | 'start' | 'center' | 'end',
+    behavior?: 'auto' | 'smooth',
+  ) => void;
+  scrollToOffset: (offset: number, behavior?: 'auto' | 'smooth') => void;
 }
 export interface VirtualListProps<T> extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
   items: readonly T[];
   itemKey: (item: T, index: number) => Key;
   renderItem: (item: T, index: number) => ReactNode;
-  height?: number;
+  height?: number | string;
   estimateSize?: number | ((item: T, index: number) => number);
   overscan?: number;
   emptyContent?: ReactNode;
@@ -46,7 +52,11 @@ function VirtualListRoot<T>(rawProps: VirtualListProps<T>, ref: Ref<VirtualListH
     style,
     ...props
   } = rawProps;
+  const { direction } = useLeafConfig();
+  const motion = useMotionEnabled();
+  const isRtl = direction === 'rtl';
   const root = useRef<HTMLDivElement>(null);
+  const initialHeight = typeof height === 'number' && Number.isFinite(height) ? height : 320;
   const virtualizer = useVirtualizer<HTMLDivElement, HTMLLIElement>({
     count: items.length,
     getScrollElement: () => root.current,
@@ -57,16 +67,33 @@ function VirtualListRoot<T>(rawProps: VirtualListProps<T>, ref: Ref<VirtualListH
     getItemKey: (index) => itemKey(items[index] as T, index),
     overscan: Math.max(0, overscan),
     horizontal,
-    initialRect: { height, width: 640 },
+    isRtl,
+    scrollToFn:
+      horizontal && isRtl
+        ? (offset, options, instance) =>
+            elementScroll(
+              -offset,
+              { ...options, adjustments: -(options.adjustments ?? 0) },
+              instance,
+            )
+        : elementScroll,
+    initialRect: { height: initialHeight, width: 640 },
   });
   useImperativeHandle(
     ref,
     () => ({
       element: root.current,
-      scrollToIndex: (index, align = 'auto') => virtualizer.scrollToIndex(index, { align }),
-      scrollToOffset: (offset) => virtualizer.scrollToOffset(offset),
+      scrollToIndex: (index, align = 'auto', behavior) =>
+        virtualizer.scrollToIndex(index, {
+          align,
+          behavior: behavior === 'smooth' && !motion ? 'auto' : behavior,
+        }),
+      scrollToOffset: (offset, behavior) =>
+        virtualizer.scrollToOffset(offset, {
+          behavior: behavior === 'smooth' && !motion ? 'auto' : behavior,
+        }),
     }),
-    [virtualizer],
+    [virtualizer, motion],
   );
   return (
     <ScrollbarControl
@@ -99,11 +126,11 @@ function VirtualListRoot<T>(rawProps: VirtualListProps<T>, ref: Ref<VirtualListH
               aria-setsize={items.length}
               className="leaf-virtual-list__item"
               style={{
-                top: 0,
-                left: 0,
+                insetBlockStart: 0,
+                insetInlineStart: 0,
                 width: horizontal ? undefined : '100%',
                 height: horizontal ? '100%' : undefined,
-                transform: `translate${horizontal ? 'X' : 'Y'}(${row.start}px)`,
+                transform: `translate${horizontal ? 'X' : 'Y'}(${horizontal && isRtl ? -row.start : row.start}px)`,
               }}
             >
               {renderItem(items[row.index] as T, row.index)}

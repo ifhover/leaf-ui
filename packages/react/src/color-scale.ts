@@ -9,14 +9,14 @@ export type ColorScale = Record<ColorScaleStep, string>;
 /** Fixed OKLCH lightness values shared by runtime generation and SSR expressions. */
 export const colorScaleLightness: Record<ColorScaleStep, number> = {
   100: 0.97,
-  200: 0.92,
-  300: 0.84,
-  400: 0.74,
-  500: 0.64,
-  600: 0.54,
-  700: 0.44,
-  800: 0.34,
-  900: 0.24,
+  200: 0.922,
+  300: 0.85,
+  400: 0.708,
+  500: 0.59,
+  600: 0.53,
+  700: 0.37,
+  800: 0.269,
+  900: 0.16,
 };
 
 /** Taper chroma toward white and black while keeping the middle of the scale saturated. */

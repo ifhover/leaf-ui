@@ -122,14 +122,15 @@ export function LoadingBarProvider({ children, ...props }: LoadingBarProviderPro
     };
     return {
       start: (components, config) => {
-        // The first active task owns the shared bar's presentation until the batch completes.
-        if (!pending.current.size) {
+        // 仅全新批次初始化展示配置与进度；并发追加任务时保留已显式设置的进度，避免清空。
+        const fresh = !pending.current.size;
+        if (fresh) {
           setTaskComponents(components);
           setTaskConfig(config);
+          setProgress(undefined);
         }
         const key = Symbol();
         pending.current.add(key);
-        setProgress(undefined);
         setActive(true);
         return () => finish(key);
       },
@@ -157,6 +158,8 @@ export function LoadingBarProvider({ children, ...props }: LoadingBarProviderPro
             ...leafThemeVariables(config.theme),
           }}
           dir={config.direction}
+          lang={config.locale}
+          data-leaf-theme={config.theme.appearance}
         >
           <LoadingBarControl {...presentation} active={active} progress={progress} />
         </div>

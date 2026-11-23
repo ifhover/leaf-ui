@@ -85,4 +85,31 @@ describe('portal theme resets', () => {
     expect(panel.parentElement).toBe(popupContainer());
     expect(panel.closest('[data-reset-source]')).toBeNull();
   });
+
+  it('forwards data-leaf-theme across ScopedPortal and FloatingPanel including nested themes', async () => {
+    render(
+      <ConfigProvider theme={{ appearance: 'dark' }}>
+        <ScopedPortal>
+          <span>Dark modal scope</span>
+        </ScopedPortal>
+        <ConfigProvider theme={{ appearance: 'light' }}>
+          <ScopedPortal>
+            <span>Light modal scope</span>
+          </ScopedPortal>
+          <Select aria-label="Light select" options={[{ value: 'a', label: 'A' }]} />
+        </ConfigProvider>
+      </ConfigProvider>,
+    );
+
+    expect(
+      screen.getByText('Dark modal scope').closest<HTMLElement>('.leaf-portal-scope'),
+    ).toHaveAttribute('data-leaf-theme', 'dark');
+    expect(
+      screen.getByText('Light modal scope').closest<HTMLElement>('.leaf-portal-scope'),
+    ).toHaveAttribute('data-leaf-theme', 'light');
+
+    await userEvent.click(screen.getByRole('combobox', { name: 'Light select' }));
+    const popup = screen.getByRole('listbox').closest<HTMLElement>('[data-leaf-popup]');
+    expect(popup).toHaveAttribute('data-leaf-theme', 'light');
+  });
 });

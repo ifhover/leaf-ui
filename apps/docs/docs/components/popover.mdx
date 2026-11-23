@@ -14,11 +14,12 @@ export const leafDoc = { component: 'Popover', primaryApi: 'PopoverProps' };
 
 ## 基础用法
 
-点击触发器打开，Escape、点击外部或将焦点移出时关闭。
+点击触发器打开，Escape、点击外部或将焦点移出时关闭。若只是普通的简短文字展示，推荐使用 [Tooltip](tooltip)。
 
 <ComponentExample exampleId="basic" preview={<PopoverBasic />} fileName="basic.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/popover/basic.tsx"
+
 ```
 
 </ComponentExample>
@@ -34,6 +35,7 @@ export const leafDoc = { component: 'Popover', primaryApi: 'PopoverProps' };
 <ComponentExample exampleId="hover" preview={<PopoverHover />} fileName="hover.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/popover/hover.tsx"
+
 ```
 
 </ComponentExample>
@@ -45,17 +47,19 @@ export const leafDoc = { component: 'Popover', primaryApi: 'PopoverProps' };
 <ComponentExample exampleId="controlled" preview={<PopoverControlled />} fileName="controlled.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/popover/controlled.tsx"
+
 ```
 
 </ComponentExample>
 
 ### 浮层位置
 
-通过 `placement` 设置期望位置，空间不足时会自动调整。
+支持 `top`、`bottom`、`left`、`right` 以及各自搭配 `-start`、`-end` 的共 12 个方向（如右上角触发常用 `bottom-end`），空间不足时会自动调整；箭头默认自动指向触发元素，可通过 `arrow={false}` 隐藏。
 
 <ComponentExample exampleId="placements" preview={<PopoverPlacements />} fileName="placements.tsx" width="fit-content">
 
 ```tsx lineNumbers file="../../src/examples/popover/placements.tsx"
+
 ```
 
 </ComponentExample>
@@ -77,6 +81,7 @@ export const leafDoc = { component: 'Popover', primaryApi: 'PopoverProps' };
 | `children` | `ReactElement< HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement>; disabled?: boolean } >` | 必填 | 触发元素，需要支持 ref 与事件 |
 | `trigger` | `'click' \| 'hover'` | `'click'` | 触发方式 |
 | `placement` | `'top' \| 'top-start' \| 'top-end' \| 'bottom' \| 'bottom-start' \| 'bottom-end' \| 'left' \| 'left-start' \| 'left-end' \| 'right' \| 'right-start' \| 'right-end'` | `'top'` | 浮层方向 |
+| `arrow` | `boolean` | `true` | 是否显示指向触发元素的箭头。 |
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `open` | `boolean` | — | 受控的展开状态。 |
 | `defaultOpen` | `boolean` | `false` | 非受控模式的初始展开状态。 |

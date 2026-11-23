@@ -52,6 +52,7 @@ export function Anchor(rawProps: AnchorProps) {
   useMovingIndicator(root, indicator, '[aria-current="location"]', active);
   const callback = useRef(setActive);
   callback.current = setActive;
+  const locking = useRef<{ key: string; href: string; until: number } | null>(null);
   useEffect(() => {
     const scroll = container?.() ?? window;
     let frame = 0;
@@ -59,24 +60,54 @@ export function Anchor(rawProps: AnchorProps) {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         const top = scroll instanceof HTMLElement ? scroll.getBoundingClientRect().top : 0;
+        if (locking.current) {
+          const lockedTarget = anchorTarget(locking.current.href);
+          if (
+            Date.now() < locking.current.until &&
+            lockedTarget &&
+            Math.abs(lockedTarget.getBoundingClientRect().top - top - offset) > 2
+          ) {
+            callback.current(locking.current.key);
+            return;
+          }
+          locking.current = null;
+        }
         let key = '';
+        let lastReachableKey = '';
         const visit = (entries: readonly AnchorItem[]) => {
           for (const item of entries) {
             const target = anchorTarget(item.href);
-            if (target && target.getBoundingClientRect().top - top <= offset + 24) key = item.key;
+            if (target) {
+              lastReachableKey = item.key;
+              if (target.getBoundingClientRect().top - top <= offset + 24) key = item.key;
+            }
             if (item.children) visit(item.children);
           }
         };
         visit(items);
+        const atBottom =
+          scroll instanceof HTMLElement
+            ? scroll.scrollTop > 0 &&
+              scroll.scrollHeight - scroll.scrollTop - scroll.clientHeight <= 2
+            : window.scrollY > 0 &&
+              document.documentElement.scrollHeight - window.scrollY - window.innerHeight <= 2;
+        if (atBottom && lastReachableKey) key = lastReachableKey;
         callback.current(key);
       });
     };
+    const clearLock = () => {
+      if (!locking.current) return;
+      locking.current = null;
+      update();
+    };
     scroll.addEventListener('scroll', update, { passive: true });
+    scroll.addEventListener('scrollend', clearLock, { passive: true });
     window.addEventListener('resize', update);
     update();
     return () => {
       cancelAnimationFrame(frame);
       scroll.removeEventListener('scroll', update);
+      scroll.removeEventListener('scrollend', clearLock);
       window.removeEventListener('resize', update);
     };
   }, [container, items, offset]);
@@ -119,6 +150,11 @@ export function Anchor(rawProps: AnchorProps) {
               (scroll instanceof HTMLElement ? scroll.getBoundingClientRect().top : 0) +
               (scroll instanceof HTMLElement ? scroll.scrollTop : window.scrollY) -
               offset;
+            if (smooth && motion) {
+              locking.current = { key: item.key, href: item.href, until: Date.now() + 600 };
+            } else {
+              locking.current = null;
+            }
             scroll.scrollTo({
               top,
               behavior: smooth && motion ? 'smooth' : 'instant',

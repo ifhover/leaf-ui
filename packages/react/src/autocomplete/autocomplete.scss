@@ -1,5 +1,5 @@
 @use '../styles/mixins' as mixins;
-@use '../shared/picker';
+@use '../shared/clear';
 
 @layer leaf-ui {
   .leaf-autocomplete {
@@ -12,7 +12,7 @@
       width: 100%;
       height: 100%;
       min-width: 0;
-      padding: 0 10px;
+      padding: 0 var(--leaf-density-field-padding);
       border: 0;
       outline: none;
       border-radius: inherit;
@@ -32,7 +32,7 @@
   .leaf-autocomplete__panel .leaf-floating__option {
     @include mixins.choice-option(true);
     @include mixins.choice-option-size(
-      var(--leaf-autocomplete-option-height, var(--leaf-current-control-height, 34px))
+      var(--leaf-autocomplete-option-height, var(--leaf-current-control-height, 32px))
     );
     justify-content: space-between;
   }

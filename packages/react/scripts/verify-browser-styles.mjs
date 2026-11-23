@@ -263,7 +263,7 @@ for (const engine of ['rspack', 'vite']) {
     if (fixture.include.length) {
       assert.match(
         css,
-        /--leaf-control-height:\s*34px/,
+        /--leaf-control-height:\s*32px/,
         `${engine} ${name} includes theme defaults`,
       );
       assert.ok(css.includes('.leaf-floating'), `${engine} ${name} includes shared popup styles`);

@@ -2,11 +2,11 @@ import { Button, ConfigProvider, Flex, FormField, Grid, Slider, Text } from '@if
 import { Fragment, useState } from 'react';
 
 export function ConfigProviderSizes() {
-  const [height, setHeight] = useState(34);
+  const [height, setHeight] = useState(32);
   return (
     <Flex direction="column" gap="lg">
       <FormField label="Base height">
-        <Slider min={28} max={44} value={height} onChange={setHeight} showValue={false} />
+        <Slider min={26} max={44} value={height} onChange={setHeight} showValue={false} />
       </FormField>
       <Text tone="muted">Current height: {height}px</Text>
       <ConfigProvider theme={{ controlHeight: height }}>

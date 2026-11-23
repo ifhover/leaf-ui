@@ -157,95 +157,138 @@ export const SliderControl = forwardRef<HTMLInputElement, SliderProps>(function 
       <div className="leaf-slider__rail">
         <div className="leaf-slider__fill" />
       </div>
-      {(range ? [low, high] : [high]).map((number, index) => (
-        <input
-          {...inputProps}
-          key={range ? (index === 0 ? 'start' : 'end') : 'single'}
-          ref={index === 0 ? ref : second}
-          id={
-            index === 0
-              ? (idProp ?? field?.id ?? generatedId)
-              : `${idProp ?? field?.id ?? generatedId}-end`
-          }
-          type="range"
-          className="leaf-slider__input"
-          name={name}
-          min={minimum}
-          max={maximum}
-          step={increment}
-          value={number}
-          disabled={disabled}
-          readOnly={readOnly}
-          aria-readonly={readOnly || undefined}
-          aria-orientation={vertical ? 'vertical' : 'horizontal'}
-          aria-label={
-            range
-              ? `${label ?? messages.slider.label} ${index === 0 ? messages.common.start : messages.common.end}`
-              : (label ?? (field ? undefined : messages.slider.label))
-          }
-          aria-labelledby={range ? undefined : inputProps['aria-labelledby']}
-          aria-describedby={
-            [inputProps['aria-describedby'], field?.descriptionId].filter(Boolean).join(' ') ||
-            undefined
-          }
-          onChange={(event) => change(Number(event.target.value), index)}
-          onFocus={() => setActiveThumb(index)}
-          onPointerDown={() => setActiveThumb(index)}
-          onPointerEnter={() => setActiveThumb(index)}
-          onPointerLeave={() => {
-            if (
-              document.activeElement !== input.current &&
-              document.activeElement !== second.current
-            )
-              setActiveThumb(null);
-          }}
-          onKeyDown={(event) => {
-            onKeyDown?.(event);
-            if (event.defaultPrevented) return;
-            let next: number | undefined;
-            if (event.key === 'Home') next = step === null ? positions[0] : minimum;
-            else if (event.key === 'End') next = step === null ? positions.at(-1) : maximum;
-            else if (
-              ['ArrowRight', 'ArrowUp', 'ArrowLeft', 'ArrowDown', 'PageUp', 'PageDown'].includes(
-                event.key,
-              )
-            )
-              next =
-                number +
-                ([direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight', 'ArrowUp', 'PageUp'].includes(
-                  event.key,
-                )
-                  ? 1
-                  : -1) *
-                  increment *
-                  (event.shiftKey || event.key.startsWith('Page') ? 10 : 1);
-            if (next !== undefined) {
-              if (step === null && positions.length && !['Home', 'End'].includes(event.key)) {
-                const previous = positions.filter((value) => value < number).at(-1);
-                next =
-                  next > number
-                    ? (positions.find((value) => value > number) ?? positions.at(-1))
-                    : (previous ?? positions[0]);
-              }
-              event.preventDefault();
-              if (next !== undefined) change(next, index);
-            }
-          }}
-          onKeyUp={(event) => {
-            onKeyUp?.(event);
-            complete();
-          }}
-          onPointerUp={(event) => {
-            onPointerUp?.(event);
-            complete();
-          }}
-          onBlur={(event) => {
-            setActiveThumb(null);
-            onBlur?.(event);
-            complete();
-          }}
-        />
-      ))}
+      {(() => {
+        const labelledBy = inputProps['aria-labelledby'] ?? field?.labelId;
+        const raiseStart = range && low === high && low > (minimum + maximum) / 2;
+        return (range ? [low, high] : [high]).map((number, index) => {
+          const thumbId = `${generatedId}-thumb-${index}`;
+          const suffix = index === 0 ? messages.common.start : messages.common.end;
+          const useExternalRangeLabel = range && !label && Boolean(labelledBy);
+          return (
+            <span
+              key={range ? (index === 0 ? 'start' : 'end') : 'single'}
+              style={{ display: 'contents' }}
+            >
+              {useExternalRangeLabel && (
+                <span id={thumbId} className="leaf-slider__sr">
+                  {suffix}
+                </span>
+              )}
+              <input
+                {...inputProps}
+                ref={index === 0 ? ref : second}
+                id={
+                  index === 0
+                    ? (idProp ?? field?.id ?? generatedId)
+                    : `${idProp ?? field?.id ?? generatedId}-end`
+                }
+                type="range"
+                className="leaf-slider__input"
+                style={raiseStart && index === 0 ? { zIndex: 2 } : undefined}
+                name={name}
+                min={minimum}
+                max={maximum}
+                step={increment}
+                value={number}
+                disabled={disabled}
+                aria-readonly={readOnly || undefined}
+                aria-orientation={vertical ? 'vertical' : 'horizontal'}
+                aria-label={
+                  range
+                    ? useExternalRangeLabel
+                      ? undefined
+                      : `${label ?? messages.slider.label} ${suffix}`
+                    : (label ?? (labelledBy ? undefined : messages.slider.label))
+                }
+                aria-labelledby={
+                  range
+                    ? useExternalRangeLabel
+                      ? `${labelledBy} ${thumbId}`
+                      : undefined
+                    : label
+                      ? undefined
+                      : labelledBy
+                }
+                aria-describedby={
+                  [inputProps['aria-describedby'], field?.descriptionId]
+                    .filter(Boolean)
+                    .join(' ') || undefined
+                }
+                onChange={(event) => change(Number(event.target.value), index)}
+                onFocus={() => setActiveThumb(index)}
+                onPointerDown={(event) => {
+                  if (readOnly) {
+                    event.preventDefault();
+                    event.currentTarget.focus();
+                    return;
+                  }
+                  setActiveThumb(index);
+                }}
+                onPointerEnter={() => setActiveThumb(index)}
+                onPointerLeave={() => {
+                  if (
+                    document.activeElement !== input.current &&
+                    document.activeElement !== second.current
+                  )
+                    setActiveThumb(null);
+                }}
+                onKeyDown={(event) => {
+                  onKeyDown?.(event);
+                  if (event.defaultPrevented) return;
+                  let next: number | undefined;
+                  if (event.key === 'Home') next = step === null ? positions[0] : minimum;
+                  else if (event.key === 'End') next = step === null ? positions.at(-1) : maximum;
+                  else if (
+                    [
+                      'ArrowRight',
+                      'ArrowUp',
+                      'ArrowLeft',
+                      'ArrowDown',
+                      'PageUp',
+                      'PageDown',
+                    ].includes(event.key)
+                  )
+                    next =
+                      number +
+                      ([
+                        direction === 'rtl' ? 'ArrowLeft' : 'ArrowRight',
+                        'ArrowUp',
+                        'PageUp',
+                      ].includes(event.key)
+                        ? 1
+                        : -1) *
+                        increment *
+                        (event.shiftKey || event.key.startsWith('Page') ? 10 : 1);
+                  if (next !== undefined) {
+                    if (step === null && positions.length && !['Home', 'End'].includes(event.key)) {
+                      const previous = positions.filter((value) => value < number).at(-1);
+                      next =
+                        next > number
+                          ? (positions.find((value) => value > number) ?? positions.at(-1))
+                          : (previous ?? positions[0]);
+                    }
+                    event.preventDefault();
+                    if (next !== undefined) change(next, index);
+                  }
+                }}
+                onKeyUp={(event) => {
+                  onKeyUp?.(event);
+                  complete();
+                }}
+                onPointerUp={(event) => {
+                  onPointerUp?.(event);
+                  complete();
+                }}
+                onBlur={(event) => {
+                  setActiveThumb(null);
+                  onBlur?.(event);
+                  complete();
+                }}
+              />
+            </span>
+          );
+        });
+      })()}
       {tooltip && activeThumb !== null && (
         <Tooltip
           open

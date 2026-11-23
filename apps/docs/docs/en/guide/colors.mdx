@@ -4,17 +4,17 @@ import { ThemeColors } from '../../../src/examples/en/theming/colors';
 
 # Colors
 
-Each of the five semantic colors generates seven derived shades, while neutral keeps its nine-step scale. Light and dark modes share both.
+Each of the five semantic colors derives seven shade steps (`light-N` / `dark-N`) in JS, while neutral derives a nine-step OKLCH lightness scale. Global CSS exports only the active semantic and neutral usage roles computed from these bands, while light and dark modes switch the role mappings automatically. You can also set `theme.primaryColor` to `'neutral'` for adaptive high-contrast black/white primary styling.
 
-## Global Color Variables
+## Color Scales & Shades
 
-Each row shows an independently preserved base color and its derived band. The five semantic colors provide 35 derived swatches and neutral provides nine, for 44 in total. Select a swatch to see its value and CSS variable.
+Each row shows an independently preserved base color and its derived band. The five semantic colors provide 35 derived swatches and neutral provides nine, for 44 in total. Select a swatch to see its step name and computed hex value (generated via `generateColorShades` and `generateColorScale`).
 
 <ColorPalette />
 
 ## Change Base Colors
 
-Configure the primary base with `theme.primaryColor`, and the other five with `theme.tokens`. Update these JS values through ConfigProvider to regenerate the scales; changing DOM styles does not trigger JS theme recalculation.
+Configure the primary base with `theme.primaryColor` (supporting hex strings or `'neutral'`), and the other five with `theme.tokens`. Update these JS values through ConfigProvider to regenerate colors; changing DOM styles does not trigger JS theme recalculation.
 
 The example uses the light appearance and sets `tokens.mutedSurfaceColor` to `rgb(244,243,239)`. The outer canvas of a layered Card uses this surface, while inner Card content and clean controls keep the content surface. Explicit component overrides take precedence.
 

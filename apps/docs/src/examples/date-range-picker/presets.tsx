@@ -1,4 +1,4 @@
-import { type DateRange, DateRangePicker, Form, FormField } from '@ifhover/leaf-ui';
+import { type DateRange, DateRangePicker } from '@ifhover/leaf-ui';
 
 function recentSevenDays(): DateRange {
   const end = new Date();
@@ -10,10 +10,9 @@ function recentSevenDays(): DateRange {
 
 export function Presets() {
   return (
-    <Form layout="vertical" onSubmit={(event) => event.preventDefault()}>
-      <FormField label="统计区间">
-        <DateRangePicker presets={[{ label: '最近七天', value: recentSevenDays }]} />
-      </FormField>
-    </Form>
+    <DateRangePicker
+      aria-label="统计区间"
+      presets={[{ label: '最近七天', value: recentSevenDays }]}
+    />
   );
 }

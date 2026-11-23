@@ -1,4 +1,4 @@
-import { Button, Drawer, Form, FormField, Input, Space } from '@ifhover/leaf-ui';
+import { Button, Drawer, Form, FormField, Input } from '@ifhover/leaf-ui';
 import { useId, useState } from 'react';
 
 export function DrawerSections() {
@@ -10,14 +10,16 @@ export function DrawerSections() {
       <Drawer
         open={open}
         title="编辑名称"
+        description="新名称会同步应用到文档列表与分享链接。"
+        divided
         onClose={() => setOpen(false)}
         footer={
-          <Space wrap>
+          <>
             <Button onClick={() => setOpen(false)}>取消</Button>
             <Button variant="solid" type="submit" form={formId}>
               保存
             </Button>
-          </Space>
+          </>
         }
       >
         <Form

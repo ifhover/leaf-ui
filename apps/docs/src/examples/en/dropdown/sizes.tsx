@@ -27,8 +27,9 @@ export function DropdownSizes() {
               { key: 'copy', label: 'Copy link', icon: <Copy />, extra: 'Ctrl C' },
             ]}
           >
-            <Button variant="outline" endIcon={<ChevronDown size={16} />}>
+            <Button variant="outline">
               More actions
+              <ChevronDown />
             </Button>
           </Dropdown>
         </Grid>

@@ -1,6 +1,6 @@
 import { TinyColor } from '@ctrl/tinycolor';
 
-// Ant Design's HSV palette: link hover uses step 4 (danger uses 5), press uses 7.
+// Ant Design HSV 色阶：链接悬停取第 4 阶，按压取第 7 阶。
 // The algorithm and its MIT notice are documented in THIRD_PARTY.md.
 export function actionColor(seed: string, offset: -2 | -1 | 1): string {
   const parsed = new TinyColor(seed);

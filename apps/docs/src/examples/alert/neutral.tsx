@@ -7,7 +7,7 @@ export function NeutralAlerts({ english = false }: { english?: boolean }) {
     <Space direction="vertical" align="stretch">
       <Alert
         type="success"
-        icon={<ShieldCheck size={20} />}
+        icon={<ShieldCheck size={16} />}
         title={t('访问范围符合策略', 'Access follows your policy')}
         description={t(
           '默认只读，变更操作需要审批。',
@@ -15,7 +15,7 @@ export function NeutralAlerts({ english = false }: { english?: boolean }) {
         )}
       />
       <Alert
-        type="info"
+        type="default"
         title={t('草稿已自动保存', 'Your draft is saved')}
         description={t('你可以稍后继续完成设置。', 'You can finish setting up later.')}
         closable

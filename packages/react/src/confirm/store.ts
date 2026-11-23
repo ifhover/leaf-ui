@@ -33,6 +33,25 @@ export function createConfirmStore() {
     publish(requests.map((entry) => (entry.id === id ? { ...entry, open: false } : entry)));
     request.resolve(result);
   };
+  const fail = (id: number, followUpOptions?: ConfirmOptions) => {
+    const request = requests[0];
+    if (!request?.open || request.id !== id) return;
+    const next = requests.map((entry) => (entry.id === id ? { ...entry, open: false } : entry));
+    // 将失败提示紧跟插在当前请求之后，避免被后续排队请求插队，同时同步保留调用区域配置。
+    if (followUpOptions) {
+      next.splice(1, 0, {
+        id: ++sequence,
+        options: followUpOptions,
+        scope: request.scope,
+        config: request.config,
+        components: request.components,
+        open: true,
+        resolve: () => {},
+      });
+    }
+    publish(next);
+    request.resolve(false);
+  };
   return {
     getSnapshot: () => requests,
     subscribe: (listener: () => void) => {
@@ -62,6 +81,7 @@ export function createConfirmStore() {
       });
     },
     close,
+    fail,
     remove: (id: number) => {
       if (requests[0]?.id === id && !requests[0].open) publish(requests.slice(1));
     },

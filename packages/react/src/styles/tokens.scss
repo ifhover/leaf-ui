@@ -2,9 +2,14 @@
 
 @layer leaf-ui {
   :root,
-  :host {
+  :host,
+  [data-leaf-theme='light'] {
     @include palette.light;
-    --leaf-control-height: 34px;
+    color-scheme: light;
+  }
+  :root,
+  :host {
+    --leaf-control-height: 32px;
     --leaf-density-form-gap: 16px;
     --leaf-density-label-gap: 6px;
     --leaf-density-row-padding: 12px;
@@ -12,7 +17,7 @@
     --leaf-density-option-padding: 6px;
     --leaf-density-field-padding: 10px;
     --leaf-density-dialog-block: 20px;
-    --leaf-density-dialog-inline: 24px;
+    --leaf-density-dialog-inline: 20px;
     --leaf-density-dialog-gap: 16px;
     --leaf-z-index-popup: 1000;
     --leaf-z-index-modal: 1100;
@@ -29,20 +34,6 @@
     --leaf-motion-easing: cubic-bezier(0.22, 1, 0.36, 1);
     --leaf-motion-spring: cubic-bezier(0.22, 1.28, 0.36, 1);
     --leaf-motion-play-state: running;
-  }
-
-  [data-leaf-theme='light'] {
-    @include palette.light;
-    color-scheme: light;
-  }
-
-  [data-leaf-theme='dark'] {
-    @include palette.dark;
-    color-scheme: dark;
-  }
-
-  :root,
-  :host {
     --leaf-spacing: 8px;
     --leaf-line-height: 20px;
     --leaf-line-height-sm: 18px;
@@ -52,6 +43,11 @@
     --leaf-shadow-sm: 0 2px 8px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04);
     --leaf-shadow-md: 0 8px 24px rgb(0 0 0 / 0.07), 0 2px 6px rgb(0 0 0 / 0.04);
     --leaf-shadow-lg: 0 16px 40px rgb(0 0 0 / 0.1), 0 4px 12px rgb(0 0 0 / 0.06);
+  }
+
+  [data-leaf-theme='dark'] {
+    @include palette.dark;
+    color-scheme: dark;
   }
 
   [data-leaf-scope] {
@@ -69,15 +65,65 @@
     --leaf-spacing-xl: calc(var(--leaf-spacing) * 4);
     --leaf-control-height-sm: max(1px, calc(var(--leaf-control-height) - 6px));
     --leaf-control-height-lg: calc(var(--leaf-control-height) + 6px);
-    --leaf-radius-sm: calc(var(--leaf-radius) * 0.5);
-    --leaf-control-radius-sm: calc(var(--leaf-radius) * 0.8);
-    --leaf-control-radius-lg: calc(var(--leaf-radius) * 1.2);
-    --leaf-radius-md: calc(var(--leaf-radius) * 1.4);
-    --leaf-radius-lg: calc(var(--leaf-radius) * 1.6);
-    --leaf-choice-radius: calc(var(--leaf-radius) * 0.5);
+    --leaf-radius-sm: max(0px, calc(var(--leaf-radius) - 5px));
+    --leaf-control-radius-sm: max(0px, calc(var(--leaf-radius) - 2px));
+    --leaf-control-radius-lg: calc(var(--leaf-radius) + min(var(--leaf-radius), 2px));
+    --leaf-radius-md: calc(var(--leaf-radius) + min(var(--leaf-radius), 4px));
+    --leaf-radius-lg: calc(var(--leaf-radius) + min(var(--leaf-radius), 6px));
+    --leaf-choice-radius: max(0px, calc(var(--leaf-radius) - 5px));
     --leaf-motion-fast: calc(var(--leaf-motion-duration) * 0.6);
     --leaf-motion-slow: calc(var(--leaf-motion-duration) * 1.6);
     --leaf-motion-color: var(--leaf-motion-duration);
+    --leaf-focus-outline: 2px solid
+      var(--leaf-color-focus, var(--leaf-focus-color, var(--leaf-color-text-muted)));
+    --leaf-action-transition:
+      background-color var(--leaf-motion-color) var(--leaf-motion-easing),
+      border-color var(--leaf-motion-color) var(--leaf-motion-easing),
+      color var(--leaf-motion-color) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-color) var(--leaf-motion-easing),
+      opacity var(--leaf-motion-color) var(--leaf-motion-easing),
+      translate var(--leaf-motion-fast) var(--leaf-motion-easing);
+    --leaf-field-transition:
+      border-color var(--leaf-motion-color) var(--leaf-motion-easing),
+      background-color var(--leaf-motion-color) var(--leaf-motion-easing),
+      box-shadow var(--leaf-motion-color) var(--leaf-motion-easing);
+  }
+
+  @keyframes leaf-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes leaf-backdrop-in {
+    from {
+      opacity: 0;
+      backdrop-filter: blur(0);
+    }
+    to {
+      opacity: 1;
+      backdrop-filter: blur(var(--leaf-backdrop-blur, 3px));
+    }
+  }
+
+  @keyframes leaf-backdrop-webkit {
+    from {
+      opacity: 0;
+      -webkit-backdrop-filter: blur(0);
+    }
+    to {
+      opacity: 1;
+      -webkit-backdrop-filter: blur(var(--leaf-backdrop-blur, 3px));
+    }
+  }
+
+  @keyframes leaf-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes leaf-content-in {
@@ -103,7 +149,9 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    :where([class^='leaf-'], [class*=' leaf-']) {
+    :where([class^='leaf-'], [class*=' leaf-']),
+    :where([class^='leaf-'], [class*=' leaf-'])::before,
+    :where([class^='leaf-'], [class*=' leaf-'])::after {
       animation: none !important;
       animation-delay: 0s !important;
       transition-duration: 0s !important;

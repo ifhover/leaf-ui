@@ -8,24 +8,11 @@
     &__input {
       border-radius: var(--leaf-choice-radius, 5px);
       box-shadow: var(--leaf-shadow-xs);
-      transition:
-        border-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-        background-color var(--leaf-motion-duration) var(--leaf-motion-easing),
-        box-shadow var(--leaf-motion-duration) var(--leaf-motion-easing),
-        transform var(--leaf-motion-fast) var(--leaf-motion-easing);
-    }
-    &:active:not([data-disabled]) &__input {
-      transform: scale(0.94);
-    }
-    &__control {
-      transition: transform var(--leaf-motion-fast) var(--leaf-motion-easing);
+      transition: var(--leaf-field-transition);
     }
     &__mark {
       opacity: 0;
-      transform: scale(0.6);
-      transition:
-        opacity var(--leaf-motion-fast) var(--leaf-motion-easing),
-        transform var(--leaf-motion-duration) var(--leaf-motion-easing);
+      transition: var(--leaf-action-transition);
       position: absolute;
       width: 14px;
       height: 14px;
@@ -34,28 +21,26 @@
       stroke-width: 2.5;
       &--check polyline,
       &--check path {
-        stroke-dasharray: 22;
-        stroke-dashoffset: 22;
+        stroke-dasharray: 24;
+        stroke-dashoffset: 24;
+        transition: stroke-dashoffset var(--leaf-motion-duration) var(--leaf-motion-easing);
+      }
+      &--mixed line,
+      &--mixed path {
+        stroke-dasharray: 16;
+        stroke-dashoffset: 16;
         transition: stroke-dashoffset var(--leaf-motion-duration) var(--leaf-motion-easing);
       }
     }
     &__input:checked:not(:indeterminate) ~ &__mark--check,
     &__input:indeterminate ~ &__mark--mixed {
       opacity: 1;
-      transform: scale(1);
     }
     &__input:checked:not(:indeterminate) ~ &__mark--check polyline,
-    &__input:checked:not(:indeterminate) ~ &__mark--check path {
+    &__input:checked:not(:indeterminate) ~ &__mark--check path,
+    &__input:indeterminate ~ &__mark--mixed line,
+    &__input:indeterminate ~ &__mark--mixed path {
       stroke-dashoffset: 0;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      &__control,
-      &__input,
-      &__mark,
-      &__mark--check polyline,
-      &__mark--check path {
-        transition: none;
-      }
     }
   }
 
@@ -65,7 +50,8 @@
     margin: 0;
     border: 0;
     color: var(--leaf-color-text);
-    font: var(--leaf-font-size) var(--leaf-font-family);
+    font-family: var(--leaf-font-family);
+    font-size: var(--leaf-font-size);
     legend {
       margin-bottom: 8px;
       padding: 0;
