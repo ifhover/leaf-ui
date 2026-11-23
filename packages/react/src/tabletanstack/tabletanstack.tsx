@@ -33,6 +33,7 @@ import {
 import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowDown, ChevronRight } from 'lucide-react';
 import {
+  type CSSProperties,
   createContext,
   Fragment,
   type HTMLAttributes,
@@ -48,7 +49,6 @@ import {
   useState,
 } from 'react';
 import { ButtonControl } from '../button/button';
-import { CardControl } from '../card/card';
 import { CardTitleControl } from '../card/title';
 import { CheckboxControl as Checkbox } from '../checkbox/checkbox';
 import {
@@ -199,13 +199,14 @@ function DataTableRoot<TData>({
   const id = useId();
   const titleId = `${id}-title`;
   const isCard = variant === 'card';
+  const regionPrefix = isCard ? 'leaf-card' : 'leaf-data-table';
   const rawTabItems = tabs?.items;
   const hasTabs = Boolean(rawTabItems?.length);
   const hasTitleHeading = title != null || description != null;
   const hasHeadingBar = hasTitleHeading || (!hasTabs && extra != null);
   const tabExtra =
     !hasTitleHeading && extra != null ? (
-      <div className="leaf-data-table__tab-extra">
+      <div className={`${regionPrefix}__tab-extra`}>
         {tabs?.extra}
         {extra}
       </div>
@@ -298,6 +299,39 @@ function DataTableRoot<TData>({
     }
   }, [pagination, paginationAvailable, expansionAvailable, renderExpandedRow]);
 
+  const headingNode = hasHeadingBar ? (
+    <div className={`${regionPrefix}__header`}>
+      {hasTitleHeading && (
+        <div className={isCard ? 'leaf-card__heading' : 'leaf-data-table__title-group'}>
+          {title != null && (
+            <CardTitleControl id={titleId} size={size} className={`${regionPrefix}__title`}>
+              {title}
+            </CardTitleControl>
+          )}
+          {description != null && (
+            <div className={`${regionPrefix}__description`}>{description}</div>
+          )}
+        </div>
+      )}
+      {extra != null && <div className={`${regionPrefix}__extra`}>{extra}</div>}
+    </div>
+  ) : null;
+
+  const tabsNode =
+    hasTabs && tabs && rawTabItems ? (
+      <Tabs
+        {...tabs}
+        type="line"
+        placement="top"
+        size={tabs.size ?? size}
+        aria-label={tabLabel}
+        aria-labelledby={tabLabelledBy}
+        extra={tabExtra}
+        className={classes(`${regionPrefix}__tabs`, tabs.className)}
+        items={rawTabItems}
+      />
+    ) : null;
+
   const footerNode = automaticPagination ? (
     <DataTableFooterControl>
       <DataTablePaginationControl {...(typeof pagination === 'object' ? pagination : {})} />
@@ -312,55 +346,31 @@ function DataTableRoot<TData>({
           className={classes('leaf-data-table', isCard && 'leaf-data-table--card', className)}
         >
           {isCard ? (
-            <CardControl
-              className="leaf-data-table__card"
-              size={size}
-              title={title}
-              description={description}
-              extra={extra}
-              tabs={tabs}
-              titleId={title != null ? titleId : undefined}
-              padding={{ body: 0 }}
+            <div
+              className={classes(
+                'leaf-card',
+                `leaf-card--${size}`,
+                'leaf-card--bordered',
+                'leaf-card--divided',
+                hasTitleHeading && 'leaf-card--headed',
+                hasTabs && 'leaf-card--tabbed',
+                'leaf-data-table__card',
+              )}
+              style={{ '--leaf-card-body-padding': '0px' } as CSSProperties}
             >
-              <DataTableContentControl />
-              {footerNode}
-            </CardControl>
+              {headingNode}
+              <div className="leaf-card__panel">
+                {tabsNode}
+                <div className="leaf-card__body">
+                  <DataTableContentControl />
+                  {footerNode}
+                </div>
+              </div>
+            </div>
           ) : (
             <>
-              {hasHeadingBar && (
-                <div className="leaf-data-table__header">
-                  {hasTitleHeading && (
-                    <div className="leaf-data-table__title-group">
-                      {title != null && (
-                        <CardTitleControl
-                          id={titleId}
-                          size={size}
-                          className="leaf-data-table__title"
-                        >
-                          {title}
-                        </CardTitleControl>
-                      )}
-                      {description != null && (
-                        <div className="leaf-data-table__description">{description}</div>
-                      )}
-                    </div>
-                  )}
-                  {extra != null && <div className="leaf-data-table__extra">{extra}</div>}
-                </div>
-              )}
-              {hasTabs && tabs && rawTabItems && (
-                <Tabs
-                  {...tabs}
-                  type="line"
-                  placement="top"
-                  size={tabs.size ?? size}
-                  aria-label={tabLabel}
-                  aria-labelledby={tabLabelledBy}
-                  extra={tabExtra}
-                  className={classes('leaf-data-table__tabs', tabs.className)}
-                  items={rawTabItems}
-                />
-              )}
+              {headingNode}
+              {tabsNode}
               <DataTableContentControl />
               {footerNode}
             </>
