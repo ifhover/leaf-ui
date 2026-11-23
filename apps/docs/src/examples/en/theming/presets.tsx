@@ -19,12 +19,14 @@ export function createExampleTheme(style: ThemeStyle, primaryColor?: string): Le
   const base: LeafTheme = primaryColor ? { primaryColor } : {};
   if (style === 'default') return base;
   if (style === 'illustration') {
+    const borderColor = 'color-mix(in srgb, var(--leaf-color-primary) 12%, var(--leaf-color-text))';
     return {
       ...base,
       borderRadius: 4,
       tokens: {
         borderWidth: 2,
-        borderColor: 'color-mix(in srgb, var(--leaf-color-primary) 12%, var(--leaf-color-text))',
+        borderColor,
+        frameBorderColor: borderColor,
         mutedSurfaceColor:
           'color-mix(in srgb, var(--leaf-color-primary) 8%, var(--leaf-color-surface))',
         controlShadow: '3px 3px 0 var(--leaf-color-border)',
@@ -34,13 +36,15 @@ export function createExampleTheme(style: ThemeStyle, primaryColor?: string): Le
   }
   if (style === 'windows-xp') {
     const bevel = 'inset 1px 1px 0 rgb(255 255 255 / 0.7), inset -1px -1px 0 rgb(0 0 0 / 0.18)';
+    const borderColor =
+      'color-mix(in srgb, var(--leaf-color-primary) 45%, var(--leaf-color-text-muted))';
     return {
       ...base,
       borderRadius: 3,
       fontFamily: 'Tahoma, "Microsoft YaHei", sans-serif',
       tokens: {
-        borderColor:
-          'color-mix(in srgb, var(--leaf-color-primary) 45%, var(--leaf-color-text-muted))',
+        borderColor,
+        frameBorderColor: borderColor,
         mutedSurfaceColor:
           'color-mix(in srgb, var(--leaf-color-primary) 6%, var(--leaf-color-surface))',
         controlShadow: `${bevel}, 0 1px 2px rgb(0 0 0 / 0.12)`,
@@ -76,6 +80,7 @@ export function createExampleTheme(style: ThemeStyle, primaryColor?: string): Le
   }
   const highlight = 'light-dark(rgb(255 255 255 / 0.95), rgb(255 255 255 / 0.06))';
   const shade = 'light-dark(rgb(0 0 0 / 0.16), rgb(0 0 0 / 0.5))';
+  const borderColor = 'color-mix(in srgb, var(--leaf-color-text) 12%, var(--leaf-color-surface))';
   return {
     ...base,
     borderRadius: 14,
@@ -84,7 +89,8 @@ export function createExampleTheme(style: ThemeStyle, primaryColor?: string): Le
         'light-dark(color-mix(in srgb, var(--leaf-color-primary) 3%, #eef0f3), color-mix(in srgb, var(--leaf-color-primary) 3%, #26282d))',
       mutedSurfaceColor:
         'color-mix(in srgb, var(--leaf-color-primary) 5%, var(--leaf-color-surface))',
-      borderColor: 'color-mix(in srgb, var(--leaf-color-text) 12%, var(--leaf-color-surface))',
+      borderColor,
+      frameBorderColor: borderColor,
       controlShadow: `3px 3px 7px ${shade}, -3px -3px 7px ${highlight}, inset 0 1px 0 ${highlight}`,
       surfaceShadow: `6px 6px 14px ${shade}, -6px -6px 14px ${highlight}`,
     },

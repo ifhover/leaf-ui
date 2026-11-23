@@ -110,7 +110,7 @@ test('segmented progress keeps the outer track radius and removes inner fill cur
   assert.equal(progress('.leaf-progress__track')['border-radius'], '100px');
 });
 
-test('tables use muted header ink, soft divider rule, neutral stripes matching hover and 2px header divider', async () => {
+test('tables use muted header ink, soft divider rule, neutral stripes matching hover and 1px header divider', async () => {
   const table = await compiledStyles('table/table.scss');
   const palette = table('.leaf-table');
   assert.equal(
@@ -176,13 +176,13 @@ test('tables use muted header ink, soft divider rule, neutral stripes matching h
     table('.leaf-table__header > .leaf-table__row:last-child > .leaf-table__column-header')[
       'border-block-end'
     ],
-    '2px solid var(--leaf-table-divider)',
+    '1px solid var(--leaf-table-divider)',
   );
   assert.equal(
     table(
       '.leaf-table__header > .leaf-table__row:not(:last-child) > .leaf-table__column-header:not([data-leaf-header-group])[rowspan]',
     )['border-block-end'],
-    '2px solid var(--leaf-table-divider)',
+    '1px solid var(--leaf-table-divider)',
   );
 });
 
@@ -232,6 +232,44 @@ test('table outer cell insets exclude fixed-width utility columns in both direct
     ],
     'ellipsis',
   );
+
+  const cardTable = table('.leaf-data-table--card .leaf-data-table__card .leaf-table');
+  assert.equal(
+    cardTable['--leaf-table-inset'],
+    'calc(var(--leaf-card-padding)- var(--leaf-table-padding-inline))',
+  );
+  assert.equal(
+    table(
+      '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel:first-child > .leaf-card__body:first-child > .leaf-data-table__content:last-child .leaf-table',
+    )['border-radius'],
+    'var(--leaf-data-table-card-inner-radius)',
+  );
+  assert.equal(
+    table(
+      '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel:first-child > .leaf-card__body:first-child > .leaf-data-table__content:not(:last-child) .leaf-table',
+    )['border-radius'],
+    'var(--leaf-data-table-card-inner-radius)var(--leaf-data-table-card-inner-radius)0 0',
+  );
+  for (const selector of [
+    '.leaf-data-table--card .leaf-data-table__card > .leaf-card__header + .leaf-card__panel > .leaf-card__body > .leaf-data-table__content:last-child .leaf-table',
+    '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel > .leaf-card__body:not(:first-child) > .leaf-data-table__content:last-child .leaf-table',
+  ]) {
+    assert.equal(
+      table(selector)['border-radius'],
+      '0 0 var(--leaf-data-table-card-inner-radius)var(--leaf-data-table-card-inner-radius)',
+    );
+  }
+  for (const selector of [
+    '.leaf-data-table--card .leaf-data-table__card > .leaf-card__header + .leaf-card__panel > .leaf-card__body > .leaf-data-table__content:not(:last-child) .leaf-table',
+    '.leaf-data-table--card .leaf-data-table__card > .leaf-card__panel > .leaf-card__body:not(:first-child) > .leaf-data-table__content:not(:last-child) .leaf-table',
+  ]) {
+    assert.equal(table(selector)['border-radius'], '0px');
+  }
+  const cardFooter = table(
+    '.leaf-data-table--card .leaf-data-table__card .leaf-data-table__footer',
+  );
+  assert.equal(cardFooter['margin-block-start'], '0px');
+  assert.equal(cardFooter.padding, 'min(16px,var(--leaf-card-padding))var(--leaf-card-padding)');
 });
 
 function stripComments(source) {
@@ -331,12 +369,11 @@ test('Card headings use text role while retaining the component color override',
     'var(--leaf-component-card-footer-background,color-mix(in srgb,var(--leaf-card-surface),var(--leaf-color-surface-muted)))',
   );
   assert.equal(
-    card('.leaf-card--divided:not(.leaf-card--layered) > .leaf-card__panel > .leaf-card__footer')[
-      'border-block-start'
-    ],
+    card('.leaf-card--divided > .leaf-card__panel > .leaf-card__footer')['border-block-start'],
     '1px solid var(--leaf-component-card-border-color,var(--leaf-color-divider))',
   );
   assert.throws(() => card('.leaf-card--selected'), /missing compiled rule/u);
+  assert.throws(() => card('.leaf-card--layered'), /missing compiled rule/u);
 });
 
 test('cover-only Cards round the cover as the final content surface', async () => {

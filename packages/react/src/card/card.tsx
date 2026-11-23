@@ -14,7 +14,6 @@ export interface CardTabsProps extends Omit<TabsProps, 'type' | 'placement' | 'c
 
 export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title?: ReactNode;
-  /** Supporting text for the default appearance; not displayed by layered cards. */
   description?: ReactNode;
   extra?: ReactNode;
   /** Tabs replace the heading when no title is supplied, otherwise sit below it. */
@@ -23,48 +22,48 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'>
   footer?: ReactNode;
   loading?: boolean;
   bordered?: boolean;
-  /** Show the card's resting shadow; layered cards apply this to the inner content surface. */
+  /** Show the card's resting shadow. */
   shadow?: boolean;
   /** Separate the footer bar with a top border. */
   divided?: boolean;
-  /** `layered` separates the content surface from the heading and footer on a muted canvas. */
-  variant?: 'default' | 'layered';
   /** Card spacing, heading typography and height, and the default size of embedded tabs. */
   size?: 'sm' | 'md' | 'lg';
   /** Customize inner padding for the card or individual header/body/footer regions. */
   padding?: ContainerPadding;
 }
-export function Card(rawProps: CardProps) {
-  const {
-    title,
-    description,
-    extra,
-    tabs,
-    cover,
-    footer,
-    loading = false,
-    bordered = true,
-    shadow = true,
-    divided = true,
-    variant = 'default',
-    size = 'md',
-    padding,
-    children,
-    className,
-    style,
-    ...props
-  } = useComponentProps('Card', rawProps);
+interface CardControlProps extends CardProps {
+  titleId?: string;
+}
+
+export function CardControl({
+  title,
+  description,
+  extra,
+  tabs,
+  cover,
+  footer,
+  loading = false,
+  bordered = true,
+  shadow = true,
+  divided = true,
+  size = 'md',
+  padding,
+  titleId: customTitleId,
+  children,
+  className,
+  style,
+  ...props
+}: CardControlProps) {
   const paddingStyle = resolvePaddingVars('card', padding);
-  const titleId = useId();
+  const generatedTitleId = useId();
+  const titleId = customTitleId ?? generatedTitleId;
   const body = useRef<HTMLDivElement>(null);
   // Skeleton 内部已负责内容显露动效，此处仅保留高度过渡避免叠加。
   useContentTransition(body, loading ? 'loading' : 'content', 0, true);
   const rawTabItems = tabs?.items;
   const hasTabs = Boolean(rawTabItems?.length);
   const hasTabPanels = Boolean(rawTabItems?.some((item) => item.children != null));
-  const layered = variant === 'layered';
-  const visibleDescription = layered ? undefined : description;
-  const hasHeading = title != null || visibleDescription != null;
+  const hasHeading = title != null || description != null;
   // 封面或无面板标签栏可直接搭配 Card children，仅在无标签面板且 loading 时保留空 body 骨架占位。
   const hasBody = children != null || (!hasTabPanels && loading) || (!hasTabs && cover == null);
   const footerContent = footer != null && <div className="leaf-card__footer">{footer}</div>;
@@ -124,7 +123,7 @@ export function Card(rawProps: CardProps) {
           <Skeleton loading={loading}>{children}</Skeleton>
         </div>
       )}
-      {!layered && footerContent}
+      {footerContent}
     </>
   );
   return (
@@ -137,7 +136,6 @@ export function Card(rawProps: CardProps) {
         bordered && 'leaf-card--bordered',
         !shadow && 'leaf-card--shadowless',
         divided && 'leaf-card--divided',
-        layered && 'leaf-card--layered',
         hasHeading && 'leaf-card--headed',
         hasTabs && 'leaf-card--tabbed',
         className,
@@ -153,16 +151,18 @@ export function Card(rawProps: CardProps) {
                   {title}
                 </CardTitleControl>
               )}
-              {visibleDescription != null && (
-                <div className="leaf-card__description">{visibleDescription}</div>
-              )}
+              {description != null && <div className="leaf-card__description">{description}</div>}
             </div>
           )}
           {extra != null && <div className="leaf-card__extra">{extra}</div>}
         </div>
       )}
       <div className="leaf-card__panel">{content}</div>
-      {layered && footerContent}
     </div>
   );
+}
+
+export function Card(rawProps: CardProps) {
+  const props = useComponentProps('Card', rawProps);
+  return <CardControl {...props} />;
 }

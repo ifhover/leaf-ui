@@ -16,7 +16,9 @@
       --leaf-current-control-height: inherit;
       --leaf-current-font-size: inherit;
       --leaf-current-radius: inherit;
-      --leaf-button-rest-color: var(--leaf-component-pagination-color, var(--leaf-color-text));
+      &:not([aria-current='page']) {
+        --leaf-button-rest-color: var(--leaf-component-pagination-color, var(--leaf-color-text));
+      }
       min-width: var(--leaf-current-control-height);
       height: var(--leaf-current-control-height);
       font-size: inherit;
@@ -29,40 +31,23 @@
         gap: 4px;
       }
     }
-    // 无边框样式直接切换当前页为纯边框方框（去除阴影并略微加深中性边框），不使用滑动指示器动画。
-    &--ghost > .leaf-pagination__entry > .leaf-button[aria-current='page'] {
-      --leaf-button-rest-color: var(--leaf-component-pagination-color, var(--leaf-color-text));
-      --leaf-button-rest-background: var(--leaf-color-surface);
-      --leaf-button-rest-border: var(--leaf-frame-border-color, var(--leaf-color-border-hover));
-      --leaf-button-rest-shadow: none;
-      --leaf-button-hover-background: var(--leaf-color-surface);
-      --leaf-button-hover-border: var(--leaf-frame-border-color, var(--leaf-color-border-hover));
-      --leaf-button-active-color: var(--leaf-button-base-color);
-      --leaf-button-active-background: var(--leaf-button-base-background);
-      --leaf-button-active-border: var(--leaf-button-base-border);
-      &:active:not(:disabled):not([data-loading]) {
-        translate: none;
-      }
-    }
-    // 有边框样式下，当前选中页保持相同占位于不可点击的纯文本状态。
-    &--outline > .leaf-pagination__entry > .leaf-button[aria-current='page'] {
+    // 当前选中页统一使用 Button solid 样式，不可点击且悬停时鼠标指针与视觉状态均保持静止。
+    & > .leaf-pagination__entry > .leaf-button[aria-current='page'] {
       &,
       &:disabled,
       &:hover,
       &:active,
       &:focus-visible {
-        color: var(--leaf-component-pagination-color, var(--leaf-color-text));
-        background: transparent;
-        border-color: transparent;
-        box-shadow: none;
+        color: var(--leaf-button-base-color);
+        background: var(--leaf-button-base-background);
+        border-color: var(--leaf-button-base-border);
+        box-shadow: var(--leaf-button-base-shadow);
         opacity: 1;
         cursor: default;
         translate: none;
       }
     }
-    &--outline[data-disabled]
-      > .leaf-pagination__entry
-      > .leaf-button[aria-current='page']:disabled {
+    &[data-disabled] > .leaf-pagination__entry > .leaf-button[aria-current='page']:disabled {
       opacity: 0.45;
       cursor: not-allowed;
     }
@@ -137,6 +122,7 @@
 
   @media (forced-colors: active) {
     .leaf-pagination__entry > .leaf-button[aria-current='page'] {
+      background: Highlight;
       border-color: Highlight;
       color: HighlightText;
       forced-color-adjust: none;

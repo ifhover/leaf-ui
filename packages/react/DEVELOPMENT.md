@@ -36,7 +36,7 @@ pnpm dev
 
 对外主题配置统一经过 ConfigProvider 的 `theme`、`theme.tokens` 和 `theme.components`。`src/theme.ts` 使用纯函数合并配置并生成内联变量，服务端与客户端输出一致；业务 CSS 只消费结果。不要在组件中增加 DOM 颜色监听或自动前景判断，不为每个状态公开新变量。新增配置必须同步实际消费、类型、中英 API 与测试。
 
-文档示例中的主题配置只用于说明品牌色、明暗与密度等接入方式，组件包只提供公共主题能力，不内置风格预设，也不以可定制作为卖点。辅助表面、描边和阴影配色从当前映射角色派生，不依赖额外皮肤 CSS。默认风格不写覆盖，默认密度不显式设置；库自动派生的色阶不在示例中重复配置，也不能把语义原色重新定义为 500；语义色按需派生 light-N / dark-N，中性色独立保留九档。显式 `tokens.borderColor` 同时提供统一外框色，组件级覆盖优先；无边框元素和语义状态保留原有行为。CSS color-mix / light-dark 配色保留表达式，语义明暗派生保留 sRGB color-mix，中性色阶无法解析时输出 relative OKLCH；服务端和客户端均不读 DOM 推断颜色或外观，不在 hydration 后替换数值。主题只通过 ConfigProvider 的 JS 配置更新。全局外框与阴影使用 `borderWidth`、`controlShadow`、`surfaceShadow`；组件状态只允许 `color`、`background`、`borderColor`、`shadow`，不改变交互几何。嵌套状态逐字段纯合并并忽略 undefined。新增状态消费者时同步主题变量参考中的支持范围，保证类名归一化与组件名一致；不能仅生成未消费的变量。较粗描边必须计入字段内部高度、选择标签、连接边及浮层内圆角计算。
+文档示例中的主题配置只用于说明品牌色、明暗与密度等接入方式，组件包只提供公共主题能力，不内置风格预设，也不以可定制作为卖点。辅助表面、描边和阴影配色从当前映射角色派生，不依赖额外皮肤 CSS。默认风格不写覆盖，默认密度不显式设置；库自动派生的色阶不在示例中重复配置，也不能把语义原色重新定义为 500；语义色按需派生 light-N / dark-N，中性色独立保留九档。显式 `tokens.borderColor` 仅调整中性边框色 `--leaf-color-border`；需要同时给实色按钮、开关与弱描边外框统一描边时使用 `tokens.frameBorderColor`，组件级覆盖优先；无边框文字/链接按钮和语义状态保留原有行为。CSS color-mix / light-dark 配色保留表达式，语义明暗派生保留 sRGB color-mix，中性色阶无法解析时输出 relative OKLCH；服务端和客户端均不读 DOM 推断颜色或外观，不在 hydration 后替换数值。主题只通过 ConfigProvider 的 JS 配置更新。全局外框与阴影使用 `borderWidth`、`controlShadow`、`surfaceShadow`；组件状态只允许 `color`、`background`、`borderColor`、`shadow`，不改变交互几何。嵌套状态逐字段纯合并并忽略 undefined。新增状态消费者时同步主题变量参考中的支持范围，保证类名归一化与组件名一致；不能仅生成未消费的变量。较粗描边必须计入字段内部高度、选择标签、连接边及浮层内圆角计算。
 
 字段聚焦、普通选项、Button 各外观和语义状态的具体视觉契约由 [设计标准](../../DESIGN-STANDARDS.md) 与 [颜色家族契约](../../COLOR-SYSTEM.md#视觉家族契约) 维护。复用家族时保留这些差异和显式状态覆盖，不因为统一实现而扩大交互变化范围。
 

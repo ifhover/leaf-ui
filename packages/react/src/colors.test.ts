@@ -59,10 +59,15 @@ describe('theme color derivation', () => {
     const surface = 'color-mix(in srgb, var(--leaf-color-primary) 8%, white)';
     const variables = leafThemeVariables({
       primaryColor: '#ff6900',
-      tokens: { mutedSurfaceColor: surface, borderColor: 'var(--brand-ink)' },
+      tokens: {
+        mutedSurfaceColor: surface,
+        borderColor: 'var(--brand-ink)',
+        frameBorderColor: 'var(--brand-frame)',
+      },
     });
     expect(variables['--leaf-color-surface-muted']).toBe(surface);
-    expect(variables['--leaf-frame-border-color']).toBe('var(--brand-ink)');
+    expect(variables['--leaf-color-border']).toBe('var(--brand-ink)');
+    expect(variables['--leaf-frame-border-color']).toBe('var(--brand-frame)');
     expect(variables['--leaf-color-on-primary']).toBe('#ffffff');
     expect(variables['--leaf-color-primary-active']).toBe(mixColors('#ff6900', '#000000', 90));
   });

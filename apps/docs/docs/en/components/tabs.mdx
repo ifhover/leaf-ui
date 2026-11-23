@@ -18,7 +18,7 @@ Switch content within one region.
 
 ## Basic usage
 
-Define labels and content with `items`; select a tab to switch panels. Unselected line tabs use muted text color and transition crisply to foreground contrast on hover, press and selection; the active tab shows a fading underline spanning its padded width without a full-width bar border.
+Define labels and content with `items`; select a tab to switch panels. Line tabs display an open baseline divider with primary interactive text feedback and a smooth sliding indicator.
 
 <ComponentExample exampleId="basic" preview={<TabsBasic />} fileName="basic.tsx">
 
@@ -34,7 +34,7 @@ Define labels and content with `items`; select a tab to switch panels. Unselecte
 
 ### Sizes
 
-Use `size` to set the tab control size (`sm`, `md`, `lg`); line tabs default to control height plus 2px (and expand cleanly for taller label content). Each row shows one appearance, with columns comparing small, medium and large sizes. Scroll horizontally on narrow screens.
+Use `size` to set the tab control size (`sm`, `md`, `lg`); line tabs derive height from line height plus vertical padding, keeping the base font size with compact padding for `sm`. Each row shows one appearance, with columns comparing small, medium and large sizes. Scroll horizontally on narrow screens.
 
 <ComponentExample exampleId="sizes" preview={<TabsSizes />} fileName="sizes.tsx" width="100%">
 
@@ -46,7 +46,7 @@ Use `size` to set the tab control size (`sm`, `md`, `lg`); line tabs default to 
 
 ### Appearances
 
-Use `type` to choose between `line`, `card` and `segmented` tab appearances, all using restrained monochrome neutral feedback.
+Use `type` to choose between `line`, `card` and `segmented` tab appearances. Line tabs use primary selection and sliding indicator emphasis, while card and segmented appearances use restrained neutral contrast.
 
 <ComponentExample exampleId="appearances" preview={<TabsAppearances />} fileName="appearances.tsx">
 

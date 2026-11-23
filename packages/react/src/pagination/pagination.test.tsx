@@ -28,7 +28,10 @@ describe('Pagination', () => {
     expect(next).not.toHaveAttribute('data-loading');
     await userEvent.click(next);
     expect(change).toHaveBeenLastCalledWith(2, 10);
-    expect(screen.getByRole('button', { name: 'Page 2' })).toHaveClass('leaf-button--outline');
+    const active = screen.getByRole('button', { name: 'Page 2' });
+    expect(active).toHaveClass('leaf-button--solid');
+    expect(active).toHaveAttribute('aria-current', 'page');
+    expect(active).toBeDisabled();
     expect(document.querySelector('.leaf-pagination__indicator')).toBeNull();
   });
   it('jumps across omitted pages using accessible ellipsis controls', async () => {
@@ -339,7 +342,7 @@ describe('Pagination', () => {
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 
-  it('renders labeled previous/next buttons and unclickable current page in outline variant', async () => {
+  it('renders labeled previous/next buttons and unclickable solid current page in outline variant', async () => {
     const change = vi.fn();
     render(
       <ConfigProvider locale="en-US">
@@ -353,6 +356,7 @@ describe('Pagination', () => {
     expect(prev).toHaveTextContent('Previous');
     expect(next).toHaveClass('leaf-button--sm', 'leaf-button--outline');
     expect(next).toHaveTextContent('Next');
+    expect(active).toHaveClass('leaf-button--sm', 'leaf-button--solid');
     expect(active).toHaveAttribute('aria-current', 'page');
     expect(active).toBeDisabled();
     await userEvent.click(active);

@@ -71,6 +71,7 @@ export interface LeafThemeTokens {
   mutedSurfaceColor?: string;
   raisedSurfaceColor?: string;
   borderColor?: string;
+  frameBorderColor?: string;
   borderHoverColor?: string;
   dividerColor?: string;
   borderWidth?: number | string;
@@ -165,6 +166,7 @@ const tokenVariables = {
   mutedSurfaceColor: 'color-surface-muted',
   raisedSurfaceColor: 'color-surface-raised',
   borderColor: 'color-border',
+  frameBorderColor: 'frame-border-color',
   borderHoverColor: 'color-border-hover',
   dividerColor: 'color-divider',
   borderWidth: 'border-width',
@@ -361,10 +363,10 @@ export function leafThemeVariables(theme: LeafTheme): LeafThemeStyle {
             ? length(value)
             : value;
   }
-  // An explicit global border color also styles frames whose normal border is
-  // transparent or muted. Component and semantic state overrides still win.
-  if (theme.tokens?.borderColor !== undefined)
-    variables['--leaf-frame-border-color'] = theme.tokens.borderColor;
+  // `borderColor` only overrides `--leaf-color-border`; `frameBorderColor` sets
+  // `--leaf-frame-border-color` for styles that also outline normally borderless
+  // or muted frames (e.g. solid buttons and switches). Component and semantic
+  // state overrides still win.
   if (theme.motion !== undefined) {
     variables['--leaf-motion-play-state'] = theme.motion ? 'running' : 'paused';
     variables['--leaf-motion-animation'] = theme.motion ? 'initial' : 'none';

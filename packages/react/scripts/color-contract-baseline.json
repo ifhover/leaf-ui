@@ -125,18 +125,18 @@
       "textarea/textarea.scss",
       "treeselect/treeselect.scss"
     ],
-    "primaryFocusConsumers": {},
-    "neutralFocusConsumers": {
+    "primaryFocusConsumers": {
       "autocomplete/autocomplete.scss": "auto-complete",
       "cascader/cascader.scss": "cascader",
       "colorpicker/colorpicker.scss": "color-picker",
+      "datepicker/datepicker.scss": "date-picker",
       "input/input.scss": "input",
       "inputnumber/inputnumber.scss": "input-number",
       "select/select.scss": "select",
-      "datepicker/datepicker.scss": "date-picker",
       "textarea/textarea.scss": "textarea",
       "treeselect/treeselect.scss": "tree-select"
-    }
+    },
+    "neutralFocusConsumers": {}
   },
   "debt": {},
   "exceptions": {
@@ -653,9 +653,9 @@
         "reason": "Status-label close and checkable feedback share a foreground-relative tint."
       },
       {
-        "expression": "color-mix(in srgb,#{$color} 20%,transparent)",
+        "expression": "color-mix(in srgb,#{$color} 12%,transparent)",
         "count": 1,
-        "reason": "Field family and InputOTP slots share a restrained 20% translucent 3px outer focus ring following the active focus or validation border color."
+        "reason": "Field family and InputOTP slots share a restrained 12% translucent 3px outer focus ring following the active focus or validation border color."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-field-color)30%,var(--leaf-color-border))",

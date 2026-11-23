@@ -593,6 +593,23 @@ const choicePopupMaxWidth = [
   '可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。',
   'Optional maximum popup width; no additional limit when unset, still bounded by the viewport.',
 ];
+const tableVariantDescription = [
+  '容器外观；card 使用 Card 包裹表格与卡片内部分页区（表格占满宽度且首末列边缘对齐 Card 内边距）。',
+  'Container appearance; card wraps the table and pagination inside a Card body (table spans full width with outer column edges aligned to Card padding).',
+];
+const tableTitleDescription = ['表格上方标题内容。', 'Heading content above the table.'];
+const tableDescriptionDescription = [
+  '标题下方的补充说明。',
+  'Supporting text displayed below the title.',
+];
+const tableExtraDescription = [
+  '标题或标签栏右侧的附加操作或信息。',
+  'Trailing actions or content in the title or tab bar.',
+];
+const tableTabsDescription = [
+  '表格上方的线形标签页配置；支持与 Card tabs 一致的受控/非受控与附加区域行为。',
+  'Line tabs displayed above the table; shares Card tabs controlled, uncontrolled and extra placement behavior.',
+];
 const tableStripedDescription = [
   '默认显示细行分割线；设置为 true 后切换为斑马条纹样式，从第二行开始展示交替浅灰背景并隐藏行间分割线。',
   'Fine row dividers are shown by default; true enables zebra striping from the second row with an alternating light gray background and hides row dividers.',
@@ -755,6 +772,8 @@ const specificDefaults = {
   'TooltipProps.open': '—',
   'PopoverProps.open': '—',
   'DataTableProps.table': '—',
+  'DataTableProps.variant': "`'default'`",
+  'DataTablePresentationProps.variant': "`'default'`",
   'DataTableProps.data': ['未传 table 时必填', 'Required without table'],
   'DataTableProps.columns': ['未传 table 时必填', 'Required without table'],
   'DataTableProps.rowKey': ['未传 table 时必填', 'Required without table'],
@@ -3162,30 +3181,20 @@ const specific = {
     '标题区域外层容器的原生属性；heading 自身的属性、事件与 ref 仍直接应用于实际标题元素。',
     'Native attributes for the title-region wrapper; heading attributes, events and ref still target the actual heading element.',
   ],
-  'CardProps.variant': [
-    '卡片外观；layered 将内容卡与外层标题、底部操作分层展示。',
-    'Card appearance; layered separates the content surface from the heading and footer on a muted canvas.',
-  ],
-  'CardProps.description': [
-    '标题下方的补充说明，仅默认外观支持；layered 不展示。',
-    'Supporting text below the title; only supported by the default appearance, not layered.',
-  ],
+  'CardProps.description': ['标题下方的补充说明。', 'Supporting text below the title.'],
   'CardProps.footer': [
-    '底部内容或操作；默认带浅底与底部分割线并右对齐布局（可通过 `divided={false}` 关闭分割线），layered 外观展示在内容卡下方的外层画布。',
-    'Footer content or actions; uses a right-aligned flex row with subtle background and top divider by default (`divided={false}` hides the divider), while layered places it on the outer canvas below the content card.',
+    '底部内容或操作；默认带浅底与底部分割线并右对齐布局（可通过 `divided={false}` 关闭分割线）。',
+    'Footer content or actions; uses a right-aligned flex row with subtle background and top divider by default (`divided={false}` hides the divider).',
   ],
   'CardProps.divided': [
-    '在底部操作栏顶部显示细分隔线；layered 外观不显示。',
-    'Show a subtle divider above the footer action bar; omitted on layered cards.',
+    '在底部操作栏顶部显示细分隔线。',
+    'Show a subtle divider above the footer action bar.',
   ],
   'CardProps.loading': [
     '将正文和标签页内容替换为骨架屏；不会禁用标题、标签页或操作。',
     'Replace body and tab-page content with skeletons; headings, tabs and actions remain enabled.',
   ],
-  'CardProps.shadow': [
-    '显示卡片的静止阴影；分层卡片将其应用于内层内容面。',
-    "Show the card's resting shadow; layered cards apply it to the inner content surface.",
-  ],
+  'CardProps.shadow': ['显示卡片的静止阴影。', "Show the card's resting shadow."],
   'CardProps.size': [
     '卡片尺寸；内嵌标签页默认跟随此尺寸，其他子组件独立配置。',
     'Card size; embedded tabs follow it by default, while other children use their own sizes.',
@@ -3281,6 +3290,16 @@ const specific = {
   'DataTablePresentationProps.pagination': tablePaginationDescription,
   'DataTableProps.localPagination': localPaginationDescription,
   'UseDataTableOptions.localPagination': localPaginationDescription,
+  'DataTableProps.variant': tableVariantDescription,
+  'DataTablePresentationProps.variant': tableVariantDescription,
+  'DataTableProps.title': tableTitleDescription,
+  'DataTablePresentationProps.title': tableTitleDescription,
+  'DataTableProps.description': tableDescriptionDescription,
+  'DataTablePresentationProps.description': tableDescriptionDescription,
+  'DataTableProps.extra': tableExtraDescription,
+  'DataTablePresentationProps.extra': tableExtraDescription,
+  'DataTableProps.tabs': tableTabsDescription,
+  'DataTablePresentationProps.tabs': tableTabsDescription,
   'DataTableProps.striped': tableStripedDescription,
   'DataTablePresentationProps.striped': tableStripedDescription,
   'DataTableProps.bordered': tableBorderedDescription,
@@ -3419,8 +3438,8 @@ const specific = {
     'Auxiliary text; shares the muted default and can be overridden separately.',
   ],
   'LeafThemeTokens.mutedSurfaceColor': [
-    '次级表面与共享底板，对应 `--leaf-color-surface-muted`。Card layered 与 card 形态日期面板等共用该角色；内层内容仍使用 `surfaceColor`，组件显式覆盖优先。',
-    'Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Layered Card canvases and card-variant date panels share this role; inner content keeps `surfaceColor`. Explicit component overrides take precedence.',
+    '次级表面与共享底板，对应 `--leaf-color-surface-muted`。Segmented Tabs 轨道与 card 形态日期面板等共用该角色；内层滑块仍使用 `surfaceColor`，组件显式覆盖优先。',
+    'Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Segmented Tabs tracks and card-variant date panels share this role; active pills keep `surfaceColor`. Explicit component overrides take precedence.',
   ],
   'LeafThemeTokens.raisedSurfaceColor': [
     '浮层与抬升表面色。',
@@ -3481,8 +3500,12 @@ const specific = {
     'Disabled appearance overrides; disabled behavior is unchanged.',
   ],
   'LeafThemeTokens.borderColor': [
-    '全局外框色；显式设置时统一覆盖实色控件和弱描边外框，组件级覆盖优先。',
-    'Global frame color; explicit values also apply to solid actions and muted frames. Component overrides take precedence.',
+    '全局常规中性边框色（`--leaf-color-border`）；仅作用于原本带有中性边框的控件与容器，不影响实色按钮或开关。',
+    'Global neutral border color (`--leaf-color-border`); applies only to controls and containers that already use a neutral border, leaving solid buttons and switches unaffected.',
+  ],
+  'LeafThemeTokens.frameBorderColor': [
+    '全局统一外框描边色（`--leaf-frame-border-color`）；显式设置时一并为实色/危险按钮、开关及弱描边轨道加上外框，组件级与语义状态覆盖优先。',
+    'Global unified frame border color (`--leaf-frame-border-color`); when set, also outlines solid/danger buttons, switches, and muted tracks. Component and semantic state overrides take precedence.',
   ],
   'LeafTheme.borderRadius': [
     '基础圆角；数字为 px，小标签按 0.5、sm/lg 控件按 0.8/1.2、内容面与浮层按 1.4/1.6 倍生成。',

@@ -76,12 +76,7 @@ export function ThemeColors() {
         <Button onClick={() => setBlackText(!blackText)}>
           {blackText ? '改为白字' : '改为黑字'}
         </Button>
-        <Card
-          variant="layered"
-          size="sm"
-          title="共享底板"
-          description="分层 Card 的外层画布使用 mutedSurfaceColor。"
-        >
+        <Card size="sm" title="共享底板" description="Segmented Tabs 外轨使用 mutedSurfaceColor。">
           <Tabs
             type="segmented"
             size="sm"
@@ -91,12 +86,12 @@ export function ThemeColors() {
               {
                 key: 'surface',
                 label: '内容表面',
-                children: '选中的标签滑块与内嵌内容仍基于内容表面。',
+                children: '选中的标签滑块与卡片内容仍基于内容表面。',
               },
               {
                 key: 'muted',
                 label: '共享底板',
-                children: '外层分层画布与分段轨道共用 mutedSurfaceColor，不覆盖纯白滑块。',
+                children: '分段轨道共用 mutedSurfaceColor，不覆盖纯白滑块。',
               },
             ]}
           />

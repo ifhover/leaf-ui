@@ -470,7 +470,7 @@ test('loading compiles standalone animation variants, color overrides, and reduc
   assert.equal(pulseRing['border-radius'], '50%');
 });
 
-test('pagination preserves button icon padding shrink and removes ghost active page shadow with darker border', async () => {
+test('pagination preserves button icon padding shrink and keeps solid active page static and unclickable', async () => {
   const styles = await compiledStyles('pagination/pagination.scss');
   const nav = styles('.leaf-pagination > .leaf-button.leaf-pagination__nav');
   assert.equal(nav.gap, '4px');
@@ -487,16 +487,27 @@ test('pagination preserves button icon padding shrink and removes ghost active p
     '0px 8px',
   );
   assert.equal(styles('.leaf-pagination__jump').padding, '0px');
-
-  const activeGhost = styles(
-    '.leaf-pagination--ghost > .leaf-pagination__entry > .leaf-button[aria-current=page]',
-  );
-  assert.equal(activeGhost['--leaf-button-rest-shadow'], 'none');
-  assert.equal(activeGhost['--leaf-button-rest-background'], 'var(--leaf-color-surface)');
   assert.equal(
-    activeGhost['--leaf-button-rest-border'],
-    'var(--leaf-frame-border-color,var(--leaf-color-border-hover))',
+    styles('.leaf-pagination > .leaf-button:not([aria-current=page])')['--leaf-button-rest-color'],
+    'var(--leaf-component-pagination-color,var(--leaf-color-text))',
   );
+
+  const active = styles(
+    '.leaf-pagination > .leaf-pagination__entry > .leaf-button[aria-current=page]',
+  );
+  assert.equal(active.color, 'var(--leaf-button-base-color)');
+  assert.equal(active.background, 'var(--leaf-button-base-background)');
+  assert.equal(active['border-color'], 'var(--leaf-button-base-border)');
+  assert.equal(active['box-shadow'], 'var(--leaf-button-base-shadow)');
+  assert.equal(active.opacity, '1');
+  assert.equal(active.cursor, 'default');
+  assert.equal(active.translate, 'none');
+
+  const disabledActive = styles(
+    '.leaf-pagination[data-disabled] > .leaf-pagination__entry > .leaf-button[aria-current=page]:disabled',
+  );
+  assert.equal(disabledActive.opacity, '0.45');
+  assert.equal(disabledActive.cursor, 'not-allowed');
 });
 
 test('P2 compiled styles keep masonry fallback chain, restrained steps/float motion, and timeline/progress fixes', async () => {
@@ -575,4 +586,27 @@ test('P3 compiled styles keep restrained BackTop motion, Popconfirm error typogr
     path.resolve(import.meta.dirname, '../src/rate/rate.scss'),
   ).css;
   assert.match(rateCss, /@media \(forced-colors: active\)[\s\S]*\.leaf-rate__empty/u);
+});
+
+test('button isolates text variant from frame borders and keeps neutral borderColor scoped to outline', async () => {
+  const styles = await compiledStyles('button/button.scss');
+  const solid = styles('.leaf-button:is(.leaf-button--solid)');
+  assert.equal(solid['--leaf-button-rest-border'], 'transparent');
+  assert.equal(
+    solid['--leaf-button-frame-border'],
+    'var(--leaf-frame-border-color,var(--leaf-button-rest-border))',
+  );
+  assert.equal(
+    styles('.leaf-button:is(.leaf-button--outline)')['--leaf-button-rest-border'],
+    'var(--leaf-color-border)',
+  );
+  const text = styles('.leaf-button:is(.leaf-button--text)');
+  assert.equal(text['--leaf-button-frame-border'], 'var(--leaf-button-rest-border)');
+  const base = styles(
+    '.leaf-button:is(.leaf-button--solid, .leaf-button--outline, .leaf-button--text, .leaf-button--link, .leaf-button--danger)',
+  );
+  assert.equal(
+    base['--leaf-button-base-border'],
+    'var(--leaf-component-button-border-color,var(--leaf-button-frame-border))',
+  );
 });

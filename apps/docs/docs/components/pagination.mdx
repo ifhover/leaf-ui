@@ -112,6 +112,6 @@ export const leafDoc = { component: 'Pagination', primaryApi: 'PaginationProps' 
 | `disabled` | `boolean` | `false` | 禁用交互。 |
 | `hideOnSinglePage` | `boolean` | `false` | 总页数不足两页时隐藏 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 页码按钮、条数选择器和跳转输入框的尺寸 |
-| `variant` | `'outline' \| 'ghost'` | `'ghost'` | 按钮样式：无边框（默认，当前页直接切换为描边方框） / 描边（当前页为无边框纯文字） |
+| `variant` | `'outline' \| 'ghost'` | `'ghost'` | 按钮样式：无边框（默认） / 描边；当前选中页均以按钮 `solid` 样式展示、不可点击且悬停鼠标指针无变化 |
 
 组件同时支持 `aria-label`、`className`、`style` 等原生 `<nav>` 属性。

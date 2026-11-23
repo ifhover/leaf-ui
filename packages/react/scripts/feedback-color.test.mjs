@@ -111,6 +111,10 @@ test('compiled alert and close button use their intended feedback roles', async 
   assert.equal(rule('.leaf-alert')['--leaf-status-ink'], 'var(--leaf-color-text)');
   assert.equal(rule('.leaf-alert')['--leaf-alert-background'], 'var(--leaf-color-surface)');
   assert.equal(rule('.leaf-alert')['--leaf-alert-border-color'], 'var(--leaf-color-border)');
+  assert.equal(
+    rule('.leaf-alert')['--leaf-alert-frame-border'],
+    'var(--leaf-frame-border-color,var(--leaf-alert-border-color))',
+  );
   assert.equal(rule('.leaf-alert--success')['--leaf-status-ink'], 'var(--leaf-color-success-ink)');
   assert.equal(rule('.leaf-alert--warning')['--leaf-status-ink'], 'var(--leaf-color-warning-ink)');
   assert.equal(rule('.leaf-alert--danger')['--leaf-status-ink'], 'var(--leaf-color-danger-ink)');
@@ -147,6 +151,7 @@ test('compiled alert and close button use their intended feedback roles', async 
       toneRule['--leaf-alert-border-color'],
       'color-mix(in srgb,var(--leaf-feedback-color)25%,var(--leaf-color-border))',
     );
+    assert.equal(toneRule['--leaf-alert-frame-border'], 'var(--leaf-alert-border-color)');
   }
   assert.equal(
     rule('.leaf-alert__close:hover:not(:disabled)').background,

@@ -9,7 +9,7 @@ export function ContentRegion() {
         <CardTitle level={2} size="lg" description="Maintain project notes and delivery resources.">
           Project resources
         </CardTitle>
-        <Card title="Release notes" variant="layered">
+        <Card title="Release notes">
           <Flex direction="column" gap="md">
             <Text>This update includes component usage and integration notes.</Text>
             <Flex align="center" justify="space-between" gap="sm" wrap>

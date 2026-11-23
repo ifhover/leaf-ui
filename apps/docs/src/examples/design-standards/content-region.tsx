@@ -9,7 +9,7 @@ export function ContentRegion() {
         <CardTitle level={2} size="lg" description="集中维护项目说明与交付资料。">
           项目资料
         </CardTitle>
-        <Card title="发布说明" variant="layered">
+        <Card title="发布说明">
           <Flex direction="column" gap="md">
             <Text>本次更新包含组件用法与接入说明。</Text>
             <Flex align="center" justify="space-between" gap="sm" wrap>

@@ -7,6 +7,23 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.19.0 - 2026-11-24
+
+### Features
+
+- **DataTable card presentation, header region, and tabs**: Added `variant="card"` on `DataTable` (wrapping a full-width table inside a `Card` with outer column edges aligned to `Card` padding and pagination rendered inside the card body without `Card` footer chrome), along with `title`, `description`, `extra`, and `tabs` matching `Card`.
+- **Dedicated control frame border token**: Added `frameBorderColor` on `LeafThemeTokens` (emitting `--leaf-frame-border-color`) to configure outer frames for `solid`/`danger` `Button` and `Switch` independently.
+
+### Improvements and fixes
+
+- **Focus ring, pagination, table, and line tabs polish**: Restored primary focus borders with a `12%` translucent primary ring across field-family inputs and selects; changed the active `Pagination` page to a static, unclickable `solid` button; updated the `Table` header bottom rule to `1px`; and restored primary interactive feedback, the `1px` full-width header divider, and the sliding indicator for default `line` `Tabs` (`card` and `segmented` remain neutral).
+- **Fixed selected preset hover feedback in `DateRangePicker`**: Switched pressed side presets (`aria-pressed="true"`) from direct background/color overrides to `Button` state CSS variables so hovering or pressing a selected preset continues to update its background.
+
+### Breaking changes and migration
+
+- **Removed `Card` layered variant**: Removed `variant` (`'default' | 'layered'`), `.leaf-card--layered`, and layered card styles on `Card`, retaining a single default presentation; compose `Card` directly with `description` and `footer`.
+- **Separated `borderColor` from `--leaf-frame-border-color`**: `LeafThemeTokens.borderColor` no longer emits `--leaf-frame-border-color` and now overrides only the standard neutral `--leaf-color-border` (preventing neutral border tweaks from adding borders to `solid`/`text`/`danger` `Button`, `Switch`, and semantic `Alert` states). Use the new `LeafThemeTokens.frameBorderColor` when adding outer frames to solid/danger buttons or switches (`text` buttons and semantic `Alert` states retain their own borders).
+
 ## 0.18.0 - 2026-11-23
 
 ### Features

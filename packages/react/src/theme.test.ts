@@ -298,6 +298,18 @@ describe('component padding geometry', () => {
       expect(variables[`--leaf-component-dropdown-padding-${side}`]).toBe('3px');
   });
 
+  it('keeps neutral borderColor separate from frameBorderColor while allowing explicit opt-in', () => {
+    const neutralOnly = leafThemeVariables({ tokens: { borderColor: '#e5e7eb' } });
+    expect(neutralOnly['--leaf-color-border']).toBe('#e5e7eb');
+    expect(neutralOnly['--leaf-frame-border-color']).toBeUndefined();
+
+    const frameOutlined = leafThemeVariables({
+      tokens: { borderColor: '#e5e7eb', frameBorderColor: '#111827' },
+    });
+    expect(frameOutlined['--leaf-color-border']).toBe('#e5e7eb');
+    expect(frameOutlined['--leaf-frame-border-color']).toBe('#111827');
+  });
+
   it('derives harmonic control and surface radii when borderRadius changes', () => {
     expect(leafThemeVariables({ borderRadius: 10 })).toEqual({
       '--leaf-radius': '10px',

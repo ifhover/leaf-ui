@@ -77,10 +77,9 @@ export function ThemeColors() {
           {blackText ? 'Use white text' : 'Use black text'}
         </Button>
         <Card
-          variant="layered"
           size="sm"
           title="Shared muted surface"
-          description="The layered Card outer canvas uses mutedSurfaceColor."
+          description="Segmented Tabs tracks use mutedSurfaceColor."
         >
           <Tabs
             type="segmented"
@@ -91,13 +90,13 @@ export function ThemeColors() {
               {
                 key: 'surface',
                 label: 'Content surface',
-                children: 'The active tab pill and inset content keep using the content surface.',
+                children: 'The active tab pill and card body keep using the content surface.',
               },
               {
                 key: 'muted',
                 label: 'Muted surface',
                 children:
-                  'Outer layered canvases and segmented tracks share mutedSurfaceColor without tinting the clean pill.',
+                  'Segmented tracks share mutedSurfaceColor without tinting the clean pill.',
               },
             ]}
           />

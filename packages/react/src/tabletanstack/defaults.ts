@@ -1,4 +1,5 @@
 import type { CSSProperties, HTMLAttributes, ReactNode, Ref, TdHTMLAttributes } from 'react';
+import type { CardTabsProps } from '../card/card';
 import type { PaginationProps } from '../pagination/pagination';
 import type { ControlSize } from '../shared/types';
 
@@ -17,7 +18,16 @@ export interface DataTableVirtualOptions {
 
 /** Shared presentation props do not depend on TanStack or the caller's row type. */
 export interface DataTablePresentationProps
-  extends Omit<HTMLAttributes<HTMLDivElement>, 'children'> {
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'title'> {
+  /** Visual container style; `card` wraps the table in a Card without horizontal body padding. */
+  variant?: 'default' | 'card';
+  title?: ReactNode;
+  /** Supporting text displayed below the title. */
+  description?: ReactNode;
+  /** Action or status content placed at the inline end of the header. */
+  extra?: ReactNode;
+  /** Tabs placed above the table; matches `Card` `tabs` behavior. */
+  tabs?: CardTabsProps;
   size?: ControlSize;
   /** Add an outer frame around the table without changing internal dividers. */
   bordered?: boolean;

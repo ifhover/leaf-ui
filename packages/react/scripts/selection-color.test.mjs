@@ -78,33 +78,33 @@ test('link buttons brighten on hover and darken on press while danger is a singl
   );
 });
 
-test('line Tabs use muted unselected text and monochrome selected paint without solid or pill variants', async () => {
+test('line Tabs use primary selection feedback and sliding indicator without solid or pill variants', async () => {
   const tabs = await compiledStyles('tabs/tabs.scss');
   const line = tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab');
   assert.equal(
     line['--leaf-tabs-tab-color'],
-    'var(--leaf-component-tabs-muted-color,var(--leaf-color-text-muted))',
+    'var(--leaf-component-tabs-muted-color,var(--leaf-component-tabs-color,var(--leaf-color-text)))',
+  );
+  assert.equal(
+    line['--leaf-tabs-tab-hover-color'],
+    'var(--leaf-component-tabs-color,var(--leaf-color-primary-hover))',
+  );
+  assert.equal(
+    line['--leaf-tabs-tab-active-color'],
+    'var(--leaf-component-tabs-color,var(--leaf-color-primary-link-active))',
   );
   const selected = tabs(
     '.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab[aria-selected=true]',
   );
   assert.equal(
     selected['--leaf-tabs-tab-color'],
-    'var(--leaf-component-tabs-color,var(--leaf-color-text))',
+    'var(--leaf-component-tabs-color,var(--leaf-color-primary))',
   );
   for (const state of ['hover', 'active']) {
-    assert.equal(
-      line[`--leaf-tabs-tab-${state}-color`],
-      'var(--leaf-component-tabs-color,var(--leaf-color-text))',
-    );
     assert.equal(selected[`--leaf-tabs-tab-${state}-color`], 'var(--leaf-tabs-tab-color)');
   }
-  assert.equal(line.transition, undefined);
-  assert.equal(
-    tabs('.leaf-tabs__tab').transition,
-    'color var(--leaf-motion-fast)var(--leaf-motion-easing)',
-  );
-  assert.equal(selected['text-shadow'], undefined);
+  assert.equal(line.transition, 'color calc(var(--leaf-motion-color)* 1.5)ease');
+  assert.equal(selected['text-shadow'], '0 0 0.25px currentColor');
   for (const state of ['hover', 'active']) {
     const selector =
       state === 'hover'
@@ -128,8 +128,8 @@ test('line Tabs use muted unselected text and monochrome selected paint without 
     );
   }
   assert.equal(
-    tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab::after').background,
-    'var(--leaf-component-tabs-indicator-color,var(--leaf-color-text))',
+    tabs('.leaf-tabs__indicator::after').background,
+    'var(--leaf-component-tabs-indicator-color,var(--leaf-color-primary))',
   );
   assert.equal(
     tabs('.leaf-tabs--segmented .leaf-tabs__indicator')['box-shadow'],
@@ -145,7 +145,7 @@ test('line Tabs use muted unselected text and monochrome selected paint without 
   }
 });
 
-test('line Tabs share sizing and fade-in/out underline without bottom header border outside Card', async () => {
+test('line Tabs share 0.17.x spacing, bottom hairline divider, and sliding indicator', async () => {
   const tabs = await compiledStyles('tabs/tabs.scss');
   const large = tabs('.leaf-tabs--lg');
   assert.equal(large['--leaf-tabs-item-padding'], '18px');
@@ -160,46 +160,45 @@ test('line Tabs share sizing and fade-in/out underline without bottom header bor
     assert.match(tabs(selector).gap, /--leaf-tabs-item-gap/);
   }
   const lineRoot = tabs('.leaf-tabs--line');
-  assert.equal(lineRoot['--leaf-tabs-item-gap'], '4px');
-  assert.equal(lineRoot['--leaf-tabs-item-padding'], '10px');
+  assert.equal(lineRoot['--leaf-tabs-item-gap'], '32px');
+  assert.equal(lineRoot['--leaf-tabs-line-padding-block'], '12px');
+  assert.equal(
+    lineRoot['--leaf-tabs-line-height'],
+    'calc(var(--leaf-component-tabs-font-size,var(--leaf-current-font-size))+ 8px)',
+  );
+  assert.equal(
+    lineRoot['--leaf-current-control-height'],
+    'var(--leaf-component-tabs-height,calc(var(--leaf-tabs-line-height)+ var(--leaf-tabs-line-padding-block)*2))',
+  );
+  const lineSm = tabs('.leaf-tabs--line.leaf-tabs--sm');
+  assert.equal(lineSm['--leaf-tabs-line-padding-block'], '8px');
+  assert.equal(lineSm['--leaf-current-font-size'], 'var(--leaf-font-size)');
+  assert.equal(tabs('.leaf-tabs--line.leaf-tabs--lg')['--leaf-tabs-line-padding-block'], '16px');
   const line = tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab');
-  assert.equal(line['padding-inline'], 'var(--leaf-tabs-item-padding,10px)');
+  assert.equal(line['padding-inline'], '0px');
+  assert.equal(line['border-radius'], '0px');
   assert.equal(line['min-height'], 'var(--leaf-current-control-height)');
-  assert.equal(tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__indicator').display, 'none');
-  for (const [selector, suffix, offset] of [
-    ['.leaf-tabs--line', '', ''],
-    ['.leaf-tabs--line.leaf-tabs--sm', '-sm', '-sm'],
-    ['.leaf-tabs--line.leaf-tabs--lg', '-lg', '-lg'],
-  ]) {
-    assert.equal(
-      tabs(selector)['--leaf-current-control-height'],
-      `var(--leaf-component-tabs-height${suffix},calc(var(--leaf-control-height${offset})+ 2px))`,
-    );
-  }
-  const underline = tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab::after');
-  assert.equal(underline['inset-inline'], '0px');
-  assert.equal(underline.bottom, '0px');
-  assert.equal(underline.height, '2px');
-  assert.equal(underline.opacity, '0');
-  assert.equal(
-    underline.transition,
-    'opacity var(--leaf-motion-duration)var(--leaf-motion-easing)',
+  assert.equal(line['line-height'], 'var(--leaf-tabs-line-height)');
+  assert.match(
+    tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__indicator[data-animate=true]')
+      .transition,
+    /transform calc\(var\(--leaf-motion-color\)\* 1\.5\)/,
   );
-  assert.equal(underline['border-radius'], undefined);
+  const headerDivider = tabs('.leaf-tabs--line > .leaf-tabs__header::before');
+  assert.equal(headerDivider['border-block-end'], '1px solid');
   assert.equal(
-    tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab[aria-selected=true]::after')
-      .opacity,
-    '1',
+    headerDivider['border-block-end-color'],
+    'var(--leaf-component-tabs-border-color,var(--leaf-color-divider))',
   );
+  const bottomRule = tabs(
+    '.leaf-tabs--line.leaf-tabs--bottom > .leaf-tabs__header::before, .leaf-tabs--line.leaf-tabs--bottom > .leaf-tabs__header .leaf-tabs__indicator::after',
+  );
+  assert.equal(bottomRule.top, '0px');
+  assert.equal(bottomRule.bottom, 'auto');
   assert.throws(
-    () => tabs('.leaf-tabs--line > .leaf-tabs__header::before'),
+    () => tabs('.leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab::after'),
     /missing compiled rule/u,
   );
-  const bottomUnderline = tabs(
-    '.leaf-tabs--line.leaf-tabs--bottom > .leaf-tabs__header .leaf-tabs__tab::after',
-  );
-  assert.equal(bottomUnderline.top, '0px');
-  assert.equal(bottomUnderline.bottom, 'auto');
   const card = await compiledStyles('card/card.scss');
   assert.equal(card('.leaf-card__tabs')['--leaf-current-control-height'], undefined);
   const cardHeader = card('.leaf-card__tabs > .leaf-tabs__header');

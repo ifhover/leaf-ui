@@ -379,11 +379,11 @@ test('requires review for formulas inside shared recipes without counting them a
   assert.match(changed.result.errors.join('\n'), /46%/u);
 });
 
-test('requires fields to use the shared neutral recipe instead of local color overrides', async (t) => {
+test('requires fields to use the shared primary recipe instead of local color overrides', async (t) => {
   const files = {
     'input/input.scss': `.leaf-input {
-  @include mixins.field('input', 'primary');
-  --leaf-field-color: var(--leaf-color-primary);
+  @include mixins.field('input', 'neutral');
+  --leaf-field-color: var(--leaf-color-text-muted);
 }`,
     'select/select.scss': `.leaf-select {
   @include mixins.field('select');
@@ -393,16 +393,12 @@ test('requires fields to use the shared neutral recipe instead of local color ov
   const invalid = await fixture(t, files, {
     fieldFamily: {
       consumers: ['input/input.scss', 'select/select.scss'],
-      primaryFocusConsumers: [],
-      neutralFocusConsumers: {
-        'input/input.scss': 'input',
-        'select/select.scss': 'select',
-      },
+      primaryFocusConsumers: ['input/input.scss', 'select/select.scss'],
     },
   });
   assert.equal(invalid.result.ok, false);
-  assert.match(invalid.result.errors.join('\n'), /shared neutral field variant for input/u);
-  assert.match(invalid.result.errors.join('\n'), /must not redefine field-shell color/u);
+  assert.match(invalid.result.errors.join('\n'), /shared primary field recipe for input/u);
+  assert.match(invalid.result.errors.join('\n'), /must not redefine --leaf-field-color/u);
 
   const valid = await fixture(
     t,
@@ -411,17 +407,13 @@ test('requires fields to use the shared neutral recipe instead of local color ov
   @include mixins.field('input');
 }`,
       'select/select.scss': `.leaf-select {
-  @include mixins.field('select', 'neutral');
+  @include mixins.field('select', 'primary');
 }`,
     },
     {
       fieldFamily: {
         consumers: ['input/input.scss', 'select/select.scss'],
-        primaryFocusConsumers: [],
-        neutralFocusConsumers: {
-          'input/input.scss': 'input',
-          'select/select.scss': 'select',
-        },
+        primaryFocusConsumers: ['input/input.scss', 'select/select.scss'],
       },
     },
   );
@@ -451,38 +443,36 @@ test('primary field contracts can name dashed component slots explicitly', async
   const { result } = await fixture(
     t,
     {
-      [file]: ".leaf-date-picker { @include mixins.field('date-picker', 'primary'); }",
+      [file]: ".leaf-date-picker { @include mixins.field('date-picker'); }",
     },
     { fieldFamily: { consumers: [file], primaryFocusConsumers: { [file]: 'date-picker' } } },
   );
   assert.equal(result.ok, true);
 });
 
-test('requires an explicit primary variant for fields registered as primary exceptions', async (t) => {
+test('requires an explicit neutral variant for fields registered as neutral exceptions', async (t) => {
   const limits = {
     fieldFamily: {
       consumers: ['textarea/textarea.scss'],
-      primaryFocusConsumers: { 'textarea/textarea.scss': 'textarea' },
+      neutralFocusConsumers: { 'textarea/textarea.scss': 'textarea' },
     },
   };
-  for (const call of ["field('textarea', 'primary')"]) {
-    const valid = await fixture(
-      t,
-      {
-        'textarea/textarea.scss': `.leaf-textarea { @include mixins.${call}; }`,
-      },
-      limits,
-    );
-    assert.equal(valid.result.ok, true);
-  }
-  for (const call of ["field('textarea')", "field('textarea', 'neutral')"]) {
+  const valid = await fixture(
+    t,
+    {
+      'textarea/textarea.scss': `.leaf-textarea { @include mixins.field('textarea', 'neutral'); }`,
+    },
+    limits,
+  );
+  assert.equal(valid.result.ok, true);
+  for (const call of ["field('textarea')", "field('textarea', 'primary')"]) {
     const invalid = await fixture(
       t,
       { 'textarea/textarea.scss': `.leaf-textarea { @include mixins.${call}; }` },
       limits,
     );
     assert.equal(invalid.result.ok, false);
-    assert.match(invalid.result.errors.join('\n'), /shared primary field recipe/u);
+    assert.match(invalid.result.errors.join('\n'), /shared neutral field variant/u);
   }
 });
 

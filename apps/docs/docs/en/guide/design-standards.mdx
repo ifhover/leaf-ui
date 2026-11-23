@@ -16,8 +16,8 @@ This guide covers component composition and the scales for custom page layouts. 
 | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Menu](/en/components/menu)       | Defaults to `neutral`, using a subtle hover fill and `surface-muted` monochrome selection.                                             | Keep navigation neutral rather than adding large brand-colored highlights; choose `raised` or `primary` explicitly when needed.                                                             |
 | [Button](/en/components/button)   | Defaults to `outline`: a neutral content surface and plain border (no shadow) with a subtle hover background.                          | Keep ordinary actions neutral and reserve `solid` for primary actions (supporting adaptive `'neutral'` monochrome contrast); adjust button themes locally via `ConfigProvider` when needed. |
-| [Card](/en/components/card)       | `variant="layered"` puts a small muted heading on the canvas and content on an inner surface. Card itself still defaults to `default`. | Use `layered` for independent tasks needing a heading/content separation. It does not display `description`; put important explanations in the body or a standalone CardTitle.              |
-| [DataTable](/en/components/table) | Uses a clean data surface by default, with muted 500-weight headers and neutral row states.                                            | Place the main table directly and render filters and other actions alongside it, usually without another layered Card around them.                                                          |
+| [Card](/en/components/card)       | Uses a clean content surface with a crisp neutral border and lightest resting shadow (`shadow-xs`), sharing consistent padding across heading, body, and footer. | Use for independent task sections needing clear container framing; add context via `description` or a standalone `CardTitle`. |
+| [DataTable](/en/components/table) | Uses a clean data surface by default, with muted 500-weight headers and neutral row states.                                                                      | Place the main table directly and render filters and other actions alongside it; use `variant="card"` when a card frame is needed. |
 
 Canvas and content surface are roles, not fixed light gray and pure white. Preserve their grouping when users change surface colors or switch to dark appearance. Retain each component's selected surface, checkmark, border or indicator; do not impose either "selection never has a background" or another page-level brand highlight.
 
@@ -70,7 +70,7 @@ Size and density are separate dimensions. Use consistent `size` values in one ro
 
 Use `--leaf-radius-sm`, `--leaf-control-radius-sm`, `--leaf-radius`, `--leaf-control-radius-lg`, `--leaf-radius-md` and `--leaf-radius-lg`: defaults are `5 / 8 / 10 / 12 / 14 / 16px`, derived from the base with whole-pixel integer offsets (`borderRadius: 0` zeroes all derived radii, so `sm / md / lg` controls use `8 / 10 / 12px` and sized cards / bordered descriptions use `12 / 14 / 16px`). Components normally handle their own nested geometry; do not override internal `.leaf-*` radii.
 
-Use the library's `--leaf-shadow-xs`, `--leaf-shadow-sm`, `--leaf-shadow-md` and `--leaf-shadow-lg` roles: default Card uses the lightest resting feedback, layered Card / Table inner surfaces use `shadow-sm`, and floating panels use higher levels. Prefer component defaults without adding duplicate shadows around containers. Hover does not lift, enlarge or raise shadow levels. Configure necessary overrides through the theme and preserve user `controlShadow` / `surfaceShadow` settings.
+Use the library's `--leaf-shadow-xs`, `--leaf-shadow-sm`, `--leaf-shadow-md` and `--leaf-shadow-lg` roles: Card uses the lightest resting feedback (`shadow-xs`), Segmented Tabs active pills use `shadow-sm`, and floating panels use higher levels. Prefer component defaults without adding duplicate shadows around containers. Hover does not lift, enlarge or raise shadow levels. Configure necessary overrides through the theme and preserve user `controlShadow` / `surfaceShadow` settings.
 
 Input, InputNumber, InputSearch, Select, AutoComplete, Cascader, TreeSelect and single-value pickers default to 240px and do not resize after selection. Date ranges use 300px and datetime ranges 380px; allow more width for longer formats. Fields shrink in narrow containers and fill FormField; `style.width` overrides the default. Textarea remains full-width. Page layouts must not depend on these default widths remaining fixed.
 
@@ -113,13 +113,13 @@ Place the page within the current ConfigProvider region. These styles need not b
 
 - Use default outlined buttons for ordinary actions and `variant="solid"` for primary actions. Use `text` for quieter local actions, `link` for inline link-style actions, and `variant="danger"` for destructive actions.
 - Do not add custom hover lifts, scaling, colored halos or decorative gradients in page CSS. Keep components' built-in feedback instead of redesigning every state.
-- Input and picker fields subtly deepen their border to `--leaf-color-border-hover` on hover and pair a crisp `--leaf-color-text-muted` border with a restrained 3px translucent neutral outer ring when focused or open by default. Textarea, Mentions and InputNumber follow the same rule. Error, warning and disabled states retain their feedback (with semantic focus rings on error/warning fields); buttons retain a neutral keyboard focus outline.
+- Input and picker fields subtly deepen their border to `--leaf-color-border-hover` on hover and pair a crisp `--leaf-color-primary` border with a restrained 3px translucent primary outer ring when focused or open by default. Textarea, Mentions and InputNumber follow the same rule. Error, warning and disabled states retain their feedback (with semantic focus rings on error/warning fields); buttons retain a neutral keyboard focus outline.
 
 ## Minimal compositions
 
 ### Content section
 
-A standalone heading carries the description while the layered Card retains a short section name. Use existing typography, spacing and actions without adding a card skin.
+A standalone heading carries the description while the Card retains a short section name. Use existing typography, spacing and actions without adding a card skin.
 
 <ComponentExample title="Content section" preview={<ContentRegion />} fileName="content-region.tsx" width={600}>
 

@@ -16,7 +16,7 @@ import { ThemeColors } from '../../src/examples/theming/colors';
 
 通过 ConfigProvider 的 `theme.primaryColor` 修改主题基色（支持色值或 `'neutral'`），其他五组通过 `theme.tokens` 修改。更新这些 JS 配置即可重新生成颜色；修改 DOM 样式不会触发 JS 主题重算。
 
-示例固定为浅色外观，并把 `tokens.mutedSurfaceColor` 设为 `rgb(244,243,239)`。分层 Card 的外层画布使用这份底板，卡片内部内容与净白控件仍使用内容表面；组件显式覆盖优先。
+示例固定为浅色外观，并把 `tokens.mutedSurfaceColor` 设为 `rgb(244,243,239)`。`Segmented Tabs` 外轨使用这份底板，卡片内容面与选中滑块仍使用内容表面；组件显式覆盖优先。
 
 所有 `on*Color` 默认白色，需要黑字时将对应字段设为 `#000000`。请根据实际背景选择合适的字色。
 

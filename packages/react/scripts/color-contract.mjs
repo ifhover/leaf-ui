@@ -69,12 +69,12 @@ const NUMERIC_DERIVED_TOKEN = new RegExp(
 const FIELD_INCLUDE = /@include\s+(?:[a-z0-9_-]+\.)?field\s*\(/iu;
 const PRIMARY_FIELD_INCLUDE = (component) =>
   new RegExp(
-    `@include\\s+(?:[a-z0-9_-]+\\.)?field\\(\\s*['"]${component}['"]\\s*,\\s*['"]primary['"]\\s*\\)`,
+    `@include\\s+(?:[a-z0-9_-]+\\.)?field\\(\\s*['"]${component}['"]\\s*(?:,\\s*['"]primary['"]\\s*)?\\)`,
     'iu',
   );
 const NEUTRAL_FIELD_INCLUDE = (component) =>
   new RegExp(
-    `@include\\s+(?:[a-z0-9_-]+\\.)?field\\(\\s*['"]${component}['"]\\s*(?:,\\s*['"]neutral['"]\\s*)?\\)`,
+    `@include\\s+(?:[a-z0-9_-]+\\.)?field\\(\\s*['"]${component}['"]\\s*,\\s*['"]neutral['"]\\s*\\)`,
     'iu',
   );
 const FIELD_PAINT_DECLARATION =
@@ -705,7 +705,7 @@ function validateFieldFamily(scan, baseline, errors) {
     }
     if (!PRIMARY_FIELD_INCLUDE(component).test(source))
       errors.push(
-        `${file} must use the shared primary field recipe for ${component}, with explicit primary focus.`,
+        `${file} must use the shared primary field recipe for ${component}, with default or explicit primary focus.`,
       );
     if (/--leaf-field-(?:color|rest-border)\s*:/u.test(source))
       errors.push(
@@ -717,9 +717,7 @@ function validateFieldFamily(scan, baseline, errors) {
   )) {
     const source = stripComments(scan.contents?.get?.(file) ?? '');
     if (!NEUTRAL_FIELD_INCLUDE(component).test(source))
-      errors.push(
-        `${file} must retain the shared neutral field variant for ${component}, with default or explicit neutral focus.`,
-      );
+      errors.push(`${file} must retain the shared neutral field variant for ${component}.`);
     if (/--leaf-field-(?:color|rest-border)\s*:/u.test(source))
       errors.push(`${file} must not redefine field-shell color; use the shared field recipe.`);
   }

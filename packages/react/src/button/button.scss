@@ -138,6 +138,7 @@
     &:is(&--danger) {
       --leaf-button-rest-border: transparent;
       --leaf-button-rest-shadow: none;
+      --leaf-button-frame-border: var(--leaf-frame-border-color, var(--leaf-button-rest-border));
     }
     &:is(&--solid) {
       --leaf-button-rest-color: var(--leaf-button-on-color);
@@ -168,6 +169,8 @@
     }
     &:is(&--text) {
       @include mixins.text-action-family;
+      // 纯文字按钮保持无框结构，不跟随全局统一描边变量。
+      --leaf-button-frame-border: var(--leaf-button-rest-border);
       --leaf-button-rest-color: var(--leaf-text-action-color);
       --leaf-button-rest-background: transparent;
       --leaf-button-hover-background: var(--leaf-text-action-background);
@@ -197,7 +200,7 @@
       );
       --leaf-button-base-border: var(
         --leaf-component-button-border-color,
-        var(--leaf-frame-border-color, var(--leaf-button-rest-border))
+        var(--leaf-button-frame-border)
       );
       --leaf-button-base-shadow: var(
         --leaf-component-button-shadow,
@@ -233,10 +236,7 @@
           active,
           var(--leaf-button-active-color),
           var(--leaf-button-active-background),
-          var(
-            --leaf-component-button-border-color,
-            var(--leaf-frame-border-color, var(--leaf-button-active-border))
-          ),
+          var(--leaf-component-button-border-color, var(--leaf-button-frame-border)),
           var(--leaf-button-active-shadow)
         );
         &:not(.leaf-button--link) {

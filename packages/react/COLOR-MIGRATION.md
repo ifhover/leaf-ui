@@ -7,7 +7,7 @@
 - Zero-consumer CSS variables are pruned from global stylesheet / `deriveColors()` / Tailwind outputs (neutral `100..900`, semantic `light-N`/`dark-N` shades, `primary-indicator`, `primary-focus`, `primary-fill-border`, `primary-ink`/`-ink-hover`/`-ink-active`, `danger-hover`, `danger-link-hover`/`danger-link-active`, `*-soft-active`, `success-border`, `info-border`, and 4 unused `primary-alpha-*` recipes), leaving 50 active global tokens + 6 retained optical recipes in `src/color-recipes.ts`. `generateColorScale`, `neutralColorScale`, and `generateColorShades` remain exported JS utilities for runtime/docs calculations.
 - Solid press paint derives directly from the original base; outline press keeps text and border stable and adds a subtle neutral background. Explicit component/state overrides remain authoritative.
 - Semantic ink preserves the original base when readable on all applicable surfaces; otherwise `generateColorShades` selects readable adjustments. Built-in `primary` text/badges consume `primary` directly.
-- Tabs segmented tracks (`surface-muted`), inset Card outer canvases (`surface-muted`), and inset picker canvases share `surface-muted`. Set `tokens.mutedSurfaceColor` to an exact color such as `rgb(244, 243, 239)`. Selected Tabs sliders (`surface` + `shadow-xs`), Card inner panels, Drawer footers, and default pickers retain `surface`; explicit component backgrounds remain authoritative.
+- Tabs segmented tracks (`surface-muted`) and inset picker canvases share `surface-muted`. Set `tokens.mutedSurfaceColor` to an exact color such as `rgb(244, 243, 239)`. Selected Tabs sliders (`surface` + `shadow-xs`), Card surfaces, Drawer footers, and default pickers retain `surface`; explicit component backgrounds remain authoritative.
 
 Source-level review updated for the `0.18.0` monochrome redesign.
 
@@ -17,7 +17,7 @@ Source-level review updated for the `0.18.0` monochrome redesign.
 
 ## Shared family contract
 
-- `field` / `field-states` / `field-status` / `field-ring-variables`: shared field shell, hover `border-hover`, neutral focus by default (`$focus: neutral` using `text-muted` + 3px 20% ring; explicit `$focus: primary` supported), and validation precedence (border + 20% ring) for `autocomplete`, `cascader`, `colorpicker`, `datepicker`, `input`, `inputnumber`, `select`, `textarea`, and `treeselect`.
+- `field` / `field-states` / `field-status` / `field-ring-variables`: shared field shell, hover `border-hover`, primary focus by default (`$focus: primary` using `primary` + 3px 12% ring; explicit `$focus: neutral` supported), and validation precedence (border + 12% ring) for `autocomplete`, `cascader`, `colorpicker`, `datepicker`, `input`, `inputnumber`, `select`, `textarea`, and `treeselect`.
 - `choice` / `choice-states` / `choice-surfaces`: shared choice geometry and state order for `checkbox`, `radio`, and `switch` (`border-hover` resting border, `text-muted` unchecked hover, `primary`/`on-primary` checked).
 - `floating-paint` and shared floating/backdrop helpers: popup surfaces and portal paint for fields, menus, popovers, tooltips, pickers, and overlays.
 - `danger-soft-feedback-family`: `--leaf-danger-soft-background` maps to `danger-soft`; `--leaf-danger-soft-active-background` maps to `danger-soft-hover`. This is soft danger feedback, not a synonym for danger ink or danger indicators.
@@ -27,7 +27,7 @@ Source-level review updated for the `0.18.0` monochrome redesign.
 - `overlay-family`: dialog (light `rgb(0 0 0 / 28%)`, dark `[data-leaf-theme='dark']` `rgb(0 0 0 / 55%)`) and spotlight (light `rgb(0 0 0 / 45%)`, dark `[data-leaf-theme='dark']` `rgb(0 0 0 / 68%)`) overlay roles for `modal`, `drawer`, and `tour`.
 - `panel-canvas-family`: muted panel canvas for inset calendar-picker panels.
 - `status-ink-family` / `status-label-family`: readable status ink and soft status-label foreground/background roles (`primary` uses base `primary` directly; other semantic families use contrast-aware `*-ink`).
-- `table-family`: crisp `surface` table & header background, muted header ink (preserving `--leaf-component-table-color` override), `border` outer frame paired with softer `divider` horizontal rules (`2px` header bottom rule), and `resting-surface-shadow` on Card. Selected rows use `surface-muted` with unchanged hover; hover and zebra stripes share a light `25% option-hover` neutral mix over the table surface, while loading scrim retains the table's surface formula. Table is frameless by default and has no pinned-column shadows.
+- `table-family`: crisp `surface` table & header background, muted header ink (preserving `--leaf-component-table-color` override), `border` outer frame paired with softer `divider` horizontal rules (`1px` header bottom rule), and `resting-surface-shadow` on Card. Selected rows use `surface-muted` with unchanged hover; hover and zebra stripes share a light `25% option-hover` neutral mix over the table surface, while loading scrim retains the table's surface formula. Table is frameless by default (`variant="card"` wraps the table in Card) and has no pinned-column shadows.
 
 Single-consumer paint stays on direct semantic tokens or remains a documented local exception. A family is not introduced for a single consumer.
 
@@ -37,7 +37,7 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | ---: | --- | --- | --- | --- |
 | 1 | `alert` | `alert` | Status base/ink roles on a softened neutral surface via `subtle-action-background`; `option-hover` for close feedback | Reviewed |
 | 2 | `anchor` | `anchor` | Direct text, muted, and border roles; `choice-option-background()` hover and neutral indicator bar | Reviewed |
-| 4 | `auto-complete` | `autocomplete` | Neutral `field` focus; `floating-paint`; shared `choice-option` feedback | Inherited |
+| 4 | `auto-complete` | `autocomplete` | Primary `field` focus; `floating-paint`; shared `choice-option` feedback | Inherited |
 | 5 | `avatar` | `avatar` | Direct surface, text, and border roles; grouped text fallbacks cycle through `primary-soft` / `primary`, `info` / `warning` / `danger` `*-soft` / `*-ink` pairs, and neutral muted roles for identity, not status; explicit Avatar paint overrides win | Reviewed |
 | 6 | `back-top` | `backtop` | Inherits shared Button action paint | Inherited |
 | 7 | `badge` | `badge` | Status base and on-status foreground roles; inside placement has an explicitly fixed white separator ring, independent of theme surface and foreground | Reviewed |
@@ -46,13 +46,13 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 10 | `calendar` | `calendar` | `calendar-selection-family` and `segmented-surface-family`; `divider` hairline grid on `surface`; selected numeral uses `primary`, `on-primary`, and a `primary` boundary; today uses `primary` only; hover / press use the shared choice-option and `option-hover` backgrounds | Reviewed |
 | 11 | `card` | `card` | Direct border and surface roles; `resting-surface-shadow`; optional `divided` footer divider (`divider`) and `subtle-action-background` footer surface | Reviewed |
 | 12 | `carousel` | `carousel` | Local media-navigation controls over changing imagery | Exception |
-| 13 | `cascader` | `cascader` | Neutral `field` focus; `floating-paint`; `choice-option`; controlled structural borders | Inherited |
+| 13 | `cascader` | `cascader` | Primary `field` focus; `floating-paint`; `choice-option`; controlled structural borders | Inherited |
 | 14 | `checkbox` | `checkbox` | `choice` (`border-hover` resting border, `text-muted` unchecked hover); checked fill and border use `primary`, and content uses `on-primary` | Reviewed |
 | 15 | `collapse` | `collapse` | `control-size`; direct surface, divider, and text roles | Reviewed |
-| 16 | `color-picker` | `colorpicker` | Neutral `field` focus; shared Input for color text and segmented Tabs for formats; intrinsic hue/alpha/checker/preset paint | Reviewed + exception |
+| 16 | `color-picker` | `colorpicker` | Primary `field` focus; shared Input for color text and segmented Tabs for formats; intrinsic hue/alpha/checker/preset paint | Reviewed + exception |
 | 18 | `config-provider` | `config-provider` | Contrast-calculation canvas only; no component paint | Exception |
 | 19 | `confirm` | `confirm` | Inherits dialog/modal and button actions; danger-soft error detail | Inherited |
-| 20 | `date-picker` | `datepicker`, private `timepicker` | Neutral `field` focus; info/on-info native selection; `floating-paint`; shared calendar selection and `choice-option` time columns; persistent scrollbar | Reviewed |
+| 20 | `date-picker` | `datepicker`, private `timepicker` | Primary `field` focus; info/on-info native selection; `floating-paint`; shared calendar selection and `choice-option` time columns; persistent scrollbar | Reviewed |
 | 21 | `date-range-picker` | `daterangepicker`, private `timerangepicker` | Shared DateInput field/selection, calendar range and TimePanel option paint; persistent scrollbar | Reviewed |
 | 22 | `descriptions` | `descriptions` | Direct surface, divider, border, and muted roles | Reviewed |
 | 23 | `divider` | `divider` | Dedicated divider role | Reviewed |
@@ -67,10 +67,10 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 32 | `grid` | `grid` | No color responsibility | No color |
 | 33 | `image` | `image` | Fixed media-viewer overlays and exposed viewer variables | Exception |
 | 34 | `infinite-scroll` | `infinitescroll` | Direct muted, text, and surface roles | Reviewed |
-| 35 | `input` | `input` | `field('input')` (shared neutral focus default); controlled native reset | Inherited |
+| 35 | `input` | `input` | `field('input')` (shared primary focus default); controlled native reset | Inherited |
 | 36 | `input-mask` | `inputmask` | Inherits the input field shell and native reset | Inherited |
-| 37 | `input-number` | `inputnumber` | Neutral `field` focus; `option-hover` for stepper backgrounds | Reviewed |
-| 38 | `input-otp` | `inputotp` | Unified hover (`border-hover`), active slot `text-muted` / validation borders, and shared 3px `field-ring-variables` halo; field/base roles | Reviewed |
+| 37 | `input-number` | `inputnumber` | Primary `field` focus; `option-hover` for stepper backgrounds | Reviewed |
+| 38 | `input-otp` | `inputotp` | Unified hover (`border-hover`), active slot `primary` / validation borders, and shared 3px `field-ring-variables` halo; field/base roles | Reviewed |
 | 39 | `layout` | `layout` | Direct surface, muted, and divider roles | Reviewed |
 | 40 | `loading` | `loading` | Primary/border roles for all 12 animation variants and local translucent surface scrim | Exception |
 | 41 | `loading-bar` | `loadingbar` | Direct primary role | Reviewed |
@@ -80,7 +80,7 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 45 | `message` | `message` | Status roles; direct surface and elevation roles | Reviewed |
 | 46 | `modal` | `modal` | `overlay-family`; shared dialog sections; direct panel surface, `border`, and footer-only `divider` on Confirm-excluded Modal | Reviewed |
 | 47 | `notification` | `notification` | Status roles; direct surface and elevation roles | Reviewed |
-| 48 | `pagination` | `pagination` | Ghost defaults (`outline` page box on active `--leaf-color-surface` / `border-hover`, no shadow); `outline` renders active page in plain `text` without frame; labels & totals use `--leaf-color-text` | Reviewed |
+| 48 | `pagination` | `pagination` | Active page uses Button `solid` (`primary` / `on-primary`) with static `default` hover cursor and disabled click; inactive controls inherit `text` / `outline` neutral roles | Reviewed |
 | 49 | `popconfirm` | `popconfirm` | Inherits popover/modal and button action roles | Inherited |
 | 50 | `popover` | `popover` | `floating-paint` with divider border | Inherited |
 | 51 | `progress` | `progress` | Primary track/fill plus local shimmer effect | Exception |
@@ -90,7 +90,7 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 55 | `result` | `result` | Status, surface, and text roles | Reviewed |
 | 56 | `scroll-area` | `scrollarea` | Inherits scrollbar paint | Inherited |
 | 57 | `scrollbar` | `scrollbar` | `focus-ring`; direct muted/text/surface roles | Reviewed |
-| 58 | `select` | `select` | `field('select')` (shared neutral focus default); `floating-paint`; `choice-option`; `section-label` | Inherited |
+| 58 | `select` | `select` | `field('select')` (shared primary focus default); `floating-paint`; `choice-option`; `section-label` | Inherited |
 | 59 | `skeleton` | `skeleton` | Local text-subtle shimmer | Exception |
 | 60 | `slider` | `slider` | `accent-halo-family`; fill and thumb use `primary` | Reviewed |
 | 61 | `space` | `space` | No color responsibility | No color |
@@ -98,8 +98,8 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 63 | `statistic` | `statistic` | Direct text, muted, and status roles | Reviewed |
 | 64 | `steps` | `steps` | `control-size`; `focus-ring`; active and finished icons/connectors use neutral `surface` / `text` roles | Reviewed |
 | 65 | `switch` | `switch` | `choice`; unchecked `option-hover` track; checked `primary` track and `primary` border; `on-primary` thumb with `primary` spinner | Reviewed |
-| 66 | `table` / `table/tanstack` | `tabletanstack` | `table-family` crisp `surface` headers (`text-muted`, component color override preserved), softer `divider` rules (`2px` header line), `25% option-hover` hover and stripes, `surface-muted` selection; scrollbar | Inherited |
-| 67 | `tabs` | `tabs` | `segmented-surface-family` (`surface-muted` track, `surface` active slider with `shadow-sm`); `control-size`; monochrome `line` / `card` states | Reviewed |
+| 66 | `table` / `table/tanstack` | `tabletanstack` | `table-family` crisp `surface` headers (`text-muted`, component color override preserved), softer `divider` rules (`1px` header line), `25% option-hover` hover and stripes, `surface-muted` selection; optional `card` wrapper; scrollbar | Inherited |
+| 67 | `tabs` | `tabs` | `segmented-surface-family` (`surface-muted` track, `surface` active slider with `shadow-sm`); `control-size`; `line` tabs (`text` rest, `primary-hover` / `primary-link-active` / `primary` interactive & selected + `primary` indicator, `divider` bottom hairline) and monochrome `card` / `segmented` states | Reviewed |
 | 68 | `tag` | `tag` | `status-label-family`; soft backgrounds and foregrounds come from matching semantic roles (`primary` uses base `primary` directly); close feedback keeps `currentColor` translucency | Reviewed + exception |
 | 69 | `textarea` | `textarea` | `field`; native resize remains component-owned | Inherited |
 | 70 | `timeline` | `timeline` | Direct divider, primary, and status roles | Reviewed |
@@ -107,7 +107,7 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 72 | `tour` | `tour` | `overlay-family(spotlight)`; local target isolation | Reviewed |
 | 73 | `transfer` | `transfer` | Direct `surface` and `border` panels (`--leaf-shadow-xs`); `surface-muted` selected rows with `text` label | Reviewed |
 | 74 | `tree` | `tree` | `choice-option` row feedback; `surface-muted` drop-inside and `text` insertion bar; `shadow-md` drag preview | Reviewed |
-| 75 | `tree-select` | `treeselect` | Neutral `field` focus; `floating-paint`; tree selection semantics | Inherited |
+| 75 | `tree-select` | `treeselect` | Primary `field` focus; `floating-paint`; tree selection semantics | Inherited |
 | 76 | `typography` | `typography` | `surface-muted` action hover; `status-ink-family`; `primary` link roles; inline warning mark keeps its translucent content-highlight role | Reviewed + exception |
 | 77 | `upload` | `upload` | Neutral `border-hover` / `surface-muted` hover and dragover feedback; `focus-ring` | Reviewed |
 | 78 | `virtual-list` | `virtuallist` | `focus-ring`; direct surface/text roles | Reviewed |

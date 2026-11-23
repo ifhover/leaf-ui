@@ -47,7 +47,7 @@
     gap: var(--leaf-component-input-otp-gap, 8px);
   }
   .leaf-input-otp__slot {
-    --leaf-otp-focus-color: var(--leaf-color-text-muted);
+    --leaf-otp-focus-color: var(--leaf-color-primary);
     @include mixins.field-ring-variables(var(--leaf-otp-focus-color));
     position: relative;
     box-sizing: border-box;

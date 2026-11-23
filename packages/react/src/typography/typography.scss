@@ -142,7 +142,7 @@
   }
 
   .leaf-text__editor {
-    @include mixins.field-ring-variables(var(--leaf-color-text-muted));
+    @include mixins.field-ring-variables(var(--leaf-color-primary));
     box-sizing: border-box;
     width: 100%;
     min-height: var(--leaf-control-height);
@@ -158,7 +158,7 @@
     }
     &:focus {
       outline: none;
-      border-color: var(--leaf-color-text-muted);
+      border-color: var(--leaf-color-primary);
       box-shadow: var(--leaf-field-focus-shadow);
     }
   }

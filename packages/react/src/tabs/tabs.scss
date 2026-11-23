@@ -66,7 +66,7 @@
         inset-inline: 0;
         bottom: 0;
         height: 2px;
-        background: var(--leaf-component-tabs-indicator-color, var(--leaf-color-text));
+        background: var(--leaf-component-tabs-indicator-color, var(--leaf-color-primary));
       }
     }
     &__tab {
@@ -295,31 +295,33 @@
         order: 2;
       }
     }
-    &--line > &__header &__indicator {
-      display: none;
+    &--line > &__header {
+      @include mixins.line-header-divider(
+        var(--leaf-component-tabs-border-color, var(--leaf-color-divider))
+      );
+    }
+    &--line > &__header &__indicator[data-animate='true'] {
+      transition:
+        transform calc(var(--leaf-motion-color) * 1.5) ease,
+        width calc(var(--leaf-motion-color) * 1.5) ease,
+        height calc(var(--leaf-motion-color) * 1.5) ease;
     }
     &--line > &__header &__tab {
-      position: relative;
       min-height: var(--leaf-current-control-height);
-      padding-block: 4px;
-      padding-inline: var(--leaf-tabs-item-padding, 10px);
+      padding-block: max(
+        0px,
+        calc((var(--leaf-current-control-height) - var(--leaf-tabs-line-height)) / 2)
+      );
+      padding-inline: 0;
+      border-radius: 0;
       line-height: var(--leaf-tabs-line-height);
-      &::after {
-        content: '';
-        position: absolute;
-        inset-inline: 0;
-        bottom: 0;
-        height: 2px;
-        background: var(--leaf-component-tabs-indicator-color, var(--leaf-color-text));
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity var(--leaf-motion-duration) var(--leaf-motion-easing);
-      }
-      &[aria-selected='true']::after {
-        opacity: 1;
+      transition: color calc(var(--leaf-motion-color) * 1.5) ease;
+      &[aria-selected='true'] {
+        text-shadow: 0 0 0.25px currentColor;
       }
     }
-    &--line.leaf-tabs--bottom > &__header &__tab::after {
+    &--line.leaf-tabs--bottom > &__header::before,
+    &--line.leaf-tabs--bottom > &__header &__indicator::after {
       top: 0;
       bottom: auto;
     }
@@ -362,29 +364,28 @@
   }
 
   .leaf-tabs--line {
-    --leaf-tabs-item-gap: 4px;
-    --leaf-tabs-item-padding: 10px;
-    --leaf-tabs-line-height: var(--leaf-line-height);
+    --leaf-tabs-item-gap: 32px;
+    --leaf-tabs-line-padding-block: 12px;
+    --leaf-tabs-line-height: calc(
+      var(--leaf-component-tabs-font-size, var(--leaf-current-font-size)) + 8px
+    );
     --leaf-current-control-height: var(
       --leaf-component-tabs-height,
-      calc(var(--leaf-control-height) + 2px)
+      calc(var(--leaf-tabs-line-height) + var(--leaf-tabs-line-padding-block) * 2)
     );
     &.leaf-tabs--sm {
-      --leaf-tabs-item-gap: 2px;
-      --leaf-tabs-item-padding: 8px;
-      --leaf-tabs-line-height: var(--leaf-line-height-sm);
+      --leaf-tabs-line-padding-block: 8px;
+      --leaf-current-font-size: var(--leaf-font-size);
       --leaf-current-control-height: var(
         --leaf-component-tabs-height-sm,
-        calc(var(--leaf-control-height-sm) + 2px)
+        calc(var(--leaf-tabs-line-height) + var(--leaf-tabs-line-padding-block) * 2)
       );
     }
     &.leaf-tabs--lg {
-      --leaf-tabs-item-gap: 6px;
-      --leaf-tabs-item-padding: 14px;
-      --leaf-tabs-line-height: var(--leaf-line-height-lg);
+      --leaf-tabs-line-padding-block: 16px;
       --leaf-current-control-height: var(
         --leaf-component-tabs-height-lg,
-        calc(var(--leaf-control-height-lg) + 2px)
+        calc(var(--leaf-tabs-line-height) + var(--leaf-tabs-line-padding-block) * 2)
       );
     }
   }
@@ -441,9 +442,23 @@
       }
     }
     &--line > &__header &__tab {
-      --leaf-tabs-tab-color: var(--leaf-component-tabs-muted-color, var(--leaf-color-text-muted));
-      --leaf-tabs-tab-hover-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
-      --leaf-tabs-tab-active-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
+      --leaf-tabs-tab-color: var(
+        --leaf-component-tabs-muted-color,
+        var(--leaf-component-tabs-color, var(--leaf-color-text))
+      );
+      --leaf-tabs-tab-hover-color: var(
+        --leaf-component-tabs-color,
+        var(--leaf-color-primary-hover)
+      );
+      --leaf-tabs-tab-active-color: var(
+        --leaf-component-tabs-color,
+        var(--leaf-color-primary-link-active)
+      );
+      &[aria-selected='true'] {
+        --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-primary));
+        --leaf-tabs-tab-hover-color: var(--leaf-tabs-tab-color);
+        --leaf-tabs-tab-active-color: var(--leaf-tabs-tab-color);
+      }
     }
     &--card &__tab,
     &--segmented &__tab {
@@ -452,7 +467,6 @@
         var(--leaf-segmented-muted-color)
       );
     }
-    &--line > &__header &__tab[aria-selected='true'],
     &--card &__tab[aria-selected='true'],
     &--segmented &__tab[aria-selected='true'] {
       --leaf-tabs-tab-color: var(--leaf-component-tabs-color, var(--leaf-color-text));
@@ -462,7 +476,6 @@
   }
 
   @media (forced-colors: active) {
-    .leaf-tabs--line > .leaf-tabs__header .leaf-tabs__tab::after,
     .leaf-tabs__indicator::after,
     .leaf-tabs--card .leaf-tabs__indicator,
     .leaf-tabs--segmented .leaf-tabs__indicator {

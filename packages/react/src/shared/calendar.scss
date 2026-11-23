@@ -227,8 +227,10 @@
     > .leaf-button {
       justify-content: flex-start;
       &[aria-pressed='true'] {
-        background: var(--leaf-calendar-range-background);
-        color: var(--leaf-color-primary);
+        --leaf-button-rest-background: var(--leaf-calendar-range-background);
+        --leaf-button-rest-color: var(--leaf-color-primary);
+        --leaf-button-hover-background: var(--leaf-calendar-selected-hover-background);
+        --leaf-button-active-background: var(--leaf-calendar-selected-hover-background);
       }
     }
   }

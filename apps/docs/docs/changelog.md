@@ -7,6 +7,23 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.19.0 - 2026-11-24
+
+### 新增功能
+
+- **DataTable 卡片外观、标题区与标签页**：`DataTable` 新增 `variant="card"`（由 `Card` 包裹全宽表格、表格首末列外侧内边距对齐卡片内边距、分页直接嵌入卡片主体底部而不使用 `Card` 页脚），并支持与 `Card` 一致的 `title`、`description`、`extra` 与 `tabs` 定制上方区域。
+- **独立控件外框主题变量**：`LeafThemeTokens` 新增 `frameBorderColor`（输出 `--leaf-frame-border-color`），用于按需统一控制实底/危险 `Button` 与 `Switch` 等控件外框。
+
+### 改进与修复
+
+- **聚焦、分页、表格与线形标签页交互调整**：输入与选择字段家族聚焦态恢复 `--leaf-color-primary` 边框与淡化 `12%` 主题色外环；`Pagination` 当前页切换为 `solid` 按钮外观并保持悬停静止与不可点击；`Table` 表头底部分割线调整为 `1px`；默认线形 `Tabs` 恢复主题色交互反馈、底部 `1px` 基准分割线与平滑滑移指示条（`card` / `segmented` 保持中性）。
+- **修复日期区间快捷按钮选中后悬停无反馈**：`DateRangePicker` 侧边快捷按钮选中态（`aria-pressed="true"`）改通过 `Button` 状态变量覆盖，修复选中后再悬停或按下无法改变背景色的问题。
+
+### 破坏性变更与迁移说明
+
+- **移除 `Card` 分层外观变体**：`Card` 移除 `variant` 属性（`'default' | 'layered'`）、`.leaf-card--layered` 类名与分层卡片样式，保留单一默认外观；使用 `Card` 自身及其 `description`、`footer` 即可。
+- **拆分 `borderColor` 与控件外框职责**：`LeafThemeTokens.borderColor` 不再额外输出 `--leaf-frame-border-color`，仅用于覆盖常规中性边框 `--leaf-color-border`（避免仅微调中性边框色时意外给 `Button` `solid` / `text` / `danger`、`Switch`、`Alert` 语义状态等套上边框）；需要为实色/危险按钮、开关等统一加外框时，改用新增的 `LeafThemeTokens.frameBorderColor`（`text` 按钮和 `Alert` 语义状态始终保持自身结构与语义边框）。
+
 ## 0.18.0 - 2026-11-23
 
 ### 新增功能

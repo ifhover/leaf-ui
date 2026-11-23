@@ -194,11 +194,11 @@ export function PaginationControl({
               ))}
             <ButtonControl
               size={size}
-              variant={variant === 'outline' ? 'outline' : number === page ? 'outline' : 'text'}
+              variant={number === page ? 'solid' : variant === 'outline' ? 'outline' : 'text'}
               type="button"
               aria-label={format('pagination.pageLabel', { page: number })}
               aria-current={number === page ? 'page' : undefined}
-              disabled={disabled || (variant === 'outline' && number === page)}
+              disabled={disabled || number === page}
               onClick={() => choose(number)}
             >
               {number}

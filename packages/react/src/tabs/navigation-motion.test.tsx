@@ -336,19 +336,55 @@ describe('Navigation motion contracts', () => {
     }
   });
 
-  it('skips moving indicator measurement for line tabs in favor of per-tab crossfade', () => {
-    const { container } = render(
-      <Tabs
-        items={[
-          { key: 'first', label: 'First' },
-          { key: 'second', label: 'Second' },
-        ]}
-      />,
-    );
-    const marker = container.querySelector<HTMLElement>('.leaf-tabs__indicator');
-    expect(marker?.dataset.visible).toBeUndefined();
-    expect(marker?.dataset.animate).toBeUndefined();
-    fireEvent.click(screen.getByRole('tab', { name: 'Second' }));
-    expect(marker?.dataset.animate).toBeUndefined();
+  it('measures moving indicator for line tabs and animates on tab switch', async () => {
+    const widthSpy = vi
+      .spyOn(HTMLElement.prototype, 'offsetWidth', 'get')
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains('leaf-tabs__track') ? 200 : 60;
+      });
+    const heightSpy = vi
+      .spyOn(HTMLElement.prototype, 'offsetHeight', 'get')
+      .mockImplementation(function (this: HTMLElement) {
+        return 46;
+      });
+    const rectSpy = vi
+      .spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        if (this.classList.contains('leaf-tabs__track')) return new DOMRect(0, 0, 200, 46);
+        if (this.hasAttribute('data-leaf-indicator-item')) {
+          return this.dataset.tabKey === 'second'
+            ? new DOMRect(92, 0, 70, 46)
+            : new DOMRect(0, 0, 60, 46);
+        }
+        return new DOMRect(0, 0, 200, 46);
+      });
+    try {
+      const { container } = render(
+        <Tabs
+          items={[
+            { key: 'first', label: 'First' },
+            { key: 'second', label: 'Second' },
+          ]}
+        />,
+      );
+      const marker = container.querySelector<HTMLElement>('.leaf-tabs__indicator');
+      await waitFor(() => {
+        expect(marker?.dataset.visible).toBe('true');
+      });
+      expect(marker?.dataset.animate).toBe('false');
+      expect(marker?.style.getPropertyValue('--leaf-indicator-x')).toBe('0px');
+      expect(marker?.style.getPropertyValue('--leaf-indicator-width')).toBe('60px');
+
+      fireEvent.click(screen.getByRole('tab', { name: 'Second' }));
+      await waitFor(() => {
+        expect(marker?.dataset.animate).toBe('true');
+      });
+      expect(marker?.style.getPropertyValue('--leaf-indicator-x')).toBe('92px');
+      expect(marker?.style.getPropertyValue('--leaf-indicator-width')).toBe('70px');
+    } finally {
+      widthSpy.mockRestore();
+      heightSpy.mockRestore();
+      rectSpy.mockRestore();
+    }
   });
 });

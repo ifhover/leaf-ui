@@ -11,7 +11,7 @@
 ### 视觉方向
 
 - 默认外观安静、可读。所有组件使用语义主题 token，支持浅色 / 深色区域，并继承宽松 / 紧凑密度；组件局部覆盖与显式尺寸优先。
-- 桌面工具视觉：纯白（深色模式 `#0d0d0d`）净面与克制的黑白灰阶边界、柔和圆角，紧凑控件放在宽松的容器留白中，避免过度堆叠灰色底板。品牌色可配置（默认 `#007aff`，支持 `'neutral'` 自适应黑白灰单色主色），收敛至主要操作 `Button`、勾选/开关/滑块/进度、日历选中日期与状态标识；标签页、菜单、表格与普通表单聚焦保持黑白灰中性外观；更换品牌色时视觉结构保持一致。
+- 桌面工具视觉：纯白（深色模式 `#0d0d0d`）净面与克制的黑白灰阶边界、柔和圆角，紧凑控件放在宽松的容器留白中，避免过度堆叠灰色底板。品牌色可配置（默认 `#007aff`，支持 `'neutral'` 自适应黑白灰单色主色），收敛至主要操作 `Button`、勾选/开关/滑块/进度、日历选中日期、分页当前页、默认线形标签页、表单字段聚焦与状态标识；卡片/分段标签页、菜单与表格保持黑白灰中性外观；更换品牌色时视觉结构保持一致。
 - 中性角色来自一套由 `neutralColor` 种子（默认纯灰 `#707070`）生成的共享色阶：默认灰阶不偏蓝，显式带色相的中性基色仍保留其色相。浅色模式把文字、边框、表面映射到适合浅底的档位，深色模式把同一色阶映射到深色表面。组件消费这些角色，不硬编码中性值。语义状态色和可读的焦点反馈与中性表面区分开。
 - 可选主题预设可以使用更粗的外边框和偏移阴影；token 缺省时默认外观不变。全局 `borderWidth`、`controlShadow`、`surfaceShadow` 与显式组件状态绘制必须经由 ConfigProvider 生效，包括 Portal 和 API 反馈服务。结构分割线保留自身细线。
 - 更粗的边框从内部控件几何和嵌套圆角中扣除，不增加控件高度。自定义阴影必须保留清晰的焦点轮廓、禁用语义、减少动态效果与强制颜色模式。预设只包含可移植的主题数据；文档装饰不得提供私有组件皮肤规则。
@@ -38,8 +38,8 @@
 
 ### 阴影与边框
 
-- 纯白内容面在白色背景上通过清晰而不过重的中性外框区分边界：`Card`、`Collapse`（bordered）、`Descriptions`（bordered）、`Transfer`、`Modal`、`Drawer` 与 `FileList` 外框统一使用 `--leaf-color-border`（浅色 `#e5e5e5`，深色 `#262626`）；`Card` 默认加最轻的朝下静止阴影（`shadow-xs`），分层 `Card` 只在内层内容框使用 `shadow-sm`；`DataTable` 保持平面且无外框。
-- `Collapse`（bordered）、`Transfer` 面板与 `Upload` 符号徽标共用朝下的 `shadow-xs` 静止阴影，悬停不抬起；无边框 `Pagination` 当前页方框采用无阴影纯边框。
+- 纯白内容面在白色背景上通过清晰而不过重的中性外框区分边界：`Card`、`Collapse`（bordered）、`Descriptions`（bordered）、`Transfer`、`Modal`、`Drawer` 与 `FileList` 外框统一使用 `--leaf-color-border`（浅色 `#e5e5e5`，深色 `#262626`）；`Card` 默认加最轻的朝下静止阴影（`shadow-xs`）；`DataTable` 保持平面且无外框。
+- `Collapse`（bordered）、`Transfer` 面板与 `Upload` 符号徽标共用朝下的 `shadow-xs` 静止阴影，悬停不抬起；`Pagination` 当前页使用无阴影 `solid` 按钮。
 - `Table` 网格、普通内部分割线、`Modal` / `Drawer` 页脚顶部 `divided` 分隔线、`Transfer` 表头底线与 `Card` 内嵌标签栏分区线使用更轻的 `--leaf-color-divider`（浅色 `#eaeaea`，深色 `#212121`），形成“外框清、内线轻”的层级。
 - 更强的阴影只用于浮起的层和手柄：分段 `Tabs` 轨道保持扁平无阴影、选中滑块使用 `shadow-sm`；浮层、`Modal` 与 `Confirm` 使用 `shadow-md`；`Drawer` `shadow-lg`；滑块手柄使用各自抬起阴影。
 
@@ -57,7 +57,7 @@
 | 默认        | 文字清晰、图标对齐一致、几何稳定                                                                                                                                                                                                                                        |
 | 悬停        | 颜色或边框反馈；普通操作与悬浮按钮保持位置、尺寸与阴影层级不变                                                                                                                                                                                                          |
 | 按下        | 立即的颜色反馈；仅普通 `Button` 配合克制的 `1px` 轻压下沉（`outline` 保留下沉位移但颜色与边框不变），其余控件与条目使用克制的变色、透明度或阴影收敛（零按压缩放、零外缘波纹、不改变外围几何）                                                                           |
-| 键盘焦点    | 可见且不引起布局位移：输入和选择类字段（含 Textarea、Mentions、InputNumber）与 InputOTP 激活格聚焦或展开时统一使用清晰边框（默认 `--leaf-color-text-muted`，校验态或显式主色随其变化）并叠加克制的 3px 20% 半透明外环；按钮使用中性键盘轮廓；强制颜色模式保留可辨识轮廓 |
+| 键盘焦点    | 可见且不引起布局位移：输入和选择类字段（含 Textarea、Mentions、InputNumber）与 InputOTP 激活格聚焦或展开时统一使用清晰边框（默认 `--leaf-color-primary`，校验态或显式中性变体随其变化）并叠加克制的 3px 12% 半透明外环；按钮使用中性键盘轮廓；强制颜色模式保留可辨识轮廓 |
 | 选中        | 语义化的选中背景 / 指示加 ARIA 状态；不能只靠颜色                                                                                                                                                                                                                       |
 | 禁用        | 不可操作，原生 / ARIA 状态正确；与 loading 区分                                                                                                                                                                                                                         |
 | 加载        | 尽量保持标签与宽度；暴露 busy 状态；防止重复提交                                                                                                                                                                                                                        |
@@ -69,17 +69,17 @@
 - 主题色用于可操作的强调；success / info / warning / danger 表达含义。弱化文字保持可读；自定义色板须对实际前景 / 背景组合满足 WCAG 对比度。透明派生色使用预乘 sRGB alpha。
 - 默认语义基色在 `colors.ts` 声明一次，浅深外观共享，经由 JS `generateColorShades` 与 `resolveColorRoles` 映射为 `--leaf-color-*` 用途角色输出；组件不得重新声明。基色：primary `#007aff`（支持 `'neutral'` 自适应黑白灰单色主色）、success `#4bb418`、danger `#ff4d4f`、warning `#e69f12`、info `#1677ff`。用户提供的具体 primary 保持原值，不改写、不强制为 500 档。
 - 浅深模式都保留显式主色实底；外观切换只换用途映射与 `'neutral'` 单色主色（浅 `#0d0d0d` / 深 `#f5f5f5`，对应 `on-primary` `#ffffff` / `#0d0d0d`），不重新着色具体基色。非主色语义 `ink` 与实底前景（`on-*`）的默认值见 [颜色系统：角色映射与选阶](COLOR-SYSTEM.md#角色映射与选阶)；内置主色控件与指示统一直接使用 `--leaf-color-primary`。不要为了让主色文字可读而提亮所有主色实底；显式组件 / 状态、前景和焦点覆盖优先。
-- 键盘焦点反馈以清晰中性轮廓与中性边框为主：按钮与常见控件复用 `--leaf-color-text-muted` 轮廓（可通过 `--leaf-color-focus` 显式覆盖），输入与选择字段悬停加深至 `--leaf-color-border-hover`、聚焦或展开时默认采用 `--leaf-color-text-muted` 边框配 3px 半透明外环（校验态与显式主色字段分别跟随语义色或 `--leaf-color-primary`），`Slider` 滑块在 `:focus-visible` 时叠加 `accent-halo-focus-color`。
-- 实底 Button 默认透明边框，即使基色与周围表面相同也不自动补对比边框；显式全局、组件和状态边框覆盖及系统强制颜色模式仍有效。保留独立的 on-primary / on-success / on-danger / on-warning / on-info 角色，即使取值相同。浅深模式可以共享取值；只有确有视觉或对比需要时才区分，不复制完整矩阵。
+- 键盘焦点反馈以清晰中性轮廓与主题色字段边框为主：按钮与常见控件复用 `--leaf-color-text-muted` 轮廓（可通过 `--leaf-color-focus` 显式覆盖），输入与选择字段悬停加深至 `--leaf-color-border-hover`、聚焦或展开时默认采用 `--leaf-color-primary` 边框配 3px 半透明主题色外环（校验态与显式中性字段分别跟随语义色或 `--leaf-color-text-muted`），`Slider` 滑块在 `:focus-visible` 时叠加 `accent-halo-focus-color`。
+- 实底 Button 默认透明边框，即使基色与周围表面相同也不自动补对比边框（常规 `tokens.borderColor` 不改变其透明边框；显式 `tokens.frameBorderColor`、组件和状态边框覆盖及系统强制颜色模式仍有效）。保留独立的 on-primary / on-success / on-danger / on-warning / on-info 角色，即使取值相同。浅深模式可以共享取值；只有确有视觉或对比需要时才区分，不复制完整矩阵。
 - Checkbox、Radio、Switch 的选中实底与边界统一使用原 primary 与 on-primary 内容（未选中控件常态边框使用 `border-hover`、悬停加深为 `text-muted`）；不得把派生色阶用作实底却沿用另一颜色的前景。显式组件绘制覆盖优先。
 - Checkbox 与 Radio 按下不缩放控件；选中边框与填充使用主题基色，显式组件边框与状态覆盖优先。Checkbox 对号与半选横线使用 SVG `stroke-dashoffset` 绘制过渡；Radio 选中圆点按 Ant Design 5 使用 300ms 的 `cubic-bezier(0.78, 0.14, 0.15, 0.86)` `clip-path` 中心展开与透明度过渡，圆框颜色使用 200ms ease；时长随区域 motionDuration 缩放，遵守减少动态效果设置。
-- Switch 关闭态在两种外观下都是中性灰轨道配亮色滑块，不用浅色轨道配深色滑块。轨道默认边框与填充同色；显式全局、组件、状态绘制覆盖优先。关闭态 loading 图标保持中性；开启态轨道与 loading 图标使用 primary，滑块使用 on-primary。修改 on-primary 不得改变关闭态滑块。
+- Switch 关闭态在两种外观下都是中性灰轨道配亮色滑块，不用浅色轨道配深色滑块。轨道默认边框与填充同色；显式 `frameBorderColor`、组件、状态绘制覆盖优先。关闭态 loading 图标保持中性；开启态轨道与 loading 图标使用 primary，滑块使用 on-primary。修改 on-primary 不得改变关闭态滑块。
 - Warning 图标、字段强调与状态填充使用共享琥珀基色（`#e69f12`）；警告文字独立派生可读 ink。Tag 的 soft 标签文字跟随对应语义基色，solid 标签文字使用白色；不要为文字对比度把所有警告强调色调暗。
 
 ### 动效
 
 - 普通操作反馈使用 120–200 ms 缓动。链接文字颜色按 Ant Design 使用 200 ms ease-in-out，均随区域 motionDuration 缩放。对话框与抽屉最长 320 ms；抽屉滑入无过冲。Message 与 Notification 整体入场，内部图标 / 文字无弹性。
-- 选中指示在同组切换时可移动到新选中项（当前仅 `Tabs` 的 `card` / `segmented` 滑块保留 `--leaf-motion-spring`），其余组件、浮层与弹窗均采用无过冲 `--leaf-motion-easing`；悬停时 Card、按钮与悬浮按钮保持位置与表面阴影；`Button` 按下时应用克制的 `1px` 轻压下沉，`FloatButton` / `BackTop`、选项行、日历格与各类交互控件按下只改变颜色、透明度或阴影收敛而不做按压缩放与位移，均不移动周围排版。
+- 选中指示在同组切换时可移动到新选中项（`Tabs` 的 `card` / `segmented` 滑块保留 `--leaf-motion-spring`，`line` 指示线使用 `calc(var(--leaf-motion-color) * 1.5) ease` 平移），其余组件、浮层与弹窗均采用无过冲 `--leaf-motion-easing`；悬停时 Card、按钮与悬浮按钮保持位置与表面阴影；`Button` 按下时应用克制的 `1px` 轻压下沉，`FloatButton` / `BackTop`、选项行、日历格与各类交互控件按下只改变颜色、透明度或阴影收敛而不做按压缩放与位移，均不移动周围排版。
 - 遵守系统减少动态效果和 `theme.motion={false}`；动画永不阻塞功能，所有动效在减少动态效果下均关闭。
 - 颜色过渡共用 `--leaf-motion-color`（当前等于标准动效时长），覆盖字段、按钮、菜单表面与浮层选项行。
 
@@ -105,7 +105,7 @@
 
 - 默认使用无边框的 `variant="ghost"`；`variant="outline"` 为常规分页与翻页按钮提供表面填充描边样式。两者共用控件高度 token、稳定的按下几何与默认 `--leaf-color-text` 正文色（含总数、省略号与条数标签）。
 - 上一页、下一页按钮在图标旁直接展示文字（中文“上一页 / 下一页”，英文“Previous / Next”）。
-- `ghost` 模式下，非当前页与翻页按钮保持透明无边框，当前选中页直接切换为纯白净面（`--leaf-color-surface`）配略深中性边框（`--leaf-color-border-hover`）的无阴影纯边框方框，不使用滑动指示器过渡动画；`outline` 模式下，当前选中页保持相同占位但不展示边框、不可点击、直接显示默认正文色纯文字。
+- `ghost` 与 `outline` 模式下，非当前页与翻页按钮分别保持透明无边框（`text`）或表面填充描边（`outline`）；当前选中页统一使用按钮的 `solid` 样式（`--leaf-color-primary` 背景配 `--leaf-color-on-primary` 前景，无阴影），并保持不可点击、悬停时鼠标指针保持 `default` 且无视觉变化，不使用滑动指示器过渡动画（整组分页 `disabled` 时同步应用禁用透明度与 `not-allowed` 指针）。
 - 上一页、下一页翻页按钮复用 Button 图标侧自动收窄内边距的行为（仅收窄图标一侧）。
 - `showSizeChanger` 在禁止输入搜索的紧凑下拉框内部展示 `{count} 条/页`（英文 `{count} / page`）；`showQuickJumper` 展示“跳至 [输入框] 页”（英文 “Go to [input] page”），在 Enter 或离开分页区域时提交，不覆盖已点击的分页操作。`showTotal` 接受布尔值或渲染函数，页码和每页条数变化使用同一回调。
 
@@ -147,12 +147,12 @@
 ### Tabs
 
 - 只支持横向，提供 `type?: 'line' | 'card' | 'segmented'`（默认 `'line'`）；标签按下只更新颜色反馈，不做按压缩放。
-- line：对齐简洁中性线形规范（接近 shadcn/ui 风格）。小、默认、大尺寸的行内内边距为 8 / 10 / 14 px、项间距为 2 / 4 / 6 px；标签采用控件基础高度加 2 px 作为默认最小高度（`28 / 34 / 40 px`，含大尺寸内容时允许自然撑高），字号沿用统一控件字号阶梯（13 / 14 / 16 px），显式组件高度、字号和 gap 覆盖优先。未选中标签使用 `--leaf-color-text-muted`，悬停与按下使用 `--leaf-motion-fast`（120 ms）快速切换至 `--leaf-color-text`（不加 `text-shadow`，字重稳定；显式组件文字覆盖优先）。独立线形标签栏不绘制全宽底部分割线（仅 Card 内嵌头部保留底部分割线），选中指示线默认使用 `--leaf-color-text`（可通过组件 indicatorColor 覆盖），统一为 2 px 厚、直角、铺满标签宽度（含左右内边距），底部标签将指示线放在栏顶；切换选中项时不做移动动画，改为每项下划线独立渐隐渐显（`opacity` 200 ms `--leaf-motion-easing`，随区域 motionDuration 缩放）。
+- line：沿用简洁开放式线形规范。项间距 `32 px`、`padding-inline: 0`、直角，行高 `--leaf-tabs-line-height` 为字号加 `8 px`（`sm` 保持基础字号 `--leaf-font-size`），上下内边距小/默认/大分别为 `8 / 12 / 16 px`（与行高相加导出默认最小高度，显式组件高度、字号和 gap 覆盖优先）。未选中标签使用 `--leaf-color-text`，悬停使用 `--leaf-color-primary-hover`，按下使用 `--leaf-color-primary-link-active`，选中使用 `--leaf-color-primary` 配轻描边 `text-shadow: 0 0 0.25px currentColor`（颜色过渡 `calc(var(--leaf-motion-color) * 1.5) ease`；显式组件文字覆盖优先）。头部底部绘制 `1 px` 全宽 `--leaf-color-divider` 分割线（`placement="bottom"` 时放在栏顶），共享滑移指示条默认使用 `--leaf-color-primary`（2 px 厚，与标签文字等宽；可通过组件 indicatorColor 覆盖），切换选中项时通过 `transform` / `width` / `height` 平滑滑移（`calc(var(--leaf-motion-color) * 1.5) ease`）。
 - card：去掉外围栏，项间距 4 px，未选中标签使用弱文字色（`--leaf-color-text-muted`），选中滑块使用 `--leaf-color-surface-muted` 配 `--leaf-color-text` 文字。滑块使用 `--leaf-motion-spring` 移动到选中项，保持 26 / 32 / 38 px 控件尺寸与 12 px 行内内边距。
 - segmented：浅灰外轨（`--leaf-segmented-background`，即 `--leaf-color-surface-muted`）配 `1px solid transparent`（`--leaf-segmented-border`）且无外轨阴影，默认内边距 3 px，小尺寸上下内边距为 2 px、左右仍为 3 px；项间距 3 px；轨道高 26 / 32 / 38 px，标签行内内边距 14 px。使用 `--leaf-color-surface` 纯白滑块配 `--leaf-shadow-sm` 阴影与 `--leaf-color-text` 文字（悬停 / 按下高亮为 `--leaf-color-text`，未选中为 `--leaf-color-text-muted`）。滑块使用 `--leaf-motion-spring` 移动到选中项。
 - 大尺寸 card 与 segmented 外观的标签行内内边距为 18 px，项间距为 8 px，分段轨道内边距为 4 px；显式组件 gap 和 padding 继续优先。
 - `block` 等宽铺满；省略项内容可作为只有标签栏的视图切换器。标签溢出时在两侧显示描边纯图标滚动按钮，仅在标签栏悬停或获得键盘焦点时出现。
-- 内容与面板高度立即更新，无入场、淡入、滑动或高度动画；仅 `card` 与 `segmented` 的选中滑块保留移动动画，`line` 下划线使用渐隐渐显。
+- 内容与面板高度立即更新，无入场、淡入、滑动或高度动画；三种外观的选中指示条 / 滑块均保留移动动画（`card` / `segmented` 使用 `--leaf-motion-spring`，`line` 使用 `calc(var(--leaf-motion-color) * 1.5) ease`）。
 - Tabs 不作为表单字段提交；需要原生提交时由表单单独持有字段。
 
 ### Tag
@@ -233,13 +233,9 @@
 ### Card
 
 - 不提供 `hoverable`，不做悬停抬起；保留朝下的轻微静止阴影，`bordered={false}` 可移除边框，`shadow={false}` 可移除阴影。
-- `size` 为 small / default / large：正文内边距默认 16 / 20 / 24 px，标题左右内缩相同（上下分别为 `headingGap` 与 `headingGap * 0.8`），标题文字 14 / 16 / 18 px，标题颜色使用 `--leaf-color-text`（浅色 `#0d0d0d`，深色 `#f5f5f5`）；`theme.components.Card.color` 可显式覆盖。普通 Card 标题字重统一跟随 `fontWeight`（默认 500），描述样式对齐 Modal（13 px / 行高 18 px，紧接标题下方间隔 `--leaf-spacing-sm` 即 8 px），头部操作顶部对齐首行；页脚布局与样式对齐 Modal（默认右对齐弹性排列、`gap: 8 px`、克制浅底 `subtle-action-background`、同心底部内圆角、上下内边距上限 16 px 并默认启用顶部分割线 `divided={true}`，可通过 `divided={false}` 关闭；紧接仅含头部的标签栏时不重复绘制顶部线；`variant="layered"` 的页脚留在外层灰画布且保持透明底）。默认 Card 四边外留白相等（16 / 20 / 24 px）；页眉、页脚与正文共用阅读边，不重复内部分区间距；支持通过 `padding?: ContainerPadding`（`number | string | 'none' | { header?, body?, footer? }`）按整体或分区独立覆盖内边距；显式组件内边距与页脚背景覆盖优先。
+- `size` 为 small / default / large：正文内边距默认 16 / 20 / 24 px，标题左右内缩相同（上下分别为 `headingGap` 与 `headingGap * 0.8`），标题文字 14 / 16 / 18 px，标题颜色使用 `--leaf-color-text`（浅色 `#0d0d0d`，深色 `#f5f5f5`）；`theme.components.Card.color` 可显式覆盖。Card 标题字重统一跟随 `fontWeight`（默认 500），描述样式对齐 Modal（13 px / 行高 18 px，紧接标题下方间隔 `--leaf-spacing-sm` 即 8 px），头部操作顶部对齐首行；页脚布局与样式对齐 Modal（默认右对齐弹性排列、`gap: 8 px`、克制浅底 `subtle-action-background`、同心底部内圆角、上下内边距上限 16 px 并默认启用顶部分割线 `divided={true}`，可通过 `divided={false}` 关闭；紧接仅含头部的标签栏时不重复绘制顶部线）。Card 四边外留白相等（16 / 20 / 24 px）；页眉、页脚与正文共用阅读边，不重复内部分区间距；支持通过 `padding?: ContainerPadding`（`number | string | 'none' | { header?, body?, footer? }`）按整体或分区独立覆盖内边距；显式组件内边距与页脚背景覆盖优先。
 - 标题与页脚约定：标题栏下方不加分隔线；不再提供 `selected` 属性与选中边框修饰；是否显示页脚顶部分割线由 `divided` 控制。
 - 内嵌 Tabs 跟随 Card 尺寸，除非显式覆盖；子控件保持各自尺寸。
-- `variant="layered"`（原未发布的 `inset`）：无外层阴影，灰色画布上放小号弱化标题和页脚，不显示 `description`。只有封面、标签页和正文放在内容面上，内容面左右和底部内缩 4 px（无标题时顶部 6 px）。
-- 分层标题尺寸 12 / 12 / 13 px，字重 500。内圆角为外圆角减边框宽度再减 2 px（默认 11 px 对 14 px）；朝下的柔和阴影使用 `shadow-sm`，模糊 6 px，两侧与下方最多可见 6 px，不超出面板顶部。
-- 分层内容内边距补偿内缩，使标签与正文共用阅读边；分层标题通过减小页眉行内起点内边距，相对该阅读边向行内起点偏移 5 px，不使用负外边距。
-- 分层标题顶部内缩 6 / 8 / 10 px，底部 2 / 4 / 6 px；页眉预留一行等于默认描边 Tag 的高度（small 行高加 6 px），有无 Tag 的单行标题等高；行尾内容与内容卡边缘对齐。页脚上方内边距 0、下方 4 px，由内容卡的 4 px 底部外边距负责间隔，页脚操作与内容卡边缘对齐。
 
 ### Card 内嵌标签页
 
@@ -256,8 +252,8 @@
 
 ### DataTable
 
-- 仅保留简洁外观，无 `variant` 或 `columnDividers` 参数；内容表面仅顶部使用基础圆角（默认 10px），无内层内容框、阴影和固定列边缘阴影。表头直接使用干净的内容表面 `--leaf-table-surface`，配次要弱化灰（`--leaf-color-text-muted`，保留 `--leaf-component-table-color` 组件覆盖）与 `fontWeight`（默认 500）字重；表头下沿（末行与跨行utility表头单元）使用 `2px` 柔和分割线（`--leaf-table-divider`，默认 `--leaf-color-divider`），非末行分组表头无底线，叶列之间不再添加装饰性居中短竖线。显式颜色和边框色覆盖优先。`bordered` 仅给外层增加四边边框并使用四角基础圆角，并在最末一行、状态行或表尾底部隐藏自身底线以避免双线，内部单元格与分组表头保持不变。
-- 默认 `size="md"`，所有尺寸均使用基础字号（默认 14px）、约 1.5714 倍行高（默认 22px）与等宽数字 `tabular-nums`，表头字重为 500；sm / md / lg 的上下内边距为 8 / 10 / 16px，水平内边距为 12 / 14 / 16px，数据行单行高度为 39 / 43 / 55px，表头单行高度为 40 / 44 / 56px。表头始终固定且不可关闭；高度受限的 flex 布局收缩表体视口。分组表头、固定列和虚拟行共用一个原生 table；列配置 `meta.ellipsis` 时启用单行省略并在未固定列宽时自动切换固定布局以约束列宽。
+- 仅保留简洁外观，提供 `variant?: 'default' | 'card'`（默认 `'default'`）：默认内容表面仅顶部使用基础圆角（默认 10px），无内层内容框、阴影和固定列边缘阴影。表头直接使用干净的内容表面 `--leaf-table-surface`，配次要弱化灰（`--leaf-color-text-muted`，保留 `--leaf-component-table-color` 组件覆盖）与 `fontWeight`（默认 500）字重；表头下沿（末行与跨行utility表头单元）使用 `1px` 柔和分割线（`--leaf-table-divider`，默认 `--leaf-color-divider`），非末行分组表头无底线，叶列之间不再添加装饰性居中短竖线。显式颜色和边框色覆盖优先。`bordered` 仅给外层增加四边边框并使用四角基础圆角，并在最末一行、状态行或表尾底部隐藏自身底线以避免双线，内部单元格与分组表头保持不变。`variant="card"` 时用 Card（无 body 左右/上下内边距）包裹标题区、标签栏、占满宽度的表格与卡片内部分页区（直接位于卡片主体下方而不使用 Card footer，对齐卡片左右内边距），表格首列左内边距与末列右内边距对齐 Card 内边距（无分页时保留下内圆角并隐藏末行底线以衔接卡片边框，有分页时保留表格末行分割线自然分隔分页区；无标题无标签栏时保留顶部内圆角）；支持与 `Card` 一致的 `title`、`description`、`extra` 与 `tabs` 定制表格上方标题与标签区。
+- 默认 `size="md"`，所有尺寸均使用基础字号（默认 14px）、约 1.5714 倍行高（默认 22px）与等宽数字 `tabular-nums`，表头字重为 500；sm / md / lg 的上下内边距为 8 / 10 / 16px，水平内边距为 12 / 14 / 16px，数据行单行高度为 39 / 43 / 55px，表头单行高度为 39 / 43 / 55px。表头始终固定且不可关闭；高度受限的 flex 布局收缩表体视口。分组表头、固定列和虚拟行共用一个原生 table；列配置 `meta.ellipsis` 时启用单行省略并在未固定列宽时自动切换固定布局以约束列宽。
 - 排序表头紧跟文字右侧 `4px` 放置单向线性箭头图标（未排序与降序朝下、升序旋转 180° 朝上），跟随列对齐方向整体居中或靠右；激活排序箭头高亮为 `--leaf-color-text`，排序表头、悬停表头与排序列使用基于 `surface-muted` 的中性反馈。默认显示细行分割线，包括末行；设置 `striped` 后省略所有表体与表尾横向分割线，并从第二行数据开始展示与悬停同色的浅灰条纹背景（与悬停共用基于当前表格表面的 `25% option-hover`，`bordered` 下同样隐藏内部横向分割线）。详情行与虚拟占位行不影响条纹奇偶。选择列宽 34px，展开列宽 48px。
 - 普通行悬停基于 `25% option-hover` 混合轻量中性浅灰底（斑马条纹复用同一背景色），选中行使用 `--leaf-color-surface-muted` 且悬停时不改变背景色。展开操作复用小号纯图标文字按钮及其中性反馈；空数据与加载失败状态均复用 `Result` 组件渲染。显式组件状态覆盖优先。
 - 默认内容布局填满容器；尺寸布局遵循固定列宽与弹性分配，全部固定或达到最大宽度时允许右侧留白。内容区域的最小宽度只是下限。
@@ -291,7 +287,7 @@
 
 ### 共享灰色底板
 
-- 分层 Card（`variant="layered"`）与显式 card 型日期选择器画布直接共用 `--leaf-color-surface-muted`。显式 `mutedSurfaceColor` 在这些画布上绘制完全相同的颜色，不再与边框或表面混合。
+- 显式 card 型日期选择器画布与 `Segmented Tabs`、`Calendar` 视图分段轨道直接共用 `--leaf-color-surface-muted`。显式 `mutedSurfaceColor` 在这些画布上绘制完全相同的颜色，不再与边框或表面混合。
 - Segmented Tabs 选中滑块、`Transfer` 面板、`Drawer` 分区页脚和内嵌内容面使用 `--leaf-color-surface`（或 `transparent`）净白表面；`Segmented Tabs` 与 `Calendar` 视图分段外轨使用 `--leaf-color-surface-muted` 浅灰底；显式组件覆盖与嵌套主题优先。
 
 ### Upload、ColorPicker、InputOTP 与 Slider
@@ -299,7 +295,7 @@
 - ColorPicker 显示颜色文字时，HEX / RGB / HSL / 渐变模式默认宽度分别为 144 / 272 / 296 / 160px，透明度变化不改变宽度；显式 style.width 优先，最大宽度不超过容器。不显示文字时保持当前尺寸的方形色块控件，清除操作额外预留空间。格式切换复用内部 segmented Tabs。
 - Upload 拖拽图标徽标（`.leaf-upload__symbol`）使用 `--leaf-color-surface` 白色圆形底座配细边框与 `--leaf-shadow-xs`（悬停 / 拖拽时切至 `--leaf-color-surface-muted` 与 `--leaf-color-text`，拖拽区外框切为 `--leaf-color-text-muted` 配 `--leaf-color-surface-muted` 浅灰底）；ColorPicker 色块 / 预设保持几何稳定。
 - AvatarUpload 使用 128px 的虚线圆角方形上传入口：初始底色为 `--leaf-color-surface`、加号和上传文字，悬停切换 `--leaf-color-border-hover` 边框、按下切换为 `--leaf-color-text-muted` 边框与 `--leaf-color-surface-muted` 浅灰底（不做按压缩放），校验与请求期间以转圈图标替换加号，成功后图片铺满；悬停或键盘聚焦时显示深色媒体遮罩与白色“重新上传”文字。禁用时不可操作，失败后显示错误并允许重新选择。
-- InputOTP 与 `field` 家族统一悬停和聚焦反馈：非禁用状态下悬停显示 `border-hover` 边框，激活格聚焦使用 `--leaf-color-text-muted`（error / warning 状态跟随 `danger` / `warning`）边框与共享 3px 20% 半透明外环，闲置格不再附加多余静止投影；Slider 滑块仅在 `:focus-visible` 键盘聚焦时显示 3px `accent-halo-focus-color` 聚焦环，悬停不放大、拖拽仅加深描边至 `--leaf-color-primary-active` 而不缩滑块也不扩张大光晕；Progress 默认 `active={false}`（需循环扫光时显式传入 `active`），LoadingBar 不再叠加外发光。
+- InputOTP 与 `field` 家族统一悬停和聚焦反馈：非禁用状态下悬停显示 `border-hover` 边框，激活格聚焦使用 `--leaf-color-primary`（error / warning 状态跟随 `danger` / `warning`）边框与共享 3px 12% 半透明外环，闲置格不再附加多余静止投影；Slider 滑块仅在 `:focus-visible` 键盘聚焦时显示 3px `accent-halo-focus-color` 聚焦环，悬停不放大、拖拽仅加深描边至 `--leaf-color-primary-active` 而不缩滑块也不扩张大光晕；Progress 默认 `active={false}`（需循环扫光时显式传入 `active`），LoadingBar 不再叠加外发光。
 
 ## 配置
 

@@ -16,8 +16,8 @@ import { DataRegion } from '../../src/examples/design-standards/data-region';
 | ------------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | [Menu](/components/menu)       | 默认 `neutral`，悬停使用轻底、选中复用 `surface-muted` 中性灰阶。                           | 导航保持克制的黑白灰层级，不叠加额外大面积品牌色块；需要独立浮卡感或主色高亮时可选 `raised` 或 `primary`。                                 |
 | [Button](/components/button)   | 默认 `outline`，中性内容面和纯边框（无阴影），悬停展示浅灰背景。                            | 普通操作保持中性，主要操作使用 `solid` 承载主题色（支持 `'neutral'` 自适应黑白反色）；局部区域也可按需用 `ConfigProvider` 调整按钮主题色。 |
-| [Card](/components/card)       | `variant="layered"` 用底板承载小号弱标题，内层内容面承载正文。Card 本身默认仍是 `default`。 | 独立任务分区需要标题与内容分层时使用 `layered`；此时不显示 `description`，重要说明放在正文或独立 CardTitle 中。                            |
-| [DataTable](/components/table) | 默认使用简洁的数据表面，表头（次要灰 / 500 字重）与选中行均保持克制中性灰阶。               | 主要数据区域直接放置表格，筛选和其他操作控件与表格并列；通常不再外包一层同样的分层 Card。                                                  |
+| [Card](/components/card)       | 纯白内容面配实体中性外框与最轻静止阴影（`shadow-xs`），页眉、页脚与正文共用一致留白。 | 独立任务分区需要清晰容器边界时使用，可通过 `description` 或独立 `CardTitle` 补充说明。 |
+| [DataTable](/components/table) | 默认使用简洁的数据表面，表头（次要灰 / 500 字重）与选中行均保持克制中性灰阶。               | 主要数据区域直接放置表格，筛选和其他操作控件与表格并列；需要卡片外框包裹时使用 `variant="card"`。 |
 
 “底板”和“内容面”是角色，不是固定浅灰和纯白。用户改变表面色或切换深色外观后，分组关系仍应保留。选中状态沿用组件自身的表面、勾选、边框或指示，不在页面层强制统一成“永远没有背景”或另一套主题色高亮。
 
@@ -70,7 +70,7 @@ Flex 的 `gap="sm|md|lg"` 与 Space 的 `size="sm|md|lg"` 直接读取对应变�
 
 圆角使用 `--leaf-radius-sm`、`--leaf-control-radius-sm`、`--leaf-radius`、`--leaf-control-radius-lg`、`--leaf-radius-md`、`--leaf-radius-lg`，默认为 `5 / 8 / 10 / 12 / 14 / 16px`，随基础圆角按整数偏移步进派生（控件和分段标签按 `sm / md / lg` 对应 `8 / 10 / 12px`，卡片和带边框描述列表对应 `12 / 14 / 16px`，直角主题时全数归零）。通常由组件处理内外嵌套，不手工覆盖内部 `.leaf-*` 圆角。
 
-阴影使用库提供的 `--leaf-shadow-xs`、`--leaf-shadow-sm`、`--leaf-shadow-md`、`--leaf-shadow-lg`：默认 Card 的静止反馈最轻，分层 Card / Table 的内层内容使用 `shadow-sm`，浮层使用更高层级。优先使用组件默认值，不在容器外重复添加阴影；悬停不抬升、不放大、不切换阴影等级。需要覆盖时通过主题配置，保留用户 `controlShadow` / `surfaceShadow` 设置。
+阴影使用库提供的 `--leaf-shadow-xs`、`--leaf-shadow-sm`、`--leaf-shadow-md`、`--leaf-shadow-lg`：Card 的静止反馈最轻（`shadow-xs`），Segmented Tabs 选中滑块使用 `shadow-sm`，浮层使用更高层级。优先使用组件默认值，不在容器外重复添加阴影；悬停不抬升、不放大、不切换阴影等级。需要覆盖时通过主题配置，保留用户 `controlShadow` / `surfaceShadow` 设置。
 
 Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelect 和单值选择器默认宽 240px，选值后不改变宽度。日期区间为 300px，日期时间区间为 380px；较长格式适当加宽。窄容器中自动收缩，FormField 内默认铺满；`style.width` 可显式覆盖，Textarea 保持默认铺满。页面布局不能依赖字段永远等于这些默认宽度。
 
@@ -113,13 +113,13 @@ Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelec
 
 - 一般操作使用默认描边按钮，主要操作使用 `variant="solid"`；低强调局部操作可用 `text`，行内链接式操作可用 `link`，危险操作使用 `variant="danger"`。
 - 不在页面 CSS 中额外叠加悬停抬起、缩放、彩色光晕或装饰渐变。保留组件自身的交互反馈，不在页面中重新设计每种状态。
-- 输入和选择类字段悬停时略微加深边框至 `--leaf-color-border-hover`，聚焦或展开时默认使用清晰的 `--leaf-color-text-muted` 边框并叠加克制的 3px 半透明中性外环；Textarea、Mentions 和 InputNumber 也遵循同一规则。错误、警告和禁用状态保留各自反馈（其中错误、警告聚焦时同步呈现对应语义外环）；按钮保留中性键盘焦点轮廓。
+- 输入和选择类字段悬停时略微加深边框至 `--leaf-color-border-hover`，聚焦或展开时默认使用清晰的 `--leaf-color-primary` 主题色边框并叠加克制的 3px 淡主题色外环；Textarea、Mentions 和 InputNumber 也遵循同一规则。错误、警告和禁用状态保留各自反馈（其中错误、警告聚焦时同步呈现对应语义外环）；按钮保留中性键盘焦点轮廓。
 
 ## 最小组合
 
 ### 内容分区
 
-独立标题负责说明，分层 Card 只保留简短分区名称。使用现有排版、间距和按钮，不额外定义卡片皮肤。
+独立标题负责说明，Card 保留简短分区名称。使用现有排版、间距和按钮，不额外定义卡片皮肤。
 
 <ComponentExample title="内容分区" preview={<ContentRegion />} fileName="content-region.tsx" width={600}>
 

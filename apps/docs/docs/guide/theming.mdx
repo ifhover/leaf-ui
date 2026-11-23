@@ -69,7 +69,7 @@ import { ThemePresets } from '../../src/examples/theming/presets';
 
 默认风格不增加任何 token；`density` 使用默认值时也无需设置。按下、焦点和主色上的文字颜色由组件库自动生成，不需要在配置中逐项写出；示例仅按风格调整必要的阴影反馈。
 
-自定义风格只定义差异：圆角、描边宽度、全局 `tokens.borderColor`、阴影，以及用 `color-mix()` 生成的染色表面。设置一次全局边框色，实色按钮、开关、卡片、表格、浮层等组件的外框都会生效，无需为每个组件重复配置。组件级覆盖优先，错误、选中等状态继续保留各自语义；原本无边框的组件保持自身结构。
+自定义风格只定义差异：圆角、描边宽度、常规边框色 `tokens.borderColor`、统一外框描边 `tokens.frameBorderColor`、阴影，以及用 `color-mix()` 生成的染色表面。`tokens.borderColor` 只影响本身带有中性边框的控件与容器；需要让实色按钮、危险按钮、开关和分段轨道等也统一带上描边时，再显式设置 `tokens.frameBorderColor`，无需为每个组件重复配置。组件级覆盖优先，错误、选中与警示状态继续保留各自语义；原本无边框的文字或链接按钮保持自身结构。
 
 调用 `createExampleTheme('illustration', '#1d9bf0')` 设置主色。染色背景和描边使用 `var(--leaf-color-primary)`，阴影复用 `var(--leaf-color-border)`，因此会随主色自动变化，无需为每种颜色手写整套色板。省略颜色参数可继承所在区域的主题色；表面色继续由组件库按深浅外观生成，染色背景在此基础上混入主色。
 

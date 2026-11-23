@@ -407,9 +407,9 @@
   }
 }
 
-// 字段家族（含 InputOTP）共用的 3px 聚焦外环变量，在聚焦边框色外侧按 20% 透明混合，适配浅深背景与校验状态。
+// 字段家族（含 InputOTP）共用的 3px 聚焦外环变量，在聚焦边框色外侧按 12% 透明混合，适配浅深背景与校验状态。
 @mixin field-ring-variables($color: var(--leaf-field-color)) {
-  --leaf-field-ring: color-mix(in srgb, #{$color} 20%, transparent);
+  --leaf-field-ring: color-mix(in srgb, #{$color} 12%, transparent);
   --leaf-field-focus-shadow: 0 0 0 3px var(--leaf-field-ring);
 }
 
@@ -501,7 +501,7 @@
   }
 }
 
-@mixin field($component: field, $focus: neutral) {
+@mixin field($component: field, $focus: primary) {
   @include control-size($component);
   @if $focus == primary {
     --leaf-field-color: var(--leaf-color-primary);

@@ -55,14 +55,6 @@
 
   .leaf-card {
     --leaf-card-padding: var(--leaf-component-card-padding, calc(var(--leaf-spacing) * 2 + 4px));
-    --leaf-card-content-padding-left: var(
-      --leaf-component-card-padding-left,
-      var(--leaf-card-padding)
-    );
-    --leaf-card-content-padding-right: var(
-      --leaf-component-card-padding-right,
-      var(--leaf-card-padding)
-    );
     --leaf-card-heading-gap: var(--leaf-component-card-gap, calc(var(--leaf-spacing) * 2 + 4px));
     --leaf-card-title-font-size: calc(var(--leaf-font-size) + 2px);
     --leaf-card-title-line-height: calc(var(--leaf-line-height) + 2px);
@@ -72,13 +64,7 @@
       var(--leaf-border-width, 1px)
     );
     --leaf-card-radius: var(--leaf-component-card-radius, var(--leaf-radius-md));
-    --leaf-card-inset: max(2px, calc(var(--leaf-spacing) - 4px));
     --leaf-card-tabbed-gap: calc(var(--leaf-spacing) + 2px);
-    --leaf-card-inset-padding: max(
-      0px,
-      calc(var(--leaf-card-padding) - var(--leaf-card-inset) - var(--leaf-card-border-width))
-    );
-    --leaf-card-canvas: var(--leaf-color-surface-muted);
     box-sizing: border-box;
     min-width: 0;
     border: var(--leaf-card-border-width) solid transparent;
@@ -209,11 +195,11 @@
         margin-block-end: 0;
       }
     }
-    &--divided:not(&--layered) > &__panel > &__footer {
+    &--divided > &__panel > &__footer {
       border-block-start: 1px solid
         var(--leaf-component-card-border-color, var(--leaf-color-divider));
     }
-    &--divided:not(&--layered)
+    &--divided
       > &__panel
       > &__tabs:not(:has(> .leaf-tabs__panels > .leaf-tabs__panel:not([hidden])))
       + &__footer {
@@ -237,126 +223,8 @@
       min-width: 0;
       border-radius: inherit;
     }
-    &--layered {
-      --leaf-card-content-padding-left: max(
-        0px,
-        calc(
-          var(--leaf-component-card-padding-left, var(--leaf-card-padding)) - var(
-              --leaf-card-inset
-            ) - var(--leaf-card-border-width)
-        )
-      );
-      --leaf-card-content-padding-right: max(
-        0px,
-        calc(
-          var(--leaf-component-card-padding-right, var(--leaf-card-padding)) - var(
-              --leaf-card-inset
-            ) - var(--leaf-card-border-width)
-        )
-      );
-      --leaf-card-heading-gap: var(
-        --leaf-component-card-gap,
-        max(4px, calc(var(--leaf-spacing) - 2px))
-      );
-      --leaf-card-title-font-size: max(12px, calc(var(--leaf-font-size) - 2px));
-      --leaf-card-title-line-height: var(--leaf-line-height-sm);
-      background: var(--leaf-card-canvas);
-      box-shadow: none;
-      &.leaf-card--sm {
-        --leaf-card-heading-gap: var(
-          --leaf-component-card-gap,
-          max(2px, calc(var(--leaf-spacing) - 4px))
-        );
-      }
-      &.leaf-card--lg {
-        --leaf-card-heading-gap: var(--leaf-component-card-gap, var(--leaf-spacing));
-        --leaf-card-title-font-size: var(--leaf-font-size-sm);
-      }
-      > .leaf-card__header {
-        box-sizing: border-box;
-        min-block-size: calc(var(--leaf-line-height-sm) + 6px + var(--leaf-card-heading-gap) * 2);
-        --leaf-card-header-default-padding: calc(var(--leaf-card-heading-gap) + 2px)
-          var(--leaf-card-inset) max(0px, calc(var(--leaf-card-heading-gap) - 2px))
-          var(--leaf-card-inset-padding);
-      }
-      > .leaf-card__header > .leaf-card__extra {
-        display: flex;
-        align-items: center;
-      }
-      > .leaf-card__header .leaf-card__title {
-        color: var(--leaf-component-card-color, var(--leaf-color-text-muted));
-        font-size: max(12px, calc(var(--leaf-font-size) - 2px));
-        font-weight: 500;
-        line-height: var(--leaf-line-height-sm);
-      }
-      &.leaf-card--lg > .leaf-card__header .leaf-card__title {
-        font-size: var(--leaf-font-size-sm);
-      }
-      > .leaf-card__panel {
-        position: relative;
-        box-sizing: border-box;
-        min-width: 0;
-        margin: var(--leaf-card-inset);
-        margin-block-start: var(--leaf-card-heading-gap);
-        border: var(--leaf-card-border-width) solid
-          var(
-            --leaf-component-card-border-color,
-            var(--leaf-frame-border-color, var(--leaf-color-border))
-          );
-        border-radius: max(
-          0px,
-          calc(var(--leaf-card-radius) - var(--leaf-card-border-width) - 2px)
-        );
-        background: var(--leaf-card-surface);
-        // Clip only the shadow layer, leaving content and keyboard outlines unclipped.
-        &::before {
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          box-shadow: var(
-            --leaf-component-card-shadow,
-            var(--leaf-surface-shadow, var(--leaf-shadow-sm))
-          );
-          clip-path: inset(0 -6px -6px);
-          pointer-events: none;
-          content: '';
-        }
-      }
-      > .leaf-card__header + .leaf-card__panel {
-        margin-block-start: 0;
-      }
-      > .leaf-card__panel > .leaf-card__body {
-        --leaf-card-body-default-padding: var(--leaf-card-inset-padding)
-          var(--leaf-card-content-padding-right) var(--leaf-card-inset-padding)
-          var(--leaf-card-content-padding-left);
-      }
-      > .leaf-card__panel
-        > .leaf-card__tabs:has(> .leaf-tabs__panels > .leaf-tabs__panel:not([hidden]))
-        + .leaf-card__body {
-        --leaf-card-body-default-padding: 0 var(--leaf-card-content-padding-right)
-          var(--leaf-card-inset-padding) var(--leaf-card-content-padding-left);
-      }
-      > .leaf-card__footer {
-        --leaf-card-footer-default-padding: 0 var(--leaf-card-inset) var(--leaf-card-inset);
-        padding-inline: var(--leaf-card-inset);
-        border-end-start-radius: inherit;
-        border-end-end-radius: inherit;
-        background: var(--leaf-component-card-footer-background, transparent);
-      }
-      > .leaf-card__panel > .leaf-card__tabs > .leaf-tabs__header,
-      > .leaf-card__panel > .leaf-card__tabs > .leaf-tabs__panels > .leaf-tabs__panel {
-        padding-left: var(--leaf-card-content-padding-left);
-        padding-right: var(--leaf-card-content-padding-right);
-      }
-    }
     &--shadowless {
       box-shadow: none;
-      > .leaf-card__panel::before {
-        box-shadow: none;
-      }
-    }
-    &--layered:not(.leaf-card--bordered) > .leaf-card__panel {
-      border-color: transparent;
     }
     &--tabbed > &__header {
       --leaf-card-header-default-padding: var(--leaf-card-heading-gap) var(--leaf-card-padding)
@@ -391,7 +259,7 @@
         );
       }
     }
-    &:not(.leaf-card--layered) > &__header + &__panel > &__tabs > .leaf-tabs__header,
+    &__header + &__panel > &__tabs > .leaf-tabs__header,
     &__cover + &__tabs,
     &__cover + &__tabs > .leaf-tabs__header {
       border-start-start-radius: 0;
@@ -401,11 +269,6 @@
       display: flex;
       align-items: center;
       gap: var(--leaf-spacing-sm);
-    }
-  }
-  @media (forced-colors: active) {
-    .leaf-card--layered > .leaf-card__panel {
-      border-color: CanvasText;
     }
   }
 }

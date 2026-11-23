@@ -26,6 +26,142 @@
     font-family: var(--leaf-font-family);
     font-size: var(--leaf-font-size);
 
+    &__header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-block-end: var(--leaf-spacing-md, 16px);
+      &:has(+ .leaf-data-table__tabs) {
+        margin-block-end: var(--leaf-spacing-sm, 8px);
+      }
+    }
+
+    &__tabs {
+      margin-block-end: var(--leaf-spacing-md, 16px);
+    }
+
+    &__tab-extra {
+      display: flex;
+      align-items: center;
+      gap: var(--leaf-spacing-sm);
+    }
+
+    &__title-group {
+      flex: 1;
+      align-self: center;
+      min-width: 0;
+    }
+
+    &__description {
+      color: var(--leaf-color-text-muted);
+      font-size: var(--leaf-font-size-sm);
+      line-height: var(--leaf-line-height-sm);
+      overflow-wrap: anywhere;
+      &:not(:first-child) {
+        margin-block-start: var(--leaf-spacing-sm);
+      }
+    }
+
+    &__extra {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--leaf-spacing-sm);
+      min-height: var(--leaf-line-height-lg);
+      margin-inline-start: auto;
+    }
+
+    &--card {
+      .leaf-data-table__card {
+        --leaf-data-table-card-inner-radius: max(
+          0px,
+          calc(var(--leaf-card-radius) - var(--leaf-card-border-width))
+        );
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        min-height: 0;
+
+        > .leaf-card__panel {
+          display: flex;
+          flex: 1 1 auto;
+          flex-direction: column;
+          min-height: 0;
+
+          > .leaf-card__body {
+            display: flex;
+            flex: 1 1 auto;
+            flex-direction: column;
+            min-height: 0;
+          }
+        }
+
+        .leaf-table {
+          --leaf-table-inset: calc(var(--leaf-card-padding) - var(--leaf-table-padding-inline));
+        }
+
+        > .leaf-card__panel:first-child
+          > .leaf-card__body:first-child
+          > .leaf-data-table__content:last-child
+          .leaf-table {
+          border-radius: var(--leaf-data-table-card-inner-radius);
+        }
+
+        > .leaf-card__panel:first-child
+          > .leaf-card__body:first-child
+          > .leaf-data-table__content:not(:last-child)
+          .leaf-table {
+          border-radius: var(--leaf-data-table-card-inner-radius)
+            var(--leaf-data-table-card-inner-radius) 0 0;
+        }
+
+        > .leaf-card__header
+          + .leaf-card__panel
+          > .leaf-card__body
+          > .leaf-data-table__content:last-child
+          .leaf-table,
+        > .leaf-card__panel
+          > .leaf-card__body:not(:first-child)
+          > .leaf-data-table__content:last-child
+          .leaf-table {
+          border-radius: 0 0 var(--leaf-data-table-card-inner-radius)
+            var(--leaf-data-table-card-inner-radius);
+        }
+
+        > .leaf-card__header
+          + .leaf-card__panel
+          > .leaf-card__body
+          > .leaf-data-table__content:not(:last-child)
+          .leaf-table,
+        > .leaf-card__panel
+          > .leaf-card__body:not(:first-child)
+          > .leaf-data-table__content:not(:last-child)
+          .leaf-table {
+          border-radius: 0;
+        }
+
+        .leaf-data-table__footer {
+          margin-block-start: 0;
+          padding: min(16px, var(--leaf-card-padding)) var(--leaf-card-padding);
+        }
+
+        > .leaf-card__panel > .leaf-card__body > .leaf-data-table__content:last-child {
+          .leaf-table__state-row > .leaf-table__cell,
+          .leaf-table__footer > .leaf-table__row:last-child > .leaf-table__cell,
+          .leaf-table__table:not(:has(> .leaf-table__footer))
+            .leaf-table__row[data-last-visible]
+            > .leaf-table__cell,
+          .leaf-table__table:not(:has([data-row-id]))
+            > :last-child
+            > .leaf-table__row:last-child
+            > .leaf-table__cell {
+            border-block-end: 0;
+          }
+        }
+      }
+    }
+
     &__content {
       display: flex;
       flex: 1 1 auto;

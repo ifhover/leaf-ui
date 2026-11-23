@@ -217,7 +217,6 @@ describe('DataTable TanStack adapter', () => {
       selectAllMode: 'all',
       columnReordering: true,
       onRowReorder: vi.fn(),
-      variant: 'layered',
       columnDividers: true,
       toolbar: 'Obsolete toolbar',
       bleed: true,
@@ -616,7 +615,9 @@ describe('DataTable TanStack adapter', () => {
   });
 
   it('supports regional stripes and explicit overrides without replacing selected rows', async () => {
-    expectTypeOf<DataTableProps<Person>>().not.toHaveProperty('variant');
+    expectTypeOf<DataTableProps<Person>['variant']>().toEqualTypeOf<
+      'default' | 'card' | undefined
+    >();
     expectTypeOf<DataTableProps<Person>>().not.toHaveProperty('columnDividers');
     const { rerender } = render(
       <ConfigProvider components={{ DataTable: { striped: true } }}>
@@ -1400,5 +1401,130 @@ describe('DataTable TanStack adapter', () => {
     expect(arrow()).toHaveAttribute('data-direction', 'asc');
     await userEvent.click(screen.getByRole('button', { name: 'Age: Clear sorting' }));
     expect(arrow()).not.toHaveAttribute('data-direction');
+  });
+
+  it('wraps the table and pagination inside the Card body without using Card footer', () => {
+    const { container, rerender } = render(
+      <ConfigProvider
+        components={{ Card: { divided: false, bordered: false, shadow: false, title: 'Leak' } }}
+      >
+        <DataTable
+          variant="card"
+          title="Members"
+          description="Active team roster"
+          extra={<button type="button">Add member</button>}
+          data={data}
+          columns={columns}
+          rowKey="id"
+          options={{ initialState: { pagination: { pageSize: 2 } } }}
+        />
+      </ConfigProvider>,
+    );
+    const root = container.querySelector('.leaf-data-table');
+    const card = root?.querySelector('.leaf-data-table__card');
+    const cardBody = card?.querySelector('.leaf-card__body');
+    const table = screen.getByRole('table', { name: 'Members' });
+    const footer = root?.querySelector('.leaf-data-table__footer');
+    expect(root).toHaveClass('leaf-data-table--card');
+    expect(card).toHaveClass('leaf-card', 'leaf-card--bordered', 'leaf-card--divided');
+    expect(card).not.toHaveClass('leaf-card--shadowless');
+    expect(card).toHaveStyle({ '--leaf-card-body-padding': '0px' });
+    expect(card?.contains(table)).toBe(true);
+    expect(table.closest('.leaf-table')).not.toHaveClass('leaf-table--bordered');
+    expect(screen.getByText('Active team roster')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add member' })).toBeInTheDocument();
+    expect(footer).not.toBeNull();
+    expect(card?.querySelector('.leaf-card__footer')).toBeNull();
+    expect(cardBody?.contains(footer as Node)).toBe(true);
+    expect(footer?.closest('.leaf-card')).toBe(card);
+
+    rerender(
+      <DataTable
+        variant="card"
+        title="Members"
+        data={data}
+        columns={columns}
+        rowKey="id"
+        pagination={false}
+      />,
+    );
+    expect(container.querySelector('.leaf-card__footer')).toBeNull();
+    expect(container.querySelector('.leaf-data-table__footer')).toBeNull();
+  });
+
+  it('renders custom title, description, and extra above default tables and wires aria-labelledby', () => {
+    const { container } = render(
+      <DataTable
+        title="Default title"
+        description="Default subtitle"
+        extra={<span>3 total</span>}
+        data={data}
+        columns={columns}
+        rowKey="id"
+        pagination={false}
+      />,
+    );
+    expect(container.querySelector('.leaf-data-table')).not.toHaveClass('leaf-data-table--card');
+    expect(container.querySelector('.leaf-data-table__header')).toBeInTheDocument();
+    expect(screen.getByRole('table', { name: 'Default title' })).toBeInTheDocument();
+    expect(screen.getByText('Default subtitle')).toBeInTheDocument();
+    expect(screen.getByText('3 total')).toBeInTheDocument();
+  });
+
+  it('supports Card-compatible tabs in both card and default variants', () => {
+    const onTabChange = vi.fn();
+    const { container, rerender } = render(
+      <DataTable
+        variant="card"
+        extra={<button type="button">Filter</button>}
+        tabs={{
+          activeKey: 'all',
+          onChange: onTabChange,
+          items: [
+            { key: 'all', label: 'All' },
+            { key: 'active', label: 'Active' },
+          ],
+        }}
+        data={data}
+        columns={columns}
+        rowKey="id"
+      />,
+    );
+
+    const card = container.querySelector('.leaf-data-table__card');
+    expect(card?.querySelector('.leaf-card__header')).toBeNull();
+    expect(card?.querySelector('.leaf-card__tabs')).toBeInTheDocument();
+    expect(card?.querySelector('.leaf-card__tab-extra')).toContainElement(
+      screen.getByRole('button', { name: 'Filter' }),
+    );
+    fireEvent.click(screen.getByRole('tab', { name: 'Active' }));
+    expect(onTabChange).toHaveBeenCalledWith('active');
+
+    rerender(
+      <DataTable
+        title="Default title"
+        extra={<button type="button">Export</button>}
+        tabs={{
+          activeKey: 'all',
+          onChange: onTabChange,
+          items: [
+            { key: 'all', label: 'All' },
+            { key: 'active', label: 'Active' },
+          ],
+        }}
+        data={data}
+        columns={columns}
+        rowKey="id"
+        pagination={false}
+      />,
+    );
+
+    expect(container.querySelector('.leaf-data-table__header')).toBeInTheDocument();
+    expect(container.querySelector('.leaf-data-table__tabs')).toBeInTheDocument();
+    expect(container.querySelector('.leaf-data-table__extra')).toContainElement(
+      screen.getByRole('button', { name: 'Export' }),
+    );
+    fireEvent.click(screen.getByRole('tab', { name: 'Active' }));
+    expect(onTabChange).toHaveBeenCalledTimes(2);
   });
 });

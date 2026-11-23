@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../../src/components/component-example';
 import { TableBasic } from '../../../src/examples/en/table/basic';
+import { TableCard } from '../../../src/examples/en/table/card';
 import { TableSimple } from '../../../src/examples/en/table/simple';
 import { TableStriped } from '../../../src/examples/en/table/striped';
 import { TableSizes } from '../../../src/examples/en/table/sizes';
@@ -30,7 +31,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ## Basic usage
 
-Pass data, column definitions, and a stable unique `rowKey`. Tables use clean surface headers (muted text, 500 weight), a 2px header bottom divider, rounded top corners, fine row dividers, and `tabular-nums` numeric alignment. The default `size` is `md` (`10px 14px` padding, with `43px` single-line body rows and `44px` headers); use `lg` (`55px`) for larger padding or `sm` (`39px`) for compact spacing. Local pagination is enabled by default. This example sets 5 rows per page so you can switch pages. Ordinary tables without configured widths distribute space based on content and wrap long text, or set `meta.ellipsis` to truncate onto a single line.
+Pass data, column definitions, and a stable unique `rowKey`. Tables use clean surface headers (muted text, 500 weight), a 1px header bottom divider, rounded top corners, fine row dividers, and `tabular-nums` numeric alignment. The default `size` is `md` (`10px 14px` padding, with `43px` single-line body rows and `43px` headers); use `lg` (`55px`) for larger padding or `sm` (`39px`) for compact spacing. Local pagination is enabled by default. This example sets 5 rows per page so you can switch pages. Ordinary tables without configured widths distribute space based on content and wrap long text, or set `meta.ellipsis` to truncate onto a single line.
 
 <ComponentExample exampleId="basic" preview={<TableBasic />} fileName="basic.tsx" width="100%">
 
@@ -46,11 +47,23 @@ Pass data, column definitions, and a stable unique `rowKey`. Tables use clean su
 
 ## Examples
 
+### Card appearance and title
+
+Set `variant="card"` to wrap the table and pagination inside a Card container (without Card footer chrome; the table spans full width with outer column edges aligned to Card padding), and use `title`, `description`, `extra`, and `tabs` to customize the header and tabs above the table.
+
+<ComponentExample exampleId="card" preview={<TableCard />} fileName="card.tsx" width="100%">
+
+```tsx lineNumbers file="../../../src/examples/en/table/card.tsx"
+
+```
+
+</ComponentExample>
+
 ### Bordered table
 
 <a id="simple-appearance" />
 
-Headers show a 2px bottom divider and body rows show 1px dividers by default; set `bordered` to add only an outer frame with four rounded corners while keeping internal dividers and headers unchanged.
+Headers and body rows show 1px dividers by default; set `bordered` to add only an outer frame with four rounded corners while keeping internal dividers and headers unchanged.
 
 <ComponentExample exampleId="simple" preview={<TableSimple />} fileName="simple.tsx" width="100%">
 
@@ -231,6 +244,11 @@ Pass `data`, `columns`, and `rowKey` directly, or pass a table instance created 
 | `options` | `Omit<TableOptions<TData>, 'data' \| 'columns' \| 'getCoreRowModel' \| 'getRowId'>` | — | Customize TanStack state, callbacks and server configuration. |
 | `localPagination` | `boolean` | — | Whether TanStack slices rows into local pages. Disable it to keep pagination state and controls while rendering all supplied rows. |
 | `table` | `TanStackTable<TData>` | — | Instance from useDataTable or useReactTable; mutually exclusive with data, columns, rowKey, options and localPagination. |
+| `variant` | `'default' \| 'card'` | `'default'` | Container appearance; card wraps the table and pagination inside a Card body (table spans full width with outer column edges aligned to Card padding). |
+| `title` | `ReactNode` | — | Heading content above the table. |
+| `description` | `ReactNode` | — | Supporting text displayed below the title. |
+| `extra` | `ReactNode` | — | Trailing actions or content in the title or tab bar. |
+| `tabs` | [`CardTabsProps`](card#cardtabs-api) | — | Line tabs displayed above the table; shares Card tabs controlled, uncontrolled and extra placement behavior. |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Presentation size. |
 | `bordered` | `boolean` | `false` | Add only an outer border and four rounded corners while keeping internal dividers and headers unchanged. |
 | `striped` | `boolean` | `false` | Fine row dividers are shown by default; true enables zebra striping from the second row with an alternating light gray background and hides row dividers. |

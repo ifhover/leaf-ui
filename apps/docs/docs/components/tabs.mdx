@@ -18,7 +18,7 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 
 ## 基础用法
 
-通过 `items` 定义标签和内容，点击标签切换当前面板。线形标签未选中时使用次要文字色，悬停、按下和选中时快速呈现清晰对比；选中标签底部显示铺满项宽度的渐显下划线，不显示多余整行底边框。
+通过 `items` 定义标签和内容，点击标签切换当前面板。线形标签默认呈现开放式底部基准分割线，交互和选中时通过主题色文字与平滑移动的指示条反馈当前项。
 
 <ComponentExample exampleId="basic" preview={<TabsBasic />} fileName="basic.tsx">
 
@@ -34,7 +34,7 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 
 ### 不同尺寸
 
-通过 `size` 设置标签控件尺寸（`sm` / `md` / `lg`）；线形标签默认高度跟随统一控件高度加 2 px（含大号内容时可自然撑高）。每行展示一种形态，每列对比小、默认和大三种尺寸。窄屏下可横向滚动查看。
+通过 `size` 设置标签控件尺寸（`sm` / `md` / `lg`）；线形标签通过字体行高与上下内边距决定高度，小尺寸保持基础字号并收窄上下内边距。每行展示一种形态，每列对比小、默认和大三种尺寸。窄屏下可横向滚动查看。
 
 <ComponentExample exampleId="sizes" preview={<TabsSizes />} fileName="sizes.tsx" width="100%">
 
@@ -46,7 +46,7 @@ export const leafDoc = { component: 'Tabs', primaryApi: 'TabsProps' };
 
 ### 不同形态
 
-通过 `type` 选择线形（`line`）、卡片（`card`）或分段（`segmented`）三种标签页外观，均保持中性灰阶反馈。
+通过 `type` 选择线形（`line`）、卡片（`card`）或分段（`segmented`）三种标签页外观。线形使用主题色交互强调与滑移指示条，卡片与分段保持克制的中性灰阶层次。
 
 <ComponentExample exampleId="appearances" preview={<TabsAppearances />} fileName="appearances.tsx">
 

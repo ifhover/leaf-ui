@@ -190,7 +190,7 @@
 
     &__header > &__row:last-child > &__column-header,
     &__header > &__row:not(:last-child) > &__column-header:not([data-leaf-header-group])[rowspan] {
-      border-block-end: 2px solid var(--leaf-table-divider);
+      border-block-end: 1px solid var(--leaf-table-divider);
     }
 
     &__header > &__row:not(:last-child) > &__column-header[data-leaf-header-group] {

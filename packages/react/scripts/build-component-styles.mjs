@@ -37,7 +37,7 @@ const dependencies = {
   pagination: ['select', 'inputnumber'],
   table: ['button', 'loading', 'result', 'scrollbar'],
   scrollarea: ['scrollbar'],
-  tabletanstack: ['table', 'checkbox', 'radio', 'pagination'],
+  tabletanstack: ['table', 'checkbox', 'radio', 'pagination', 'card', 'tabs'],
   typography: [],
   tour: [],
   floatbutton: ['tooltip'],

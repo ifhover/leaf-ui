@@ -48,6 +48,8 @@ import {
   useState,
 } from 'react';
 import { ButtonControl } from '../button/button';
+import { CardControl } from '../card/card';
+import { CardTitleControl } from '../card/title';
 import { CheckboxControl as Checkbox } from '../checkbox/checkbox';
 import {
   mergeComponentProps,
@@ -62,6 +64,7 @@ import { assignRef } from '../shared/field';
 import { inertProps } from '../shared/inert';
 import { useText } from '../shared/use-text';
 import { TableControl as Table } from '../table/table';
+import { TabsControl as Tabs } from '../tabs/tabs';
 import { getColumnLayout } from './column-sizing';
 import { useRowMotion } from './row-motion';
 
@@ -148,7 +151,7 @@ export type DataTableProps<TData> = DataTableInstanceProps<TData> | DataTableDat
 
 type DataTableContextValue = Omit<
   DataTableInstanceProps<unknown>,
-  keyof HTMLAttributes<HTMLDivElement>
+  keyof HTMLAttributes<HTMLDivElement> | 'title'
 > & {
   id: string;
   label?: string;
@@ -165,6 +168,11 @@ function useDataTableContext() {
 
 function DataTableRoot<TData>({
   table,
+  variant = 'default',
+  title,
+  description,
+  extra,
+  tabs,
   size = 'md',
   bordered = false,
   striped = false,
@@ -189,6 +197,25 @@ function DataTableRoot<TData>({
   ...props
 }: DataTableInstanceProps<TData>) {
   const id = useId();
+  const titleId = `${id}-title`;
+  const isCard = variant === 'card';
+  const rawTabItems = tabs?.items;
+  const hasTabs = Boolean(rawTabItems?.length);
+  const hasTitleHeading = title != null || description != null;
+  const hasHeadingBar = hasTitleHeading || (!hasTabs && extra != null);
+  const tabExtra =
+    !hasTitleHeading && extra != null ? (
+      <div className="leaf-data-table__tab-extra">
+        {tabs?.extra}
+        {extra}
+      </div>
+    ) : (
+      tabs?.extra
+    );
+  const tabLabel = tabs?.['aria-label'] ?? (typeof title === 'string' ? title : label);
+  const tabLabelledBy =
+    tabs?.['aria-labelledby'] ??
+    (tabs?.['aria-label'] == null ? (title != null ? titleId : labelledBy) : undefined);
   const state = table.getState();
   const paginationAvailable = hasPaginationModel(table as unknown as TanStackTable<unknown>);
   const expansionAvailable = hasExpansionModel(table as unknown as TanStackTable<unknown>);
@@ -198,9 +225,10 @@ function DataTableRoot<TData>({
     table: table as unknown as TanStackTable<unknown>,
     id,
     label,
-    labelledBy,
+    labelledBy: labelledBy ?? (label == null && title != null ? titleId : undefined),
+    variant,
     size,
-    bordered,
+    bordered: isCard ? false : bordered,
     striped,
     maxHeight: maxHeight ?? (virtual ? 400 : undefined),
     minWidth,
@@ -270,15 +298,72 @@ function DataTableRoot<TData>({
     }
   }, [pagination, paginationAvailable, expansionAvailable, renderExpandedRow]);
 
+  const footerNode = automaticPagination ? (
+    <DataTableFooterControl>
+      <DataTablePaginationControl {...(typeof pagination === 'object' ? pagination : {})} />
+    </DataTableFooterControl>
+  ) : undefined;
+
   return (
     <DataTableContext.Provider value={value}>
       <FieldScope>
-        <div {...props} className={classes('leaf-data-table', className)}>
-          <DataTableContentControl />
-          {automaticPagination && (
-            <DataTableFooterControl>
-              <DataTablePaginationControl {...(typeof pagination === 'object' ? pagination : {})} />
-            </DataTableFooterControl>
+        <div
+          {...props}
+          className={classes('leaf-data-table', isCard && 'leaf-data-table--card', className)}
+        >
+          {isCard ? (
+            <CardControl
+              className="leaf-data-table__card"
+              size={size}
+              title={title}
+              description={description}
+              extra={extra}
+              tabs={tabs}
+              titleId={title != null ? titleId : undefined}
+              padding={{ body: 0 }}
+            >
+              <DataTableContentControl />
+              {footerNode}
+            </CardControl>
+          ) : (
+            <>
+              {hasHeadingBar && (
+                <div className="leaf-data-table__header">
+                  {hasTitleHeading && (
+                    <div className="leaf-data-table__title-group">
+                      {title != null && (
+                        <CardTitleControl
+                          id={titleId}
+                          size={size}
+                          className="leaf-data-table__title"
+                        >
+                          {title}
+                        </CardTitleControl>
+                      )}
+                      {description != null && (
+                        <div className="leaf-data-table__description">{description}</div>
+                      )}
+                    </div>
+                  )}
+                  {extra != null && <div className="leaf-data-table__extra">{extra}</div>}
+                </div>
+              )}
+              {hasTabs && tabs && rawTabItems && (
+                <Tabs
+                  {...tabs}
+                  type="line"
+                  placement="top"
+                  size={tabs.size ?? size}
+                  aria-label={tabLabel}
+                  aria-labelledby={tabLabelledBy}
+                  extra={tabExtra}
+                  className={classes('leaf-data-table__tabs', tabs.className)}
+                  items={rawTabItems}
+                />
+              )}
+              <DataTableContentControl />
+              {footerNode}
+            </>
           )}
         </div>
       </FieldScope>
@@ -1073,7 +1158,6 @@ function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
   const {
     stickyHeader: _stickyHeader,
     caption: _caption,
-    variant: _variant,
     columnDividers: _columnDividers,
     layout: _layout,
     children: _children,
@@ -1087,7 +1171,6 @@ function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
   } = merged as typeof merged & {
     stickyHeader?: unknown;
     caption?: unknown;
-    variant?: unknown;
     columnDividers?: unknown;
     layout?: unknown;
     children?: unknown;

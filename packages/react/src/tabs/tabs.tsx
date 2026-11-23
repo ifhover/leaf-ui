@@ -120,7 +120,7 @@ export function useTabsParts({
     indicator,
     '[data-leaf-indicator-item][data-active="true"]',
     `${selected}-${placement}-${type}-${direction}-${visibilityKey ?? ''}`,
-    items.length > 0 && type !== 'line',
+    items.length > 0,
   );
   const [scrollSides, setScrollSides] = useState({ start: false, end: false });
   const sorting = sortable && Boolean(onReorder);

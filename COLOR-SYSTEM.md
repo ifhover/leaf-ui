@@ -49,7 +49,7 @@
 - `on-*`（实底上的文字 / 图标）始终默认纯白（仅 `primaryColor: 'neutral'` 深色模式下为 `#0d0d0d`），不按普通主色亮度自动反转为黑；五种 `on*Color` token 可由应用显式设为纯黑或其他颜色。它不与浅底文字 `ink` 合并。组件消费共享 `on-*`，不硬编码白色或自动黑白判断。固定白色可能使部分亮色自定义组合低于 4.5:1：这是已确认的产品契约，验收时如实报告失败组合与 `on*Color` 定制方式，不自动改黑、不调暗基色，也不关闭 axe 对比度检查；库不保证显式亮色加默认白字满足对比度。本条是实底前景规则的唯一出处，其他文档只链接这里。
 - 内置组件的主色指示、进度、选中边框与边界统一直接使用 `primary` 基色，不因亮暗自动压暗或提亮；Button 实底保持透明默认边框。
 - Checkbox、Radio 和 Switch 的选中实底、选中边框与交互边框统一直接使用原 `primary`，内容使用 `on-primary`；未选中态保持中性边界与悬停（`border-hover` / `text-muted`）；显式组件、边框与状态覆盖优先。禁止把派生色阶用作实底却沿用另一颜色的前景。
-- 共享 `choice` / `choice-states` / `choice-surfaces` 配方保留 `$checked-border` 参数以支持组件级边框差异，默认统一映射为 `var(--leaf-frame-border-color, var(--leaf-color-primary))`；组件边框及对应状态覆盖优先。
+- 共享 `choice` / `choice-states` / `choice-surfaces` 配方保留 `$checked-border` 参数以支持组件级边框差异，默认统一映射为 `var(--leaf-frame-border-color, var(--leaf-color-primary))`（仅在显式配置 `frameBorderColor` 时生效，`borderColor` 不改变选中边框）；组件边框及对应状态覆盖优先。
 - 组件不得自行挑选语义明暗派生档或中性数字档。常规状态使用映射后的 `*-soft`、`*-border`、非主色语义的 `*-ink`、主色或中性用途角色，或显式组件覆盖；确需新增全局导出角色时，先进入 `resolveColorRoles` 与准入审查并补齐基线测试。
 
 ## 视觉家族契约
@@ -62,11 +62,11 @@ Input、Select、AutoComplete、Textarea、InputNumber、TreeSelect、Cascader�
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 普通        | 共用正文、内容表面、边框；组件未显式覆盖时，Input 与 Select 最终边框一致                                                                                                   |
 | 悬停 / 按下 | 默认与按下（未聚焦时）加深外框至 `border-hover`；保持背景、文字与阴影不变，显式状态覆盖与校验状态边框仍优先                                                                |
-| 聚焦 / 展开 | 默认采用清晰的 `--leaf-color-text-muted` 中性边框配 3px 20% 半透明外环（`field-ring-variables`，仅传入 `$focus: primary` 的字段使用主色）；Mentions 通过内部 Textarea 继承 |
+| 聚焦 / 展开 | 默认采用清晰的 `--leaf-color-primary` 主题色边框配 3px 12% 淡主题色外环（`field-ring-variables`，仅显式传入 `$focus: neutral` 的字段使用中性边框与外环）；Mentions 通过内部 Textarea 继承 |
 | 校验        | error 使用 danger，warning 使用 warning；校验语义不被普通聚焦覆盖                                                                                                          |
 | 禁用        | 共用禁用背景、静止边框和不可交互规则；保留既有透明度行为                                                                                                                   |
 
-字段的中性聚焦由共享 `field($component, $focus: neutral)` 配方默认提供，各字段只传入组件名称，除非确需主题强调才显式选择 `primary`，且不能各自重写颜色公式。Mentions、InputSearch、InputMask 与日期 / 时间组合字段通过内部 Textarea、Input 或 DateInput 继承。日期 / 时间分段的原生选区复用 info 蓝色与 on-info 前景，不新增全局变量。其他家族差异也必须先进入公共配方，再由组件选择。
+字段的主题色聚焦由共享 `field($component, $focus: primary)` 配方默认提供，各字段只传入组件名称，除非确需中性弱化才显式选择 `neutral`，且不能各自重写颜色公式。Mentions、InputSearch、InputMask 与日期 / 时间组合字段通过内部 Textarea、Input 或 DateInput 继承。日期 / 时间分段的原生选区复用 info 蓝色与 on-info 前景，不新增全局变量。其他家族差异也必须先进入公共配方，再由组件选择。
 
 字段文件里的内层原生控件 `border: 0`、分栏线、步进按钮分隔线、色板对比边框和浮层移动层透明边框，不等于字段外壳重复配色。审计按实际绘制职责登记；不能为了降低债务数字删除必要的内部边界或把它们都改成外框色。
 
@@ -82,11 +82,11 @@ Select、AutoComplete、Mentions、Tree、TreeSelect、Cascader、Dropdown 和�
 
 内容表面区分 surface、surface-muted、surface-raised；边框与 divider 不强行合并。Modal、Card、Drawer 等内容容器外框直接消费实体 `--leaf-color-border`，内部分区线消费 `--leaf-color-divider`。静止阴影复用共享阴影 token 并保留显式覆盖优先。Button 复用动作状态，不把 hover 色直接用于普通选项或字段外框。
 
-Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载遮罩集中在 `table-family` 配方。表头直接使用 `--leaf-table-surface` 干净内容面配 `--leaf-color-text-muted` 弱化灰（保留 `--leaf-component-table-color` 覆盖）与 500 字重文字；表格外框共用 `--leaf-table-border-color`（默认 `--leaf-color-border`），表头 2px 底线与行间 1px 分隔线共用 `--leaf-table-divider`（默认 `--leaf-color-divider`，保留显式边框色覆盖优先）。普通行悬停与斑马条纹共用混入 25% `option-hover` 的纯浅灰表面（保持轻量中性层次）、排序表头混入 55% `surface-muted`、排序列混入 35% `surface-muted`、选中行使用 `--leaf-color-surface-muted` 且悬停不变色、加载遮罩基于当前表格表面计算；内部展开操作复用文字按钮的中性反馈，不新增全局颜色 token。
+Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载遮罩集中在 `table-family` 配方。表头直接使用 `--leaf-table-surface` 干净内容面配 `--leaf-color-text-muted` 弱化灰（保留 `--leaf-component-table-color` 覆盖）与 500 字重文字；表格外框共用 `--leaf-table-border-color`（默认 `--leaf-color-border`），表头 1px 底线与行间 1px 分隔线共用 `--leaf-table-divider`（默认 `--leaf-color-divider`，保留显式边框色覆盖优先）。普通行悬停与斑马条纹共用混入 25% `option-hover` 的纯浅灰表面（保持轻量中性层次）、排序表头混入 55% `surface-muted`、排序列混入 35% `surface-muted`、选中行使用 `--leaf-color-surface-muted` 且悬停不变色、加载遮罩基于当前表格表面计算；内部展开操作复用文字按钮的中性反馈，不新增全局颜色 token。
 
 ### 共享底板与内容表面
 
-分层 `Card`（`variant="layered"`）、显式 `panelVariant="card"` 的日期 / 时间面板画布以及 `Segmented Tabs` 轨道、`Calendar` 视图分段轨道使用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
+显式 `panelVariant="card"` 的日期 / 时间面板画布以及 `Segmented Tabs` 轨道、`Calendar` 视图分段轨道使用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
 
 `Segmented Tabs` / `Calendar` 视图分段选中滑块、`Transfer` 面板、`Drawer` 分区页脚与 `Card` / 面板内层内容直接使用净面 `--leaf-color-surface`（或页脚 `transparent`），避免多层灰底套叠；其中 `Segmented Tabs` 轨道外围使用透明边框、选中滑块配 `--leaf-shadow-xs`。`DataTable` 整体直接使用内容表面，无外层底板。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
 
@@ -100,15 +100,15 @@ Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载�
 | `segmented-surface-family`                  | 分段 `Tabs` 与 `Calendar` 视图切换共用 `surface-muted` 轨道、透明外框、`surface` 选中滑块与 `--leaf-color-text` / `--leaf-color-text-muted` 文字                                                                                                                                                     |
 | `overlay-family(dialog / spotlight)`        | Modal / Drawer 默认共用无模糊半透明灰色遮罩（浅 28% / 深 55% 黑），可显式开启模糊；Tour 保留更强的无模糊聚光遮罩                                                                                                                                                                                     |
 | `calendar-selection-family`                 | Calendar 与日期选择共用基于 `primary-soft` 的 opaque 范围底、整格选中底和 soft-hover 反馈；不等于普通选项反馈                                                                                                                                                                                        |
-| `accent-halo-family`                        | Slider 滑块 `:focus-visible` 使用的 `--leaf-color-primary-alpha-20` 强调光晕；字段家族聚焦外环改由各自的 `field-ring-variables`（20% 透明）承担                                                                                                                                                      |
+| `accent-halo-family`                        | Slider 滑块 `:focus-visible` 使用的 `--leaf-color-primary-alpha-20` 强调光晕；字段家族聚焦外环改由各自的 `field-ring-variables`（12% 透明）承担                                                                                                                                                      |
 
-文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认正文文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。Button `variant="danger"` 作为独立外观，仅保留危险浅底与文字样式：静止直接使用 `--leaf-color-danger` 前景与 `--leaf-color-danger-soft` 背景，悬停与按下收小变化跨度，分别向 `--leaf-color-danger-soft-hover` 混合 30% 与 50%（兼容属性 `danger` 内部回退至此唯一外观）。链接按钮与 Typography 链接使用主题基色 `primary`，悬停和按下使用 `primary-link-hover` / `primary-link-active`。线形 Tabs 保持黑白灰层级：未选中标签使用 `--leaf-color-text-muted`，悬停、按下与选中均使用 `--leaf-color-text`（显式组件文字覆盖优先）。
+文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认正文文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。Button `variant="danger"` 作为独立外观，仅保留危险浅底与文字样式：静止直接使用 `--leaf-color-danger` 前景与 `--leaf-color-danger-soft` 背景，悬停与按下收小变化跨度，分别向 `--leaf-color-danger-soft-hover` 混合 30% 与 50%（兼容属性 `danger` 内部回退至此唯一外观）。链接按钮与 Typography 链接使用主题基色 `primary`，悬停和按下使用 `primary-link-hover` / `primary-link-active`。线形 Tabs 恢复主题色交互强调：未选中标签使用 `--leaf-color-text`，悬停使用 `--leaf-color-primary-hover`，按下使用 `--leaf-color-primary-link-active`，选中标签与底部滑移指示条使用 `--leaf-color-primary`（显式组件文字和指示颜色覆盖优先）。
 
-Button / Typography 的链接文字反馈按 HSV 规则与 `generateColorShades` 派生（`primaryColor: 'neutral'` 时映射到对应高对比中性阶梯）；`primary` 的 hover、active 显式配置仍覆盖对应链接状态。浅深模式（具体十六进制主色下）使用同一基色算法，区域主题通过 JS 配置重新派生；CSS 表达式和半透明输入保留原有混色回退，不读取 DOM。链接文字动作色不进行可读 ink 的对比度修正，应用需确认自定义颜色的实际对比度。组件 paint / 状态覆盖优先，不新增公共配置槽。链接颜色默认过渡 200ms、使用 Ant Design ease-in-out 曲线，线形 Tabs 悬停文字颜色使用 `--leaf-motion-fast`（默认 120ms）；两者随 motionDuration 缩放并遵守减少动态效果设置。
+Button / Typography 的链接文字反馈按 HSV 规则与 `generateColorShades` 派生（`primaryColor: 'neutral'` 时映射到对应高对比中性阶梯）；`primary` 的 hover、active 显式配置仍覆盖对应链接状态。浅深模式（具体十六进制主色下）使用同一基色算法，区域主题通过 JS 配置重新派生；CSS 表达式和半透明输入保留原有混色回退，不读取 DOM。链接文字动作色不进行可读 ink 的对比度修正，应用需确认自定义颜色的实际对比度。组件 paint / 状态覆盖优先，不新增公共配置槽。链接颜色默认过渡 200ms、使用 Ant Design ease-in-out 曲线，线形 Tabs 文字与指示条过渡使用 `calc(var(--leaf-motion-color) * 1.5) ease`；两者随 motionDuration 缩放并遵守减少动态效果设置。
 
-配方只增加内部共享变量，不扩展 `LeafThemeTokens` 配置矩阵。Button 实底与危险外观默认透明边框，不因基色与背景接近而自动增加对比边框；显式全局、组件和状态边框配置仍优先，系统 forced-colors 的可辨识边界保留。实底按下由基色混黑 10% 生成，不为满足前景对比而反向变亮；描边按钮为无阴影纯边框，悬停使用 `--leaf-color-surface-muted` 背景且保持边框不变，按下不做额外变色（保留 `1px` 轻压位移），不偏主题色。
+配方只增加内部共享变量，不扩展 `LeafThemeTokens` 派生色阶配置矩阵（`frameBorderColor` 仅作为全局统一外框描边入口与 `borderColor` 解耦）。Button 实底与危险外观默认透明边框，不因基色与背景接近而自动增加对比边框；显式 `frameBorderColor`、组件和状态边框配置仍优先（仅调整常规 `borderColor` 时不改变实底、文字与危险按钮的无边框外观），系统 forced-colors 的可辨识边界保留。实底按下由基色混黑 10% 生成，不为满足前景对比而反向变亮；描边按钮为无阴影纯边框，悬停使用 `--leaf-color-surface-muted` 背景且保持边框不变，按下不做额外变色（保留 `1px` 轻压位移），不偏主题色。
 
-Switch 关闭态使用中性灰轨道与亮色滑块：浅色与深色区域均消费 `option-hover` 轨道，滑块分别消费 `surface` / `text`，通过区域的 CSS `light-dark()` 选择，不新增颜色角色或运行时推断。默认边框与轨道同色，显式全局 / 组件边框仍优先；关闭态 loading 图标使用对比清晰的中性色，不混入主题色。开启态继续使用 primary 轨道、`on-primary` 滑块与 primary loading 图标；显式 `onPrimaryColor` 只影响开启态，不改写关闭态滑块。
+Switch 关闭态使用中性灰轨道与亮色滑块：浅色与深色区域均消费 `option-hover` 轨道，滑块分别消费 `surface` / `text`，通过区域的 CSS `light-dark()` 选择，不新增颜色角色或运行时推断。默认边框与轨道同色，显式 `frameBorderColor` / 组件边框仍优先；关闭态 loading 图标使用对比清晰的中性色，不混入主题色。开启态继续使用 primary 轨道、`on-primary` 滑块与 primary loading 图标；显式 `onPrimaryColor` 只影响开启态，不改写关闭态滑块。
 
 ### 可读颜色与兼容性
 
@@ -205,7 +205,7 @@ Menu 的三种完整外观、Rate 的评分色、媒体对比、加载光泽和�
 
 ## 自动约束与验收
 
-涉及颜色时执行 `pnpm check:colors` 与 `pnpm test:colors`；它们分别接入 `pnpm check` 与 `pnpm test`，已有对应聚合结果时不重复运行。浏览器排障与人工确认的边界统一见 [质量规则](packages/react/QUALITY.md#当前验收规则)，不另设颜色浏览器门禁。
+静态扫描入口为 `pnpm check:colors`，分类颜色与编译样式测试位于 `packages/react/scripts/*color*.test.mjs`（聚合入口为 `pnpm test:colors`）。日常单组件修改只运行 `pnpm check:colors` 与对应类别的单个测试文件，不运行整组 `pnpm test:colors`；已有 `pnpm check` / `pnpm test` 聚合结果时不重复运行。浏览器排障与人工确认的边界统一见 [质量规则](packages/react/QUALITY.md#当前验收规则)，不另设颜色浏览器门禁。
 
 - 用色检查必须覆盖全局派生定义和组件消费；新文件也必须扫描，不能只核对已有文件数量。
 - 组件不得绕过配方新增默认 HEX / RGB / HSL、颜色混合公式或百分比 token 消费。业务传入色、ColorPicker 色板、QR 前景背景、媒体和强制颜色模式属于可说明的例外，不能全仓库一刀切。
@@ -222,7 +222,7 @@ Menu 的三种完整外观、Rate 的评分色、媒体对比、加载光泽和�
 
 | 改动                             | 必须同步与检查                                                                                                                              |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| 仅组件消费或局部例外             | 组件状态 / 覆盖测试、必要的例外登记；`pnpm check:colors`、`pnpm test:colors` 及相关编译样式检查                                             |
+| 仅组件消费或局部例外             | 组件状态 / 覆盖测试、必要的例外登记；`pnpm check:colors` 及对应类别的单个编译样式测试文件（不跑全量 `pnpm test:colors`）                        |
 | 共享家族配方                     | 搜索全部消费者，按类别更新家族颜色与编译样式测试；不因内部复用默认新增公共 token                                                            |
 | 基色、色阶、用途映射或生成默认值 | 来源、色阶与主题单元测试；`pnpm --filter @ifhover/leaf-ui generate:palette`、`pnpm design:export`；设计资源静态检查                         |
 | 新增 / 修改公共配置              | `theme.ts` 类型与映射、继承 / SSR / 显式覆盖测试、中英文 API 和示例；运行 `node apps/docs/scripts/sync-component-api.mjs`，核对说明与默认值 |

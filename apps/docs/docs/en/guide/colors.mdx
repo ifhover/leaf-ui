@@ -16,7 +16,7 @@ Each row shows an independently preserved base color and its derived band. The f
 
 Configure the primary base with `theme.primaryColor` (supporting hex strings or `'neutral'`), and the other five with `theme.tokens`. Update these JS values through ConfigProvider to regenerate colors; changing DOM styles does not trigger JS theme recalculation.
 
-The example uses the light appearance and sets `tokens.mutedSurfaceColor` to `rgb(244,243,239)`. The outer canvas of a layered Card uses this surface, while inner Card content and clean controls keep the content surface. Explicit component overrides take precedence.
+The example uses the light appearance and sets `tokens.mutedSurfaceColor` to `rgb(244,243,239)`. The `Segmented Tabs` track uses this surface, while the Card surface and active pill keep the content surface. Explicit component overrides take precedence.
 
 All `on*Color` values default to white. Set the corresponding value to `#000000` for black text and choose suitable foreground/background pairs for your application.
 

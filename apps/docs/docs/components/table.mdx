@@ -1,5 +1,6 @@
 import { ComponentExample } from '../../src/components/component-example';
 import { TableBasic } from '../../src/examples/table/basic';
+import { TableCard } from '../../src/examples/table/card';
 import { TableSimple } from '../../src/examples/table/simple';
 import { TableStriped } from '../../src/examples/table/striped';
 import { TableSizes } from '../../src/examples/table/sizes';
@@ -30,7 +31,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ## 基础用法
 
-传入数据、列定义与稳定唯一的 `rowKey`。默认使用干净内容面表头（弱化灰、500 字重）、2px 表头底线、顶部圆角、细行分隔线与等宽数字 `tabular-nums`；`size` 默认为 `md`（内边距 `10px 14px`，单行正文高 `43px`、表头高 `44px`），可设置 `lg`（`55px`）恢复宽松间距或设置 `sm`（`39px`）收紧间距。默认开启本地分页；下面设置每页 5 条，可直接切换页码。普通表格不设置列宽时按内容分配空间，长文本默认换行，也可在列 `meta` 开启 `ellipsis` 单行省略。
+传入数据、列定义与稳定唯一的 `rowKey`。默认使用干净内容面表头（弱化灰、500 字重）、1px 表头底线、顶部圆角、细行分隔线与等宽数字 `tabular-nums`；`size` 默认为 `md`（内边距 `10px 14px`，单行正文高 `43px`、表头高 `43px`），可设置 `lg`（`55px`）恢复宽松间距或设置 `sm`（`39px`）收紧间距。默认开启本地分页；下面设置每页 5 条，可直接切换页码。普通表格不设置列宽时按内容分配空间，长文本默认换行，也可在列 `meta` 开启 `ellipsis` 单行省略。
 
 <ComponentExample exampleId="basic" preview={<TableBasic />} fileName="basic.tsx" width="100%">
 
@@ -46,11 +47,23 @@ npm install @tanstack/react-table@^8.21.3
 
 ## 示例
 
+### 卡片外观与标题区
+
+设置 `variant="card"` 使用卡片容器包裹表格（表格占满卡片宽度且首末列边缘对齐卡片内边距，分页器位于卡片内表格下方），并通过 `title`、`description`、`extra` 与 `tabs` 定制表格上方标题与标签区。
+
+<ComponentExample exampleId="card" preview={<TableCard />} fileName="card.tsx" width="100%">
+
+```tsx lineNumbers file="../../src/examples/table/card.tsx"
+
+```
+
+</ComponentExample>
+
 ### 带边框
 
 <a id="简洁样式" />
 
-默认在表头下方显示 2px 分割线、行间显示 1px 分隔线；设置 `bordered` 仅在表格外层增加边框并使用四角圆角，内部分割线和表头结构保持不变。
+默认在表头下方和行间显示 1px 分隔线；设置 `bordered` 仅在表格外层增加边框并使用四角圆角，内部分割线和表头结构保持不变。
 
 <ComponentExample exampleId="simple" preview={<TableSimple />} fileName="simple.tsx" width="100%">
 
@@ -231,6 +244,11 @@ npm install @tanstack/react-table@^8.21.3
 | `options` | `Omit<TableOptions<TData>, 'data' \| 'columns' \| 'getCoreRowModel' \| 'getRowId'>` | — | 定制 TanStack 的状态、回调和服务端配置。 |
 | `localPagination` | `boolean` | — | 是否让 TanStack 在本地切分当前页数据；关闭时保留分页状态和分页器，但直接展示传入的行。 |
 | `table` | `TanStackTable<TData>` | — | 由 useDataTable 或 useReactTable 创建的实例；与 data、columns、rowKey、options 和 localPagination 互斥。 |
+| `variant` | `'default' \| 'card'` | `'default'` | 容器外观；card 使用 Card 包裹表格与卡片内部分页区（表格占满宽度且首末列边缘对齐 Card 内边距）。 |
+| `title` | `ReactNode` | — | 表格上方标题内容。 |
+| `description` | `ReactNode` | — | 标题下方的补充说明。 |
+| `extra` | `ReactNode` | — | 标题或标签栏右侧的附加操作或信息。 |
+| `tabs` | [`CardTabsProps`](card#cardtabs-api) | — | 表格上方的线形标签页配置；支持与 Card tabs 一致的受控/非受控与附加区域行为。 |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 展示尺寸。 |
 | `bordered` | `boolean` | `false` | 仅在表格外层添加边框与四角圆角，内部单元格分割线与表头样式保持不变。 |
 | `striped` | `boolean` | `false` | 默认显示细行分割线；设置为 true 后切换为斑马条纹样式，从第二行开始展示交替浅灰背景并隐藏行间分割线。 |
