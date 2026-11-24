@@ -21,11 +21,11 @@ test('link buttons brighten on hover and darken on press while danger is a singl
   assert.equal(danger['--leaf-button-rest-shadow'], 'none');
   assert.equal(
     danger['--leaf-button-hover-background'],
-    'color-mix(in srgb,var(--leaf-danger-soft-active-background)30%,var(--leaf-danger-soft-background))',
+    'color-mix(in srgb,var(--leaf-danger-soft-active-background)50%,var(--leaf-danger-soft-background))',
   );
   assert.equal(
     danger['--leaf-button-active-background'],
-    'color-mix(in srgb,var(--leaf-danger-soft-active-background)50%,var(--leaf-danger-soft-background))',
+    'var(--leaf-danger-soft-active-background)',
   );
   assert.equal(
     button('.leaf-button--link').transition,
@@ -38,30 +38,46 @@ test('link buttons brighten on hover and darken on press while danger is a singl
       `var(--leaf-component-button-color,var(--leaf-button-ink-${state}))`,
     );
   }
+  const solid = button('.leaf-button:is(.leaf-button--solid)');
+  assert.equal(solid['--leaf-button-rest-shadow'], 'var(--leaf-shadow-control)');
+  assert.equal(
+    solid['--leaf-button-hover-background'],
+    'var(--leaf-component-button-background,var(--leaf-color-primary-hover))',
+  );
+  assert.equal(solid['--leaf-button-active-background'], 'var(--leaf-button-active)');
+
   const outline = button('.leaf-button:is(.leaf-button--outline)');
   assert.equal(outline['--leaf-button-rest-color'], 'var(--leaf-color-text)');
   assert.equal(outline['--leaf-button-rest-background'], 'var(--leaf-color-surface)');
   assert.equal(outline['--leaf-button-rest-border'], 'var(--leaf-color-border)');
-  assert.equal(outline['--leaf-button-rest-shadow'], 'none');
-  assert.equal(outline['--leaf-button-hover-background'], 'var(--leaf-color-surface-muted)');
-  assert.equal(outline['--leaf-button-hover-border'], undefined);
-  assert.equal(outline['--leaf-button-active-color'], 'var(--leaf-button-base-color)');
-  assert.equal(outline['--leaf-button-active-background'], 'var(--leaf-button-base-background)');
-  assert.equal(outline['--leaf-button-active-border'], 'var(--leaf-button-base-border)');
-  const outlineHover = button(
-    '.leaf-button:is(.leaf-button--outline):hover:not(:disabled):not([data-loading]):where(:not(:focus-visible))',
+  assert.equal(outline['--leaf-button-rest-shadow'], 'var(--leaf-shadow-control)');
+  assert.equal(
+    outline['--leaf-button-hover-color'],
+    'var(--leaf-component-button-color,var(--leaf-color-primary-hover))',
   );
   assert.equal(
-    outlineHover['--leaf-button-active-background'],
-    'var(--leaf-button-hover-background)',
+    outline['--leaf-button-hover-border'],
+    'var(--leaf-component-button-border-color,var(--leaf-frame-border-color,var(--leaf-color-primary-hover)))',
   );
-  assert.equal(outlineHover['--leaf-button-active-border'], undefined);
+  assert.equal(outline['--leaf-button-hover-background'], undefined);
+  assert.equal(
+    outline['--leaf-button-active-color'],
+    'var(--leaf-component-button-color,var(--leaf-color-primary-link-active))',
+  );
+  assert.equal(outline['--leaf-button-active-background'], 'var(--leaf-button-base-background)');
+  assert.equal(
+    outline['--leaf-button-active-border'],
+    'var(--leaf-component-button-border-color,var(--leaf-frame-border-color,var(--leaf-color-primary-link-active)))',
+  );
   const variants =
     '.leaf-button:is(.leaf-button--solid, .leaf-button--outline, .leaf-button--text, .leaf-button--link, .leaf-button--danger)';
+  assert.throws(
+    () => button(`${variants}:active:not(:disabled):not([data-loading]):not(.leaf-button--link)`),
+    /missing compiled rule/u,
+  );
   assert.equal(
-    button(`${variants}:active:not(:disabled):not([data-loading]):not(.leaf-button--link)`)
-      .translate,
-    '0 1px',
+    button(`${variants}:active:not(:disabled):not([data-loading])`).translate,
+    undefined,
   );
   assert.equal(
     button(`${variants}:hover:not(:disabled):not([data-loading]):where(:not(:focus-visible))`)
@@ -71,6 +87,10 @@ test('link buttons brighten on hover and darken on press while danger is a singl
   assert.equal(
     button(`${variants}:active:not(:disabled):not([data-loading])`).color,
     'var(--leaf-component-button-active-color,var(--leaf-button-active-color))',
+  );
+  assert.equal(
+    button(`${variants}:active:not(:disabled):not([data-loading])`)['border-color'],
+    'var(--leaf-component-button-active-border-color,var(--leaf-button-active-border))',
   );
   assert.equal(
     button(`${variants}:disabled`).color,
@@ -108,8 +128,8 @@ test('line Tabs use primary selection feedback and sliding indicator without sol
   for (const state of ['hover', 'active']) {
     const selector =
       state === 'hover'
-        ? '.leaf-tabs__tab:hover:not(:disabled):where(:not(:focus-visible))'
-        : '.leaf-tabs__tab:active:not(:disabled)';
+        ? '.leaf-tabs__tab:hover:not(:disabled):not([aria-selected=true]):where(:not(:focus-visible))'
+        : '.leaf-tabs__tab:active:not(:disabled):not([aria-selected=true])';
     assert.equal(
       tabs(selector).color,
       `var(--leaf-component-tabs-${state}-color,var(--leaf-tabs-tab-${state}-color))`,
@@ -399,14 +419,19 @@ test('Input fills its shell and only rounds native edges that meet the outer fra
   }
 });
 
-test('choice rows retain Select feedback independently of the neutral Menu appearance', async () => {
-  for (const [file, selector] of [
-    ['select/select.scss', '.leaf-select__panel .leaf-floating__option'],
-    ['tree/tree.scss', '.leaf-tree__row'],
-    ['autocomplete/autocomplete.scss', '.leaf-autocomplete__panel .leaf-floating__option'],
-    ['mentions/mentions.scss', '.leaf-mentions__panel .leaf-floating__option'],
-    ['cascader/cascader.scss', '.leaf-cascader__column .leaf-floating__option'],
-    ['dropdown/dropdown.scss', '.leaf-dropdown:not(.leaf-menu__popup) .leaf-floating__option'],
+test('choice rows retain neutral hover while accent-selected popups keep primary-soft selection immune to hover', async () => {
+  for (const [file, selector, selectedAccent] of [
+    ['select/select.scss', '.leaf-select__panel .leaf-floating__option', true],
+    ['cascader/cascader.scss', '.leaf-cascader__panel .leaf-floating__option', true],
+    ['timepicker/timepicker.scss', '.leaf-time-picker__column .leaf-floating__option', true],
+    ['tree/tree.scss', '.leaf-tree__row', false],
+    ['autocomplete/autocomplete.scss', '.leaf-autocomplete__panel .leaf-floating__option', false],
+    ['mentions/mentions.scss', '.leaf-mentions__panel .leaf-floating__option', false],
+    [
+      'dropdown/dropdown.scss',
+      '.leaf-dropdown:not(.leaf-menu__popup) .leaf-floating__option',
+      false,
+    ],
   ]) {
     const rule = await compiledStyles(file);
     assert.equal(rule(selector).color, 'inherit', file);
@@ -418,14 +443,21 @@ test('choice rows retain Select feedback independently of the neutral Menu appea
       'background-color var(--leaf-motion-color)var(--leaf-motion-easing)',
       file,
     );
-    const active = rule(
-      `${selector}:is(:hover, :focus-visible, :active, [data-highlighted=true]):not(:disabled):not([aria-disabled=true]):not([data-disabled])::before`,
-    );
+    const activeSelector = selectedAccent
+      ? `${selector}:is(:hover, :focus-visible, :active, [data-highlighted=true]):not(:disabled):not([aria-disabled=true]):not([data-disabled]):not([aria-selected=true]):not([data-selected])::before`
+      : `${selector}:is(:hover, :focus-visible, :active, [data-highlighted=true]):not(:disabled):not([aria-disabled=true]):not([data-disabled])::before`;
     assert.equal(
-      active.background,
+      rule(activeSelector).background,
       'color-mix(in srgb,var(--leaf-color-option-hover)32%,transparent)',
       file,
     );
+    if (selectedAccent) {
+      assert.equal(
+        rule(`${selector}:is([aria-selected=true], [data-selected])::before`).background,
+        'var(--leaf-color-primary-soft)',
+        file,
+      );
+    }
     assert.equal(
       rule(`${selector}:is([aria-selected=true], [aria-checked=true], [data-selected])`).color,
       'inherit',
@@ -437,4 +469,16 @@ test('choice rows retain Select feedback independently of the neutral Menu appea
       file,
     );
   }
+  const treeSelect = await compiledStyles('treeselect/treeselect.scss');
+  const treeSelectRow = '.leaf-tree-select__panel .leaf-tree__row';
+  assert.equal(
+    treeSelect(`${treeSelectRow}:is([aria-selected=true], [data-selected])::before`).background,
+    'var(--leaf-color-primary-soft)',
+  );
+  assert.equal(
+    treeSelect(
+      `${treeSelectRow}:is([aria-selected=true], [data-selected]):is(:hover, :focus-visible, :active, [data-highlighted=true]):not(:disabled):not([aria-disabled=true]):not([data-disabled])::before`,
+    ).background,
+    'var(--leaf-color-primary-soft)',
+  );
 });

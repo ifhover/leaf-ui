@@ -229,8 +229,10 @@
       &[aria-pressed='true'] {
         --leaf-button-rest-background: var(--leaf-calendar-range-background);
         --leaf-button-rest-color: var(--leaf-color-primary);
-        --leaf-button-hover-background: var(--leaf-calendar-selected-hover-background);
-        --leaf-button-active-background: var(--leaf-calendar-selected-hover-background);
+        --leaf-button-hover-background: var(--leaf-calendar-range-background);
+        --leaf-button-hover-color: var(--leaf-color-primary);
+        --leaf-button-active-background: var(--leaf-calendar-range-background);
+        --leaf-button-active-color: var(--leaf-color-primary);
       }
     }
   }

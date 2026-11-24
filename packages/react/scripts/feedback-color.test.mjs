@@ -276,9 +276,15 @@ test('modal and confirm share unified header weight, spacing, footer background,
     'calc(-1 * var(--leaf-dialog-padding-start))calc(-1 * var(--leaf-dialog-padding-end))',
   );
   assert.equal(undividedFooter['margin-block-end'], 'calc(-1 * var(--leaf-dialog-padding-bottom))');
-  assert.throws(
-    () => modal('.leaf-modal--divided > .leaf-modal__header:not(.leaf-modal__header--compact)'),
-    /missing compiled rule/u,
+  assert.equal(
+    modal('.leaf-modal--divided:not(.leaf-modal--mini)')['--leaf-dialog-close-block'],
+    'var(--leaf-modal-close-inset-top,var(--leaf-dialog-header-padding-top))',
+  );
+  assert.equal(
+    modal(
+      '.leaf-modal--divided:not(.leaf-modal--mini) > .leaf-modal__header:not(.leaf-modal__header--compact)',
+    )['border-block-end'],
+    '1px solid var(--leaf-dialog-divider)',
   );
   assert.equal(
     modal('.leaf-modal--divided > .leaf-modal__footer')['border-block-start'],

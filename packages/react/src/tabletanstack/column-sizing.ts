@@ -1,5 +1,69 @@
 import type { Column, ColumnDef, Table } from '@tanstack/react-table';
+import { estimateControlHeight, type LeafDensity } from '../density';
+import { paddingSides } from '../shared/padding';
+import type { LeafTheme } from '../theme';
 import type { DataTableColumnMeta } from './tabletanstack';
+
+const SELECTION_CONTROL_WIDTH = 18;
+const EXPANSION_ICON_SIZE = 14;
+const EXPANSION_TRAILING_GAP = 8;
+const TABLE_INLINE_PADDING: Record<'sm' | 'md', number> = {
+  sm: 12,
+  md: 16,
+};
+
+function parsePx(value: string | number | undefined): number | undefined {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  return /^\d+(?:\.\d+)?(?:px)?$/.test(trimmed) ? Number.parseFloat(trimmed) : undefined;
+}
+
+/** 根据表格尺寸、密度、网格边框与主题覆写推导选择列和展开列的逻辑宽度，与 SCSS 公式保持一致。 */
+export function resolveUtilityWidths({
+  size,
+  bordered = false,
+  selection,
+  expandable,
+  theme,
+  density,
+  direction,
+}: {
+  size: 'sm' | 'md';
+  bordered?: boolean;
+  selection: boolean;
+  expandable: boolean;
+  theme: LeafTheme;
+  density: LeafDensity;
+  direction: 'ltr' | 'rtl';
+}) {
+  const tablePadding = theme.components?.Table?.padding;
+  let tableEdgeStart: number | undefined;
+  if (tablePadding !== undefined) {
+    const raw = typeof tablePadding === 'number' ? `${tablePadding}px` : tablePadding;
+    const sides = paddingSides(raw);
+    tableEdgeStart = parsePx(direction === 'rtl' ? sides[1] : sides[3]);
+  }
+  const edgeStart = tableEdgeStart ?? TABLE_INLINE_PADDING[size];
+
+  const buttonHeight = parsePx(theme.components?.Button?.controlHeight);
+  const expandButtonSize =
+    buttonHeight !== undefined
+      ? Math.max(1, buttonHeight - 6)
+      : (parsePx(theme.tokens?.controlHeightSm) ??
+        Math.max(1, estimateControlHeight(theme, density) - 6));
+  const expansionStart = selection
+    ? EXPANSION_TRAILING_GAP
+    : Math.max(0, edgeStart - (expandButtonSize - EXPANSION_ICON_SIZE) / 2);
+  const borderWidth = bordered
+    ? (parsePx(theme.components?.Table?.borderWidth ?? theme.tokens?.borderWidth) ?? 1)
+    : 0;
+
+  return {
+    selectionWidth: selection ? edgeStart + SELECTION_CONTROL_WIDTH + borderWidth : 0,
+    expansionWidth: expandable ? expansionStart + expandButtonSize + borderWidth : 0,
+  };
+}
 
 function configuredSizes<TData>(
   definitions: ColumnDef<TData>[],

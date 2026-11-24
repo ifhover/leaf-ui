@@ -61,8 +61,8 @@ Input、Select、AutoComplete、Textarea、InputNumber、TreeSelect、Cascader�
 | 状态        | 默认契约                                                                                                                                                                   |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 普通        | 共用正文、内容表面、边框；组件未显式覆盖时，Input 与 Select 最终边框一致                                                                                                   |
-| 悬停 / 按下 | 默认与按下（未聚焦时）加深外框至 `border-hover`；保持背景、文字与阴影不变，显式状态覆盖与校验状态边框仍优先                                                                |
-| 聚焦 / 展开 | 默认采用清晰的 `--leaf-color-primary` 主题色边框配 3px 12% 淡主题色外环（`field-ring-variables`，仅显式传入 `$focus: neutral` 的字段使用中性边框与外环）；Mentions 通过内部 Textarea 继承 |
+| 悬停 / 按下 | 默认与按下（未聚焦时）将外框切至 `primary-hover`（显式 `$focus: neutral` 字段为 `border-hover`）；保持背景、文字与阴影不变，显式状态覆盖与校验状态边框仍优先               |
+| 聚焦 / 展开 | 默认采用清晰的 `--leaf-color-primary` 主题色边框配 2px 10% 淡主题色外环（`field-ring-variables`，仅显式传入 `$focus: neutral` 的字段使用中性边框与外环）；Mentions 通过内部 Textarea 继承 |
 | 校验        | error 使用 danger，warning 使用 warning；校验语义不被普通聚焦覆盖                                                                                                          |
 | 禁用        | 共用禁用背景、静止边框和不可交互规则；保留既有透明度行为                                                                                                                   |
 
@@ -76,19 +76,19 @@ Input、Select、AutoComplete、Textarea、InputNumber、TreeSelect、Cascader�
 
 普通选项的候选、悬停和按下使用 `--leaf-color-option-hover`。使用独立候选背景的其他列表共用这一角色；有移动背景时只能由移动层绘制一次。下列 Select 风格选项使用共享的浅色逐行配方。危险操作、日历、分页等明确设计例外不能被机械替换成普通选项。
 
-Select、AutoComplete、Mentions、Tree、TreeSelect、Cascader、Dropdown 和时间列的选项行共用 `choice-option` 配方：使用 32% `option-hover` 的透明中性反馈（`choice-option-background()`），未选中、选中、悬停与键盘候选均使用完整继承文字色，不因未选中而淡化。每行只对自身背景颜色作过渡，不使用移动背景或几何出入动画；已保存值以勾选标记表达，不永久绘制选中底色。AutoComplete / Mentions 的 ARIA 选中表示当前候选，因此保留候选背景。Menu 默认 `variant="neutral"` 悬停采用共享 32% `option-hover` 中性浅底，按下与选中独立使用 `--leaf-color-surface-muted` 与 80%/100% 继承文字色，具体填充见[Menu 状态契约](DESIGN-STANDARDS.md#menu)；三种皮肤不受 choice-option 配方改动影响。危险操作、禁用文字、搜索命中、日历 / 范围选中态保留各自语义，不扩大字段聚焦变体。
+Select、Cascader、TreeSelect 与时间列的选项行消费 `choice-option(false, true)` 配方：未选中项悬停和键盘高亮使用 32% `option-hover` 的透明中性反馈（`choice-option-background()`）与完整继承正文文字色；已选中项使用 `--leaf-color-primary-soft` 浅主题色底与 `--leaf-font-weight` 字重、不再在右侧显示对号图标，且悬停/聚焦/按下/高亮不覆盖已选中样式。AutoComplete、Mentions、独立 Tree 与 Dropdown 继续使用中性 `choice-option` 配方（独立 Tree 保留对号，AutoComplete / Mentions 的 ARIA 选中表示当前候选并保留中性背景）。Menu 默认 `variant="neutral"` 悬停采用共享 32% `option-hover` 中性浅底，按下与选中独立使用 `--leaf-color-surface-muted` 与 80%/100% 继承文字色，具体填充见[Menu 状态契约](DESIGN-STANDARDS.md#menu)；三种皮肤不受 choice-option 配方改动影响。危险操作、禁用文字、搜索命中、日历 / 范围选中态保留各自语义，不扩大字段聚焦变体。
 
 ### 内容表面与动作
 
 内容表面区分 surface、surface-muted、surface-raised；边框与 divider 不强行合并。Modal、Card、Drawer 等内容容器外框直接消费实体 `--leaf-color-border`，内部分区线消费 `--leaf-color-divider`。静止阴影复用共享阴影 token 并保留显式覆盖优先。Button 复用动作状态，不把 hover 色直接用于普通选项或字段外框。
 
-Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载遮罩集中在 `table-family` 配方。表头直接使用 `--leaf-table-surface` 干净内容面配 `--leaf-color-text-muted` 弱化灰（保留 `--leaf-component-table-color` 覆盖）与 500 字重文字；表格外框共用 `--leaf-table-border-color`（默认 `--leaf-color-border`），表头 1px 底线与行间 1px 分隔线共用 `--leaf-table-divider`（默认 `--leaf-color-divider`，保留显式边框色覆盖优先）。普通行悬停与斑马条纹共用混入 25% `option-hover` 的纯浅灰表面（保持轻量中性层次）、排序表头混入 55% `surface-muted`、排序列混入 35% `surface-muted`、选中行使用 `--leaf-color-surface-muted` 且悬停不变色、加载遮罩基于当前表格表面计算；内部展开操作复用文字按钮的中性反馈，不新增全局颜色 token。
+Table / DataTable 的表面、表头浅灰、排序、条纹、悬停、选中、柔化框线和加载遮罩集中在 `softened-frame-color` 与 `table-family` 配方。表头使用基于当前表格表面混入 `--leaf-color-surface-muted` 的浅灰底，搭配常规前景色 `--leaf-table-text`（保留 `--leaf-component-table-color` 覆盖）与 `600` 字重文字；表格外框、表头 `1px × 1.6em` 短竖分隔线、单元格网格与行间分隔线共用经 `--leaf-color-divider` 70% 柔化混合的 `--leaf-table-frame-color`（保留显式边框色覆盖优先）。普通行悬停混入 `4% --leaf-table-text`、斑马条纹混入 `2% --leaf-table-text`、排序/悬停表头使用 `--leaf-color-surface-muted`、排序列复用表头浅灰底、选中与选中悬停分别混入 `6%` 与 `10% --leaf-color-primary`、激活排序三角与列宽拖拽线使用 `--leaf-color-primary`、加载遮罩基于当前表格表面计算；内部展开操作复用文字按钮的中性反馈，不新增全局颜色 token。
 
 ### 共享底板与内容表面
 
-显式 `panelVariant="card"` 的日期 / 时间面板画布以及 `Segmented Tabs` 轨道、`Calendar` 视图分段轨道使用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
+显式 `Card variant="layered"` 画布、`panelVariant="card"` 的日期 / 时间面板画布以及 `Segmented Tabs` 轨道、`Calendar` 视图分段轨道使用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
 
-`Segmented Tabs` / `Calendar` 视图分段选中滑块、`Transfer` 面板、`Drawer` 分区页脚与 `Card` / 面板内层内容直接使用净面 `--leaf-color-surface`（或页脚 `transparent`），避免多层灰底套叠；其中 `Segmented Tabs` 轨道外围使用透明边框、选中滑块配 `--leaf-shadow-xs`。`DataTable` 整体直接使用内容表面，无外层底板。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
+`Segmented Tabs` / `Calendar` 视图分段选中滑块、`Transfer` 面板、`Drawer` 分区页脚与 `Card` / 面板内层内容直接使用净面 `--leaf-color-surface`（或页脚 `transparent`），避免多层灰底套叠；其中 `Segmented Tabs` 轨道外围使用透明边框、选中滑块配 `--leaf-shadow-sm`。`DataTable` 整体直接使用内容表面，无外层底板。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
 
 ### 跨组件的有限配方
 
@@ -100,13 +100,13 @@ Table / DataTable 的表面、表头文字、条纹、悬停、选中和加载�
 | `segmented-surface-family`                  | 分段 `Tabs` 与 `Calendar` 视图切换共用 `surface-muted` 轨道、透明外框、`surface` 选中滑块与 `--leaf-color-text` / `--leaf-color-text-muted` 文字                                                                                                                                                     |
 | `overlay-family(dialog / spotlight)`        | Modal / Drawer 默认共用无模糊半透明灰色遮罩（浅 28% / 深 55% 黑），可显式开启模糊；Tour 保留更强的无模糊聚光遮罩                                                                                                                                                                                     |
 | `calendar-selection-family`                 | Calendar 与日期选择共用基于 `primary-soft` 的 opaque 范围底、整格选中底和 soft-hover 反馈；不等于普通选项反馈                                                                                                                                                                                        |
-| `accent-halo-family`                        | Slider 滑块 `:focus-visible` 使用的 `--leaf-color-primary-alpha-20` 强调光晕；字段家族聚焦外环改由各自的 `field-ring-variables`（12% 透明）承担                                                                                                                                                      |
+| `accent-halo-family`                        | Slider 滑块 `:focus-visible` 使用的 `--leaf-color-primary-alpha-20` 强调光晕；字段家族聚焦外环改由各自的 `field-ring-variables`（2px 10% 透明）承担                                                                                                                                                  |
 
-文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认正文文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。Button `variant="danger"` 作为独立外观，仅保留危险浅底与文字样式：静止直接使用 `--leaf-color-danger` 前景与 `--leaf-color-danger-soft` 背景，悬停与按下收小变化跨度，分别向 `--leaf-color-danger-soft-hover` 混合 30% 与 50%（兼容属性 `danger` 内部回退至此唯一外观）。链接按钮与 Typography 链接使用主题基色 `primary`，悬停和按下使用 `primary-link-hover` / `primary-link-active`。线形 Tabs 恢复主题色交互强调：未选中标签使用 `--leaf-color-text`，悬停使用 `--leaf-color-primary-hover`，按下使用 `--leaf-color-primary-link-active`，选中标签与底部滑移指示条使用 `--leaf-color-primary`（显式组件文字和指示颜色覆盖优先）。
+文字按钮及紧凑的清除、关闭、显隐动作共用 `text-action-family` / `text-action`：默认正文文字、透明底，悬停使用 `option-hover` 的 50% 透明混合浅灰底，按下使用完整 `option-hover` 灰底，不改变几何。Button `variant="danger"` 作为独立外观，仅保留危险浅底与文字样式：静止直接使用 `--leaf-color-danger` 前景与 `--leaf-color-danger-soft` 背景，悬停向 `--leaf-color-danger-soft-hover` 混合 50%、按下切至完整的 `--leaf-color-danger-soft-hover`（兼容属性 `danger` 内部回退至此唯一外观）。链接按钮与 Typography 链接使用主题基色 `primary`，悬停和按下使用 `primary-link-hover` / `primary-link-active`。线形 Tabs 恢复主题色交互强调：未选中标签使用 `--leaf-color-text`，悬停使用 `--leaf-color-primary-hover`，按下使用 `--leaf-color-primary-link-active`，选中标签与底部滑移指示条使用 `--leaf-color-primary`（显式组件文字和指示颜色覆盖优先）。
 
 Button / Typography 的链接文字反馈按 HSV 规则与 `generateColorShades` 派生（`primaryColor: 'neutral'` 时映射到对应高对比中性阶梯）；`primary` 的 hover、active 显式配置仍覆盖对应链接状态。浅深模式（具体十六进制主色下）使用同一基色算法，区域主题通过 JS 配置重新派生；CSS 表达式和半透明输入保留原有混色回退，不读取 DOM。链接文字动作色不进行可读 ink 的对比度修正，应用需确认自定义颜色的实际对比度。组件 paint / 状态覆盖优先，不新增公共配置槽。链接颜色默认过渡 200ms、使用 Ant Design ease-in-out 曲线，线形 Tabs 文字与指示条过渡使用 `calc(var(--leaf-motion-color) * 1.5) ease`；两者随 motionDuration 缩放并遵守减少动态效果设置。
 
-配方只增加内部共享变量，不扩展 `LeafThemeTokens` 派生色阶配置矩阵（`frameBorderColor` 仅作为全局统一外框描边入口与 `borderColor` 解耦）。Button 实底与危险外观默认透明边框，不因基色与背景接近而自动增加对比边框；显式 `frameBorderColor`、组件和状态边框配置仍优先（仅调整常规 `borderColor` 时不改变实底、文字与危险按钮的无边框外观），系统 forced-colors 的可辨识边界保留。实底按下由基色混黑 10% 生成，不为满足前景对比而反向变亮；描边按钮为无阴影纯边框，悬停使用 `--leaf-color-surface-muted` 背景且保持边框不变，按下不做额外变色（保留 `1px` 轻压位移），不偏主题色。
+配方只增加内部共享变量，不扩展 `LeafThemeTokens` 派生色阶配置矩阵（`frameBorderColor` 仅作为全局统一外框描边入口与 `borderColor` 解耦）。Button 实底与危险外观默认透明边框，不因基色与背景接近而自动增加对比边框；显式 `frameBorderColor`、组件和状态边框配置仍优先（仅调整常规 `borderColor` 时不改变实底、文字与危险按钮的无边框外观），系统 forced-colors 的可辨识边界保留。实底与描边按钮共享极轻底阴影 `--leaf-shadow-control`：实底悬停使用 `--leaf-color-primary-hover`，按下由基色混黑 10% 生成，不为满足前景对比而反向变亮；描边按钮悬停时边框与文字切至 `--leaf-color-primary-hover`，按下时边框与文字进一步加深至 `--leaf-color-primary-link-active` 且保持位置静止。
 
 Switch 关闭态使用中性灰轨道与亮色滑块：浅色与深色区域均消费 `option-hover` 轨道，滑块分别消费 `surface` / `text`，通过区域的 CSS `light-dark()` 选择，不新增颜色角色或运行时推断。默认边框与轨道同色，显式 `frameBorderColor` / 组件边框仍优先；关闭态 loading 图标使用对比清晰的中性色，不混入主题色。开启态继续使用 primary 轨道、`on-primary` 滑块与 primary loading 图标；显式 `onPrimaryColor` 只影响开启态，不改写关闭态滑块。
 

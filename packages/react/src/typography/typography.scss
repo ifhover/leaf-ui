@@ -128,8 +128,7 @@
       color: var(--leaf-color-primary-link-hover, var(--leaf-color-primary));
     }
     &:focus-visible {
-      @include mixins.focus-ring;
-      outline-offset: 3px;
+      @include mixins.focus-ring(3px);
       border-radius: 2px;
     }
     &--underline:hover {

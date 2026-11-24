@@ -1,4 +1,4 @@
-import { Check, ChevronDown, ChevronRight, LoaderCircle } from 'lucide-react';
+import { ChevronDown, ChevronRight, LoaderCircle } from 'lucide-react';
 import {
   type ButtonHTMLAttributes,
   forwardRef,
@@ -670,9 +670,6 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
                     }}
                   >
                     <span className="leaf-floating__option-label">{caption(path)}</span>
-                    {selected && (
-                      <Check size={14} className="leaf-cascader__check" aria-hidden="true" />
-                    )}
                   </button>
                 );
               })
@@ -725,6 +722,7 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
                             role="option"
                             className="leaf-floating__option"
                             aria-selected={draft[depth] === option.value}
+                            data-selected={isSaved || undefined}
                             data-highlighted={isBranchExpanded ? 'true' : undefined}
                             disabled={option.disabled}
                             tabIndex={
@@ -774,26 +772,11 @@ export const Cascader = forwardRef<HTMLButtonElement, CascaderProps>(function Ca
                                 className="leaf-cascader__spinner"
                                 aria-hidden="true"
                               />
-                            ) : hasChildren ? (
-                              <>
-                                {isSaved && (
-                                  <Check
-                                    size={14}
-                                    className="leaf-cascader__check"
-                                    aria-hidden="true"
-                                  />
-                                )}
+                            ) : (
+                              hasChildren && (
                                 <ChevronRight
                                   size={14}
                                   className="leaf-cascader__expand"
-                                  aria-hidden="true"
-                                />
-                              </>
-                            ) : (
-                              isSaved && (
-                                <Check
-                                  size={14}
-                                  className="leaf-cascader__check"
                                   aria-hidden="true"
                                 />
                               )

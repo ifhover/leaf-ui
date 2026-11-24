@@ -25,8 +25,7 @@
         background: var(--leaf-color-border-hover);
       }
       &:focus-visible {
-        @include mixins.focus-ring;
-        outline-offset: -2px;
+        @include mixins.focus-ring(-2px);
       }
       &__toggles,
       .leaf-splitter__toggles {

@@ -44,7 +44,6 @@
         box-shadow: var(--leaf-button-base-shadow);
         opacity: 1;
         cursor: default;
-        translate: none;
       }
     }
     &[data-disabled] > .leaf-pagination__entry > .leaf-button[aria-current='page']:disabled {

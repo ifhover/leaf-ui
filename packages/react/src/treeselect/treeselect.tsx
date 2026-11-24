@@ -509,6 +509,7 @@ const InternalTreeSelect = forwardRef<HTMLInputElement, InternalTreeSelectProps>
               }}
               checkOnClick={treeCheckable}
               expandOnClick
+              hideSelectionMark
               filterTreeNode={
                 filterTreeNode
                   ? (node, query) => {

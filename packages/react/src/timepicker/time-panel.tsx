@@ -1,4 +1,3 @@
-import { Check } from 'lucide-react';
 import { type KeyboardEvent, useEffect, useLayoutEffect, useRef } from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { ScrollbarControl } from '../scrollbar/scrollbar';
@@ -209,7 +208,6 @@ function TimeColumn({ unit, label, selected, options, periods, onChange }: TimeC
             onKeyDown={(event) => key(event, number)}
           >
             <span>{unit === 'period' ? periods[number] : String(number).padStart(2, '0')}</span>
-            <Check size={12} aria-hidden="true" className="leaf-time-picker__check" />
           </button>
         ))}
       </ScrollbarControl>

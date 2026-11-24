@@ -43,7 +43,7 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 
 ### 底部提交
 
-通过按钮的 `form` 属性关联抽屉内的表单，保留原生校验；提交与关闭都由应用处理。`footer` 区域已内置操作按钮间距，可直接放置多个按钮；可通过 `divided` 在操作栏顶部增加分隔线，并通过 `padding` 按整体或 `header` / `body` / `footer` 分区自定义内边距。
+通过按钮的 `form` 属性关联抽屉内的表单，保留原生校验；提交与关闭都由应用处理。`footer` 区域已内置操作按钮间距，可直接放置多个按钮；可通过 `divided` 在标题栏下方与操作栏顶部增加分隔线，并通过 `padding` 按整体或 `header` / `body` / `footer` 分区自定义内边距。
 
 <ComponentExample exampleId="sections" preview={<DrawerSections />} fileName="sections.tsx" width="fit-content">
 
@@ -101,7 +101,7 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 | `footer` | `ReactNode` | — | 底部内容 |
 | `extra` | `ReactNode` | — | 标题旁的操作内容 |
 | `icon` | `ReactNode` | — | 标题左侧的装饰图标。 |
-| `divided` | `boolean` | `false` | 在底部操作栏顶部显示细分隔线。 |
+| `divided` | `boolean` | `false` | 用浅分隔线划分标题、内容和底部操作区。 |
 | `padding` | `number \| string \| 'none' \| { header?: number \| string \| 'none'; body?: number \| string \| 'none'; footer?: number \| string \| 'none' }` | — | 整体或按 header / body / footer 分区覆盖抽屉内边距；数字按 px，'none' 为 0。 |
 | `closable` | `boolean` | `true` | 显示关闭按钮。 |
 | `maskClosable` | `boolean` | `true` | 点击遮罩时请求关闭。 |

@@ -22,7 +22,7 @@
 | `mutedTextColor` | `string` | 按外观生成 | 主要 / 次要文字 |
 | `subtleTextColor` | `string` | — | 辅助文字；默认与 mutedTextColor 同值，可独立覆盖。 |
 | `surfaceColor` | `string` | 按外观生成 | 表面 / 次级表面 |
-| `mutedSurfaceColor` | `string` | 按外观生成 | 次级表面与共享底板，对应 `--leaf-color-surface-muted`。Segmented Tabs 轨道与 card 形态日期面板等共用该角色；内层滑块仍使用 `surfaceColor`，组件显式覆盖优先。 |
+| `mutedSurfaceColor` | `string` | 按外观生成 | 次级表面与共享底板，对应 `--leaf-color-surface-muted`。Card layered、Segmented Tabs 轨道与 card 形态日期面板等共用该角色；内层内容或滑块仍使用 `surfaceColor`，组件显式覆盖优先。 |
 | `raisedSurfaceColor` | `string` | — | 浮层与抬升表面色。 |
 | `borderColor` | `string` | 按外观生成 | 全局常规中性边框色（`--leaf-color-border`）；仅作用于原本带有中性边框的控件与容器，不影响实色按钮或开关。 |
 | `frameBorderColor` | `string` | — | 全局统一外框描边色（`--leaf-frame-border-color`）；显式设置时一并为实色/危险按钮、开关及弱描边轨道加上外框，组件级与语义状态覆盖优先。 |

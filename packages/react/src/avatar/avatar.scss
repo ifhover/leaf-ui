@@ -109,8 +109,7 @@
         background: var(--leaf-component-avatar-background, var(--leaf-color-option-hover));
       }
       &:focus-visible {
-        @include mixins.focus-ring;
-        outline-offset: 3px;
+        @include mixins.focus-ring(3px);
       }
     }
     &__overflow {

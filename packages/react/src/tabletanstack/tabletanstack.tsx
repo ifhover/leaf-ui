@@ -31,9 +31,8 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual';
-import { ArrowDown, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import {
-  type CSSProperties,
   createContext,
   Fragment,
   type HTMLAttributes,
@@ -49,7 +48,6 @@ import {
   useState,
 } from 'react';
 import { ButtonControl } from '../button/button';
-import { CardTitleControl } from '../card/title';
 import { CheckboxControl as Checkbox } from '../checkbox/checkbox';
 import {
   mergeComponentProps,
@@ -64,8 +62,7 @@ import { assignRef } from '../shared/field';
 import { inertProps } from '../shared/inert';
 import { useText } from '../shared/use-text';
 import { TableControl as Table } from '../table/table';
-import { TabsControl as Tabs } from '../tabs/tabs';
-import { getColumnLayout } from './column-sizing';
+import { getColumnLayout, resolveUtilityWidths } from './column-sizing';
 import { useRowMotion } from './row-motion';
 
 export interface DataTableColumnMeta {
@@ -89,8 +86,6 @@ function warnDevelopment(key: string, message: string) {
   developmentWarnings.add(key);
   console.warn(`Leaf UI: ${message}`);
 }
-
-const SELECTION_CONTENT_WIDTH = 34; // 左右各 8px 内边距 + 18px 选择框本身宽度
 
 function hasSortingModel(table: TanStackTable<unknown>) {
   return Boolean(table.options.getSortedRowModel || table.options.manualSorting);
@@ -156,6 +151,7 @@ type DataTableContextValue = Omit<
   id: string;
   label?: string;
   labelledBy?: string;
+  dir?: 'ltr' | 'rtl';
   expandable: boolean;
 };
 const DataTableContext = createContext<DataTableContextValue | null>(null);
@@ -168,12 +164,6 @@ function useDataTableContext() {
 
 function DataTableRoot<TData>({
   table,
-  variant = 'default',
-  title,
-  description,
-  extra,
-  tabs,
-  topContent,
   size = 'md',
   bordered = false,
   striped = false,
@@ -198,27 +188,6 @@ function DataTableRoot<TData>({
   ...props
 }: DataTableInstanceProps<TData>) {
   const id = useId();
-  const titleId = `${id}-title`;
-  const isCard = variant === 'card';
-  const regionPrefix = isCard ? 'leaf-card' : 'leaf-data-table';
-  const rawTabItems = tabs?.items;
-  const hasTabs = Boolean(rawTabItems?.length);
-  const hasTopContent = topContent != null && typeof topContent !== 'boolean';
-  const hasTitleHeading = title != null || description != null;
-  const hasHeadingBar = hasTitleHeading || (!hasTabs && extra != null);
-  const tabExtra =
-    !hasTitleHeading && extra != null ? (
-      <div className={`${regionPrefix}__tab-extra`}>
-        {tabs?.extra}
-        {extra}
-      </div>
-    ) : (
-      tabs?.extra
-    );
-  const tabLabel = tabs?.['aria-label'] ?? (typeof title === 'string' ? title : label);
-  const tabLabelledBy =
-    tabs?.['aria-labelledby'] ??
-    (tabs?.['aria-label'] == null ? (title != null ? titleId : labelledBy) : undefined);
   const state = table.getState();
   const paginationAvailable = hasPaginationModel(table as unknown as TanStackTable<unknown>);
   const expansionAvailable = hasExpansionModel(table as unknown as TanStackTable<unknown>);
@@ -228,10 +197,10 @@ function DataTableRoot<TData>({
     table: table as unknown as TanStackTable<unknown>,
     id,
     label,
-    labelledBy: labelledBy ?? (label == null && title != null ? titleId : undefined),
-    variant,
+    labelledBy,
+    dir: props.dir === 'rtl' || props.dir === 'ltr' ? props.dir : undefined,
     size,
-    bordered: isCard ? false : bordered,
+    bordered,
     striped,
     maxHeight: maxHeight ?? (virtual ? 400 : undefined),
     minWidth,
@@ -301,87 +270,15 @@ function DataTableRoot<TData>({
     }
   }, [pagination, paginationAvailable, expansionAvailable, renderExpandedRow]);
 
-  const headingNode = hasHeadingBar ? (
-    <div className={`${regionPrefix}__header`}>
-      {hasTitleHeading && (
-        <div className={isCard ? 'leaf-card__heading' : 'leaf-data-table__title-group'}>
-          {title != null && (
-            <CardTitleControl id={titleId} size={size} className={`${regionPrefix}__title`}>
-              {title}
-            </CardTitleControl>
-          )}
-          {description != null && (
-            <div className={`${regionPrefix}__description`}>{description}</div>
-          )}
-        </div>
-      )}
-      {extra != null && <div className={`${regionPrefix}__extra`}>{extra}</div>}
-    </div>
-  ) : null;
-
-  const tabsNode =
-    hasTabs && tabs && rawTabItems ? (
-      <Tabs
-        {...tabs}
-        type="line"
-        placement="top"
-        size={tabs.size ?? size}
-        aria-label={tabLabel}
-        aria-labelledby={tabLabelledBy}
-        extra={tabExtra}
-        className={classes(`${regionPrefix}__tabs`, tabs.className)}
-        items={rawTabItems}
-      />
-    ) : null;
-
-  const topContentNode = hasTopContent ? (
-    <div className="leaf-data-table__top-content">{topContent}</div>
-  ) : null;
-
-  const footerNode = automaticPagination ? (
-    <DataTableFooterControl>
-      <DataTablePaginationControl {...(typeof pagination === 'object' ? pagination : {})} />
-    </DataTableFooterControl>
-  ) : undefined;
-
   return (
     <DataTableContext.Provider value={value}>
       <FieldScope>
-        <div
-          {...props}
-          className={classes('leaf-data-table', isCard && 'leaf-data-table--card', className)}
-        >
-          {isCard ? (
-            <div
-              className={classes(
-                'leaf-card',
-                `leaf-card--${size}`,
-                'leaf-card--bordered',
-                'leaf-card--divided',
-                hasTitleHeading && 'leaf-card--headed',
-                hasTabs && 'leaf-card--tabbed',
-                'leaf-data-table__card',
-              )}
-              style={{ '--leaf-card-body-padding': '0px' } as CSSProperties}
-            >
-              {headingNode}
-              <div className="leaf-card__panel">
-                {tabsNode}
-                <div className="leaf-card__body">
-                  {topContentNode}
-                  <DataTableContentControl />
-                  {footerNode}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <>
-              {headingNode}
-              {tabsNode}
-              {topContentNode}
-              <DataTableContentControl />
-              {footerNode}
-            </>
+        <div {...props} className={classes('leaf-data-table', className)}>
+          <DataTableContentControl />
+          {automaticPagination && (
+            <DataTableFooterControl>
+              <DataTablePaginationControl {...(typeof pagination === 'object' ? pagination : {})} />
+            </DataTableFooterControl>
           )}
         </div>
       </FieldScope>
@@ -501,7 +398,6 @@ function DataRow({
   measureRef,
   collapsed = false,
   animate = false,
-  lastVisible = false,
 }: {
   row: Row<unknown>;
   rowIndex: number;
@@ -510,7 +406,6 @@ function DataRow({
   measureRef?: (node: HTMLTableRowElement | null) => void;
   collapsed?: boolean;
   animate?: boolean;
-  lastVisible?: boolean;
 }) {
   const config = useDataTableContext();
   const { id, selection, loading, getRowLabel, renderExpandedRow, getRowProps, getCellProps } =
@@ -595,7 +490,6 @@ function DataRow({
         data-index={rowIndex}
         data-row-id={row.id}
         data-striped={(config.striped && stripeIndex % 2 === 1) || undefined}
-        data-last-visible={(lastVisible && !detail) || undefined}
         hidden={hidden || undefined}
         aria-hidden={collapsed || undefined}
         {...inertProps(collapsed)}
@@ -642,7 +536,6 @@ function DataRow({
           className="leaf-data-table__detail"
           id={detailsId}
           data-detail-row={row.id}
-          data-last-visible={(lastVisible && detail) || undefined}
           aria-rowindex={ariaRowIndex && detail ? ariaRowIndex + 1 : undefined}
           hidden={!detail}
         >
@@ -738,7 +631,6 @@ function VirtualRows({
               rowIndex={item.index}
               ariaRowIndex={rowIndexes[item.index]}
               measureRef={virtualizer.measureElement}
-              lastVisible={item.index === rows.length - 1 && bottom === 0}
             />
           </Fragment>
         ) : null;
@@ -781,6 +673,8 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
   const config = useDataTableContext();
   const { table, tableRef, loading, error, emptyContent, onRetry, selection, resizable, virtual } =
     config;
+  const { theme, density, direction } = useLeafConfig();
+  const effectiveDirection = config.dir ?? direction;
   const t = useText();
   const viewport = useRef<HTMLDivElement>(null);
   const [availableWidth, setAvailableWidth] = useState(0);
@@ -813,10 +707,20 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
   const expandable = config.expandable;
   const utilityCount = Number(Boolean(selection)) + Number(expandable);
   const colSpan = Math.max(1, columns.length + utilityCount);
+  const tableSize = config.size === 'sm' ? 'sm' : 'md';
+  const { selectionWidth, expansionWidth } = resolveUtilityWidths({
+    size: tableSize,
+    bordered: Boolean(config.bordered),
+    selection: Boolean(selection),
+    expandable,
+    theme,
+    density,
+    direction: effectiveDirection,
+  });
   const layout = getColumnLayout(table, columns, {
     forceFixed: Boolean(resizable || virtual || columns.some((column) => column.getIsPinned())),
     availableWidth,
-    utilityWidth: (selection ? SELECTION_CONTENT_WIDTH : 0) + (expandable ? 48 : 0),
+    utilityWidth: selectionWidth + expansionWidth,
   });
   const status =
     error != null && error !== false
@@ -851,7 +755,7 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
         aria-labelledby={config.labelledBy}
         aria-busy={loading || undefined}
         aria-rowcount={virtual && !status ? virtualRows.count : undefined}
-        size={config.size}
+        size={tableSize}
         bordered={config.bordered}
         striped={config.striped}
         maxHeight={config.maxHeight}
@@ -866,8 +770,18 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
         loading={loading && Boolean(rows.length) && status !== 'error'}
       >
         <colgroup>
-          {selection && <col style={{ width: SELECTION_CONTENT_WIDTH }} />}
-          {expandable && <col style={{ width: 48 }} />}
+          {selection && (
+            <col
+              className="leaf-data-table__selection-col"
+              style={layout.fixed ? { width: selectionWidth } : undefined}
+            />
+          )}
+          {expandable && (
+            <col
+              className="leaf-data-table__expansion-col"
+              style={layout.fixed ? { width: expansionWidth } : undefined}
+            />
+          )}
           {columns.map((column) => (
             <col
               key={column.id}
@@ -879,7 +793,11 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
         </colgroup>
         <Table.Header>
           {headers.map((group, groupIndex) => (
-            <Table.Row key={group.id} aria-rowindex={virtual ? groupIndex + 1 : undefined}>
+            <Table.Row
+              key={group.id}
+              aria-rowindex={virtual ? groupIndex + 1 : undefined}
+              data-spanned-start={(groupIndex > 0 && utilityCount > 0) || undefined}
+            >
               {groupIndex === 0 && selection && (
                 <Table.ColumnHeader
                   rowSpan={headers.length}
@@ -943,11 +861,13 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
                         >
                           <span>{flexRender(column.columnDef.header, header.getContext())}</span>
                           <span className="leaf-data-table__sort-icons" aria-hidden="true">
-                            <ArrowDown
-                              size={14}
-                              strokeWidth={1.75}
-                              className="leaf-data-table__sort-arrow"
-                              data-direction={sorted || undefined}
+                            <SortTriangle
+                              className="leaf-data-table__sort-up"
+                              active={sorted === 'asc'}
+                            />
+                            <SortTriangle
+                              className="leaf-data-table__sort-down"
+                              active={sorted === 'desc'}
                             />
                           </span>
                         </button>
@@ -1019,13 +939,27 @@ function DataTableContentControl({ className, ...props }: HTMLAttributes<HTMLDiv
                 stripeIndex={stripeIndex}
                 collapsed={collapsed}
                 animate={animate}
-                lastVisible={!collapsed && row.id === rows.at(-1)?.id}
               />
             ))
           )}
         </Table.Body>
       </Table>
     </div>
+  );
+}
+
+function SortTriangle({ className, active }: { className: string; active: boolean }) {
+  return (
+    <svg
+      width="10"
+      height="5"
+      viewBox="0 0 10 5"
+      className={className}
+      data-active={active || undefined}
+      aria-hidden="true"
+    >
+      <path d="M4.4 1.0 Q5 0.35 5.6 1.0 L8.7 4.1 Q9.15 4.65 8.4 4.65 L1.6 4.65 Q0.85 4.65 1.3 4.1 Z" />
+    </svg>
   );
 }
 
@@ -1185,6 +1119,12 @@ function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
     columnReordering: _columnReordering,
     onRowReorder: _onRowReorder,
     renderRowHeader: _renderRowHeader,
+    variant: _variant,
+    title: _title,
+    description: _description,
+    extra: _extra,
+    tabs: _tabs,
+    topContent: _topContent,
     ...props
   } = merged as typeof merged & {
     stickyHeader?: unknown;
@@ -1198,6 +1138,12 @@ function DataTableComponent<TData>(rawProps: DataTableProps<TData>) {
     columnReordering?: unknown;
     onRowReorder?: unknown;
     renderRowHeader?: unknown;
+    variant?: unknown;
+    title?: unknown;
+    description?: unknown;
+    extra?: unknown;
+    tabs?: unknown;
+    topContent?: unknown;
   };
   return props.table ? (
     <DataTableRoot {...(props as DataTableInstanceProps<TData>)} />

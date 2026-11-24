@@ -103,6 +103,7 @@ export function TreeControl({
   checkOnClick = false,
   expandOnClick = false,
   highlightFirst = false,
+  hideSelectionMark = false,
   checkStrictly = false,
   checkedKeys,
   defaultCheckedKeys = [],
@@ -131,7 +132,12 @@ export function TreeControl({
   className,
   'aria-label': label,
   ...props
-}: TreeProps & { checkOnClick?: boolean; expandOnClick?: boolean; highlightFirst?: boolean }) {
+}: TreeProps & {
+  checkOnClick?: boolean;
+  expandOnClick?: boolean;
+  highlightFirst?: boolean;
+  hideSelectionMark?: boolean;
+}) {
   const { messages, direction, theme, density } = useLeafConfig();
   const format = useFormattedText();
   const itemHeight = itemHeightProp ?? estimateControlHeight(theme, density);
@@ -517,7 +523,7 @@ export function TreeControl({
             >
               {nodeRender?.(node) ?? node.title}
             </span>
-            {selectable && !checkable && node.selectable !== false && (
+            {selectable && !checkable && !hideSelectionMark && node.selectable !== false && (
               <Check size={15} aria-hidden="true" className="leaf-tree__selection-mark" />
             )}
           </div>

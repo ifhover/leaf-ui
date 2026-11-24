@@ -20,7 +20,6 @@
       --leaf-button-icon-size: 22px;
     }
     &:active:not(:disabled) {
-      translate: none;
       box-shadow: var(--leaf-shadow-sm);
     }
   }

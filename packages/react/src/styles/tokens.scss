@@ -39,6 +39,7 @@
     --leaf-line-height-sm: 18px;
     --leaf-line-height-lg: 22px;
     --leaf-heading-weight: 700;
+    --leaf-shadow-control: 0 2px 0 rgb(0 0 0 / 0.02);
     --leaf-shadow-xs: 0 1px 2px rgb(0 0 0 / 0.05);
     --leaf-shadow-sm: 0 2px 8px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.04);
     --leaf-shadow-md: 0 8px 24px rgb(0 0 0 / 0.07), 0 2px 6px rgb(0 0 0 / 0.04);
@@ -81,8 +82,7 @@
       border-color var(--leaf-motion-color) var(--leaf-motion-easing),
       color var(--leaf-motion-color) var(--leaf-motion-easing),
       box-shadow var(--leaf-motion-color) var(--leaf-motion-easing),
-      opacity var(--leaf-motion-color) var(--leaf-motion-easing),
-      translate var(--leaf-motion-fast) var(--leaf-motion-easing);
+      opacity var(--leaf-motion-color) var(--leaf-motion-easing);
     --leaf-field-transition:
       border-color var(--leaf-motion-color) var(--leaf-motion-easing),
       background-color var(--leaf-motion-color) var(--leaf-motion-easing),

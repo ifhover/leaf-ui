@@ -164,7 +164,10 @@ const descriptions = {
   label: ['展示文字或内容。', 'Visible label or content.'],
   title: ['标题内容。', 'Title content.'],
   description: ['补充说明。', 'Additional description.'],
-  divided: ['在底部操作栏顶部显示细分隔线。', 'Show a subtle divider above the footer action bar.'],
+  divided: [
+    '用浅分隔线划分标题、内容和底部操作区。',
+    'Separate the heading, content and footer with subtle borders.',
+  ],
   headerBackground: [
     '标题区域背景；默认继承表面颜色。',
     'Header background; inherits the surface by default.',
@@ -593,34 +596,13 @@ const choicePopupMaxWidth = [
   '可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。',
   'Optional maximum popup width; no additional limit when unset, still bounded by the viewport.',
 ];
-const tableVariantDescription = [
-  '容器外观；card 使用 Card 包裹表格与卡片内部分页区（表格占满宽度且首末列边缘对齐 Card 内边距）。',
-  'Container appearance; card wraps the table and pagination inside a Card body (table spans full width with outer column edges aligned to Card padding).',
-];
-const tableTitleDescription = ['表格上方标题内容。', 'Heading content above the table.'];
-const tableDescriptionDescription = [
-  '标题下方的补充说明。',
-  'Supporting text displayed below the title.',
-];
-const tableExtraDescription = [
-  '标题或标签栏右侧的附加操作或信息。',
-  'Trailing actions or content in the title or tab bar.',
-];
-const tableTabsDescription = [
-  '表格上方的线形标签页配置；支持与 Card tabs 一致的受控/非受控与附加区域行为。',
-  'Line tabs displayed above the table; shares Card tabs controlled, uncontrolled and extra placement behavior.',
-];
-const tableTopContentDescription = [
-  '表格上方（标题与标签栏下方）的铺满内容区域；在 card 模式下自带与 Card 一致的正文内边距。',
-  'Full-width content rendered above the table; uses Card body padding in `card` variant.',
-];
 const tableStripedDescription = [
   '默认显示细行分割线；设置为 true 后切换为斑马条纹样式，从第二行开始展示交替浅灰背景并隐藏行间分割线。',
   'Fine row dividers are shown by default; true enables zebra striping from the second row with an alternating light gray background and hides row dividers.',
 ];
 const tableBorderedDescription = [
-  '仅在表格外层添加边框与四角圆角，内部单元格分割线与表头样式保持不变。',
-  'Add only an outer border and four rounded corners while keeping internal dividers and headers unchanged.',
+  '开启外框与全单元格垂直网格线，并隐藏表头竖向短分隔线。',
+  'Enable an outer border and full vertical cell grid lines while hiding short header column dividers.',
 ];
 const tableHeightDescription = [
   '表格视口最大高度，表头始终固定，表体在内部滚动；虚拟模式未指定时使用 400。',
@@ -3185,20 +3167,30 @@ const specific = {
     '标题区域外层容器的原生属性；heading 自身的属性、事件与 ref 仍直接应用于实际标题元素。',
     'Native attributes for the title-region wrapper; heading attributes, events and ref still target the actual heading element.',
   ],
-  'CardProps.description': ['标题下方的补充说明。', 'Supporting text below the title.'],
-  'CardProps.footer': [
-    '底部内容或操作；默认带浅底与底部分割线并右对齐布局（可通过 `divided={false}` 关闭分割线）。',
-    'Footer content or actions; uses a right-aligned flex row with subtle background and top divider by default (`divided={false}` hides the divider).',
+  'CardProps.description': [
+    '标题下方的补充说明，仅默认外观支持；layered 不展示。',
+    'Supporting text below the title; only supported by the default appearance, not layered.',
   ],
-  'CardProps.divided': [
-    '在底部操作栏顶部显示细分隔线。',
-    'Show a subtle divider above the footer action bar.',
+  'CardProps.footer': [
+    '底部内容或操作；layered 展示在内容卡下方的外层区域。',
+    'Footer content or actions; layered places them on the canvas below the content card.',
   ],
   'CardProps.loading': [
     '将正文和标签页内容替换为骨架屏；不会禁用标题、标签页或操作。',
     'Replace body and tab-page content with skeletons; headings, tabs and actions remain enabled.',
   ],
-  'CardProps.shadow': ['显示卡片的静止阴影。', "Show the card's resting shadow."],
+  'CardProps.shadow': [
+    '显示卡片的静止阴影；分层卡片将其应用于内层内容面。',
+    "Show the card's resting shadow; layered cards apply it to the inner content surface.",
+  ],
+  'CardProps.selected': [
+    '标记选中外观，不提供选择交互；使用按钮或选择控件管理选中状态。',
+    'Mark the card as selected; use a button or selection control to manage selection.',
+  ],
+  'CardProps.variant': [
+    '卡片外观；layered 将内容卡与外层标题、底部操作分层展示。',
+    'Card appearance; layered separates the content surface from the heading and footer on a muted canvas.',
+  ],
   'CardProps.size': [
     '卡片尺寸；内嵌标签页默认跟随此尺寸，其他子组件独立配置。',
     'Card size; embedded tabs follow it by default, while other children use their own sizes.',
@@ -3294,18 +3286,6 @@ const specific = {
   'DataTablePresentationProps.pagination': tablePaginationDescription,
   'DataTableProps.localPagination': localPaginationDescription,
   'UseDataTableOptions.localPagination': localPaginationDescription,
-  'DataTableProps.variant': tableVariantDescription,
-  'DataTablePresentationProps.variant': tableVariantDescription,
-  'DataTableProps.title': tableTitleDescription,
-  'DataTablePresentationProps.title': tableTitleDescription,
-  'DataTableProps.description': tableDescriptionDescription,
-  'DataTablePresentationProps.description': tableDescriptionDescription,
-  'DataTableProps.extra': tableExtraDescription,
-  'DataTablePresentationProps.extra': tableExtraDescription,
-  'DataTableProps.tabs': tableTabsDescription,
-  'DataTablePresentationProps.tabs': tableTabsDescription,
-  'DataTableProps.topContent': tableTopContentDescription,
-  'DataTablePresentationProps.topContent': tableTopContentDescription,
   'DataTableProps.striped': tableStripedDescription,
   'DataTablePresentationProps.striped': tableStripedDescription,
   'DataTableProps.bordered': tableBorderedDescription,
@@ -3444,8 +3424,8 @@ const specific = {
     'Auxiliary text; shares the muted default and can be overridden separately.',
   ],
   'LeafThemeTokens.mutedSurfaceColor': [
-    '次级表面与共享底板，对应 `--leaf-color-surface-muted`。Segmented Tabs 轨道与 card 形态日期面板等共用该角色；内层滑块仍使用 `surfaceColor`，组件显式覆盖优先。',
-    'Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Segmented Tabs tracks and card-variant date panels share this role; active pills keep `surfaceColor`. Explicit component overrides take precedence.',
+    '次级表面与共享底板，对应 `--leaf-color-surface-muted`。Card layered、Segmented Tabs 轨道与 card 形态日期面板等共用该角色；内层内容或滑块仍使用 `surfaceColor`，组件显式覆盖优先。',
+    'Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Layered Card canvases, Segmented Tabs tracks and card-variant date panels share this role; inner content and active pills keep `surfaceColor`. Explicit component overrides take precedence.',
   ],
   'LeafThemeTokens.raisedSurfaceColor': [
     '浮层与抬升表面色。',

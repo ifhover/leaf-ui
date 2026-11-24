@@ -1,4 +1,4 @@
-import { Button, Card, Text } from '@ifhover/leaf-ui';
+import { Button, Card, Flex, Text } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 export function CardActions() {
@@ -7,21 +7,20 @@ export function CardActions() {
   return (
     <Card
       title="Project details"
-      description="Heading, description, footer divider and button alignment match Modal."
       extra={
         <Button variant="link" disabled={!saved} onClick={() => setSaved(false)}>
           Reset
         </Button>
       }
       footer={
-        <>
+        <Flex justify="end" gap="sm">
           <Button variant="outline" disabled={!saved} onClick={() => setSaved(false)}>
             Revert
           </Button>
           <Button variant="solid" disabled={saved} onClick={() => setSaved(true)}>
             Save
           </Button>
-        </>
+        </Flex>
       }
     >
       <Text role="status">{saved ? 'Changes saved.' : 'There are unsaved changes.'}</Text>

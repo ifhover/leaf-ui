@@ -36,7 +36,7 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 
 ### 图标与说明
 
-通过 `icon` 和 `description` 为弹窗补充图标与说明。底部操作栏上方默认显示分隔线，通过 `divided={false}` 关闭；也可通过 `padding` 自定义整体或分区内边距。
+通过 `icon` 和 `description` 为弹窗补充图标与说明。默认在标题栏下方与底部操作栏上方显示细分隔线（`size="mini"` 不显示标题底线），通过 `divided={false}` 关闭；也可通过 `padding` 自定义整体或分区内边距。
 
 <ComponentExample exampleId="description" preview={<ModalDescription />} fileName="description.tsx" width="fit-content">
 
@@ -129,7 +129,7 @@ export const leafDoc = { component: 'Modal', primaryApi: 'ModalProps' };
 | `icon` | `ReactNode` | — | 标题装饰图标；md 位于标题左侧，mini 位于标题上方居中底座。 |
 | `size` | `'md' \| 'mini'` | `'md'` | 弹窗尺寸；'mini' 切换为居中图标标题、窄宽及底栏按钮等分的确认布局。 |
 | `danger` | `boolean` | `false` | 使用危险样式高亮确认按钮及标题图标底座。 |
-| `divided` | `boolean` | `true` | 在底部操作栏顶部显示细分隔线。 |
+| `divided` | `boolean` | `true` | 用浅分隔线划分标题、内容和底部操作区。 |
 | `padding` | `number \| string \| 'none' \| { header?: number \| string \| 'none'; body?: number \| string \| 'none'; footer?: number \| string \| 'none' }` | — | 整体或按 header / body / footer 分区覆盖弹窗内边距；数字按 px，'none' 为 0（Confirm 不继承）。 |
 | `width` | `number \| string` | 480（mini 为 340） | 弹窗宽度，数字为像素；size="mini" 时默认 340。 |
 | `closable` | `boolean` | `true` | 显示右上角关闭按钮。 |

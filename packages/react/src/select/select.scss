@@ -102,7 +102,7 @@
       transform: rotate(180deg);
     }
     &__panel .leaf-floating__option {
-      @include mixins.choice-option;
+      @include mixins.choice-option(false, true);
       @include mixins.choice-option-size(
         var(--leaf-select-option-height, var(--leaf-current-control-height, 32px))
       );
@@ -125,23 +125,6 @@
     &__panel > .leaf-floating__viewport > .leaf-scrollbar__content {
       display: flex;
       flex-direction: column;
-    }
-    &__check {
-      opacity: 0;
-      transition: var(--leaf-action-transition);
-      path,
-      polyline {
-        stroke-dasharray: 24;
-        stroke-dashoffset: 24;
-        transition: stroke-dashoffset var(--leaf-motion-duration) var(--leaf-motion-easing);
-      }
-    }
-    &__panel [aria-selected='true'] &__check {
-      opacity: 1;
-      path,
-      polyline {
-        stroke-dashoffset: 0;
-      }
     }
     &__spinner {
       animation: var(

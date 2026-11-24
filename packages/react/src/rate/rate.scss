@@ -29,7 +29,6 @@
       &:has(.leaf-rate__option:focus-visible) {
         border-radius: var(--leaf-radius-sm);
         @include mixins.focus-ring;
-        outline-offset: 2px;
       }
     }
     &__empty,

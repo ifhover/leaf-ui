@@ -55,8 +55,7 @@
         background: var(--leaf-color-surface-muted);
       }
       &:focus-visible {
-        @include mixins.focus-ring;
-        outline-offset: -2px;
+        @include mixins.focus-ring(-2px);
         border-radius: var(--leaf-radius-sm);
       }
     }

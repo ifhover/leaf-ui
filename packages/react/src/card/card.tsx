@@ -14,6 +14,7 @@ export interface CardTabsProps extends Omit<TabsProps, 'type' | 'placement' | 'c
 
 export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   title?: ReactNode;
+  /** Supporting text for the default appearance; not displayed by layered cards. */
   description?: ReactNode;
   extra?: ReactNode;
   /** Tabs replace the heading when no title is supplied, otherwise sit below it. */
@@ -22,10 +23,12 @@ export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'>
   footer?: ReactNode;
   loading?: boolean;
   bordered?: boolean;
-  /** Show the card's resting shadow. */
+  /** Show the card's resting shadow; layered cards apply this to the inner content surface. */
   shadow?: boolean;
-  /** Separate the footer bar with a top border. */
-  divided?: boolean;
+  /** Visual selection only; use explicit buttons or selection controls for interaction. */
+  selected?: boolean;
+  /** `layered` separates the content surface from the heading and footer on a muted canvas. */
+  variant?: 'default' | 'layered';
   /** Card spacing, heading typography and height, and the default size of embedded tabs. */
   size?: 'sm' | 'md' | 'lg';
   /** Customize inner padding for the card or individual header/body/footer regions. */
@@ -45,7 +48,8 @@ export function CardControl({
   loading = false,
   bordered = true,
   shadow = true,
-  divided = true,
+  selected = false,
+  variant = 'default',
   size = 'md',
   padding,
   titleId: customTitleId,
@@ -63,7 +67,9 @@ export function CardControl({
   const rawTabItems = tabs?.items;
   const hasTabs = Boolean(rawTabItems?.length);
   const hasTabPanels = Boolean(rawTabItems?.some((item) => item.children != null));
-  const hasHeading = title != null || description != null;
+  const layered = variant === 'layered';
+  const visibleDescription = layered ? undefined : description;
+  const hasHeading = title != null || visibleDescription != null;
   // 封面或无面板标签栏可直接搭配 Card children，仅在无标签面板且 loading 时保留空 body 骨架占位。
   const hasBody = children != null || (!hasTabPanels && loading) || (!hasTabs && cover == null);
   const footerContent = footer != null && <div className="leaf-card__footer">{footer}</div>;
@@ -123,7 +129,7 @@ export function CardControl({
           <Skeleton loading={loading}>{children}</Skeleton>
         </div>
       )}
-      {footerContent}
+      {!layered && footerContent}
     </>
   );
   return (
@@ -135,7 +141,8 @@ export function CardControl({
         `leaf-card--${size}`,
         bordered && 'leaf-card--bordered',
         !shadow && 'leaf-card--shadowless',
-        divided && 'leaf-card--divided',
+        selected && 'leaf-card--selected',
+        layered && 'leaf-card--layered',
         hasHeading && 'leaf-card--headed',
         hasTabs && 'leaf-card--tabbed',
         className,
@@ -151,13 +158,16 @@ export function CardControl({
                   {title}
                 </CardTitleControl>
               )}
-              {description != null && <div className="leaf-card__description">{description}</div>}
+              {visibleDescription != null && (
+                <div className="leaf-card__description">{visibleDescription}</div>
+              )}
             </div>
           )}
           {extra != null && <div className="leaf-card__extra">{extra}</div>}
         </div>
       )}
       <div className="leaf-card__panel">{content}</div>
+      {layered && footerContent}
     </div>
   );
 }

@@ -43,7 +43,7 @@ Use `width` for left and right drawers, and `height` for top and bottom drawers.
 
 ### Footer submission
 
-Associate the footer submit button with the form using its `form` attribute to retain native validation. Submission and closing are handled by the application. The `footer` area already includes spacing between action buttons; use `divided` to add a divider above the footer bar, and `padding` to override drawer or section (`header` / `body` / `footer`) padding.
+Associate the footer submit button with the form using its `form` attribute to retain native validation. Submission and closing are handled by the application. The `footer` area already includes spacing between action buttons; use `divided` to add subtle borders below the header and above the footer, and `padding` to override drawer or section (`header` / `body` / `footer`) padding.
 
 <ComponentExample exampleId="sections" preview={<DrawerSections />} fileName="sections.tsx" width="fit-content">
 
@@ -101,7 +101,7 @@ Configuration for controlled visibility, placement, content regions and dismissa
 | `footer` | `ReactNode` | — | Footer content |
 | `extra` | `ReactNode` | — | Actions beside the title |
 | `icon` | `ReactNode` | — | Decorative icon to the left of the heading. |
-| `divided` | `boolean` | `false` | Show a subtle divider above the footer action bar. |
+| `divided` | `boolean` | `false` | Separate the heading, content and footer with subtle borders. |
 | `padding` | `number \| string \| 'none' \| { header?: number \| string \| 'none'; body?: number \| string \| 'none'; footer?: number \| string \| 'none' }` | — | Override drawer or section (`header`, `body`, `footer`) padding; numbers use pixels and `'none'` sets 0. |
 | `closable` | `boolean` | `true` | Show the close button. |
 | `maskClosable` | `boolean` | `true` | Request closing when the mask is clicked. |

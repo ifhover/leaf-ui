@@ -29,7 +29,6 @@
       transform: none;
     }
     &[data-visible]:active:not(:disabled) {
-      translate: none;
       box-shadow: var(--leaf-shadow-sm);
     }
   }

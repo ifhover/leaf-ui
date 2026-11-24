@@ -3,7 +3,7 @@
 @use '../shared/selection';
 
 @mixin cascader-option {
-  @include mixins.choice-option;
+  @include mixins.choice-option(false, true);
   @include mixins.choice-option-size;
   justify-content: space-between;
   .leaf-floating__option-label {
@@ -132,8 +132,7 @@
         gap: 2px;
       }
     }
-    &__column .leaf-floating__option,
-    &__search-list .leaf-floating__option {
+    &__panel .leaf-floating__option {
       @include cascader-option;
     }
     &__spinner {
@@ -146,29 +145,6 @@
     }
     &[data-open] &__trigger > svg {
       transform: rotate(180deg);
-    }
-    &__check {
-      animation: var(
-        --leaf-motion-animation,
-        leaf-fade-in var(--leaf-motion-fast) var(--leaf-motion-easing)
-      );
-      path,
-      polyline {
-        stroke-dasharray: 24;
-        stroke-dashoffset: 0;
-        animation: var(
-          --leaf-motion-animation,
-          leaf-cascader-check-draw var(--leaf-motion-duration) var(--leaf-motion-easing)
-        );
-      }
-    }
-  }
-  @keyframes leaf-cascader-check-draw {
-    from {
-      stroke-dashoffset: 24;
-    }
-    to {
-      stroke-dashoffset: 0;
     }
   }
 

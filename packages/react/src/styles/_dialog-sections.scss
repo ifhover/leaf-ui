@@ -50,6 +50,7 @@
     --leaf-#{$component}-shell-padding-bottom,
     var(--leaf-component-#{$component}-padding-bottom, var(--leaf-spacing-md))
   );
+  --leaf-dialog-header-padding-top: var(--leaf-dialog-footer-padding-top);
   padding: var(--leaf-dialog-padding-block) var(--leaf-dialog-padding-right)
     var(--leaf-dialog-padding-bottom) var(--leaf-dialog-padding-left);
   gap: var(--leaf-dialog-gap);
@@ -71,17 +72,21 @@
     background: var(--leaf-component-#{$component}-header-background, transparent);
   }
   &[data-header-surface] > &__header,
-  &[data-header-padding] > &__header {
+  &[data-header-padding] > &__header,
+  &--divided:not(&--mini) > &__header:not(.leaf-#{$component}__header--compact) {
     margin-block-start: calc(-1 * var(--leaf-dialog-padding-block));
     margin-inline: calc(-1 * var(--leaf-dialog-padding-start))
       calc(-1 * var(--leaf-dialog-padding-end));
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+  }
+  &[data-header-surface] > &__header,
+  &[data-header-padding] > &__header {
     padding: var(
       --leaf-#{$component}-header-padding,
       var(--leaf-dialog-padding-block) var(--leaf-dialog-padding-end) 0
         var(--leaf-dialog-padding-start)
     );
-    border-start-start-radius: inherit;
-    border-start-end-radius: inherit;
   }
   &__heading {
     flex: 1;
@@ -180,29 +185,42 @@
     padding: 0;
     background: var(--leaf-component-#{$component}-footer-background, transparent);
   }
-  // divided 仅控制操作底栏顶部细分隔线，头部不再附加底边框。
-  &--divided > &__footer {
-    margin-inline: calc(-1 * var(--leaf-dialog-padding-start))
-      calc(-1 * var(--leaf-dialog-padding-end));
-    margin-block-end: calc(-1 * var(--leaf-dialog-padding-bottom));
-    padding: var(--leaf-dialog-footer-padding-top) var(--leaf-dialog-padding-end)
-      var(--leaf-dialog-footer-padding-bottom) var(--leaf-dialog-padding-start);
-    border-block-start: 1px solid var(--leaf-dialog-divider);
-    border-end-start-radius: inherit;
-    border-end-end-radius: inherit;
+  // divided 同时控制标题底边框与操作底栏顶边框；紧凑确认框（--mini）保留无头部分隔线布局。
+  &--divided:not(&--mini) {
+    --leaf-dialog-close-block: var(
+      --leaf-#{$component}-close-inset-top,
+      var(--leaf-dialog-header-padding-top)
+    );
   }
+  &--divided:not(&--mini) > &__header:not(.leaf-#{$component}__header--compact) {
+    padding: var(
+      --leaf-#{$component}-header-padding,
+      var(--leaf-dialog-header-padding-top) var(--leaf-dialog-padding-end)
+        var(--leaf-dialog-footer-padding-bottom) var(--leaf-dialog-padding-start)
+    );
+    border-block-end: 1px solid var(--leaf-dialog-divider);
+  }
+  &--divided > &__footer,
   &[data-footer-surface]:not(&--divided) > &__footer,
   &[data-footer-padding] > &__footer {
     margin-inline: calc(-1 * var(--leaf-dialog-padding-start))
       calc(-1 * var(--leaf-dialog-padding-end));
     margin-block-end: calc(-1 * var(--leaf-dialog-padding-bottom));
+    border-end-start-radius: inherit;
+    border-end-end-radius: inherit;
+  }
+  &--divided > &__footer {
+    padding: var(--leaf-dialog-footer-padding-top) var(--leaf-dialog-padding-end)
+      var(--leaf-dialog-footer-padding-bottom) var(--leaf-dialog-padding-start);
+    border-block-start: 1px solid var(--leaf-dialog-divider);
+  }
+  &[data-footer-surface]:not(&--divided) > &__footer,
+  &[data-footer-padding] > &__footer {
     padding: var(
       --leaf-#{$component}-footer-padding,
       var(--leaf-spacing-md) var(--leaf-dialog-padding-end) var(--leaf-dialog-padding-bottom)
         var(--leaf-dialog-padding-start)
     );
-    border-end-start-radius: inherit;
-    border-end-end-radius: inherit;
   }
   &__close {
     box-sizing: border-box;

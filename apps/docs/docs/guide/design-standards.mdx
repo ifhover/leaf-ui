@@ -15,9 +15,9 @@ import { DataRegion } from '../../src/examples/design-standards/data-region';
 | 组件                           | 当前外观                                                                                    | 页面组合方式                                                                                                                               |
 | ------------------------------ | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | [Menu](/components/menu)       | 默认 `neutral`，悬停使用轻底、选中复用 `surface-muted` 中性灰阶。                           | 导航保持克制的黑白灰层级，不叠加额外大面积品牌色块；需要独立浮卡感或主色高亮时可选 `raised` 或 `primary`。                                 |
-| [Button](/components/button)   | 默认 `outline`，中性内容面和纯边框（无阴影），悬停展示浅灰背景。                            | 普通操作保持中性，主要操作使用 `solid` 承载主题色（支持 `'neutral'` 自适应黑白反色）；局部区域也可按需用 `ConfigProvider` 调整按钮主题色。 |
-| [Card](/components/card)       | 纯白内容面配实体中性外框与最轻静止阴影（`shadow-xs`），页眉、页脚与正文共用一致留白。 | 独立任务分区需要清晰容器边界时使用，可通过 `description` 或独立 `CardTitle` 补充说明。 |
-| [DataTable](/components/table) | 默认使用简洁的数据表面，表头（次要灰 / 500 字重）与选中行均保持克制中性灰阶。               | 主要数据区域直接放置表格，筛选和其他操作控件与表格并列；需要卡片外框包裹时使用 `variant="card"`。 |
+| [Button](/components/button)   | 默认 `outline`，中性内容面、纯边框与轻量底阴影，悬停边框与文字转主色悬停态、按下变深。     | 普通操作默认使用 `outline`，主要操作使用 `solid` 承载主题色（支持 `'neutral'` 自适应黑白反色）；局部区域也可按需用 `ConfigProvider` 调整按钮主题色。 |
+| [Card](/components/card)       | 纯白内容面配柔化外框与最轻静止阴影（`shadow-xs`），支持 `variant="layered"` 分层画布与 `selected` 选中态。 | 独立任务分区需要清晰容器边界时使用，可通过 `description` 或独立 `CardTitle` 补充说明。 |
+| [DataTable](/components/table) | 默认使用中性内容表面与浅灰表头（600 字重）、细行分隔线与柔化边框。                           | 主要数据区域直接放置表格，筛选和其他操作控件与表格并列。                                                                                   |
 
 “底板”和“内容面”是角色，不是固定浅灰和纯白。用户改变表面色或切换深色外观后，分组关系仍应保留。选中状态沿用组件自身的表面、勾选、边框或指示，不在页面层强制统一成“永远没有背景”或另一套主题色高亮。
 
@@ -35,12 +35,12 @@ import { DataRegion } from '../../src/examples/design-standards/data-region';
 | 正文               | 14px / 20px     | `--leaf-font-size` / `--leaf-line-height`；正文常规字重 400。                                     |
 | 次要、小号文字     | 13px / 18px     | `--leaf-font-size-sm` / `--leaf-line-height-sm`。`Text tone="muted"` 只改变颜色，不自动缩小字号。 |
 | 大号文字           | 16px / 22px     | `--leaf-font-size-lg` / `--leaf-line-height-lg`。不要把每个标签都放大。                           |
-| 控件与普通标题     | 默认字重 500    | `--leaf-font-weight`；使用 Button、Card、Modal、Drawer 与 Table 等组件默认值。                    |
+| 控件与普通标题     | 默认字重 500    | `--leaf-font-weight`；使用 Button、Card、Modal 与 Drawer 等组件默认值（Table 表头使用 600）。     |
 | 强调文字与醒目标题 | 默认字重 700    | `Text strong` 或标题组件；标题使用 `--leaf-heading-weight`，不要把所有正文加粗。                  |
 
 优先用 Typography、Text、Paragraph、CardTitle 和 Title。自定义页面根节点应继承 `--leaf-font-family`、`--leaf-font-size` 与 `--leaf-line-height`；ConfigProvider 提供变量，不会自动把任意原生文本变成库的排版。默认字体栈以 Inter 开始并包含系统与中文回退，配置 `theme.fontFamily` 后继续继承，不另引入展示字体。
 
-CardTitle 与 Card 标题的 `sm / md / lg` 默认分别为 14/20、16/22、18/24px，字重均跟随常规控件字重（默认 500）。Title 的 `level={1..6}` 同时决定语义与默认大小：依次为基础字号的 2.3、1.85、1.5、1.25、1.1、1 倍，行高 1.3；它不是固定的整数像素表。选择真实的标题层级，不用较大的标题级别充当普通标签。
+CardTitle 与 Card 标题的 `sm / md / lg` 默认分别为 14/20、16/22、18/24px，`sm / md` 使用常规控件字重（默认 500），`lg` 使用强标题字重（默认 700）。Title 的 `level={1..6}` 同时决定语义与默认大小：依次为基础字号的 2.3、1.85、1.5、1.25、1.1、1 倍，行高 1.3；它不是固定的整数像素表。选择真实的标题层级，不用较大的标题级别充当普通标签。
 
 ## 间距与密度
 
@@ -113,7 +113,7 @@ Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelec
 
 - 一般操作使用默认描边按钮，主要操作使用 `variant="solid"`；低强调局部操作可用 `text`，行内链接式操作可用 `link`，危险操作使用 `variant="danger"`。
 - 不在页面 CSS 中额外叠加悬停抬起、缩放、彩色光晕或装饰渐变。保留组件自身的交互反馈，不在页面中重新设计每种状态。
-- 输入和选择类字段悬停时略微加深边框至 `--leaf-color-border-hover`，聚焦或展开时默认使用清晰的 `--leaf-color-primary` 主题色边框并叠加克制的 3px 淡主题色外环；Textarea、Mentions 和 InputNumber 也遵循同一规则。错误、警告和禁用状态保留各自反馈（其中错误、警告聚焦时同步呈现对应语义外环）；按钮保留中性键盘焦点轮廓。
+- 输入和选择类字段悬停时边框切换至 `--leaf-color-primary-hover`，聚焦或展开时默认使用清晰的 `--leaf-color-primary` 主题色边框并叠加克制的 2px 淡主题色外环；Textarea、Mentions 和 InputNumber 也遵循同一规则。错误、警告和禁用状态保留各自反馈（其中错误、警告聚焦时同步呈现对应语义外环）；按钮保留中性键盘焦点轮廓。
 
 ## 最小组合
 

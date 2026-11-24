@@ -16,10 +16,10 @@ describe('Table', () => {
     expect(root).not.toHaveClass('leaf-table--striped');
     expect(root).toHaveClass('leaf-table--md');
     expect(root?.querySelector('.leaf-table__panel')).toBeNull();
-    rerender(<Table striped size="lg" />);
+    rerender(<Table striped size="sm" />);
     expect(screen.getByRole('table').closest('.leaf-table')).toBe(root);
     expect(root).toHaveClass('leaf-table--striped');
-    expect(root).toHaveClass('leaf-table--lg');
+    expect(root).toHaveClass('leaf-table--sm');
   });
 
   it('preserves native table semantics, header scopes, spans and refs', () => {

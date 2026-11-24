@@ -22,8 +22,8 @@ Snapshot: 0.9.0 development sources, generated from a static source scan. The ch
 | Numeric derived-token debt | 0 | 0 |
 | Color-scale step debt | 0 | 0 |
 | Field-family border debt | 0 | 0 |
-| Legal hardcoded-color exceptions | 39 | 53 |
-| Legal color-mix exceptions | 6 | 6 |
+| Legal hardcoded-color exceptions | 40 | 54 |
+| Legal color-mix exceptions | 5 | 5 |
 | Reviewed derived-token exceptions | 5 | 5 |
 | Reviewed color-scale step exceptions | 0 | 0 |
 | Reviewed field-structure exceptions | 16 | 25 |
@@ -82,15 +82,15 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 
 | Token | Component files | Shared/infrastructure files | Occurrences |
 | --- | ---: | ---: | ---: |
-| `--leaf-color-border` | 30 | 4 | 64 |
-| `--leaf-color-border-hover` | 7 | 2 | 12 |
+| `--leaf-color-border` | 29 | 4 | 63 |
+| `--leaf-color-border-hover` | 7 | 2 | 11 |
 | `--leaf-color-danger` | 7 | 1 | 10 |
 | `--leaf-color-danger-active` | 0 | 0 | 0 |
 | `--leaf-color-danger-border` | 2 | 1 | 5 |
 | `--leaf-color-danger-ink` | 7 | 1 | 12 |
 | `--leaf-color-danger-soft` | 0 | 1 | 2 |
 | `--leaf-color-danger-soft-hover` | 0 | 1 | 1 |
-| `--leaf-color-divider` | 20 | 6 | 37 |
+| `--leaf-color-divider` | 18 | 6 | 35 |
 | `--leaf-color-info` | 2 | 0 | 2 |
 | `--leaf-color-info-ink` | 0 | 1 | 1 |
 | `--leaf-color-info-soft` | 0 | 1 | 1 |
@@ -101,16 +101,16 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-on-primary` | 9 | 1 | 13 |
 | `--leaf-color-on-success` | 1 | 1 | 2 |
 | `--leaf-color-on-warning` | 1 | 1 | 2 |
-| `--leaf-color-option-hover` | 8 | 2 | 21 |
-| `--leaf-color-primary` | 20 | 3 | 59 |
+| `--leaf-color-option-hover` | 8 | 2 | 20 |
+| `--leaf-color-primary` | 22 | 3 | 66 |
 | `--leaf-color-primary-active` | 4 | 0 | 6 |
 | `--leaf-color-primary-alpha-20` | 0 | 1 | 1 |
 | `--leaf-color-primary-alpha-4` | 1 | 0 | 1 |
 | `--leaf-color-primary-border` | 0 | 0 | 0 |
-| `--leaf-color-primary-hover` | 2 | 0 | 3 |
-| `--leaf-color-primary-link-active` | 2 | 0 | 2 |
+| `--leaf-color-primary-hover` | 4 | 1 | 8 |
+| `--leaf-color-primary-link-active` | 2 | 0 | 4 |
 | `--leaf-color-primary-link-hover` | 2 | 0 | 2 |
-| `--leaf-color-primary-soft` | 0 | 2 | 4 |
+| `--leaf-color-primary-soft` | 2 | 2 | 7 |
 | `--leaf-color-primary-soft-hover` | 1 | 1 | 2 |
 | `--leaf-color-success` | 2 | 0 | 4 |
 | `--leaf-color-success-ink` | 0 | 1 | 1 |
@@ -119,10 +119,10 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-surface` | 33 | 5 | 62 |
 | `--leaf-color-surface-alpha-55` | 1 | 0 | 1 |
 | `--leaf-color-surface-alpha-90` | 1 | 0 | 1 |
-| `--leaf-color-surface-muted` | 26 | 4 | 51 |
+| `--leaf-color-surface-muted` | 24 | 4 | 47 |
 | `--leaf-color-surface-raised` | 5 | 2 | 7 |
-| `--leaf-color-text` | 52 | 4 | 113 |
-| `--leaf-color-text-muted` | 47 | 6 | 112 |
+| `--leaf-color-text` | 52 | 4 | 112 |
+| `--leaf-color-text-muted` | 46 | 6 | 106 |
 | `--leaf-color-text-subtle` | 13 | 1 | 18 |
 | `--leaf-color-text-subtle-alpha-9` | 1 | 0 | 1 |
 | `--leaf-color-warning` | 2 | 1 | 3 |
@@ -142,7 +142,6 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 - `--leaf-color-info-soft-hover`
 - `--leaf-color-primary-alpha-20`
 - `--leaf-color-primary-border`
-- `--leaf-color-primary-soft`
 - `--leaf-color-success-ink`
 - `--leaf-color-success-soft`
 - `--leaf-color-success-soft-hover`
@@ -168,8 +167,7 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 
 ### `button/button.scss`
 - mixFormulas: `color-mix(in srgb,var(--leaf-button-on-color)32%,transparent)` x1 - Solid split-action separator follows its own on-fill foreground; not an ordinary border or standalone action color.
-- mixFormulas: `color-mix(in srgb,var(--leaf-danger-soft-active-background)30%,var(--leaf-danger-soft-background))` x1 - Restrained danger button hover blends 30% of danger-soft-active-background into danger-soft-background so base --leaf-color-danger text stays clear instead of jumping to 3x concentration.
-- mixFormulas: `color-mix(in srgb,var(--leaf-danger-soft-active-background)50%,var(--leaf-danger-soft-background))` x1 - Restrained danger button press blends 50% of danger-soft-active-background into danger-soft-background alongside press scaling.
+- mixFormulas: `color-mix(in srgb,var(--leaf-danger-soft-active-background)50%,var(--leaf-danger-soft-background))` x1 - Filled danger button hover blends 50% of danger-soft-active-background into danger-soft-background before stepping to danger-soft-active-background on press.
 
 ### `cascader/cascader.scss`
 - fieldFamilyBorders: `border-inline-start:1px solid var(--leaf-color-divider)` x1 - Internal column separator inside the portaled popup consuming the shared divider role; not an independently chosen outer field border.
@@ -257,6 +255,7 @@ These entries are controlled exceptions, not compliance claims. Their exact expr
 - derivedTokenUsages: `var(--leaf-color-text-subtle-alpha-9)` x1 - A moving skeleton highlight is an optical loading effect, not a readable text tier.
 
 ### `styles/tokens.scss`
+- hardcodedColors: `rgb(0 0 0/0.02)` x1 - Shared control resting bottom shadow (Ant Design button elevation); not a semantic fill or text color. Exact expressions and counts remain guarded.
 - hardcodedColors: `rgb(0 0 0/0.04)` x2 - Shared optical shadow opacity; not a semantic fill or text color. Exact expressions and counts remain guarded.
 - hardcodedColors: `rgb(0 0 0/0.05)` x1 - Shared optical shadow opacity; not a semantic fill or text color. Exact expressions and counts remain guarded.
 - hardcodedColors: `rgb(0 0 0/0.06)` x2 - Shared optical shadow opacity; not a semantic fill or text color. Exact expressions and counts remain guarded.

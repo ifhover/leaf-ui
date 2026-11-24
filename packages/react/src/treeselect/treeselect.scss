@@ -115,6 +115,16 @@
         margin-block: 0;
         border-radius: var(--leaf-tree-option-radius);
         white-space: nowrap;
+        // 复用 Tree 的 choice-option 基础叠层，仅叠加浅主色选中态并压过 Tree 的悬停权重。
+        &:is([aria-selected='true'], [data-selected]) {
+          font-weight: var(--leaf-font-weight, 500);
+          &::before,
+          &:is(:hover, :focus-visible, :active, [data-highlighted='true']):not(:disabled):not(
+              [aria-disabled='true']
+            ):not([data-disabled])::before {
+            background: var(--leaf-color-primary-soft);
+          }
+        }
       }
     }
   }

@@ -23,7 +23,7 @@ export interface ModalProps
   description?: ReactNode;
   /** Decorative header icon. */
   icon?: ReactNode;
-  /** Separate the footer action bar with a top border. */
+  /** Separate the header and footer with subtle borders. */
   divided?: boolean;
   /** Customize inner padding for the modal or individual header/body/footer regions. */
   padding?: ContainerPadding;

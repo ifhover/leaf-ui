@@ -97,8 +97,7 @@
         cursor: not-allowed;
       }
       &:focus-visible {
-        @include mixins.focus-ring;
-        outline-offset: -3px;
+        @include mixins.focus-ring(-3px);
       }
       svg {
         width: 16px;
@@ -195,8 +194,7 @@
         margin-block-end: 0;
       }
       &:focus-visible {
-        @include mixins.focus-ring;
-        outline-offset: -2px;
+        @include mixins.focus-ring(-2px);
       }
       &[hidden] {
         display: none;
@@ -410,7 +408,7 @@
           none
         );
       }
-      &:hover:not(:disabled):where(:not(:focus-visible)) {
+      &:hover:not(:disabled):not([aria-selected='true']):where(:not(:focus-visible)) {
         @include mixins.state-paint(
           tabs,
           hover,
@@ -420,7 +418,7 @@
           none
         );
       }
-      &:active:not(:disabled) {
+      &:active:not(:disabled):not([aria-selected='true']) {
         @include mixins.state-paint(
           tabs,
           active,

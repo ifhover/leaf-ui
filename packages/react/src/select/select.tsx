@@ -1,5 +1,5 @@
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Check, ChevronDown, LoaderCircle, Plus } from 'lucide-react';
+import { ChevronDown, LoaderCircle, Plus } from 'lucide-react';
 import {
   type CSSProperties,
   forwardRef,
@@ -395,7 +395,6 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
           option.label
         )}
       </span>
-      <Check size={15} aria-hidden="true" className="leaf-select__check" />
     </button>
   );
   const displayLabel = selectedOptions[0]

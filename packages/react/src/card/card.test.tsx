@@ -230,27 +230,58 @@ describe('Card variants', () => {
     expect(card).toHaveClass('leaf-card--shadowless');
   });
 
-  it('shows a divided footer by default and lets instances or ConfigProvider disable it', () => {
+  it('supports visual selection without adding an interactive role or forwarding selected to the DOM', () => {
     const { rerender } = render(
-      <Card data-testid="card" footer="Actions">
+      <Card data-testid="card" selected bordered={false}>
         Content
       </Card>,
     );
     const card = screen.getByTestId('card');
-    expect(card).toHaveClass('leaf-card--divided');
+    expect(card).toHaveClass('leaf-card--selected');
+    expect(card).not.toHaveAttribute('selected');
+    expect(card).not.toHaveAttribute('role');
+    expect(card).not.toHaveAttribute('tabindex');
+    rerender(<Card data-testid="card">Content</Card>);
+    expect(card).not.toHaveClass('leaf-card--selected');
+  });
 
-    rerender(
-      <ConfigProvider components={{ Card: { divided: false } }}>
-        <Card data-testid="plain-card" footer="Actions">
-          Plain
+  it('inherits the selection default and lets instances opt out', () => {
+    render(
+      <ConfigProvider components={{ Card: { selected: true } }}>
+        <Card data-testid="selected-card" variant="layered">
+          Selected
         </Card>
-        <Card data-testid="divided-card" divided footer="Actions">
-          Divided
+        <Card data-testid="plain-card" selected={false}>
+          Plain
         </Card>
       </ConfigProvider>,
     );
-    expect(screen.getByTestId('plain-card')).not.toHaveClass('leaf-card--divided');
-    expect(screen.getByTestId('divided-card')).toHaveClass('leaf-card--divided');
+    expect(screen.getByTestId('selected-card')).toHaveClass('leaf-card--selected');
+    expect(screen.getByTestId('plain-card')).not.toHaveClass('leaf-card--selected');
+  });
+
+  it('keeps the heading and footer on the canvas and hides layered descriptions', () => {
+    render(
+      <Card
+        data-testid="layered-card"
+        description="Standalone supporting text"
+        footer="Footer content"
+        title="Layered card"
+        variant="layered"
+      >
+        Body content
+      </Card>,
+    );
+
+    const card = screen.getByTestId('layered-card');
+    const panel = card.querySelector(':scope > .leaf-card__panel');
+    expect(card).toHaveClass('leaf-card--layered');
+    expect(panel).not.toBeNull();
+    expect(panel?.contains(screen.getByRole('heading', { name: 'Layered card' }))).toBe(false);
+    expect(panel?.contains(screen.getByText('Body content'))).toBe(true);
+    expect(panel?.contains(screen.getByText('Footer content'))).toBe(false);
+    expect(card.querySelector(':scope > .leaf-card__footer')).toHaveTextContent('Footer content');
+    expect(screen.queryByText('Standalone supporting text')).not.toBeInTheDocument();
   });
 
   it('does not reserve an empty body after a cover-only content region', () => {
@@ -263,24 +294,40 @@ describe('Card variants', () => {
     ).toHaveTextContent('Footer content');
   });
 
-  it('keeps a cover last only when it ends the content surface', () => {
-    const cover = <div>Cover content</div>;
-    const { rerender } = render(<Card cover={cover} />);
-    const content = document.querySelector('.leaf-card__panel');
-    expect(content?.querySelector('.leaf-card__cover:only-child')).not.toBeNull();
-    expect(content?.querySelector('.leaf-card__body')).toBeNull();
+  it.each(['default', 'layered'] as const)(
+    'keeps a cover last only when it ends the %s content surface',
+    (variant) => {
+      const cover = <div>Cover content</div>;
+      const { rerender } = render(<Card variant={variant} cover={cover} />);
+      const content = document.querySelector('.leaf-card__panel');
+      expect(content?.querySelector('.leaf-card__cover:only-child')).not.toBeNull();
+      expect(content?.querySelector('.leaf-card__body')).toBeNull();
 
-    rerender(<Card cover={cover}>Body content</Card>);
-    expect(content?.querySelector('.leaf-card__cover:last-child')).toBeNull();
-    expect(content?.querySelector('.leaf-card__body')).toHaveTextContent('Body content');
+      rerender(
+        <Card variant={variant} cover={cover}>
+          Body content
+        </Card>,
+      );
+      expect(content?.querySelector('.leaf-card__cover:last-child')).toBeNull();
+      expect(content?.querySelector('.leaf-card__body')).toHaveTextContent('Body content');
 
-    rerender(<Card cover={cover} footer="Footer content" />);
-    expect(content?.querySelector('.leaf-card__cover:last-child')).toBeNull();
-    expect(screen.getByText('Footer content')).toBeInTheDocument();
-  });
+      rerender(<Card variant={variant} cover={cover} footer="Footer content" />);
+      expect(content?.querySelector('.leaf-card__cover:last-child') !== null).toBe(
+        variant === 'layered',
+      );
+      expect(screen.getByText('Footer content')).toBeInTheDocument();
+    },
+  );
 
-  it('renders description in the heading and footer inside the panel', () => {
-    render(
+  it('does not create a heading for a hidden description or reserve its tab actions', () => {
+    const { rerender } = render(
+      <Card variant="layered" description="Hidden details" extra="Actions" tabs={{ items }} />,
+    );
+    expect(screen.queryByText('Hidden details')).not.toBeInTheDocument();
+    expect(screen.getByText('Actions').closest('.leaf-card__tab-extra')).not.toBeNull();
+    expect(document.querySelector('.leaf-card__header')).toBeNull();
+
+    rerender(
       <Card description="Visible details" footer="Default footer">
         Body
       </Card>,

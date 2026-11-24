@@ -69,12 +69,18 @@ test('fields default to primary focus while retaining validation and explicit ne
   const styles = styleDeclarations(css);
   assert.deepEqual(styles('.default'), styles('.explicit'));
   assert.equal(styles('.default')['--leaf-field-color'], 'var(--leaf-color-primary)');
+  assert.equal(styles('.default')['--leaf-field-hover-color'], 'var(--leaf-color-primary-hover)');
+  assert.equal(
+    styles('.default')['--leaf-field-hover-border'],
+    'var(--leaf-component-example-border-color,var(--leaf-frame-border-color,var(--leaf-field-hover-color)))',
+  );
   assert.equal(
     styles('.default')['--leaf-field-ring'],
-    'color-mix(in srgb,var(--leaf-field-color)12%,transparent)',
+    'color-mix(in srgb,var(--leaf-field-color)10%,transparent)',
   );
-  assert.equal(styles('.default')['--leaf-field-focus-shadow'], '0 0 0 3px var(--leaf-field-ring)');
+  assert.equal(styles('.default')['--leaf-field-focus-shadow'], '0 0 0 2px var(--leaf-field-ring)');
   assert.equal(styles('.neutral')['--leaf-field-color'], 'var(--leaf-color-text-muted)');
+  assert.equal(styles('.neutral')['--leaf-field-hover-color'], 'var(--leaf-color-border-hover)');
   assert.equal(
     styles('.default[data-status=error]')['--leaf-field-color'],
     'var(--leaf-color-danger)',
@@ -113,7 +119,7 @@ test('fields default to primary focus while retaining validation and explicit ne
   const typography = await compiledStyles('typography/typography.scss');
   assert.equal(
     typography('.leaf-text__editor')['--leaf-field-ring'],
-    'color-mix(in srgb,var(--leaf-color-primary)12%,transparent)',
+    'color-mix(in srgb,var(--leaf-color-primary)10%,transparent)',
   );
   assert.equal(typography('.leaf-text__editor:focus')['border-color'], 'var(--leaf-color-primary)');
 
@@ -122,7 +128,7 @@ test('fields default to primary focus while retaining validation and explicit ne
   assert.equal(slot['--leaf-otp-focus-color'], 'var(--leaf-color-primary)');
   assert.equal(
     slot['--leaf-field-ring'],
-    'color-mix(in srgb,var(--leaf-otp-focus-color)12%,transparent)',
+    'color-mix(in srgb,var(--leaf-otp-focus-color)10%,transparent)',
   );
   assert.equal(
     slot['box-shadow'],
@@ -222,7 +228,7 @@ test('dialog overlays avoid light-dark() and root tokens default color-scheme to
   assert.equal(tokens('[data-leaf-theme=dark]')['color-scheme'], 'dark');
 });
 
-test('pressed side presets override button state tokens so hover and active still change paint', async () => {
+test('pressed side presets lock button state tokens so hover and active do not alter selected paint', async () => {
   const calendar = await compiledStyles('shared/calendar.scss');
   const pressed = calendar(
     '.leaf-picker-presets.leaf-picker-presets--side > .leaf-button[aria-pressed=true]',
@@ -231,12 +237,8 @@ test('pressed side presets override button state tokens so hover and active stil
   assert.equal(pressed.color, undefined);
   assert.equal(pressed['--leaf-button-rest-background'], 'var(--leaf-calendar-range-background)');
   assert.equal(pressed['--leaf-button-rest-color'], 'var(--leaf-color-primary)');
-  assert.equal(
-    pressed['--leaf-button-hover-background'],
-    'var(--leaf-calendar-selected-hover-background)',
-  );
-  assert.equal(
-    pressed['--leaf-button-active-background'],
-    'var(--leaf-calendar-selected-hover-background)',
-  );
+  assert.equal(pressed['--leaf-button-hover-background'], 'var(--leaf-calendar-range-background)');
+  assert.equal(pressed['--leaf-button-active-background'], 'var(--leaf-calendar-range-background)');
+  assert.equal(pressed['--leaf-button-hover-color'], 'var(--leaf-color-primary)');
+  assert.equal(pressed['--leaf-button-active-color'], 'var(--leaf-color-primary)');
 });

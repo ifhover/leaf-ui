@@ -124,15 +124,14 @@
       font-size: 12px;
       cursor: pointer;
       transition: var(--leaf-action-transition);
-      &:hover:not(:disabled) {
+      &:hover:not(:disabled):not(&--selected):not(&--preview) {
         background: #{mixins.choice-option-background()};
       }
       &:active:not(:disabled):not(&--selected):not(&--preview) {
         background: var(--leaf-color-option-hover);
       }
       &:focus-visible {
-        @include mixins.focus-ring;
-        outline-offset: -1px;
+        @include mixins.focus-ring(-1px);
       }
       &:disabled {
         color: var(--leaf-color-text-muted);

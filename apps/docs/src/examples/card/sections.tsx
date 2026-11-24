@@ -1,4 +1,4 @@
-import { Button, Card, Space, Tag } from '@ifhover/leaf-ui';
+import { Button, Card, Flex, Space, Tag } from '@ifhover/leaf-ui';
 export function CardSections({ english = false }: { english?: boolean }) {
   const t = (zh: string, en: string) => (english ? en : zh);
   return (
@@ -16,15 +16,15 @@ export function CardSections({ english = false }: { english?: boolean }) {
       <Card
         title={t('内容分区', 'Content sections')}
         footer={
-          <>
+          <Flex justify="end" gap="sm" wrap>
             <Button variant="outline">{t('取消', 'Cancel')}</Button>
             <Button variant="solid">{t('确认', 'Confirm')}</Button>
-          </>
+          </Flex>
         }
       >
         {t(
-          '标题、正文和底部操作通过统一留白与分割线自然衔接。',
-          'The heading, body and footer actions follow the shared dialog spacing and divider.',
+          '标题、正文和底部操作通过留白自然衔接。',
+          'The heading, body and footer actions are grouped with spacing.',
         )}
       </Card>
     </Space>

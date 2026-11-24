@@ -1,4 +1,4 @@
-import { Button, Card, Space, Tag } from '@ifhover/leaf-ui';
+import { Button, Card, Flex, Space, Tag } from '@ifhover/leaf-ui';
 export function CardSections() {
   return (
     <Space direction="vertical" align="stretch" size="lg">
@@ -12,13 +12,13 @@ export function CardSections() {
       <Card
         title="Content sections"
         footer={
-          <>
+          <Flex justify="end" gap="sm" wrap>
             <Button variant="outline">Cancel</Button>
             <Button variant="solid">Confirm</Button>
-          </>
+          </Flex>
         }
       >
-        The heading, body and footer actions follow the shared dialog spacing and divider.
+        The heading, body and footer actions are grouped with spacing.
       </Card>
     </Space>
   );

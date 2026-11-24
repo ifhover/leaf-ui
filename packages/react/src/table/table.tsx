@@ -20,12 +20,11 @@ import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { useMergedRef } from '../shared/field';
 import { inertProps } from '../shared/inert';
-import type { ControlSize } from '../shared/types';
 import { useText } from '../shared/use-text';
 import type { DataTableCellProps, DataTableRowProps } from '../tabletanstack/defaults';
 
 export interface TableProps extends TableHTMLAttributes<HTMLTableElement> {
-  size?: ControlSize;
+  size?: 'sm' | 'md';
   bordered?: boolean;
   striped?: boolean;
   maxHeight?: CSSProperties['maxHeight'];
@@ -87,6 +86,7 @@ const TableRootControl = forwardRef<HTMLTableElement, TableRootProps>(function T
   ref,
 ) {
   const t = useText();
+  const normalizedSize = size === 'sm' ? 'sm' : 'md';
   const element = useRef<HTMLTableElement>(null);
   const tableRef = useMergedRef(element, ref);
   const viewport = useRef<HTMLDivElement>(null);
@@ -192,7 +192,7 @@ const TableRootControl = forwardRef<HTMLTableElement, TableRootProps>(function T
     <div
       className={classes(
         'leaf-table',
-        `leaf-table--${size}`,
+        `leaf-table--${normalizedSize}`,
         bordered && 'leaf-table--bordered',
         striped && 'leaf-table--striped',
         className,
@@ -236,7 +236,7 @@ const TableRootControl = forwardRef<HTMLTableElement, TableRootProps>(function T
       </Scrollbar>
       {loading && (
         <div className="leaf-table__overlay">
-          <Loading size={size} tip={t('common.loading')} />
+          <Loading size={normalizedSize} tip={t('common.loading')} />
         </div>
       )}
     </div>

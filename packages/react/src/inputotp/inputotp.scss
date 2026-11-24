@@ -80,7 +80,7 @@
       );
     }
     &[data-selected] {
-      background: var(--leaf-color-surface-muted);
+      background: var(--leaf-color-primary-soft);
       border-color: var(--leaf-otp-focus-color);
     }
     &[data-active] {
@@ -114,10 +114,10 @@
     }
   }
   .leaf-input-otp:not([data-disabled]):not([data-status]):hover
-    .leaf-input-otp__slot:not([data-active]) {
+    .leaf-input-otp__slot:not([data-active]):not([data-selected]) {
     border-color: var(
       --leaf-component-input-otp-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border-hover))
+      var(--leaf-frame-border-color, var(--leaf-color-primary-hover))
     );
   }
   .leaf-input-otp[data-status='error'] .leaf-input-otp__slot {

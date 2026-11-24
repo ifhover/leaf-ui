@@ -160,7 +160,7 @@
       font-weight: var(--leaf-font-weight);
       cursor: pointer;
       @include mixins.action-transition;
-      &:hover {
+      &:hover:not([aria-pressed='true']) {
         color: var(--leaf-color-text);
       }
       &:active:not(:disabled):not([aria-pressed='true']) {
@@ -173,8 +173,7 @@
         box-shadow: var(--leaf-shadow-xs);
       }
       &:focus-visible {
-        @include mixins.focus-ring;
-        outline-offset: 0;
+        @include mixins.focus-ring(0);
       }
     }
 
@@ -360,10 +359,10 @@
         padding: 4px;
         border-radius: var(--leaf-radius);
         font-size: var(--leaf-font-size-sm);
-        &:hover:not(:disabled) {
+        &:hover:not(:disabled):not([aria-pressed='true']) {
           background: var(--leaf-calendar-view-hover);
         }
-        &:active:not(:disabled) {
+        &:active:not(:disabled):not([aria-pressed='true']) {
           background: var(--leaf-calendar-view-pressed);
         }
       }
@@ -408,12 +407,14 @@
         gap: 4px;
         padding: 6px 6px 8px;
         font-size: var(--leaf-font-size-sm);
-        &:hover:not(:disabled) {
-          background: var(--leaf-calendar-view-hover);
-        }
-        &:active:not(:disabled) {
-          background: var(--leaf-calendar-view-pressed);
-        }
+      }
+      .leaf-calendar-view__cell:not([aria-selected='true'])
+        .leaf-calendar-view__day:hover:not(:disabled) {
+        background: var(--leaf-calendar-view-hover);
+      }
+      .leaf-calendar-view__cell:not([aria-selected='true'])
+        .leaf-calendar-view__day:active:not(:disabled) {
+        background: var(--leaf-calendar-view-pressed);
       }
       .leaf-calendar-view__number {
         align-self: flex-end;
@@ -450,10 +451,10 @@
         padding: 10px 10px 12px;
         border-radius: var(--leaf-radius);
         text-align: start;
-        &:hover:not(:disabled) {
+        &:hover:not(:disabled):not([aria-pressed='true']) {
           background: var(--leaf-calendar-view-hover);
         }
-        &:active:not(:disabled) {
+        &:active:not(:disabled):not([aria-pressed='true']) {
           background: var(--leaf-calendar-view-pressed);
         }
         &[aria-pressed='true']:not(:disabled) {

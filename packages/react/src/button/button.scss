@@ -16,14 +16,14 @@
     --leaf-button-active: var(--leaf-color-primary-active, var(--leaf-button-color));
     --leaf-button-active-color: var(--leaf-button-rest-color);
     --leaf-button-active-background: var(--leaf-button-rest-background);
-    --leaf-button-active-border: var(--leaf-button-rest-border);
+    --leaf-button-active-border: var(--leaf-button-base-border);
     --leaf-button-hover-border: var(--leaf-button-base-border);
     --leaf-button-hover-color: var(--leaf-button-base-color);
     --leaf-button-active-shadow: var(--leaf-button-base-shadow);
     --leaf-button-icon-size: 16px;
     --leaf-button-gap: 8px;
-    --leaf-button-padding-x: 12px;
-    --leaf-button-icon-padding-x: 8px;
+    --leaf-button-padding-x: 15px;
+    --leaf-button-icon-padding-x: 11px;
     --leaf-button-padding-inline-start: var(--leaf-button-padding-x);
     --leaf-button-padding-inline-end: var(--leaf-button-padding-x);
     box-sizing: border-box;
@@ -143,22 +143,38 @@
     &:is(&--solid) {
       --leaf-button-rest-color: var(--leaf-button-on-color);
       --leaf-button-rest-background: var(--leaf-button-color);
+      --leaf-button-rest-shadow: var(--leaf-shadow-control);
 
+      --leaf-button-hover-background: var(
+        --leaf-component-button-background,
+        var(--leaf-color-primary-hover)
+      );
       --leaf-button-active-background: var(--leaf-button-active);
     }
     &:is(&--outline) {
       --leaf-button-rest-color: var(--leaf-color-text);
       --leaf-button-rest-background: var(--leaf-color-surface);
       --leaf-button-rest-border: var(--leaf-color-border);
+      --leaf-button-rest-shadow: var(--leaf-shadow-control);
 
-      // 默认纯边框按钮：悬停展示中性浅底，悬停与按下均不改变边框，按下仅保留 1px 轻压位移而不做额外变色。
-      --leaf-button-hover-background: var(--leaf-color-surface-muted);
-      --leaf-button-active-color: var(--leaf-button-base-color);
+      // 参考 Ant Design 默认按钮：静止带轻底阴影，悬停边框与文字转为主色悬停态，按下后边框与文字变深。
+      --leaf-button-hover-color: var(
+        --leaf-component-button-color,
+        var(--leaf-color-primary-hover)
+      );
+      --leaf-button-hover-border: var(
+        --leaf-component-button-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-primary-hover))
+      );
+      --leaf-button-active-color: var(
+        --leaf-component-button-color,
+        var(--leaf-color-primary-link-active)
+      );
       --leaf-button-active-background: var(--leaf-button-base-background);
-      --leaf-button-active-border: var(--leaf-button-base-border);
-      &:hover:not(:disabled):not([data-loading]):where(:not(:focus-visible)) {
-        --leaf-button-active-background: var(--leaf-button-hover-background);
-      }
+      --leaf-button-active-border: var(
+        --leaf-component-button-border-color,
+        var(--leaf-frame-border-color, var(--leaf-color-primary-link-active))
+      );
     }
     &:is(&--link) {
       --leaf-button-rest-color: var(--leaf-button-ink);
@@ -177,20 +193,16 @@
       --leaf-button-active-background: var(--leaf-text-action-active-background);
     }
     &:is(&--danger) {
-      // 危险按钮仅保留单一外观，文字直接使用危险基色，悬停与按下收小浅红背景的变化跨度。
+      // 参考 Ant Design filled danger：浅红底配危险红字，悬停与按下逐级加深浅红底。
       --leaf-button-rest-color: var(--leaf-color-danger);
       --leaf-button-rest-background: var(--leaf-danger-soft-background);
 
       --leaf-button-hover-background: color-mix(
         in srgb,
-        var(--leaf-danger-soft-active-background) 30%,
-        var(--leaf-danger-soft-background)
-      );
-      --leaf-button-active-background: color-mix(
-        in srgb,
         var(--leaf-danger-soft-active-background) 50%,
         var(--leaf-danger-soft-background)
       );
+      --leaf-button-active-background: var(--leaf-danger-soft-active-background);
     }
     &:is(&--solid, &--outline, &--text, &--link, &--danger) {
       --leaf-button-base-color: var(--leaf-component-button-color, var(--leaf-button-rest-color));
@@ -236,12 +248,9 @@
           active,
           var(--leaf-button-active-color),
           var(--leaf-button-active-background),
-          var(--leaf-component-button-border-color, var(--leaf-button-frame-border)),
+          var(--leaf-button-active-border),
           var(--leaf-button-active-shadow)
         );
-        &:not(.leaf-button--link) {
-          translate: 0 1px;
-        }
       }
       &:disabled {
         @include mixins.state-paint(
@@ -324,11 +333,11 @@
         --leaf-component-button-border-color,
         var(--leaf-frame-border-color, var(--leaf-color-border))
       );
-      // 紧贴分组内侧共享边与外边框同色，外围边框各自响应交互状态。
-      &:not(:last-child) {
+      // 紧贴分组静止时共享边与外边框同色，悬停或按下时恢复各自边框响应。
+      &:not(:last-child):not(:hover):not(:active) {
         border-inline-end-color: var(--leaf-button-group-divider-color);
       }
-      &:not(:first-child) {
+      &:not(:first-child):not(:hover):not(:active) {
         border-inline-start-color: var(--leaf-button-group-divider-color);
       }
     }
@@ -387,8 +396,8 @@
     --leaf-current-radius: var(--leaf-control-radius-sm);
     --leaf-button-icon-size: 14px;
     --leaf-button-gap: 6px;
-    --leaf-button-padding-x: 10px;
-    --leaf-button-icon-padding-x: 6px;
+    --leaf-button-padding-x: 11px;
+    --leaf-button-icon-padding-x: 7px;
   }
   .leaf-button--lg,
   .leaf-button--icon-lg {
@@ -400,8 +409,8 @@
     --leaf-current-radius: var(--leaf-control-radius-lg);
     --leaf-button-icon-size: 18px;
     --leaf-button-gap: 8px;
-    --leaf-button-padding-x: 16px;
-    --leaf-button-icon-padding-x: 12px;
+    --leaf-button-padding-x: 19px;
+    --leaf-button-icon-padding-x: 15px;
   }
   .leaf-button--icon,
   .leaf-button--icon-sm,

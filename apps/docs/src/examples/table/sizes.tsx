@@ -19,7 +19,6 @@ const columns = [
 const sizeOptions = [
   { key: 'sm', label: '小 (sm)' },
   { key: 'md', label: '中 (md)' },
-  { key: 'lg', label: '大 (lg)' },
 ] as const;
 
 export function TableSizes() {

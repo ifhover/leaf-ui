@@ -427,14 +427,9 @@
           "reason": "Solid split-action separator follows its own on-fill foreground; not an ordinary border or standalone action color."
         },
         {
-          "expression": "color-mix(in srgb,var(--leaf-danger-soft-active-background)30%,var(--leaf-danger-soft-background))",
-          "count": 1,
-          "reason": "Restrained danger button hover blends 30% of danger-soft-active-background into danger-soft-background so base --leaf-color-danger text stays clear instead of jumping to 3x concentration."
-        },
-        {
           "expression": "color-mix(in srgb,var(--leaf-danger-soft-active-background)50%,var(--leaf-danger-soft-background))",
           "count": 1,
-          "reason": "Restrained danger button press blends 50% of danger-soft-active-background into danger-soft-background alongside press scaling."
+          "reason": "Filled danger button hover blends 50% of danger-soft-active-background into danger-soft-background before stepping to danger-soft-active-background on press."
         }
       ]
     },
@@ -548,6 +543,11 @@
     "styles/tokens.scss": {
       "hardcodedColors": [
         {
+          "expression": "rgb(0 0 0/0.02)",
+          "count": 1,
+          "reason": "Shared control resting bottom shadow (Ant Design button elevation); not a semantic fill or text color. Exact expressions and counts remain guarded."
+        },
+        {
           "expression": "rgb(0 0 0/0.04)",
           "count": 2,
           "reason": "Shared optical shadow opacity; not a semantic fill or text color. Exact expressions and counts remain guarded."
@@ -653,9 +653,9 @@
         "reason": "Status-label close and checkable feedback share a foreground-relative tint."
       },
       {
-        "expression": "color-mix(in srgb,#{$color} 12%,transparent)",
+        "expression": "color-mix(in srgb,#{$color} 10%,transparent)",
         "count": 1,
-        "reason": "Field family and InputOTP slots share a restrained 12% translucent 3px outer focus ring following the active focus or validation border color."
+        "reason": "Field family and InputOTP slots share an Ant Design-aligned 10% translucent 2px outer focus ring following the active focus or validation border color."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-field-color)30%,var(--leaf-color-border))",
@@ -663,24 +663,34 @@
         "reason": "Shared field internal separator follows semantic validation color."
       },
       {
-        "expression": "color-mix(in srgb,var(--leaf-color-option-hover)25%,var(--leaf-table-surface))",
+        "expression": "color-mix(in srgb,var(--leaf-color-divider)#{$divider-weight},#{$surface})",
         "count": 1,
-        "reason": "Table row hover and zebra stripes share a light 25% option-hover neutral step over the local table surface."
+        "reason": "Table and Card softened frame colors blend the shared divider with their local surface."
       },
       {
-        "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)35%,var(--leaf-table-surface))",
+        "expression": "color-mix(in srgb,var(--leaf-color-primary)6%,var(--leaf-table-surface))",
         "count": 1,
-        "reason": "Table sorted body cells blend a subtle neutral muted surface step without accent leakage."
+        "reason": "Table selected rows blend a restrained 6% primary tint into the local table surface."
       },
       {
-        "expression": "color-mix(in srgb,var(--leaf-color-surface-muted)55%,var(--leaf-table-surface))",
+        "expression": "color-mix(in srgb,var(--leaf-color-primary)10%,var(--leaf-table-surface))",
         "count": 1,
-        "reason": "Table sorted header cells use a restrained neutral muted step."
+        "reason": "Table selected-row hover steps smoothly from 6% to 10% primary tint over the local table surface."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-table-surface)80%,transparent)",
         "count": 1,
         "reason": "Table loading scrim follows the actual table surface with a compatibility override."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-table-text)2%,var(--leaf-table-surface))",
+        "count": 1,
+        "reason": "Table stripes follow component-local text and surface."
+      },
+      {
+        "expression": "color-mix(in srgb,var(--leaf-table-text)4%,var(--leaf-table-surface))",
+        "count": 1,
+        "reason": "Table row hover follows component-local text and surface with a restrained 4% neutral step."
       }
     ],
     "derivedTokenUsages": [

@@ -75,8 +75,7 @@
         cursor: not-allowed;
       }
       &:focus-visible {
-        @include mixins.focus-ring;
-        outline-offset: -3px;
+        @include mixins.focus-ring(-3px);
       }
     }
     &__extra {

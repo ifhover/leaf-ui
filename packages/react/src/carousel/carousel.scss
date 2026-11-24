@@ -110,12 +110,11 @@
           position: absolute;
           inset: -8px -4px;
         }
-        &:hover {
+        &:hover:not([aria-current]) {
           opacity: 0.7;
         }
         &:focus-visible {
-          @include mixins.focus-ring;
-          outline-offset: 3px;
+          @include mixins.focus-ring(3px);
         }
         &[aria-current] {
           width: 20px;

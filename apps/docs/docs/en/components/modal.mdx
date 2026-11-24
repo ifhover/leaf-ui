@@ -36,7 +36,7 @@ Associate the default confirm button with the form using `type="submit"` and a f
 
 ### Icon and description
 
-Use `icon` and `description` to add an icon and supporting description to the modal. The footer action bar shows a top divider by default (`divided={false}` hides it); use `padding` to customize outer or section padding.
+Use `icon` and `description` to add an icon and supporting description to the modal. Subtle dividers appear below the header (outside `size="mini"`) and above the footer by default (`divided={false}` hides them); use `padding` to customize outer or section padding.
 
 <ComponentExample exampleId="description" preview={<ModalDescription />} fileName="description.tsx" width="fit-content">
 
@@ -129,7 +129,7 @@ Provide `aria-label` when omitting `title`.
 | `icon` | `ReactNode` | — | Decorative header icon (beside the heading in md; centered above it in mini). |
 | `size` | `'md' \| 'mini'` | `'md'` | Modal size; `'mini'` uses a compact centered confirmation layout with equal-width footer buttons. |
 | `danger` | `boolean` | `false` | Highlight the confirm button and header icon tray with danger styling. |
-| `divided` | `boolean` | `true` | Show a subtle divider above the footer action bar. |
+| `divided` | `boolean` | `true` | Separate the heading, content and footer with subtle borders. |
 | `padding` | `number \| string \| 'none' \| { header?: number \| string \| 'none'; body?: number \| string \| 'none'; footer?: number \| string \| 'none' }` | — | Override modal or section (`header`, `body`, `footer`) padding; numbers use pixels and `'none'` sets 0 (Confirm excludes it). |
 | `width` | `number \| string` | 480 (340 for mini) | Modal width in pixels for numbers; defaults to 340 when size is mini. |
 | `closable` | `boolean` | `true` | Show the close button. |

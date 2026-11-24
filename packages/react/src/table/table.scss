@@ -5,17 +5,23 @@
 @layer leaf-ui {
   .leaf-table {
     @include table-family(table);
-    --leaf-table-divider: var(
-      --leaf-component-table-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-divider))
-    );
-    --leaf-table-padding-block: 10px;
-    --leaf-table-padding-inline: 14px;
+    @include softened-frame-color(table, var(--leaf-table-surface));
+    --leaf-table-header-split: var(--leaf-table-border-color);
+    --leaf-table-divider: var(--leaf-table-border-color);
+    --leaf-table-padding-block: 16px;
+    --leaf-table-padding-inline: 16px;
     --leaf-table-heading-gap: var(--leaf-table-padding-block);
-    --leaf-table-inset: 0px;
+    --leaf-table-edge-start: var(
+      --leaf-component-table-padding-left,
+      var(--leaf-table-padding-inline)
+    );
+    --leaf-table-edge-end: var(
+      --leaf-component-table-padding-right,
+      var(--leaf-table-padding-inline)
+    );
     --leaf-table-border-color: var(
       --leaf-component-table-border-color,
-      var(--leaf-frame-border-color, var(--leaf-color-border))
+      var(--leaf-frame-border-color, var(--leaf-table-frame-color))
     );
     --leaf-table-border-width: var(
       --leaf-component-table-border-width,
@@ -51,11 +57,6 @@
     }
 
     &--md {
-      --leaf-table-padding-block: 10px;
-      --leaf-table-padding-inline: 14px;
-    }
-
-    &--lg {
       --leaf-table-padding-block: 16px;
       --leaf-table-padding-inline: 16px;
     }
@@ -75,8 +76,7 @@
         display: none;
       }
       &:focus-visible {
-        @include focus-ring;
-        outline-offset: -3px;
+        @include focus-ring(-3px);
       }
     }
 
@@ -132,47 +132,56 @@
     }
 
     &--bordered {
-      border: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
-      border-radius: var(--leaf-table-radius);
+      border-block-start: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
+      border-inline-start: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
 
-      .leaf-table__state-row > .leaf-table__cell,
-      .leaf-table__footer > .leaf-table__row:last-child > .leaf-table__cell,
-      .leaf-table__table:not(:has(> .leaf-table__footer))
-        .leaf-table__row[data-last-visible]
-        > .leaf-table__cell,
-      .leaf-table__table:not(:has([data-row-id]))
-        > :last-child
-        > .leaf-table__row:last-child
-        > .leaf-table__cell {
-        border-block-end: 0;
+      .leaf-table__cell {
+        border-inline-end: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
+      }
+
+      &.leaf-table--striped .leaf-table__body > .leaf-table__row > .leaf-table__cell,
+      &.leaf-table--striped .leaf-table__footer > .leaf-table__row > .leaf-table__cell,
+      .leaf-table__header > .leaf-table__row:not(:last-child) > .leaf-table__column-header {
+        border-block-end: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
+      }
+
+      .leaf-table__column-header::after {
+        display: none;
       }
     }
 
-    &__row:not([aria-hidden='true'])
+    &__row:not([aria-hidden='true']):not([data-spanned-start])
       > &__cell:first-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
-      padding-inline-start: var(
-        --leaf-component-table-padding-left,
-        calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
-      );
+      padding-inline-start: var(--leaf-table-edge-start);
     }
 
     &__row:not([aria-hidden='true'])
       > &__cell:last-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
-      padding-inline-end: var(
-        --leaf-component-table-padding-right,
-        calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
-      );
+      padding-inline-end: var(--leaf-table-edge-end);
     }
 
     &__column-header {
       position: relative;
       padding-block: var(--leaf-table-heading-gap);
       font-size: inherit;
-      font-weight: var(--leaf-font-weight, 500);
+      font-weight: 600;
       line-height: inherit;
       background: var(--leaf-table-header-background);
       border-block-end: var(--leaf-table-border-width) solid var(--leaf-table-divider);
       white-space: nowrap;
+
+      // Ant Design places a short separator at the trailing edge of leaf headers.
+      &:not(:last-child):not(.leaf-data-table__utility):not([colspan])::after {
+        position: absolute;
+        inset-block-start: 50%;
+        inset-inline-end: 0;
+        width: 1px;
+        height: 1.6em;
+        background: var(--leaf-table-header-split);
+        transform: translateY(-50%);
+        pointer-events: none;
+        content: '';
+      }
 
       &[data-leaf-header-group] {
         text-align: center;
@@ -185,15 +194,16 @@
       &[data-sorted],
       &[data-sortable]:hover {
         background: var(--leaf-table-header-sort-background);
+        &::after {
+          background: transparent;
+        }
       }
     }
 
-    &__header > &__row:last-child > &__column-header,
-    &__header > &__row:not(:last-child) > &__column-header:not([data-leaf-header-group])[rowspan] {
-      border-block-end: 1px solid var(--leaf-table-divider);
-    }
-
-    &__header > &__row:not(:last-child) > &__column-header[data-leaf-header-group] {
+    &:not(.leaf-table--bordered)
+      &__header
+      > &__row:not(:last-child)
+      > &__column-header[data-leaf-header-group] {
       border-block-end: 0;
     }
 
@@ -210,12 +220,16 @@
       border-block-end: 0;
     }
 
-    &__body > &__row:not(.leaf-table__state-row):not([data-selected]):hover {
+    &__body > &__row:not(.leaf-table__state-row):hover {
       --leaf-table-row-background: var(--leaf-table-hover-background);
     }
 
     &__body > &__row[data-selected] {
       --leaf-table-row-background: var(--leaf-table-selected-background);
+    }
+
+    &__body > &__row[data-selected]:hover {
+      --leaf-table-row-background: var(--leaf-table-selected-hover-background);
     }
 
     &__state-cell {
@@ -258,23 +272,21 @@
     }
   }
 
-  [dir='rtl']
-    .leaf-table__row:not([aria-hidden='true'])
-    > .leaf-table__cell:first-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
-    padding-inline-start: var(
+  [dir='rtl'] .leaf-table,
+  .leaf-table[dir='rtl'] {
+    --leaf-table-edge-start: var(
       --leaf-component-table-padding-right,
-      calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
+      var(--leaf-table-padding-inline)
     );
-  }
-  [dir='rtl']
-    .leaf-table__row:not([aria-hidden='true'])
-    > .leaf-table__cell:last-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
-    padding-inline-end: var(
+    --leaf-table-edge-end: var(
       --leaf-component-table-padding-left,
-      calc(var(--leaf-table-padding-inline) + var(--leaf-table-inset))
+      var(--leaf-table-padding-inline)
     );
   }
   @media (forced-colors: active) {
+    .leaf-table__column-header::after {
+      background: CanvasText;
+    }
     .leaf-table__row[data-selected] > td {
       outline: 1px solid Highlight;
       outline-offset: -2px;

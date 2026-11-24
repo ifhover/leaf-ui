@@ -41,36 +41,15 @@
       gap: 0;
     }
     &__column .leaf-floating__option {
-      @include mixins.choice-option;
+      @include mixins.choice-option(false, true);
       @include mixins.choice-option-size(var(--leaf-density-option-height));
-      justify-content: space-between;
-      gap: 4px;
-      // The scrollbar owns its gutter; row padding only separates the value and check.
-      padding-inline: 6px 2px;
+      justify-content: center;
+      padding-inline: 6px;
       font-variant-numeric: tabular-nums;
       white-space: nowrap;
     }
     &__column .leaf-floating__option + .leaf-floating__option {
       margin-top: 0;
-    }
-    // 与 .leaf-select__check 保持一致的已保存勾选绘制动效。
-    &__check {
-      flex: 0 0 auto;
-      opacity: 0;
-      transition: var(--leaf-action-transition);
-      path,
-      polyline {
-        stroke-dasharray: 24;
-        stroke-dashoffset: 24;
-        transition: stroke-dashoffset var(--leaf-motion-duration) var(--leaf-motion-easing);
-      }
-    }
-    [aria-selected='true'] > &__check {
-      opacity: 1;
-      path,
-      polyline {
-        stroke-dashoffset: 0;
-      }
     }
   }
 

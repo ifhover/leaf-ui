@@ -61,8 +61,8 @@ test('floating arrows swap dimensions on left/right sides and stay visible outsi
 test('button styles shrink padding only on the icon side with rtl mirroring and override priority', async () => {
   const styles = await compiledStyles('button/button.scss');
   const base = styles('.leaf-button');
-  assert.equal(base['--leaf-button-padding-x'], '12px');
-  assert.equal(base['--leaf-button-icon-padding-x'], '8px');
+  assert.equal(base['--leaf-button-padding-x'], '15px');
+  assert.equal(base['--leaf-button-icon-padding-x'], '11px');
   assert.equal(base['--leaf-button-padding-inline-start'], 'var(--leaf-button-padding-x)');
   assert.equal(base['--leaf-button-padding-inline-end'], 'var(--leaf-button-padding-x)');
   assert.equal(
@@ -70,11 +70,11 @@ test('button styles shrink padding only on the icon side with rtl mirroring and 
     'var(--leaf-component-button-padding,0 var(--leaf-button-padding-inline-end)0 var(--leaf-button-padding-inline-start))',
   );
   const small = styles('.leaf-button--sm');
-  assert.equal(small['--leaf-button-padding-x'], '10px');
-  assert.equal(small['--leaf-button-icon-padding-x'], '6px');
+  assert.equal(small['--leaf-button-padding-x'], '11px');
+  assert.equal(small['--leaf-button-icon-padding-x'], '7px');
   const large = styles('.leaf-button--lg');
-  assert.equal(large['--leaf-button-padding-x'], '16px');
-  assert.equal(large['--leaf-button-icon-padding-x'], '12px');
+  assert.equal(large['--leaf-button-padding-x'], '19px');
+  assert.equal(large['--leaf-button-icon-padding-x'], '15px');
   assert.equal(
     styles('.leaf-button:where(:dir(rtl))').padding,
     'var(--leaf-component-button-padding,0 var(--leaf-button-padding-inline-start)0 var(--leaf-button-padding-inline-end))',
@@ -124,15 +124,15 @@ test('attached button group carries split-button dividers across variants withou
     'var(--leaf-component-button-border-color,var(--leaf-frame-border-color,var(--leaf-color-border)))',
   );
   assert.equal(
-    styles('.leaf-button-group--attached > .leaf-button--outline:not(:last-child)')[
-      'border-inline-end-color'
-    ],
+    styles(
+      '.leaf-button-group--attached > .leaf-button--outline:not(:last-child):not(:hover):not(:active)',
+    )['border-inline-end-color'],
     'var(--leaf-button-group-divider-color)',
   );
   assert.equal(
-    styles('.leaf-button-group--attached > .leaf-button--outline:not(:first-child)')[
-      'border-inline-start-color'
-    ],
+    styles(
+      '.leaf-button-group--attached > .leaf-button--outline:not(:first-child):not(:hover):not(:active)',
+    )['border-inline-start-color'],
     'var(--leaf-button-group-divider-color)',
   );
 
@@ -501,7 +501,7 @@ test('pagination preserves button icon padding shrink and keeps solid active pag
   assert.equal(active['box-shadow'], 'var(--leaf-button-base-shadow)');
   assert.equal(active.opacity, '1');
   assert.equal(active.cursor, 'default');
-  assert.equal(active.translate, 'none');
+  assert.equal(active.translate, undefined);
 
   const disabledActive = styles(
     '.leaf-pagination[data-disabled] > .leaf-pagination__entry > .leaf-button[aria-current=page]:disabled',

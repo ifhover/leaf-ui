@@ -202,6 +202,12 @@ describe('DataTable TanStack adapter', () => {
       'toolbar',
       'bleed',
       'renderRowHeader',
+      'variant',
+      'title',
+      'description',
+      'extra',
+      'tabs',
+      'topContent',
     ] as const) {
       expectTypeOf<DataTableProps<Person>>().not.toHaveProperty(property);
     }
@@ -221,6 +227,12 @@ describe('DataTable TanStack adapter', () => {
       toolbar: 'Obsolete toolbar',
       bleed: true,
       renderRowHeader: () => <p>Obsolete header</p>,
+      variant: 'card',
+      title: 'Obsolete title',
+      description: 'Obsolete description',
+      extra: 'Obsolete extra',
+      tabs: { activeKey: 'all', items: [{ key: 'all', label: 'Obsolete tab' }] },
+      topContent: 'Obsolete top content',
     };
     const view = render(<DataTable {...legacy} data={data} columns={columns} rowKey="id" />);
     const assertAutomaticContent = () => {
@@ -229,6 +241,12 @@ describe('DataTable TanStack adapter', () => {
       expect(screen.queryByText('Obsolete composition')).not.toBeInTheDocument();
       expect(screen.queryByText('Obsolete toolbar')).not.toBeInTheDocument();
       expect(screen.queryByText('Obsolete header')).not.toBeInTheDocument();
+      expect(screen.queryByText('Obsolete title')).not.toBeInTheDocument();
+      expect(screen.queryByText('Obsolete description')).not.toBeInTheDocument();
+      expect(screen.queryByText('Obsolete extra')).not.toBeInTheDocument();
+      expect(screen.queryByText('Obsolete tab')).not.toBeInTheDocument();
+      expect(screen.queryByText('Obsolete top content')).not.toBeInTheDocument();
+      expect(root).not.toHaveClass('leaf-data-table--card');
       for (const property of Object.keys(legacy)) expect(root).not.toHaveAttribute(property);
       expect(screen.getByRole('table').closest('.leaf-table')).toHaveClass('leaf-table--bordered');
       expect(screen.getByRole('table').closest('.leaf-table')).not.toHaveClass(
@@ -615,9 +633,6 @@ describe('DataTable TanStack adapter', () => {
   });
 
   it('supports regional stripes and explicit overrides without replacing selected rows', async () => {
-    expectTypeOf<DataTableProps<Person>['variant']>().toEqualTypeOf<
-      'default' | 'card' | undefined
-    >();
     expectTypeOf<DataTableProps<Person>>().not.toHaveProperty('columnDividers');
     const { rerender } = render(
       <ConfigProvider components={{ DataTable: { striped: true } }}>
@@ -1290,14 +1305,10 @@ describe('DataTable TanStack adapter', () => {
     );
   });
 
-  it('keeps pagination at md for lg and md tables and uses sm for sm tables', () => {
-    const view = render(<DataTable data={data} columns={columns} rowKey="id" size="lg" />);
+  it('keeps pagination at md for md tables and uses sm for sm tables', () => {
+    const view = render(<DataTable data={data} columns={columns} rowKey="id" size="md" />);
     const tableRoot = () => screen.getByRole('table').closest('.leaf-table');
     const nav = () => screen.getByRole('navigation');
-    expect(tableRoot()).toHaveClass('leaf-table--lg');
-    expect(nav()).toHaveClass('leaf-pagination--md');
-    expect(nav()).not.toHaveClass('leaf-pagination--lg');
-    view.rerender(<DataTable data={data} columns={columns} rowKey="id" size="md" />);
     expect(tableRoot()).toHaveClass('leaf-table--md');
     expect(nav()).toHaveClass('leaf-pagination--md');
     view.rerender(<DataTable data={data} columns={columns} rowKey="id" size="sm" />);
@@ -1305,7 +1316,7 @@ describe('DataTable TanStack adapter', () => {
     expect(nav()).toHaveClass('leaf-pagination--sm');
   });
 
-  it('sizes the selection column to 34px regardless of bordered mode and marks the final visible row', async () => {
+  it('sizes selection and expansion columns to align with table edges', async () => {
     const clientWidth = vi.spyOn(Element.prototype, 'clientWidth', 'get').mockReturnValue(1000);
     try {
       const pinnedColumns: ColumnDef<Person>[] = [
@@ -1323,10 +1334,12 @@ describe('DataTable TanStack adapter', () => {
         />,
       );
       let cols = [...screen.getByRole('table').querySelectorAll('col')];
+      expect(cols[0]).toHaveClass('leaf-data-table__selection-col');
       expect(cols.map((col) => col.style.width)).toEqual(['34px', '826px', '140px']);
 
       view.rerender(
         <DataTable
+          size="sm"
           data={data}
           columns={pinnedColumns}
           rowKey="id"
@@ -1337,7 +1350,22 @@ describe('DataTable TanStack adapter', () => {
         />,
       );
       cols = [...screen.getByRole('table').querySelectorAll('col')];
-      expect(cols.map((col) => col.style.width)).toEqual(['34px', '826px', '140px']);
+      expect(cols.map((col) => col.style.width)).toEqual(['31px', '829px', '140px']);
+
+      view.rerender(
+        <DataTable
+          data={data}
+          columns={pinnedColumns}
+          rowKey="id"
+          pagination={false}
+          getRowLabel={(row) => row.original.name}
+          renderExpandedRow={(row) => `Detail ${row.original.name}`}
+          options={{ initialState: { columnPinning: { right: ['team'] } } }}
+        />,
+      );
+      cols = [...screen.getByRole('table').querySelectorAll('col')];
+      expect(cols[0]).toHaveClass('leaf-data-table__expansion-col');
+      expect(cols.map((col) => col.style.width)).toEqual(['36px', '824px', '140px']);
 
       view.rerender(
         <ConfigProvider locale="en-US" theme={{ components: { Table: { borderWidth: 2 } } }}>
@@ -1355,25 +1383,48 @@ describe('DataTable TanStack adapter', () => {
         </ConfigProvider>,
       );
       cols = [...screen.getByRole('table').querySelectorAll('col')];
-      expect(cols.map((col) => col.style.width)).toEqual(['34px', '48px', '778px', '140px']);
-      expect(view.container.querySelector('[data-row-id="dana"]')).toHaveAttribute(
-        'data-last-visible',
-        'true',
-      );
-      await userEvent.click(screen.getByRole('button', { name: 'Expand row: Dana' }));
-      expect(view.container.querySelector('[data-row-id="dana"]')).not.toHaveAttribute(
-        'data-last-visible',
-      );
-      expect(view.container.querySelector('[data-detail-row="dana"]')).toHaveAttribute(
-        'data-last-visible',
-        'true',
-      );
+      expect(cols.map((col) => col.style.width)).toEqual(['36px', '36px', '788px', '140px']);
     } finally {
       clientWidth.mockRestore();
     }
   });
 
-  it('tracks single-arrow sort direction state and marks ellipsis cells in fixed layout', async () => {
+  it('delegates utility column width to CSS in auto layout and marks spanned sub-header rows', () => {
+    const groupedColumns: ColumnDef<Person>[] = [
+      {
+        header: 'Identity',
+        columns: [
+          { accessorKey: 'name', header: 'Name' },
+          { accessorKey: 'team', header: 'Team' },
+        ],
+      },
+      { accessorKey: 'age', header: 'Age' },
+    ];
+    const { rerender } = render(
+      <DataTable
+        data={data}
+        columns={groupedColumns}
+        rowKey="id"
+        selection="multiple"
+        pagination={false}
+      />,
+    );
+    const table = screen.getByRole('table');
+    const cols = [...table.querySelectorAll('col')];
+    expect(cols[0]).toHaveClass('leaf-data-table__selection-col');
+    expect(cols.every((col) => !col.style.width)).toBe(true);
+    let headerRows = [...table.querySelectorAll('thead tr')];
+    expect(headerRows).toHaveLength(2);
+    expect(headerRows[0]).not.toHaveAttribute('data-spanned-start');
+    expect(headerRows[1]).toHaveAttribute('data-spanned-start', 'true');
+
+    rerender(<DataTable data={data} columns={groupedColumns} rowKey="id" pagination={false} />);
+    headerRows = [...table.querySelectorAll('thead tr')];
+    expect(headerRows[0]).not.toHaveAttribute('data-spanned-start');
+    expect(headerRows[1]).not.toHaveAttribute('data-spanned-start');
+  });
+
+  it('tracks dual-triangle sort active states and marks ellipsis cells in fixed layout', async () => {
     const { container } = render(
       <ConfigProvider locale="en-US">
         <DataTable
@@ -1392,194 +1443,20 @@ describe('DataTable TanStack adapter', () => {
     expect(screen.getByText('Alice').closest('td')).toHaveAttribute('data-ellipsis', 'true');
     expect(screen.getByText('32').closest('td')).not.toHaveAttribute('data-ellipsis');
     const ageButton = screen.getByRole('button', { name: 'Age: Sort descending' });
-    const arrow = () => ageButton.querySelector('.leaf-data-table__sort-arrow');
-    expect(container.querySelectorAll('.leaf-data-table__sort-arrow')).toHaveLength(2);
-    expect(arrow()).not.toHaveAttribute('data-direction');
+    const up = () => ageButton.querySelector('.leaf-data-table__sort-up');
+    const down = () => ageButton.querySelector('.leaf-data-table__sort-down');
+    expect(container.querySelectorAll('.leaf-data-table__sort-up')).toHaveLength(2);
+    expect(container.querySelectorAll('.leaf-data-table__sort-down')).toHaveLength(2);
+    expect(up()).not.toHaveAttribute('data-active');
+    expect(down()).not.toHaveAttribute('data-active');
     await userEvent.click(ageButton);
-    expect(arrow()).toHaveAttribute('data-direction', 'desc');
+    expect(up()).not.toHaveAttribute('data-active');
+    expect(down()).toHaveAttribute('data-active', 'true');
     await userEvent.click(screen.getByRole('button', { name: 'Age: Sort ascending' }));
-    expect(arrow()).toHaveAttribute('data-direction', 'asc');
+    expect(up()).toHaveAttribute('data-active', 'true');
+    expect(down()).not.toHaveAttribute('data-active');
     await userEvent.click(screen.getByRole('button', { name: 'Age: Clear sorting' }));
-    expect(arrow()).not.toHaveAttribute('data-direction');
-  });
-
-  it('wraps the table and pagination inside the Card body without using Card footer', () => {
-    const { container, rerender } = render(
-      <ConfigProvider
-        components={{ Card: { divided: false, bordered: false, shadow: false, title: 'Leak' } }}
-      >
-        <DataTable
-          variant="card"
-          title="Members"
-          description="Active team roster"
-          extra={<button type="button">Add member</button>}
-          data={data}
-          columns={columns}
-          rowKey="id"
-          options={{ initialState: { pagination: { pageSize: 2 } } }}
-        />
-      </ConfigProvider>,
-    );
-    const root = container.querySelector('.leaf-data-table');
-    const card = root?.querySelector('.leaf-data-table__card');
-    const cardBody = card?.querySelector('.leaf-card__body');
-    const table = screen.getByRole('table', { name: 'Members' });
-    const footer = root?.querySelector('.leaf-data-table__footer');
-    expect(root).toHaveClass('leaf-data-table--card');
-    expect(card).toHaveClass('leaf-card', 'leaf-card--bordered', 'leaf-card--divided');
-    expect(card).not.toHaveClass('leaf-card--shadowless');
-    expect(card).toHaveStyle({ '--leaf-card-body-padding': '0px' });
-    expect(card?.contains(table)).toBe(true);
-    expect(table.closest('.leaf-table')).not.toHaveClass('leaf-table--bordered');
-    expect(screen.getByText('Active team roster')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Add member' })).toBeInTheDocument();
-    expect(footer).not.toBeNull();
-    expect(card?.querySelector('.leaf-card__footer')).toBeNull();
-    expect(cardBody?.contains(footer as Node)).toBe(true);
-    expect(footer?.closest('.leaf-card')).toBe(card);
-
-    rerender(
-      <DataTable
-        variant="card"
-        title="Members"
-        data={data}
-        columns={columns}
-        rowKey="id"
-        pagination={false}
-      />,
-    );
-    expect(container.querySelector('.leaf-card__footer')).toBeNull();
-    expect(container.querySelector('.leaf-data-table__footer')).toBeNull();
-  });
-
-  it('renders custom title, description, and extra above default tables and wires aria-labelledby', () => {
-    const { container } = render(
-      <DataTable
-        title="Default title"
-        description="Default subtitle"
-        extra={<span>3 total</span>}
-        data={data}
-        columns={columns}
-        rowKey="id"
-        pagination={false}
-      />,
-    );
-    expect(container.querySelector('.leaf-data-table')).not.toHaveClass('leaf-data-table--card');
-    expect(container.querySelector('.leaf-data-table__header')).toBeInTheDocument();
-    expect(screen.getByRole('table', { name: 'Default title' })).toBeInTheDocument();
-    expect(screen.getByText('Default subtitle')).toBeInTheDocument();
-    expect(screen.getByText('3 total')).toBeInTheDocument();
-  });
-
-  it('supports Card-compatible tabs in both card and default variants', () => {
-    const onTabChange = vi.fn();
-    const { container, rerender } = render(
-      <DataTable
-        variant="card"
-        extra={<button type="button">Filter</button>}
-        tabs={{
-          activeKey: 'all',
-          onChange: onTabChange,
-          items: [
-            { key: 'all', label: 'All' },
-            { key: 'active', label: 'Active' },
-          ],
-        }}
-        data={data}
-        columns={columns}
-        rowKey="id"
-      />,
-    );
-
-    const card = container.querySelector('.leaf-data-table__card');
-    expect(card?.querySelector('.leaf-card__header')).toBeNull();
-    expect(card?.querySelector('.leaf-card__tabs')).toBeInTheDocument();
-    expect(card?.querySelector('.leaf-card__tab-extra')).toContainElement(
-      screen.getByRole('button', { name: 'Filter' }),
-    );
-    fireEvent.click(screen.getByRole('tab', { name: 'Active' }));
-    expect(onTabChange).toHaveBeenCalledWith('active');
-
-    rerender(
-      <DataTable
-        title="Default title"
-        extra={<button type="button">Export</button>}
-        tabs={{
-          activeKey: 'all',
-          onChange: onTabChange,
-          items: [
-            { key: 'all', label: 'All' },
-            { key: 'active', label: 'Active' },
-          ],
-        }}
-        data={data}
-        columns={columns}
-        rowKey="id"
-        pagination={false}
-      />,
-    );
-
-    expect(container.querySelector('.leaf-data-table__header')).toBeInTheDocument();
-    expect(container.querySelector('.leaf-data-table__tabs')).toBeInTheDocument();
-    expect(container.querySelector('.leaf-data-table__extra')).toContainElement(
-      screen.getByRole('button', { name: 'Export' }),
-    );
-    fireEvent.click(screen.getByRole('tab', { name: 'Active' }));
-    expect(onTabChange).toHaveBeenCalledTimes(2);
-  });
-
-  it('renders topContent above the table inside Card body and in default mode', () => {
-    const { container, rerender } = render(
-      <DataTable
-        variant="card"
-        title="Members"
-        tabs={{
-          activeKey: 'all',
-          items: [{ key: 'all', label: 'All' }],
-        }}
-        topContent={<div data-testid="filter-bar">Full width filter</div>}
-        data={data}
-        columns={columns}
-        rowKey="id"
-      />,
-    );
-
-    const cardBody = container.querySelector('.leaf-data-table__card .leaf-card__body');
-    const topContent = cardBody?.querySelector('.leaf-data-table__top-content');
-    const tableContent = cardBody?.querySelector('.leaf-data-table__content');
-    expect(topContent).toBeInTheDocument();
-    expect(topContent).toContainElement(screen.getByTestId('filter-bar'));
-    expect(cardBody?.firstElementChild).toBe(topContent);
-    expect(topContent?.nextElementSibling).toBe(tableContent);
-    expect(container.querySelector('.leaf-data-table')).not.toHaveAttribute('topcontent');
-
-    rerender(
-      <DataTable
-        topContent={<div data-testid="default-filter">Default filter</div>}
-        data={data}
-        columns={columns}
-        rowKey="id"
-        pagination={false}
-      />,
-    );
-    const defaultRoot = container.querySelector('.leaf-data-table');
-    const defaultTop = defaultRoot?.querySelector('.leaf-data-table__top-content');
-    expect(defaultTop).toBeInTheDocument();
-    expect(defaultTop).toContainElement(screen.getByTestId('default-filter'));
-    expect(defaultTop?.nextElementSibling).toBe(
-      defaultRoot?.querySelector('.leaf-data-table__content'),
-    );
-
-    rerender(
-      <DataTable
-        variant="card"
-        topContent={false}
-        data={data}
-        columns={columns}
-        rowKey="id"
-        pagination={false}
-      />,
-    );
-    expect(container.querySelector('.leaf-data-table__top-content')).toBeNull();
+    expect(up()).not.toHaveAttribute('data-active');
+    expect(down()).not.toHaveAttribute('data-active');
   });
 });

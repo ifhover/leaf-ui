@@ -38,8 +38,7 @@
         text-decoration-color: currentColor;
       }
       &:focus-visible {
-        @include mixins.focus-ring;
-        outline-offset: 3px;
+        @include mixins.focus-ring(3px);
       }
     }
     [aria-current='page'] {

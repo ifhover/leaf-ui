@@ -38,8 +38,7 @@
     }
     &__item:focus-visible > .leaf-tree__row,
     &__item:focus-visible > .leaf-tree__drag-row > .leaf-tree__row {
-      @include mixins.focus-ring;
-      outline-offset: -2px;
+      @include mixins.focus-ring(-2px);
     }
     &__row {
       @include mixins.choice-option;

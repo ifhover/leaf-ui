@@ -22,7 +22,7 @@ Default light base colors come from `colors.ts`: primary uses `#007aff`, success
 | `mutedTextColor` | `string` | Appearance | Main / secondary text |
 | `subtleTextColor` | `string` | — | Auxiliary text; shares the muted default and can be overridden separately. |
 | `surfaceColor` | `string` | Appearance | Main / subtle surfaces |
-| `mutedSurfaceColor` | `string` | Appearance | Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Segmented Tabs tracks and card-variant date panels share this role; active pills keep `surfaceColor`. Explicit component overrides take precedence. |
+| `mutedSurfaceColor` | `string` | Appearance | Supporting surface and shared canvas, exposed as `--leaf-color-surface-muted`. Layered Card canvases, Segmented Tabs tracks and card-variant date panels share this role; inner content and active pills keep `surfaceColor`. Explicit component overrides take precedence. |
 | `raisedSurfaceColor` | `string` | — | Raised and floating surface color. |
 | `borderColor` | `string` | Appearance | Global neutral border color (`--leaf-color-border`); applies only to controls and containers that already use a neutral border, leaving solid buttons and switches unaffected. |
 | `frameBorderColor` | `string` | — | Global unified frame border color (`--leaf-frame-border-color`); when set, also outlines solid/danger buttons, switches, and muted tracks. Component and semantic state overrides take precedence. |

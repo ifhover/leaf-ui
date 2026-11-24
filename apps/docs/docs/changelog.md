@@ -7,6 +7,21 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.21.0 - 2026-11-25
+
+### 改进与修复
+
+- **Button 外观、交互与内边距调整**：参考 Ant Design 为默认描边（`outline`）与实底（`solid`）按钮增加轻量底阴影（`--leaf-shadow-control`）；`outline` 悬停时边框与文字切至主题色悬停态（`--leaf-color-primary-hover`）、按下后变深（`--leaf-color-primary-link-active`），`solid` 补充悬停主色态，`danger` 调整悬停/按下浅红深度（50% / 100%），并移除按钮按下 `1px` 垂直位移；`sm / md / lg` 水平内边距扩大至 `11 / 15 / 19px`（含图标侧 `7 / 11 / 15px`）。
+- **输入与选择字段家族悬停、聚焦外环与选定态统一**：字段家族（`Input`、`Select`、`InputNumber`、`Textarea`、`DatePicker`、`Cascader`、`TreeSelect`、`AutoComplete`、`ColorPicker` 及 `InputOTP`）默认悬停边框切至 `--leaf-color-primary-hover`，聚焦/展开外环收敛为 `2px` 10% 透明混合，`ColorPicker` 移除悬停浅灰底；`Select`、`Cascader`、`TreeSelect` 与 `TimePicker` 已选项统一改为浅主题色底（`--leaf-color-primary-soft`）并移除右侧对号图标（`TimePicker` 居中排布），未选项悬停保持中性灰底与正文黑色文字。
+- **修复多组件已选态被悬停覆盖的问题**：保证 `Select`、`Cascader`、`TreeSelect`、`TimePicker`、`DateRangePicker` 侧栏预设、`Calendar`（分段按钮、月份与日期格）、`DatePicker`、`Tabs`、`Carousel` 指示点与 `InputOTP` 的已选状态在悬停或按下时不被覆盖。
+- **Modal 与 Drawer 恢复标题栏底边框**：开启 `divided` 时在标题栏下方与页脚顶部同时显示 `1px` 细分隔线并垂直居中关闭按钮（`Modal size="mini"` 与 `Confirm` 保持无标题底线的紧凑确认布局，`Drawer` 维持默认 `divided={false}` 及悬浮外边距、圆角、拖拽关闭与缩放行为）。
+- **DataTable 表格视觉回调与工具列对齐优化**：表格视觉回调至 `0.17.3` 风格（浅灰表头、`600` 字重正文色表头、非末列 `1px × 1.6em` 短竖分隔线、`70%` 柔化边框、`bordered` 全单元格网格、`4% / 2%` 悬停与斑马纹、`6% / 10%` 主题色选中行与激活排序/拖拽指示），并优化选择列与首列展开列左对齐及列宽（`sm / md` 选择列默认 `30 / 34px`），消除首列左侧多余空白。
+
+### 破坏性变更与迁移说明
+
+- **移除 `DataTable` 卡片外观、上方编排属性与 `size="lg"`**：移除 `DataTable` 的 `variant`、`title`、`description`、`extra`、`tabs` 与 `topContent` 属性及其内部对 `Card` / `Tabs` 的耦合；需要卡片包裹、标题、标签栏或上方工具栏时，改由外部 `Card`、`CardTitle`、`Tabs`、`Flex` 等组件组合。`Table` / `DataTable` 的 `size` 收敛为 `'sm' | 'md'`（移除 `'lg'`，原 `16px 16px` / `55px` 行高作为默认 `'md'`，运行时未知尺寸值回退至 `'md'`）。
+- **`Card` 回退至 `0.17.3` 视觉与变体**：移除 `CardProps.divided`、`.leaf-card--divided` 及默认浅灰底/顶部分割线页脚（页脚回归透明块级容器，多按钮操作建议配合 `Flex` 排版），重新恢复 `variant?: 'default' | 'layered'` 与 `selected?: boolean` 及 `0.17.3` 标题、描述与柔化边框几何；同时保留 `padding`、无正文标签页与 `Skeleton` 加载等后续能力。
+
 ## 0.20.0 - 2026-11-24
 
 ### 新增功能

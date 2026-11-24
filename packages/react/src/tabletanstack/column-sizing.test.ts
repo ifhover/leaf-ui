@@ -5,7 +5,7 @@ import {
   type TableOptions,
 } from '@tanstack/react-table';
 import { describe, expect, it } from 'vitest';
-import { getColumnLayout } from './column-sizing';
+import { getColumnLayout, resolveUtilityWidths } from './column-sizing';
 
 type RecordRow = { name: string; description: string; status: string };
 
@@ -146,5 +146,121 @@ describe('DataTable column layout', () => {
     expect(result.fixed).toBe(true);
     expect([...result.widths.values()]).toEqual([500, 500]);
     expect(result.totalWidth).toBe(1000);
+  });
+
+  it('derives selection and expansion widths from size, density, direction and theme overrides', () => {
+    const base = {
+      theme: {},
+      density: 'comfortable' as const,
+      direction: 'ltr' as const,
+    };
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        size: 'sm',
+        selection: true,
+        expandable: false,
+      }),
+    ).toEqual({ selectionWidth: 30, expansionWidth: 0 });
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        size: 'md',
+        selection: true,
+        expandable: false,
+      }),
+    ).toEqual({ selectionWidth: 34, expansionWidth: 0 });
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        size: 'md',
+        bordered: true,
+        selection: true,
+        expandable: false,
+      }),
+    ).toEqual({ selectionWidth: 35, expansionWidth: 0 });
+
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        density: 'compact',
+        size: 'md',
+        selection: true,
+        expandable: true,
+      }),
+    ).toEqual({ selectionWidth: 34, expansionWidth: 30 });
+
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        size: 'sm',
+        selection: false,
+        expandable: true,
+      }),
+    ).toEqual({ selectionWidth: 0, expansionWidth: 32 });
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        size: 'md',
+        selection: false,
+        expandable: true,
+      }),
+    ).toEqual({ selectionWidth: 0, expansionWidth: 36 });
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        size: 'md',
+        selection: true,
+        expandable: true,
+      }),
+    ).toEqual({ selectionWidth: 34, expansionWidth: 34 });
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        size: 'md',
+        bordered: true,
+        selection: true,
+        expandable: true,
+        theme: { components: { Table: { borderWidth: 2 } } },
+      }),
+    ).toEqual({ selectionWidth: 36, expansionWidth: 36 });
+
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        size: 'md',
+        selection: true,
+        expandable: false,
+        theme: { components: { Table: { padding: '8px 10px 8px 24px' } } },
+      }),
+    ).toEqual({ selectionWidth: 42, expansionWidth: 0 });
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        direction: 'rtl',
+        size: 'md',
+        selection: true,
+        expandable: false,
+        theme: { components: { Table: { padding: '8px 10px 8px 24px' } } },
+      }),
+    ).toEqual({ selectionWidth: 28, expansionWidth: 0 });
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        size: 'md',
+        selection: false,
+        expandable: true,
+        theme: { components: { Table: { padding: 2 } } },
+      }),
+    ).toEqual({ selectionWidth: 0, expansionWidth: 26 });
+    expect(
+      resolveUtilityWidths({
+        ...base,
+        size: 'md',
+        selection: true,
+        expandable: true,
+        theme: { components: { Button: { controlHeight: 36 } } },
+      }),
+    ).toEqual({ selectionWidth: 34, expansionWidth: 38 });
   });
 });

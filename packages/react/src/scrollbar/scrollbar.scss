@@ -62,8 +62,7 @@
         display: none;
       }
       &:focus-visible {
-        @include mixins.focus-ring;
-        outline-offset: -3px;
+        @include mixins.focus-ring(-3px);
       }
     }
     &__content {
@@ -122,7 +121,6 @@
     }
     &__bar:has(:focus-visible) {
       @include mixins.focus-ring;
-      outline-offset: 2px;
       border-radius: 999px;
     }
     &__viewport:focus:not(:focus-visible) {

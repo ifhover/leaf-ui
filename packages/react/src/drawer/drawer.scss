@@ -102,6 +102,7 @@
           var(--leaf-component-drawer-padding-top, var(--leaf-density-dialog-block))
         )
       );
+      --leaf-dialog-header-padding-top: var(--leaf-dialog-padding-block);
     }
     &--swipeable#{&}--placement-top {
       --leaf-dialog-padding-bottom: max(
@@ -213,8 +214,7 @@
       opacity: 0.12;
     }
     &:focus-visible {
-      @include mixins.focus-ring;
-      outline-offset: -2px;
+      @include mixins.focus-ring(-2px);
     }
   }
   .leaf-drawer-mask--right .leaf-drawer__resize,

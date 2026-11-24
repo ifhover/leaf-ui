@@ -37,7 +37,7 @@ export const leafDoc = { component: 'Button', primaryApi: 'ButtonProps' };
 
 ### 按钮外观
 
-通过 `variant` 选择外观：默认描边（`outline`）、实底（`solid`）、文字（`text`）、行内链接（`link`）或危险（`danger`）。默认 `outline` 采用无阴影纯边框并在悬停时展示浅灰背景，悬停与按下时边框保持不变且按下保留轻压位移而不做额外变色；行内链接默认使用主题色，悬停时文字变亮，按下时变深，默认颜色过渡为 200ms。
+通过 `variant` 选择外观：默认描边（`outline`）、实底（`solid`）、文字（`text`）、行内链接（`link`）或危险（`danger`）。默认 `outline` 带轻微底部阴影，悬停时边框与文字转为主色悬停态、按下后进一步变深；实底（`solid`）带轻量底部阴影，悬停切换主色悬停态、按下加深；行内链接默认使用主题色，悬停时文字变亮，按下时变深，默认颜色过渡为 200ms。
 
 <ComponentExample exampleId="variants" preview={<ButtonVariants />} fileName="variants.tsx" width="fit-content">
 

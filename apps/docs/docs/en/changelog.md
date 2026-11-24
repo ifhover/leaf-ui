@@ -7,6 +7,21 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.21.0 - 2026-11-25
+
+### Improvements and fixes
+
+- **Button appearance, interaction, and horizontal padding**: Aligned `Button` feedback with Ant Design by adding a subtle bottom shadow (`--leaf-shadow-control`) to `outline` and `solid` buttons; `outline` shifts border and text to `--leaf-color-primary-hover` on hover and darkens to `--leaf-color-primary-link-active` on press, `solid` adds primary hover shading, `danger` deepens its soft-red hover/press levels (50% / 100%), and the `1px` active downward translate was removed. Increased `sm / md / lg` horizontal padding to `11 / 15 / 19px` (`7 / 11 / 15px` on icon sides).
+- **Field family hover, focus ring, and popup selection alignment**: Switched default hover borders across field controls (`Input`, `Select`, `InputNumber`, `Textarea`, `DatePicker`, `Cascader`, `TreeSelect`, `AutoComplete`, `ColorPicker`, and `InputOTP`) to `--leaf-color-primary-hover`, refined focus/open rings to `2px` at `10%` mix, and removed the neutral hover fill on `ColorPicker`. Unified `Select`, `Cascader`, `TreeSelect`, and `TimePicker` selected options around `--leaf-color-primary-soft` without trailing check icons (`TimePicker` centers its labels) while keeping unselected hover neutral with inherited black text.
+- **Prevented hover states from overriding selected states**: Protected selected items from hover/press overrides across `Select`, `Cascader`, `TreeSelect`, `TimePicker`, `DateRangePicker` side presets, `Calendar` (segmented buttons, months, and days), `DatePicker`, `Tabs`, `Carousel` dots, and `InputOTP`.
+- **Restored header bottom dividers on `Modal` and `Drawer`**: `divided` now renders subtle `1px` borders below the header and above the footer with vertically centered close-button alignment (`Modal size="mini"` and `Confirm` preserve their compact headerless-divider layout; `Drawer` keeps `divided={false}` by default along with floating insets, rounded corners, swipe-to-close, and resizing).
+- **`DataTable` visual rollback and utility-column alignment**: Restored `0.17.3` table visuals (tinted neutral header with `600` weight text, `1px × 1.6em` column header splits, `70%` softened borders, full cell grid under `bordered`, `4% / 2%` hover and stripes, `6% / 10%` primary selection tint, and primary sort/resize indicators) while aligning selection and leading expand columns to the content reading edge with tighter widths (`30 / 34px` for `sm / md` selection columns).
+
+### Breaking changes and migration
+
+- **Removed `DataTable` card layout, header orchestration props, and `size="lg"`**: Removed `variant`, `title`, `description`, `extra`, `tabs`, and `topContent` from `DataTable` to decouple it from `Card` and `Tabs`; compose external `Card`, `CardTitle`, `Tabs`, and `Flex` containers instead. Narrowed `Table` / `DataTable` `size` to `'sm' | 'md'` (removing `'lg'` and promoting `16px 16px` / `55px` rows as the default `'md'`, with unknown runtime sizes falling back to `'md'`).
+- **Reverted `Card` to `0.17.3` presentation and variants**: Removed `CardProps.divided`, `.leaf-card--divided`, and the default tinted/divided footer (footers are transparent block containers again—wrap multiple footer actions with `Flex`), and restored `variant?: 'default' | 'layered'`, `selected?: boolean`, and `0.17.3` heading/description/softened-frame geometry while retaining `padding`, header-only tabs, and `Skeleton` loading.
+
 ## 0.20.0 - 2026-11-24
 
 ### Features
