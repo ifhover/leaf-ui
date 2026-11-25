@@ -520,7 +520,7 @@ const consumerDirectory = await mkdtemp(path.join(qualityDirectory, 'defaults-co
 const consumerPath = path.join(consumerDirectory, 'consumer.tsx');
 const consumerConfigPath = path.join(consumerDirectory, 'tsconfig.json');
 const consumerSource = `
-import { Button, ConfigProvider, type LeafTheme, type LeafComponentStateTokens, type LeafComponentDefaults, type DataTablePresentationProps, type LeafTranslation, type LeafTranslations } from '@ifhover/leaf-ui';
+import { Button, ConfigProvider, Table, type LeafTheme, type LeafComponentStateTokens, type LeafComponentDefaults, type TablePresentationProps, type LeafTranslation, type LeafTranslations } from '@ifhover/leaf-ui';
 import { type LeafComponentStateTokens as ScopedStateTokens, type LeafTheme as ScopedTheme } from '@ifhover/leaf-ui/config-provider';
 import leafPreset from '@ifhover/leaf-ui/tailwind';
 const spacing: string = leafPreset.theme.extend.spacing.leaf;
@@ -531,12 +531,12 @@ const hover: LeafComponentStateTokens = { borderColor: '#123', shadow: 'none' };
 const scopedHover: ScopedStateTokens = hover;
 const customTheme: LeafTheme = { tokens: { borderWidth: 2, controlShadow: '2px 2px black', surfaceShadow: '4px 4px black' }, components: { Button: { borderWidth: 2, hover: scopedHover } } };
 const scopedTheme: ScopedTheme = customTheme;
-const presentation: DataTablePresentationProps = { size: 'sm', selection: 'multiple' };
+const presentation: TablePresentationProps = { size: 'sm', bordered: true };
 const components: LeafComponentDefaults = {
-  Button: { variant: 'outline' }, DataTable: presentation,
+  Button: { variant: 'outline' }, Table: presentation,
   VirtualList: { estimateSize: 36 },
 };
-export const example = <ConfigProvider components={components} locale={languages} translations={translations} theme={scopedTheme}><ConfigProvider theme={customTheme}><Button>Leaf</Button></ConfigProvider></ConfigProvider>;
+export const example = <ConfigProvider components={components} locale={languages} translations={translations} theme={scopedTheme}><ConfigProvider theme={customTheme}><Button>Leaf</Button><Table data={[{ id: '1', name: 'Leaf' }]} columns={[{ title: 'Name', dataIndex: 'name' }]} rowKey="id" /></ConfigProvider></ConfigProvider>;
 `;
 try {
   await writeFile(consumerPath, consumerSource);
@@ -720,15 +720,19 @@ for (const dependency of ['react-dom', '@floating-ui/react-dom', 'tabbable']) {
 console.log(
   'All component exports, ESM/CommonJS rendering, declarations, compiled SCSS and dependencies verified.',
 );
-assert.equal(manifest.peerDependenciesMeta['@tanstack/react-table'].optional, true);
+assert.equal(manifest.peerDependencies['@tanstack/react-table'], undefined);
+assert.equal(manifest.peerDependenciesMeta, undefined);
 assert.equal(
-  esm.DataTable,
+  manifest.exports['./table/tanstack'],
   undefined,
-  'The optional TanStack adapter must not enter the root barrel',
+  'Legacy TanStack table subpath must be removed',
 );
-for (const api of [esm, cjs])
+for (const api of [esm, cjs]) {
+  assert.equal(typeof api.Table, 'function', 'Root barrel must export Table');
   for (const name of [
-    'Table',
+    'DataTable',
+    'useDataTable',
+    'useDataTableSelection',
     'TableHeader',
     'TableBody',
     'TableFooter',
@@ -738,57 +742,34 @@ for (const api of [esm, cjs])
     'TableCaption',
   ])
     assert.ok(!(name in api), `${name} must not remain in the root API`);
-const adapter = await import('@ifhover/leaf-ui/table');
-const commonJsAdapter = require('@ifhover/leaf-ui/table');
-const legacyAdapter = await import('@ifhover/leaf-ui/table/tanstack');
-assert.equal(
-  adapter.DataTable,
-  legacyAdapter.DataTable,
-  'Legacy table path retains the same DataTable',
-);
-assertPublicExports(adapter, 'DataTable ESM');
-assert.ok(!('Table' in adapter), 'The table entry must expose only the DataTable API');
-assert.equal(
-  commonJsAdapter.DataTable,
-  require('@ifhover/leaf-ui/table/tanstack').DataTable,
-  'CommonJS legacy table path retains the same DataTable',
-);
-const headless = await import('@tanstack/react-table');
-function AdapterFixture({ component }) {
-  const table = headless.useReactTable({
-    data: [{ id: 'alice', name: 'Alice' }],
-    columns: [{ accessorKey: 'name', header: 'Name' }],
-    getRowId: (row) => row.id,
-    getCoreRowModel: headless.getCoreRowModel(),
-  });
-  return createElement(component, { table, pagination: false, 'aria-label': 'Records' });
 }
-for (const api of [adapter, commonJsAdapter]) {
-  for (const name of [
-    'DataTableSearch',
-    'DataTableColumnVisibility',
-    'DataTableToolbar',
-    'DataTableContent',
-    'DataTableFooter',
-    'DataTablePagination',
-  ])
-    assert.ok(!(name in api), `${name} must not remain in the table API`);
-  for (const name of ['Search', 'ColumnVisibility', 'Toolbar', 'Content', 'Footer', 'Pagination'])
-    assert.ok(!(name in api.DataTable), `DataTable.${name} must not remain in the table API`);
+const tableEntry = await import('@ifhover/leaf-ui/table');
+const commonJsTableEntry = require('@ifhover/leaf-ui/table');
+assert.equal(tableEntry.Table, esm.Table, 'Table subpath shares the same Table as root');
+assert.equal(commonJsTableEntry.Table, cjs.Table, 'CommonJS table subpath shares root Table');
+assertPublicExports(tableEntry, 'Table ESM');
+for (const api of [esm, cjs, tableEntry, commonJsTableEntry]) {
   assert.match(
-    renderToStaticMarkup(createElement(AdapterFixture, { component: api.DataTable })),
+    renderToStaticMarkup(
+      createElement(api.Table, {
+        data: [{ id: 'alice', name: 'Alice' }],
+        columns: [{ title: 'Name', dataIndex: 'name' }],
+        rowKey: 'id',
+        pagination: false,
+        'aria-label': 'Records',
+      }),
+    ),
     /Alice/,
   );
 }
-const adapterCss = await readFile(
+const tableCss = await readFile(
   new URL(manifest.exports['./table/style.css'], packageRoot),
   'utf8',
 );
 for (const name of ['table', 'checkbox', 'radio', 'input', 'pagination'])
-  assert.ok(adapterCss.includes(`.leaf-${name}`), `Adapter CSS includes ${name}`);
-assert.ok(!adapterCss.includes('.leaf-popover'), 'Adapter styles exclude removed column controls');
-assert.ok(!adapterCss.includes('.leaf-data-table__drag-handle'), 'Adapter styles exclude dragging');
-assert.ok(!adapterCss.includes('.leaf-color-picker'), 'Adapter styles must remain scoped');
+  assert.ok(tableCss.includes(`.leaf-${name}`), `Table CSS includes ${name}`);
+assert.ok(!tableCss.includes('.leaf-popover'), 'Table styles exclude unrelated popover styles');
+assert.ok(!tableCss.includes('.leaf-color-picker'), 'Table styles must remain scoped');
 console.log('Package root:', fileURLToPath(packageRoot));
 console.log(`Verified ${subpathCount} public JS subpaths and every CSS export.`);
 
@@ -814,7 +795,6 @@ for (const [format, extension] of [
 for (const [specifier, expected, excluded] of [
   ['button', ['button'], ['dropdown', 'table', 'modal', 'input']],
   ['table', ['table', 'scrollbar', 'loading', 'checkbox', 'pagination'], ['color-picker']],
-  ['table/tanstack', ['table', 'checkbox', 'pagination'], ['color-picker']],
   ['date-picker', ['date-picker', 'calendar', 'time-picker'], ['color-picker']],
   ['config-provider', ['message', 'confirm', 'notification', 'loading-bar'], ['table']],
 ]) {

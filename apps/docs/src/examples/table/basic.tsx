@@ -1,26 +1,26 @@
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
 const members = [
-  { id: 'alex', name: 'Alex Morgan', team: 'Design', projects: 8 },
-  { id: 'sam', name: 'Sam Taylor', team: 'Engineering', projects: 3 },
-  { id: 'jordan', name: 'Jordan Lee', team: 'Product', projects: 12 },
-  { id: 'riley', name: 'Riley Chen', team: 'Design', projects: 5 },
-  { id: 'casey', name: 'Casey Kim', team: 'Engineering', projects: 6 },
-  { id: 'taylor', name: 'Taylor Smith', team: 'Product', projects: 4 },
+  { id: '1', name: '林澈', team: '设计', projects: 8 },
+  { id: '2', name: '周岚', team: '研发', projects: 3 },
+  { id: '3', name: '许言', team: '产品', projects: 12 },
+  { id: '4', name: '陈宁', team: '设计', projects: 5 },
+  { id: '5', name: '苏杭', team: '研发', projects: 6 },
+  { id: '6', name: '赵远', team: '产品', projects: 4 },
 ];
 
 export function TableBasic() {
   return (
-    <DataTable
+    <Table
       data={members}
       columns={[
-        { accessorKey: 'name', header: '成员' },
-        { accessorKey: 'team', header: '团队' },
-        { accessorKey: 'projects', header: '项目数' },
+        { dataIndex: 'name', title: '成员' },
+        { dataIndex: 'team', title: '团队' },
+        { dataIndex: 'projects', title: '项目数', align: 'end' },
       ]}
       rowKey="id"
       aria-label="团队成员"
-      options={{ initialState: { pagination: { pageSize: 5 } } }}
+      pagination={{ defaultPageSize: 5 }}
     />
   );
 }

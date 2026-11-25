@@ -1,6 +1,6 @@
 {
   "name": "@ifhover/leaf-ui",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "A lightweight React component library with CSS variable theming.",
   "homepage": "https://ifhover.github.io/leaf-ui/",
   "repository": {
@@ -1351,45 +1351,24 @@
     "./table": {
       "browser": {
         "import": {
-          "types": "./dist/esm/tabletanstack/index.d.ts",
-          "default": "./dist/esm/browser/tabletanstack.js"
+          "types": "./dist/esm/table/index.d.ts",
+          "default": "./dist/esm/browser/table.js"
         },
         "require": {
-          "types": "./dist/cjs/tabletanstack/index.d.cts",
-          "default": "./dist/cjs/browser/tabletanstack.cjs"
+          "types": "./dist/cjs/table/index.d.cts",
+          "default": "./dist/cjs/browser/table.cjs"
         }
       },
       "import": {
-        "types": "./dist/esm/tabletanstack/index.d.ts",
-        "default": "./dist/esm/tabletanstack/index.js"
+        "types": "./dist/esm/table/index.d.ts",
+        "default": "./dist/esm/table/index.js"
       },
       "require": {
-        "types": "./dist/cjs/tabletanstack/index.d.cts",
-        "default": "./dist/cjs/tabletanstack/index.cjs"
+        "types": "./dist/cjs/table/index.d.cts",
+        "default": "./dist/cjs/table/index.cjs"
       }
     },
-    "./table/style.css": "./dist/esm/styles/tabletanstack.css",
-    "./table/tanstack": {
-      "browser": {
-        "import": {
-          "types": "./dist/esm/tabletanstack/index.d.ts",
-          "default": "./dist/esm/browser/tabletanstack.js"
-        },
-        "require": {
-          "types": "./dist/cjs/tabletanstack/index.d.cts",
-          "default": "./dist/cjs/browser/tabletanstack.cjs"
-        }
-      },
-      "import": {
-        "types": "./dist/esm/tabletanstack/index.d.ts",
-        "default": "./dist/esm/tabletanstack/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/tabletanstack/index.d.cts",
-        "default": "./dist/cjs/tabletanstack/index.cjs"
-      }
-    },
-    "./table/tanstack/style.css": "./dist/esm/styles/tabletanstack.css",
+    "./table/style.css": "./dist/esm/styles/table.css",
     "./tabs": {
       "browser": {
         "import": {
@@ -1707,20 +1686,13 @@
     "measure:bundle": "node scripts/measure-bundle.mjs"
   },
   "peerDependencies": {
-    "@tanstack/react-table": "^8.21.3",
     "react": "^18.0.0 || ^19.0.0",
     "react-dom": "^18.0.0 || ^19.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@tanstack/react-table": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@rsbuild/plugin-react": "^2.1.1",
     "@rsbuild/plugin-sass": "^2.0.1",
     "@rslib/core": "^1.0.3",
-    "@tanstack/react-table": "^8.21.3",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

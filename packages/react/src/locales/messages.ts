@@ -268,8 +268,6 @@ export interface LocaleMessages {
     readonly table: string;
     readonly scrollArea: string;
     readonly loadError: string;
-  };
-  readonly dataTable: {
     readonly resizeColumn: string;
     readonly selectRows: string;
     readonly selectAllRowsOnThisPage: string;

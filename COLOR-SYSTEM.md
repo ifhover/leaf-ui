@@ -82,13 +82,13 @@ Select、Cascader、TreeSelect 与时间列的选项行消费 `choice-option(fal
 
 内容表面区分 surface、surface-muted、surface-raised；边框与 divider 不强行合并。Modal、Card、Drawer 等内容容器外框直接消费实体 `--leaf-color-border`，内部分区线消费 `--leaf-color-divider`。静止阴影复用共享阴影 token 并保留显式覆盖优先。Button 复用动作状态，不把 hover 色直接用于普通选项或字段外框。
 
-Table / DataTable 的表面、表头浅灰、排序、条纹、悬停、选中、柔化框线和加载遮罩集中在 `softened-frame-color` 与 `table-family` 配方。表头使用基于当前表格表面混入 `--leaf-color-surface-muted` 的浅灰底，搭配常规前景色 `--leaf-table-text`（保留 `--leaf-component-table-color` 覆盖）与 `600` 字重文字；表格外框、表头 `1px × 1.6em` 短竖分隔线、单元格网格与行间分隔线共用经 `--leaf-color-divider` 70% 柔化混合的 `--leaf-table-frame-color`（保留显式边框色覆盖优先）。普通行悬停混入 `4% --leaf-table-text`、斑马条纹混入 `2% --leaf-table-text`、排序/悬停表头使用 `--leaf-color-surface-muted`、排序列复用表头浅灰底、选中与选中悬停分别混入 `6%` 与 `10% --leaf-color-primary`、激活排序三角与列宽拖拽线使用 `--leaf-color-primary`、加载遮罩基于当前表格表面计算；内部展开操作复用文字按钮的中性反馈，不新增全局颜色 token。
+Table 的表面、表头浅灰、排序、条纹、悬停、选中、柔化框线和加载遮罩集中在 `softened-frame-color` 与 `table-family` 配方。表头使用基于当前表格表面混入 `--leaf-color-surface-muted` 的浅灰底，搭配常规前景色 `--leaf-table-text`（保留 `--leaf-component-table-color` 覆盖）与 `600` 字重文字；表格外框、表头 `1px × 1.6em` 短竖分隔线、单元格网格与行间分隔线共用经 `--leaf-color-divider` 70% 柔化混合的 `--leaf-table-frame-color`（保留显式边框色覆盖优先）。普通行悬停与斑马条纹均混入 `2% --leaf-table-text`、选中行直接复用悬停浅灰底且选中后悬停不变色、排序/悬停表头使用 `--leaf-color-surface-muted`、排序列复用表头浅灰底、激活排序三角与列宽拖拽线使用 `--leaf-color-primary`、加载遮罩基于当前表格表面计算；内部展开操作复用文字按钮的中性反馈，不新增全局颜色 token。
 
 ### 共享底板与内容表面
 
 显式 `Card variant="layered"` 画布、`panelVariant="card"` 的日期 / 时间面板画布以及 `Segmented Tabs` 轨道、`Calendar` 视图分段轨道使用 `--leaf-color-surface-muted`，不得再混入边框色或内容表面制造近似色。通过 ConfigProvider `theme.tokens.mutedSurfaceColor` 可统一设为精确颜色；不是修改 `neutralColor` 后期待派生结果恰好等于它。
 
-`Segmented Tabs` / `Calendar` 视图分段选中滑块、`Transfer` 面板、`Drawer` 分区页脚与 `Card` / 面板内层内容直接使用净面 `--leaf-color-surface`（或页脚 `transparent`），避免多层灰底套叠；其中 `Segmented Tabs` 轨道外围使用透明边框、选中滑块配 `--leaf-shadow-sm`。`DataTable` 整体直接使用内容表面，无外层底板。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
+`Segmented Tabs` / `Calendar` 视图分段选中滑块、`Transfer` 面板、`Drawer` 分区页脚与 `Card` / 面板内层内容直接使用净面 `--leaf-color-surface`（或页脚 `transparent`），避免多层灰底套叠；其中 `Segmented Tabs` 轨道外围使用透明边框、选中滑块配 `--leaf-shadow-sm`。`Table` 整体直接使用内容表面，无外层底板。显式组件背景 / 状态覆盖优先；不得为统一外层底板覆盖内部内容、嵌套主题或 Portal。
 
 ### 跨组件的有限配方
 

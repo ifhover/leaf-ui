@@ -1,106 +1,57 @@
-import { Button, Flex } from '@ifhover/leaf-ui';
-import { DataTable, useDataTable } from '@ifhover/leaf-ui/table';
-import type { OnChangeFn, PaginationState, SortingState } from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
+import { Table, type TableSorterState } from '@ifhover/leaf-ui';
+import { useMemo, useState } from 'react';
 
-const members = Array.from({ length: 26 }, (_, index) => ({
-  id: String(index + 1),
-  name: ['Alex', 'Sam', 'Riley'][index % 3] ?? '',
-  team: index % 2 ? 'Design' : 'Engineering',
-  projects: index + 1,
+const allRecords = Array.from({ length: 24 }, (_, index) => ({
+  id: `rec-${index + 1}`,
+  name: `Task ${String(index + 1).padStart(2, '0')}`,
+  priority: (index % 5) + 1,
+  owner: ['Alex', 'Sam', 'Jordan', 'Riley'][index % 4] ?? '',
 }));
-const columns = [
-  { accessorKey: 'name', header: 'Name' },
-  { accessorKey: 'projects', header: 'Projects' },
-  { accessorKey: 'team', header: 'Team', enableSorting: false },
-];
 
 export function TableServer() {
-  const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 5 });
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const onSortingChange: OnChangeFn<SortingState> = (updater) => {
-    setSorting(updater);
-    setPagination((previous) => ({ ...previous, pageIndex: 0 }));
-  };
-  const [data, setData] = useState<typeof members>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [request, setRequest] = useState({ revision: 0, fail: false });
-  useEffect(() => {
-    const controller = new AbortController();
-    setLoading(true);
-    setError(false);
-    // This timer mocks an API; pass controller.signal to a real request.
-    const timer = setTimeout(() => {
-      if (controller.signal.aborted) return;
-      if (request.fail) {
-        setError(true);
-        setLoading(false);
-        return;
-      }
-      const sorted = [...members];
-      const order = sorting[0];
-      if (order) {
-        sorted.sort((first, second) => {
-          const result =
-            order.id === 'projects'
-              ? first.projects - second.projects
-              : first.name.localeCompare(second.name);
-          return order.desc ? -result : result;
-        });
-      }
-      setData(
-        sorted.slice(
-          pagination.pageIndex * pagination.pageSize,
-          (pagination.pageIndex + 1) * pagination.pageSize,
-        ),
-      );
-      setLoading(false);
-    }, 400);
-    return () => {
-      controller.abort();
-      clearTimeout(timer);
-    };
-  }, [pagination, sorting, request]);
-  const table = useDataTable({
-    data,
-    columns,
-    rowKey: 'id',
-    localPagination: false,
-    options: {
-      state: { pagination, sorting },
-      onPaginationChange: setPagination,
-      onSortingChange,
-      manualPagination: true,
-      manualSorting: true,
-      enableSorting: true,
-      enableMultiSort: false,
-      rowCount: members.length,
-    },
-  });
-  const reload = (fail: boolean) =>
-    setRequest((previous) => ({ revision: previous.revision + 1, fail }));
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [sort, setSort] = useState<TableSorterState | null>(null);
+
+  const currentPageData = useMemo(() => {
+    const sorted = [...allRecords];
+    if (sort) {
+      sorted.sort((a, b) => {
+        const delta =
+          sort.columnKey === 'priority' ? a.priority - b.priority : a.name.localeCompare(b.name);
+        return sort.order === 'desc' ? -delta : delta;
+      });
+    }
+    const start = (page - 1) * pageSize;
+    return sorted.slice(start, start + pageSize);
+  }, [page, pageSize, sort]);
+
   return (
-    <Flex direction="column" gap="md">
-      <DataTable
-        table={table}
-        aria-label="Remote members"
-        loading={loading}
-        error={error ? 'Unable to load members' : undefined}
-        onRetry={() => reload(false)}
-        pagination={{ pageSizeOptions: [5, 10, 20] }}
-      />
-      <Flex gap="sm" wrap>
-        <Button disabled={loading} onClick={() => reload(false)}>
-          Refresh
-        </Button>
-        <Button disabled={loading} onClick={() => reload(true)}>
-          Simulate error
-        </Button>
-        <Button disabled={loading || !sorting.length} onClick={() => table.resetSorting()}>
-          Clear sorting
-        </Button>
-      </Flex>
-    </Flex>
+    <Table
+      data={currentPageData}
+      columns={[
+        { dataIndex: 'name', title: 'Task', sorter: true },
+        { dataIndex: 'priority', title: 'Priority', align: 'end', sorter: true },
+        { dataIndex: 'owner', title: 'Owner' },
+      ]}
+      rowKey="id"
+      aria-label="Server sorting and pagination"
+      manualSorting
+      manualPagination
+      sort={sort}
+      onSortChange={(next) => {
+        setSort(next);
+        setPage(1);
+      }}
+      pagination={{
+        current: page,
+        pageSize,
+        total: allRecords.length,
+        onChange: (nextPage, nextSize) => {
+          setPage(nextPage);
+          setPageSize(nextSize);
+        },
+      }}
+    />
   );
 }

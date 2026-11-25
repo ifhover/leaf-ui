@@ -7,30 +7,24 @@ import { TableSorting } from '../../src/examples/table/sorting';
 import { TableSelection } from '../../src/examples/table/selection';
 import { TableExpansion } from '../../src/examples/table/expansion';
 import { TableStates } from '../../src/examples/table/states';
-import { TableColumns } from '../../src/examples/table/columns';
 import { TableSizing } from '../../src/examples/table/sizing';
-import { TableGrouped } from '../../src/examples/table/grouped';
+import { TableColumns } from '../../src/examples/table/columns';
+import { TableTree } from '../../src/examples/table/tree';
 import { TableEditable } from '../../src/examples/table/editable';
 import { TableVirtual } from '../../src/examples/table/advanced';
 import { TableServer } from '../../src/examples/table/server';
 
-export const leafDoc = { component: 'DataTable', primaryApi: 'DataTableProps' };
+export const leafDoc = { component: 'Table', primaryApi: 'TableProps' };
 
-# DataTable 表格
+# Table 表格
 
 浏览和操作结构化数据。
-
-从 `@ifhover/leaf-ui/table` 子路径导入，样式自动加载。使用前安装可选依赖：
-
-```bash
-npm install @tanstack/react-table@^8.21.3
-```
 
 {/* leaf:section basic */}
 
 ## 基础用法
 
-传入数据、列定义与稳定唯一的 `rowKey`。默认使用浅灰中性表头（常规前景色、600 字重、短竖分隔线）、顶部圆角、细行分隔线与等宽数字 `tabular-nums`；`size` 默认为 `md`（内边距 `16px 16px`，单行正文高 `55px`、表头高 `55px`），或设置 `sm`（内边距 `8px 12px`，单行高 `39px`）收紧间距。默认开启本地分页；下面设置每页 5 条，可直接切换页码。普通表格不设置列宽时按内容分配空间，长文本默认换行，也可在列 `meta` 开启 `ellipsis` 单行省略。
+传入 `data`、`columns` 和唯一标识 `rowKey`（请使用稳定的业务标识字段，避免使用数组索引）。默认开启本地分页，可通过 `pagination={false}` 关闭。
 
 <ComponentExample exampleId="basic" preview={<TableBasic />} fileName="basic.tsx" width="100%">
 
@@ -48,9 +42,9 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 带边框
 
-<a id="简洁样式" />
+<a id="简洁样式"></a>
 
-默认只在表头与正文、行与行之间展示横向细分隔线；设置 `bordered` 后同时开启外边框与全单元格竖向网格线，并隐藏表头之间的短竖分隔线。
+设置 `bordered` 显示外边框和单元格网格线。
 
 <ComponentExample exampleId="simple" preview={<TableSimple />} fileName="simple.tsx" width="100%">
 
@@ -62,7 +56,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 斑马条纹
 
-设置 `striped` 启用斑马条纹样式，从第二行数据开始展示交替浅灰行背景，并隐藏每一行的横向分割线。
+设置 `striped` 显示交替行背景。
 
 <ComponentExample exampleId="striped" preview={<TableStriped />} fileName="striped.tsx" width="100%">
 
@@ -74,7 +68,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 不同尺寸
 
-支持 `md`（默认）与 `sm` 两种行高与间距密度。内部分页器在 `md` 表格下保持 `md` 尺寸，在 `sm` 表格下同步切换为 `sm`。
+通过 `size` 切换表格尺寸，支持 `md`（默认）和 `sm`，内部分页器会同步跟随。
 
 <ComponentExample exampleId="sizes" preview={<TableSizes />} fileName="sizes.tsx" width="100%">
 
@@ -84,9 +78,9 @@ npm install @tanstack/react-table@^8.21.3
 
 </ComponentExample>
 
-### 本地排序
+### 排序
 
-在 `options` 中传入 `enableSorting: true` 开启排序；单列可通过列定义的 `enableSorting: false` 禁用。
+在列定义中设置 `sorter: true` 启用默认比较，或传入自定义比较函数 `(a, b) => number`。开启 `multiSort` 后可按住 `Shift` 点击列头叠加多列排序。
 
 <ComponentExample exampleId="sorting" preview={<TableSorting />} fileName="sorting.tsx" width="100%">
 
@@ -98,7 +92,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 行选择
 
-设置 `selection="multiple"` 并使用 `useDataTableSelection` 管理选中的业务行标识。表头全选默认仅作用于当前页。
+通过 `rowSelection` 开启多选或单选（`type: 'radio'`）。表头全选仅作用于当前页，翻页时保留其他页已选项。
 
 <ComponentExample exampleId="selection" preview={<TableSelection />} fileName="selection.tsx" width="100%">
 
@@ -110,7 +104,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 展开详情
 
-通过 `options.getRowCanExpand` 允许行展开，并通过 `renderExpandedRow` 渲染展开内容。
+通过 `expandable.expandedRowRender` 渲染展开内容，并用 `rowExpandable` 控制哪些行允许展开。
 
 <ComponentExample exampleId="expansion" preview={<TableExpansion />} fileName="expansion.tsx" width="100%">
 
@@ -122,7 +116,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 空数据、加载和错误
 
-通过 `loading`、`emptyContent`、`error` 与 `onRetry` 展示并处理加载中、空数据和错误状态；默认空数据与加载失败状态使用 [`Result`](./result) 组件渲染，也可直接传入自定义 `Result` 元素。
+通过 `loading`、`emptyContent`、`error` 和 `onRetry` 处理加载、空数据和错误状态；默认空数据与错误态使用 [`Result`](./result) 渲染，也可直接传入自定义文案或 `Result` 元素。
 
 <ComponentExample exampleId="states" preview={<TableStates />} fileName="states.tsx" width="100%">
 
@@ -136,7 +130,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 列宽分配
 
-列定义的 `size` 指定固定宽度；未设置 `size` 的列共享剩余空间。通过 `meta.flex` 指定正数权重，例如下例中商品名称与说明按 2:1 分配空间，并受 `minSize`、`maxSize` 约束。宽度不足时保留最小宽度，在表格内部横向滚动。
+通过 `width` 设置固定宽度，未设置宽度的列共享剩余空间；使用 `flex` 按权重分配空间，并配合 `minWidth`、`maxWidth` 与 `ellipsis` 控制宽度范围和单行省略。
 
 <ComponentExample exampleId="sizing" preview={<TableSizing />} fileName="sizing.tsx" width="100%">
 
@@ -146,13 +140,9 @@ npm install @tanstack/react-table@^8.21.3
 
 </ComponentExample>
 
-所有列均指定固定宽度时，多余空间留在右侧；需要填满容器时，保留未设置 `size` 的列或配置 `meta.flex`。弹性列使用 `minSize`、`maxSize` 作为边界，`size` 不参与弹性比例计算。正文默认换行，不自动省略；自定义不换行的内容需要自行处理溢出。
-
 ### 固定列与列宽调整
 
-设置 `resizable` 开启列宽拖拽，在列定义中通过 `size`、`minSize`、`maxSize` 限制宽度范围。在 `options.initialState.columnPinning` 中固定列，配合 `maxHeight` 固定表头并在内部滚动。表头操作控件由应用放在 DataTable 外部。
-
-固定列、列宽调整和虚拟滚动使用确定的列宽，未配置宽度的列以 150px 为基础分配剩余空间。固定列忽略 `meta.flex`；手动调整后该列保持调整后的宽度，双击手柄或重置列宽可恢复弹性分配。
+在列定义中设置 `fixed: 'left' | 'right'` 固定列，配合 `maxHeight` 固定表头并在内部滚动；设置 `resizable` 开启列宽拖拽（双击手柄重置宽度，支持键盘方向键），单列可通过 `resizable: false` 排除。
 
 <ComponentExample exampleId="columns" preview={<TableColumns />} fileName="columns.tsx" width="100%">
 
@@ -162,13 +152,13 @@ npm install @tanstack/react-table@^8.21.3
 
 </ComponentExample>
 
-### 分组与聚合
+### 树形数据
 
-在 `options` 中传入 `getGroupedRowModel` 启用行分组，并在列定义中通过 `aggregationFn` 配置汇总计算。
+数据包含 `children` 数组时自动展示为可展开的树形行，可通过 `expandable.indentSize` 调整缩进或 `childrenColumnName` 指定子节点字段。本地排序在各层级内分别执行，本地分页按顶层根行切分。
 
-<ComponentExample exampleId="grouped" preview={<TableGrouped />} fileName="grouped.tsx" width="100%">
+<ComponentExample exampleId="tree" preview={<TableTree />} fileName="tree.tsx" width="100%">
 
-```tsx lineNumbers file="../../src/examples/table/grouped.tsx"
+```tsx lineNumbers file="../../src/examples/table/tree.tsx"
 
 ```
 
@@ -176,7 +166,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 编辑单元格
 
-在列定义的 `cell` 中渲染输入控件。编辑状态、输入校验与持久化由应用自行管理。
+在列定义的 `render` 中渲染输入控件。编辑状态、输入校验与持久化由应用自行管理。
 
 <ComponentExample exampleId="editable" preview={<TableEditable />} fileName="editable.tsx" width="100%">
 
@@ -188,7 +178,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 虚拟滚动
 
-大数据量场景下，通过 `virtual` 开启虚拟滚动并提供估算行高，结合 `maxHeight` 限制视口高度。使用 `useDataTable` 时需配合 `localPagination: false` 关闭本地切页。
+大数据量场景下，通过 `virtual` 开启行虚拟滚动并提供估算行高，结合 `maxHeight` 限制视口高度并关闭分页。
 
 <ComponentExample exampleId="advanced" preview={<TableVirtual />} fileName="advanced.tsx" width="100%">
 
@@ -200,7 +190,7 @@ npm install @tanstack/react-table@^8.21.3
 
 ### 服务端排序与分页
 
-由应用控制排序与分页状态。在 `options` 中设置 `manualSorting: true`、`manualPagination: true` 和总行数 `rowCount`，并传入当前页数据。排序变更时通常需重置页码。
+由应用控制排序与分页状态。设置 `manualSorting`、`manualPagination` 和 `pagination.total`，在回调中请求并更新当前页数据。
 
 <ComponentExample exampleId="server" preview={<TableServer />} fileName="server.tsx" width="100%">
 
@@ -214,167 +204,104 @@ npm install @tanstack/react-table@^8.21.3
 
 ## API
 
-### DataTable API
+### Table API
 
-<a id="datatableinstance-api"></a>
-<a id="datatabledata-api"></a>
-
-列定义和状态沿用 TanStack 原生 API，参见 [列定义](https://tanstack.com/table/v8/docs/guide/column-defs) 与 [受控状态](https://tanstack.com/table/v8/docs/framework/react/guide/table-state)。
-
-通常直接传入 `data`、`columns` 和 `rowKey`；需要访问表格实例时，使用 `useDataTable` 或原生 `useReactTable` 创建实例并通过 `table` 传入，两者互斥。
+配置数据源、列定义、行交互与表格展示参数。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `data` | `readonly TData[]` | 未传 table 时必填 | 展示的数据，更新时使用新数组。 |
-| `columns` | `readonly ColumnDef<TData>[]` | 未传 table 时必填 | TanStack 的原生列定义。 |
-| `rowKey` | [`DataTableRowKey`](#datatablerowkey)`<TData>` | 未传 table 时必填 | 非可选的字符串或数字标识字段，或返回字符串 / 数字标识的函数。 |
-| `options` | `Omit<TableOptions<TData>, 'data' \| 'columns' \| 'getCoreRowModel' \| 'getRowId'>` | — | 定制 TanStack 的状态、回调和服务端配置。 |
-| `localPagination` | `boolean` | — | 是否让 TanStack 在本地切分当前页数据；关闭时保留分页状态和分页器，但直接展示传入的行。 |
-| `table` | `TanStackTable<TData>` | — | 由 useDataTable 或 useReactTable 创建的实例；与 data、columns、rowKey、options 和 localPagination 互斥。 |
+| `data` | `readonly TData[]` | 必填 | 展示的数据数组，更新时使用新数组。 |
+| `columns` | `readonly `[`TableColumn`](#tablecolumn)`<TData>[]` | 必填 | 列定义数组。 |
+| `rowKey` | [`TableRowKey`](#tablerowkey)`<TData>` | 必填 | 非可选的字符串或数字标识字段，或返回字符串 / 数字标识的函数。 |
 | `size` | `'sm' \| 'md'` | `'md'` | 展示尺寸。 |
-| `bordered` | `boolean` | `false` | 开启外框与全单元格垂直网格线，并隐藏表头竖向短分隔线。 |
-| `striped` | `boolean` | `false` | 默认显示细行分割线；设置为 true 后切换为斑马条纹样式，从第二行开始展示交替浅灰背景并隐藏行间分割线。 |
-| `maxHeight` | `CSSProperties['maxHeight']` | — | 表格视口最大高度，表头始终固定，表体在内部滚动；虚拟模式未指定时使用 400。 |
+| `bordered` | `boolean` | `false` | 显示外边框和单元格网格线。 |
+| `striped` | `boolean` | `false` | 开启斑马条纹交替背景。 |
+| `rowSelection` | [`TableRowSelection`](#tablerowselection)`<TData>` | — | 行选择配置（多选或单选）。 |
+| `expandable` | [`TableExpandable`](#tableexpandable)`<TData>` | — | 展开详情行与树形子行配置。 |
+| `sort` | [`TableSorterState`](#tablesorterstate)` \| readonly `[`TableSorterState`](#tablesorterstate)`[] \| null` | — | 受控排序状态。 |
+| `defaultSort` | [`TableSorterState`](#tablesorterstate)` \| readonly `[`TableSorterState`](#tablesorterstate)`[] \| null` | — | 非受控初始排序状态。 |
+| `onSortChange` | `(sorter: `[`TableSorterState`](#tablesorterstate)` \| null, sorters: `[`TableSorterState`](#tablesorterstate)`[]) => void` | — | 排序变化回调，返回主排序与完整排序列表。 |
+| `multiSort` | `boolean` | `false` | 允许按住 Shift 点击列头叠加多列排序。 |
+| `manualSorting` | `boolean` | `false` | 服务端排序模式，开启后仅维护排序状态，不在本地重排数据。 |
+| `pagination` | `boolean \| `[`TablePaginationProps`](#tablepagination-api) | `true` | 分页开关或配置，参见 <a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a>；设为 false 时关闭分页。 |
+| `manualPagination` | `boolean` | — | 由外部控制分页，不在本地切分 data；当 pagination.total 小于 0 或大于数据长度时自动启用。 |
+| `resizable` | `boolean` | `false` | 展示可调整列宽的拖拽手柄。 |
+| `onColumnResize` | `(columnKey: string, width: number) => void` | — | 列宽拖拽或键盘调整回调。 |
+| `virtual` | `boolean \| `[`TableVirtualOptions`](#tablevirtualoptions) | `false` | 启用行虚拟滚动。 |
+| `maxHeight` | `CSSProperties['maxHeight']` | — | 最大高度，超出时表头固定、表体滚动；开启 virtual 且未指定时默认 400。 |
 | `minWidth` | `CSSProperties['minWidth']` | — | 表格内容区域的最小宽度；默认适应容器与列宽。 |
 | `loading` | `boolean` | `false` | 展示加载状态。 |
 | `emptyContent` | `ReactNode` | — | 空数据内容。 |
 | `error` | `ReactNode` | — | 请求失败提示；null、undefined 或 false 不展示。 |
-| `onRetry` | `() => void` | — | 请求重试。 |
-| `selection` | `false \| 'single' \| 'multiple'` | `false` | 不选择、单选或多选。 |
-| `resizable` | `boolean` | `false` | 展示可调整列的宽度手柄。 |
-| `virtual` | `boolean \| `[`DataTableVirtualOptions`](#datatablevirtualoptions) | `false` | 启用行虚拟化。 |
-| `pagination` | `boolean \| `[`DataTablePaginationProps`](#datatablepagination-api) | `true` | 分页器开关或展示参数，参见 <a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a>；直接传入数据时，false 同时关闭本地切页。 |
+| `onRetry` | `() => void` | — | 请求重试回调。 |
+| `getRowLabel` | `(record: TData, index: number) => string` | — | 行操作的可访问名称；默认使用解析后的行 key。 |
+| `onRow` | `(record: TData, index: number) => `[`TableRowProps`](#tablerow-api) | — | 自定义数据行原生属性、事件与选中样式。 |
 | `tableRef` | `Ref<HTMLTableElement>` | — | 原生表格 DOM ref。 |
-| `getRowLabel` | `(row: Row<TData>) => string` | — | 行操作的可访问名称；默认使用稳定 row.id。 |
-| `renderExpandedRow` | `(row: Row<TData>) => ReactNode` | — | 渲染叶子行详情，同时配置 getRowCanExpand。 |
-| `getRowProps` | `(row: Row<TData>) => `[`DataTableRowProps`](#datatablerow-api) | — | 自定义数据行的属性与事件。 |
-| `getCellProps` | `(cell: Cell<TData, unknown>) => `[`DataTableCellProps`](#datatablecell-api) | — | 自定义单元格属性、样式或合并；colSpan / rowSpan 为 0 时省略该单元格。 |
 
 `aria-label` / `aria-labelledby` 应用于内部原生表格，其余原生属性传递给外层容器。
 
-<a id="datatablerowkey"></a>
+- <a id="tablekey"></a><a id="tablerowkey"></a>`TableRowKey<TData>`：非可选的字符串 / 数字字段名，或 `(record: TData, index: number) => TableKey` 函数（`TableKey = string | number`）；必须解析为稳定且唯一的标识，避免使用数组索引。
+- <a id="tablesortorder"></a><a id="tablesorterstate"></a>`TableSorterState`：`{ columnKey: string; order: 'asc' | 'desc' }`；`TableSortOrder` 为 `'asc' | 'desc' | null`。
+- <a id="tablerow-api"></a>`TableRowProps`（`onRow` 返回值）：支持原生 `tr` 属性与事件，额外支持 `selected?: boolean` 设置选中行样式。
+- <a id="tablecell-api"></a><a id="tableheadercell-api"></a>`TableCellProps` / `TableHeaderCellProps`（`onCell` / `onHeaderCell` 返回值）：支持原生 `td` / `th` 属性、事件与 `colSpan` / `rowSpan`（为 `0` 时省略单元格），额外支持 `align`（`'start' | 'center' | 'end'`）。
+- <a id="tablepresentation-api"></a>`TablePresentationProps`：可在 [ConfigProvider](config-provider#configprovider-api) 的 `components.Table` 中全局配置展示默认值（如 `size`、`bordered`、`striped`、`pagination` 等）。
 
-`DataTableRowKey<TData>` 为非可选的字符串 / 数字字段名，或 `(row: TData, index: number) => string | number` 函数。缺少天然唯一键时，应在业务数据中生成稳定标识，避免使用排序或分页后的数组索引。
+### TableColumn
 
-<a id="datatablerow-api"></a>
-
-`getRowProps` 返回的 `DataTableRowProps` 支持原生 `tr` 属性与事件，额外的 `selected?: boolean` 设置行的选中样式。
-
-<a id="datatablecell-api"></a>
-
-`getCellProps` 返回的 `DataTableCellProps` 支持原生 `td` 属性、事件和 `colSpan` / `rowSpan`；额外的 `align` 为 `'start' | 'center' | 'end'`，默认 `'start'`。跨度为 0 时省略该单元格。
-
-<a id="datatablepresentation-api"></a>
-
-[ConfigProvider](config-provider#configprovider-api) 的 `components.DataTable` 可全局配置展示参数（如 `size`、`striped`、`pagination` 等）。类型定义可从 `@ifhover/leaf-ui` 导入 `DataTablePresentationProps`。
-
-### useDataTable
-
-<a id="usedatatableoptions"></a>
-
-创建并返回 TanStack 原生表格实例。参数 `UseDataTableOptions<TData>` 复用 [DataTable API](#datatable-api) 的 `data`、`columns`、`rowKey`、`localPagination` 与 `options`。
-
-```ts
-function useDataTable<TData>(config: UseDataTableOptions<TData>): TanStackTable<TData>;
-```
-
-内置配置了核心、筛选、分页与展开行模型。排序模型已就绪，需在 `options` 中传入 `enableSorting: true` 开启排序交互。展开行详情需在 `options.getRowCanExpand` 中提供判断函数。
-
-### useDataTableSelection
-
-```ts
-function useDataTableSelection(options?: UseDataTableSelectionOptions): UseDataTableSelectionResult;
-```
-
-用业务行 key 管理 TanStack 的行选择，避免应用手动转换 TanStack 的 `RowSelectionState`：
-
-```tsx
-const selection = useDataTableSelection({
-  mode: 'multiple',
-  selectedRowKeys: selectedKeys,
-  onSelectedRowKeysChange: setSelectedKeys,
-});
-
-const table = useDataTable({
-  data,
-  columns,
-  rowKey: 'id',
-  options: selection.selectionOptions,
-});
-```
-
-将 `selection.selectionOptions` 传给 DataTable 或 `useDataTable` 的 `options` 即可接入选择状态。行标识必须与 `rowKey` 的返回值一致。
-
-#### 参数 (UseDataTableSelectionOptions)
-
-<a id="usedatatableselectionoptions"></a>
-
-配置业务行标识的受控或非受控选择状态。
+定义列标题、取值路径、渲染、排序、固定、省略与宽度分配。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `mode` | `'single' \| 'multiple'` | `multiple` | 单选只保留最近请求的一个 key；多选保留全部已选 key。 |
-| `selectedRowKeys` | `readonly DataTableRowSelectionKey[]` | — | 受控的已选业务行 key，数组顺序决定单选模式保留哪一项。 |
-| `defaultSelectedRowKeys` | `readonly DataTableRowSelectionKey[]` | `[]` | 非受控模式的初始已选业务行 key。 |
-| `onSelectedRowKeysChange` | `(selectedRowKeys: string[]) => void` | — | 选择变化时返回规范化、去重后的字符串 key。 |
+| `key` | `string` | — | 列唯一标识；省略时依次回退到 dataIndex 与列索引。 |
+| `dataIndex` | `keyof TData \| readonly (string \| number)[]` | — | 读取单元格值的字段名或嵌套路径数组。 |
+| `title` | `ReactNode` | 必填 | 表头展示内容。 |
+| `label` | `string` | — | 纯文字列名；表头为自定义节点时供排序与列宽调整无障碍标签使用。 |
+| `render` | `(value: unknown, record: TData, index: number) => ReactNode` | — | 自定义单元格渲染函数。 |
+| `align` | `'start' \| 'center' \| 'end'` | `'start'` | 表头与单元格对齐方式。 |
+| `width` | `number` | — | 固定列宽（像素）。 |
+| `minWidth` | `number` | `20` | 最小列宽（像素）。 |
+| `maxWidth` | `number` | — | 最大列宽（像素）。 |
+| `flex` | `number` | — | 分配剩余宽度的正数权重，受 minWidth / maxWidth 约束；固定列和手动调整宽度的列忽略此项。 |
+| `fixed` | `'left' \| 'right' \| 'start' \| 'end'` | — | 将列固定在起点或终点。 |
+| `ellipsis` | `boolean` | `false` | 开启单行省略截断，自动切换为固定列宽布局。 |
+| `sorter` | `boolean \| ((a: TData, b: TData) => number)` | — | 启用排序；true 使用默认比较，也可传入自定义比较函数。 |
+| `sortDirections` | `readonly ('asc' \| 'desc')[]` | `['asc', 'desc']` | 排序顺序循环。 |
+| `resizable` | `boolean` | `true` | 表格开启 resizable 时控制该列是否允许调整宽度。 |
+| `className` | `string` | — | 数据单元格类名。 |
+| `headerClassName` | `string` | — | 表头单元格类名。 |
+| `onCell` | `(record: TData, index: number) => `[`TableCellProps`](#tablecell-api) | — | 自定义数据单元格属性、样式或合并；colSpan / rowSpan 为 0 时省略单元格。 |
+| `onHeaderCell` | `(column: `[`TableColumn`](#tablecolumn)`<TData>) => `[`TableHeaderCellProps`](#tableheadercell-api) | — | 自定义表头单元格属性与事件。 |
 
-#### 返回值 (UseDataTableSelectionResult)
+### TableRowSelection
 
-<a id="usedatatableselectionresult"></a>
-
-返回业务行标识、原生选择状态及清除操作。
-
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `selectedRowKeys` | `string[]` | 必填 | 当前已选业务行 key；受控时来自 selectedRowKeys，非受控时来自内部状态。 |
-| `rowSelection` | `RowSelectionState` | 必填 | 由业务 key 派生的 TanStack 原生 rowSelection 映射。 |
-| `onRowSelectionChange` | `OnChangeFn<RowSelectionState>` | 必填 | 可直接传给 useDataTable 或原生 useReactTable。 |
-| `selectionOptions` | [`DataTableSelectionOptions`](#datatableselectionoptions) | 必填 | 可直接展开到 useDataTable options 的完整选择配置。 |
-| `clearSelection` | `() => void` | 必填 | 清空受控或非受控选择，并触发变更回调。 |
-
-#### TanStack 接入 (DataTableSelectionOptions)
-
-<a id="datatableselectionoptions"></a>
-
-需要手动合并 TanStack 配置时使用 `DataTableSelectionOptions`。合并 `state` 时保留业务已有的其他状态。
-
-<details className="leaf-api-details">
-<summary>查看原生选择配置</summary>
+配置行多选或单选状态。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `state` | `{ rowSelection: RowSelectionState }` | 必填 | 传给 useDataTable options 的受控 rowSelection 状态。 |
-| `onRowSelectionChange` | `OnChangeFn<RowSelectionState>` | 必填 | TanStack 原生选择变更回调，内部会规范化业务 key。 |
-| `enableMultiRowSelection` | `boolean` | 必填 | 由 mode 决定；单选为 false，多选为 true。 |
+| `type` | `'checkbox' \| 'radio'` | `'checkbox'` | 多选复选框或单选框模式。 |
+| `selectedRowKeys` | `readonly (string \| number)[]` | — | 受控已选行 key 列表。 |
+| `defaultSelectedRowKeys` | `readonly (string \| number)[]` | `[]` | 非受控初始已选行 key 列表。 |
+| `onChange` | `(selectedRowKeys: (string \| number)[], selectedRows: TData[]) => void` | — | 选择变化回调。 |
+| `getCheckboxProps` | `(record: TData) => { disabled?: boolean }` | — | 控制单行选择控件是否禁用。 |
+| `fixed` | `boolean` | — | 是否将选择列固定在起始侧；默认在存在起始固定列时自动固定。 |
 
-</details>
+### TableExpandable
 
-### DataTableColumnMeta
-
-<a id="datatablecolumndef"></a>
-
-在列定义的 `meta` 中配置 Leaf UI 的列属性。可通过 `DataTableColumnDef` 获得类型约束与补全提示；自定义表头时，建议设置 `label` 纯文本供无障碍提示和调整列宽时使用。
-
-```tsx
-import type { DataTableColumnDef } from '@ifhover/leaf-ui/table';
-
-type Member = { id: string; name: string };
-
-const columns = [
-  { accessorKey: 'name', header: '姓名', meta: { align: 'start', label: '姓名' } },
-] satisfies DataTableColumnDef<Member>[];
-```
+配置行展开详情与树形子行。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
-| `label` | `string` | — | 排序和列宽调整使用的纯文字列名。 |
-| `align` | `'start' \| 'center' \| 'end'` | `'start'` | 表头和单元格对齐。 |
-| `ellipsis` | `boolean` | — | 是否开启单行省略截断；启用后自动切换为固定列宽分配以约束内容宽度。 |
-| `cellClassName` | `string` | — | 单元格类名。 |
-| `headerClassName` | `string` | — | 表头类名。 |
-| `flex` | `number` | — | 分配剩余宽度的正数权重，受 minSize / maxSize 约束；固定列和手动调整宽度的列忽略此项。 |
+| `expandedRowRender` | `(record: TData, index: number) => ReactNode` | — | 渲染展开详情行内容。 |
+| `rowExpandable` | `(record: TData) => boolean` | — | 判断行是否允许展开。 |
+| `expandedRowKeys` | `readonly (string \| number)[]` | — | 受控已展开行 key 列表。 |
+| `defaultExpandedRowKeys` | `readonly (string \| number)[]` | `[]` | 非受控初始已展开行 key 列表。 |
+| `defaultExpandAllRows` | `boolean` | `false` | 初始默认展开所有可展开行。 |
+| `onExpandedRowsChange` | `(expandedKeys: (string \| number)[]) => void` | — | 已展开行 key 列表变化回调。 |
+| `onExpand` | `(expanded: boolean, record: TData) => void` | — | 单行展开或收起回调。 |
+| `indentSize` | `number` | `16` | 树形子行每层缩进像素。 |
+| `childrenColumnName` | `keyof TData \| (string & {})` | `'children'` | 树形数据子节点字段名。 |
 
-### DataTableVirtualOptions
+### TableVirtualOptions
 
 配置虚拟行的预估高度和额外渲染范围。
 
@@ -383,14 +310,16 @@ const columns = [
 | `estimateRowHeight` | `number` | `48` | 测量前的估算记录高度，包含数据行与展开详情。 |
 | `overscan` | `number` | `5` | 在可视区前后额外渲染的行数。 |
 
-### DataTablePagination API
+### TablePagination API
 
-通用展示参数见 <a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a>。表格自动管理分页状态，此处列出与通用分页器的差异：
+支持直接透传 <a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a> 的其他属性（如 `current`、`defaultCurrent`、`pageSize`、`defaultPageSize`、`showTotal` 等）。与独立分页器的差异如下：
 
-- `total`、`current`、`pageSize` 和 `onChange` 由表格实例统一接管，初始分页在实例的 `initialState.pagination` 中配置。
-- `showSizeChanger` 默认开启；`size` 在 `md` 表格下默认为 `md`，在 `sm` 表格下为 `sm`。
-- 总数未知（`pageCount: -1`）时仅显示上一页与下一页按钮，可通过 `hasNextPage` 控制下一页是否可用。
+- 本地分页时 `total` 可省略（默认取顶层数据长度）；服务端分页传入实际总条数，未知总数时传入 `-1`。
+- 默认每页 `10` 条并开启 `showSizeChanger`；`size` 跟随表格尺寸（`md` 或 `sm`）。
+- 总数未知（`total < 0`）时仅显示上一页、当前页码与下一页按钮，可通过 `hasNextPage` 控制下一页是否可用。
 
 | 属性 | 类型 | 默认值 | 说明 |
 | --- | --- | --- | --- |
+| `total` | `number` | — | 数据总条数；本地分页可省略，未知总数传 -1。 |
+| `onChange` | `(page: number, pageSize: number) => void` | — | 页码或每页条数变化回调。 |
 | `hasNextPage` | `boolean` | — | 未知总数时控制下一页是否可用。 |

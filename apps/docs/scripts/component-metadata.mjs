@@ -200,7 +200,6 @@ export function documentationPage(entry, availablePages) {
       : 'components/date-picker';
   const module = entry.module.split('/').filter(Boolean)[1];
   const names = {
-    tabletanstack: 'table',
     autocomplete: 'auto-complete',
     backtop: 'back-top',
     colorpicker: 'color-picker',

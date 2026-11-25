@@ -1,32 +1,42 @@
-import { Text } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { Table, Text } from '@ifhover/leaf-ui';
 
-const members = Array.from({ length: 26 }, (_, index) => ({
-  id: `member-${index + 1}`,
-  name: ['Alex Morgan', 'Sam Taylor', 'Jordan Lee'][index % 3] ?? '',
-  email: `member${index + 1}@example.com`,
-  team: ['Design', 'Engineering', 'Product'][index % 3] ?? '',
-  projects: index + 1,
-}));
+const orders = [
+  {
+    id: 'ORD-01',
+    product: '机械键盘',
+    total: '¥899',
+    note: '工作日白天配送，附带发票。',
+  },
+  {
+    id: 'ORD-02',
+    product: '4K 显示器',
+    total: '¥2,499',
+    note: '请送货前电话联系收件人。',
+  },
+  {
+    id: 'ORD-03',
+    product: '桌面支架',
+    total: '¥299',
+    note: '',
+  },
+];
 
 export function TableExpansion() {
   return (
-    <DataTable
-      data={members}
+    <Table
+      data={orders}
       columns={[
-        { accessorKey: 'name', header: '成员' },
-        { accessorKey: 'team', header: '团队' },
-        { accessorKey: 'projects', header: '项目数' },
+        { dataIndex: 'id', title: '订单号' },
+        { dataIndex: 'product', title: '商品' },
+        { dataIndex: 'total', title: '金额', align: 'end' },
       ]}
       rowKey="id"
-      aria-label="团队成员列表"
-      getRowLabel={(row) => `${row.original.name} (${row.original.id})`}
-      options={{
-        getRowCanExpand: () => true,
-        initialState: { pagination: { pageIndex: 0, pageSize: 5 } },
+      aria-label="可展开订单表格"
+      pagination={false}
+      expandable={{
+        rowExpandable: (record) => Boolean(record.note),
+        expandedRowRender: (record) => <Text tone="muted">备注：{record.note}</Text>,
       }}
-      renderExpandedRow={(row) => <Text>联系邮箱: {row.original.email}</Text>}
-      pagination={{ showSizeChanger: false }}
     />
   );
 }

@@ -3,6 +3,18 @@
 @use '../result/result';
 
 @layer leaf-ui {
+  .leaf-table-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    color: var(--leaf-color-text);
+    font-family: var(--leaf-font-family);
+    font-size: var(--leaf-font-size);
+  }
+
   .leaf-table {
     @include table-family(table);
     @include softened-frame-color(table, var(--leaf-table-surface));
@@ -61,6 +73,13 @@
       --leaf-table-padding-inline: 16px;
     }
 
+    &__content {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      min-height: 0;
+    }
+
     &__scroll-area {
       flex: 1 1 auto;
       border-radius: inherit;
@@ -92,6 +111,7 @@
       color: inherit;
       font: inherit;
     }
+
     &__sr-only {
       position: absolute;
       width: 1px;
@@ -108,6 +128,19 @@
       z-index: 3;
       background: var(--leaf-table-header-background);
       color: var(--leaf-table-header-color);
+    }
+
+    &__heading {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      &[data-align='center'] {
+        justify-content: center;
+      }
+      &[data-align='end'] {
+        justify-content: flex-end;
+      }
     }
 
     &__cell {
@@ -140,8 +173,7 @@
       }
 
       &.leaf-table--striped .leaf-table__body > .leaf-table__row > .leaf-table__cell,
-      &.leaf-table--striped .leaf-table__footer > .leaf-table__row > .leaf-table__cell,
-      .leaf-table__header > .leaf-table__row:not(:last-child) > .leaf-table__column-header {
+      &.leaf-table--striped .leaf-table__footer > .leaf-table__row > .leaf-table__cell {
         border-block-end: var(--leaf-table-border-width) solid var(--leaf-table-border-color);
       }
 
@@ -150,13 +182,13 @@
       }
     }
 
-    &__row:not([aria-hidden='true']):not([data-spanned-start])
-      > &__cell:first-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
+    &__row:not([aria-hidden='true'])
+      > &__cell:first-child:not(.leaf-table__state-cell):not(.leaf-table__utility) {
       padding-inline-start: var(--leaf-table-edge-start);
     }
 
     &__row:not([aria-hidden='true'])
-      > &__cell:last-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility) {
+      > &__cell:last-child:not(.leaf-table__state-cell):not(.leaf-table__utility) {
       padding-inline-end: var(--leaf-table-edge-end);
     }
 
@@ -170,8 +202,8 @@
       border-block-end: var(--leaf-table-border-width) solid var(--leaf-table-divider);
       white-space: nowrap;
 
-      // Ant Design places a short separator at the trailing edge of leaf headers.
-      &:not(:last-child):not(.leaf-data-table__utility):not([colspan])::after {
+      // 在非末列且非工具列列头右侧绘制短竖分隔线。
+      &:not(:last-child):not(.leaf-table__utility):not([colspan])::after {
         position: absolute;
         inset-block-start: 50%;
         inset-inline-end: 0;
@@ -181,10 +213,6 @@
         transform: translateY(-50%);
         pointer-events: none;
         content: '';
-      }
-
-      &[data-leaf-header-group] {
-        text-align: center;
       }
 
       &[data-sortable] {
@@ -200,11 +228,230 @@
       }
     }
 
-    &:not(.leaf-table--bordered)
-      &__header
-      > &__row:not(:last-child)
-      > &__column-header[data-leaf-header-group] {
-      border-block-end: 0;
+    &__sort {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      text-align: inherit;
+      font: inherit;
+      cursor: pointer;
+      &::after {
+        position: absolute;
+        inset: 0;
+        content: '';
+      }
+      &:focus-visible {
+        @include focus-ring;
+        border-radius: var(--leaf-radius-sm);
+      }
+      svg {
+        flex-shrink: 0;
+      }
+      > span:first-child {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    &__sort-icons {
+      display: inline-flex;
+      flex: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      color: var(--leaf-color-text-subtle);
+      line-height: 0;
+      svg {
+        display: block;
+        fill: currentColor;
+        stroke: none;
+        opacity: 0.6;
+        transition:
+          color var(--leaf-motion-fast) var(--leaf-motion-easing),
+          opacity var(--leaf-motion-fast) var(--leaf-motion-easing);
+        &[data-active] {
+          color: var(--leaf-color-primary);
+          opacity: 1;
+        }
+      }
+    }
+
+    &__sort:hover &__sort-icons svg:not([data-active]) {
+      opacity: 0.9;
+    }
+
+    &__sort[data-sorted] &__sort-icons svg:not([data-active]) {
+      opacity: 0.35;
+    }
+
+    &__sort-down {
+      rotate: 180deg;
+    }
+
+    &__utility {
+      text-align: start;
+      .leaf-checkbox,
+      .leaf-radio {
+        vertical-align: middle;
+        min-height: 22px;
+      }
+    }
+
+    &__selection-col,
+    &__selection {
+      --leaf-table-selection-width: calc(var(--leaf-table-edge-start) + 18px);
+      width: var(--leaf-table-selection-width);
+    }
+
+    &--bordered &__selection-col,
+    &--bordered &__selection {
+      --leaf-table-selection-width: calc(
+        var(--leaf-table-edge-start) + 18px + var(--leaf-table-border-width)
+      );
+    }
+
+    &__selection {
+      min-width: var(--leaf-table-selection-width);
+      @at-root .leaf-table__cell#{&},
+        #{&} {
+        padding-inline: var(--leaf-table-edge-start) 0;
+      }
+    }
+
+    &__expansion-col,
+    &__expansion {
+      --leaf-table-expand-size: var(
+        --leaf-component-button-height-sm,
+        var(--leaf-control-height-sm)
+      );
+      --leaf-table-expansion-start: 8px;
+      --leaf-table-expansion-width: calc(
+        var(--leaf-table-expansion-start) + var(--leaf-table-expand-size)
+      );
+      width: var(--leaf-table-expansion-width);
+
+      &:first-child {
+        --leaf-table-expansion-start: max(
+          0px,
+          calc(var(--leaf-table-edge-start) - (var(--leaf-table-expand-size) - 14px) / 2)
+        );
+      }
+    }
+
+    &--bordered &__expansion-col,
+    &--bordered &__expansion {
+      --leaf-table-expansion-width: calc(
+        var(--leaf-table-expansion-start) + var(--leaf-table-expand-size) +
+          var(--leaf-table-border-width)
+      );
+    }
+
+    &__expansion {
+      min-width: var(--leaf-table-expansion-width);
+      @at-root .leaf-table__cell#{&},
+        #{&} {
+        padding-inline: var(--leaf-table-expansion-start) 0;
+      }
+    }
+
+    &__expand-icon {
+      transition: rotate var(--leaf-motion-fast) var(--leaf-motion-easing);
+    }
+
+    &__expand[aria-expanded='true'] &__expand-icon {
+      rotate: 90deg;
+    }
+
+    &__tree-cell {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    &__tree-expand {
+      flex: none;
+    }
+
+    &__tree-spacer {
+      flex: none;
+      width: var(--leaf-component-button-height-sm, var(--leaf-control-height-sm));
+      height: 1px;
+    }
+
+    &__tree-content {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    &__detail {
+      --leaf-table-row-base: var(--leaf-color-surface-muted);
+    }
+
+    &__row-content {
+      display: flow-root;
+      min-width: 0;
+    }
+
+    &__cell[data-ellipsis],
+    &__cell[data-ellipsis] > &__row-content,
+    &__cell[data-ellipsis] &__tree-content {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &__cell[data-ellipsis] > &__row-content {
+      display: block;
+    }
+
+    &__resize {
+      display: block;
+      position: absolute;
+      inset-block: 6px;
+      inset-inline-end: 0;
+      width: 8px;
+      height: auto;
+      padding: 0;
+      margin: 0;
+      border: 0;
+      background: transparent;
+      z-index: 2;
+      cursor: col-resize;
+      touch-action: none;
+      user-select: none;
+      &::after {
+        position: absolute;
+        inset-block: 2px;
+        inset-inline-end: 3px;
+        width: 2px;
+        border-radius: 1px;
+        background: var(--leaf-color-border);
+        content: '';
+        transition: var(--leaf-action-transition);
+      }
+      &:hover::after,
+      &:focus-visible::after,
+      &[data-resizing]::after {
+        background: var(--leaf-color-primary);
+      }
+      &:focus-visible {
+        @include focus-ring;
+      }
+    }
+
+    &__spacer > td {
+      padding: 0;
+      border: 0;
     }
 
     &__body > &__row > &__cell[data-sorted] {
@@ -220,16 +467,12 @@
       border-block-end: 0;
     }
 
-    &__body > &__row:not(.leaf-table__state-row):hover {
+    &__body > &__row:not(.leaf-table__state-row):not([data-selected]):hover {
       --leaf-table-row-background: var(--leaf-table-hover-background);
     }
 
     &__body > &__row[data-selected] {
       --leaf-table-row-background: var(--leaf-table-selected-background);
-    }
-
-    &__body > &__row[data-selected]:hover {
-      --leaf-table-row-background: var(--leaf-table-selected-hover-background);
     }
 
     &__state-cell {
@@ -270,6 +513,23 @@
       background: var(--leaf-table-overlay-background);
       cursor: default;
     }
+
+    &__pagination-bar {
+      display: flex;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--leaf-component-table-gap, 12px);
+      margin-block-start: 16px;
+    }
+
+    &__pagination {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-inline-start: auto;
+    }
   }
 
   [dir='rtl'] .leaf-table,
@@ -283,6 +543,16 @@
       var(--leaf-table-padding-inline)
     );
   }
+
+  [dir='rtl'] .leaf-table__expand-icon,
+  .leaf-table__pagination[dir='rtl'] .leaf-pagination__nav > svg {
+    scale: -1 1;
+  }
+
+  [dir='rtl'] .leaf-table__expand[aria-expanded='true'] .leaf-table__expand-icon {
+    rotate: -90deg;
+  }
+
   @media (forced-colors: active) {
     .leaf-table__column-header::after {
       background: CanvasText;
@@ -290,6 +560,9 @@
     .leaf-table__row[data-selected] > td {
       outline: 1px solid Highlight;
       outline-offset: -2px;
+    }
+    .leaf-table__resize::after {
+      background: ButtonText;
     }
   }
 }

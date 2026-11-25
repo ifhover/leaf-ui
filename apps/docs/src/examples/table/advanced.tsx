@@ -1,24 +1,24 @@
-import { DataTable, useDataTable } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
-const members = Array.from({ length: 10000 }, (_, index) => ({
-  id: String(index + 1),
-  name: `成员 ${index + 1}`,
-  email: `member${index + 1}@example.com`,
-  team: index % 2 ? 'Design' : 'Engineering',
+const logs = Array.from({ length: 1000 }, (_, index) => ({
+  id: `log-${index + 1}`,
+  seq: index + 1,
+  service: ['gateway', 'auth', 'billing', 'search'][index % 4] ?? 'gateway',
+  message: `请求 #${index + 1} 处理完成`,
 }));
-const columns = [
-  { accessorKey: 'name', header: '姓名' },
-  { accessorKey: 'email', header: '邮箱' },
-  { accessorKey: 'team', header: '团队' },
-];
 
 export function TableVirtual() {
-  const table = useDataTable({ data: members, columns, rowKey: 'id', localPagination: false });
   return (
-    <DataTable
-      table={table}
-      aria-label="10000 位成员"
-      virtual={{ estimateRowHeight: 55, overscan: 6 }}
+    <Table
+      data={logs}
+      columns={[
+        { dataIndex: 'seq', title: '序号', width: 90, align: 'end' },
+        { dataIndex: 'service', title: '服务', width: 120 },
+        { dataIndex: 'message', title: '日志内容', flex: 1, minWidth: 200 },
+      ]}
+      rowKey="id"
+      aria-label="虚拟滚动日志表"
+      virtual={{ estimateRowHeight: 55 }}
       maxHeight={320}
       pagination={false}
     />

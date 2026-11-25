@@ -80,7 +80,7 @@ const componentSidebar = [
     text: '数据展示',
     items: [
       { text: 'Statistic', tag: '统计数值', link: '/components/statistic' },
-      { text: 'DataTable', tag: '表格', link: '/components/table' },
+      { text: 'Table', tag: '表格', link: '/components/table' },
       { text: 'Descriptions', tag: '描述列表', link: '/components/descriptions' },
       { text: 'QRCode', tag: '二维码', link: '/components/qr-code' },
       { text: 'Timeline', tag: '时间线', link: '/components/timeline' },
@@ -319,10 +319,6 @@ export default defineConfig({
         '@ifhover/leaf-ui/table$': path.resolve(
           directory,
           '../../packages/react/src/table/index.ts',
-        ),
-        '@ifhover/leaf-ui/table/tanstack$': path.resolve(
-          directory,
-          '../../packages/react/src/tabletanstack/index.ts',
         ),
         '@ifhover/leaf-ui$': path.resolve(directory, '../../packages/react/src/index.ts'),
         '@ifhover/leaf-ui/styles.css$': path.resolve(

@@ -266,9 +266,7 @@
   "table": {
     "table": "表",
     "scrollArea": "スクロール領域",
-    "loadError": "データを読み込めませんでした。もう一度お試しください。"
-  },
-  "dataTable": {
+    "loadError": "データを読み込めませんでした。もう一度お試しください。",
     "resizeColumn": "列「{label}」の幅を変更",
     "selectRows": "行を選択",
     "selectAllRowsOnThisPage": "このページのすべての行を選択",

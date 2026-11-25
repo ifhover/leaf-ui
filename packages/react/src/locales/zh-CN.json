@@ -266,9 +266,7 @@
   "table": {
     "table": "表格",
     "scrollArea": "滚动区域",
-    "loadError": "加载失败，请重试"
-  },
-  "dataTable": {
+    "loadError": "加载失败，请重试",
     "resizeColumn": "调整列宽: {label}",
     "selectRows": "选择行",
     "selectAllRowsOnThisPage": "选择本页所有行",

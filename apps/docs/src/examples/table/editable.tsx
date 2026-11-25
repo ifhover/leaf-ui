@@ -1,6 +1,4 @@
-import { Input } from '@ifhover/leaf-ui';
-import { DataTable, useDataTable } from '@ifhover/leaf-ui/table';
-import type { ColumnDef } from '@tanstack/react-table';
+import { Input, Table, type TableColumn } from '@ifhover/leaf-ui';
 import { useMemo, useState } from 'react';
 
 interface Member {
@@ -10,46 +8,39 @@ interface Member {
   team: string;
 }
 
-const members: Member[] = Array.from({ length: 3 }, (_, index) => ({
-  id: String(index + 1),
-  name: ['Alex', 'Sam', 'Riley'][index % 3] ?? '',
-  email: `member${index + 1}@example.com`,
-  team: index % 2 ? 'Design' : 'Engineering',
-}));
+const initialMembers: Member[] = [
+  { id: '1', name: '林澈', email: 'linche@example.com', team: '研发' },
+  { id: '2', name: '周岚', email: 'zhoulan@example.com', team: '设计' },
+  { id: '3', name: '许言', email: 'xuyan@example.com', team: '研发' },
+];
 
 export function TableEditable() {
-  const [data, setData] = useState(members);
-  const columns = useMemo<ColumnDef<Member>[]>(
+  const [data, setData] = useState(initialMembers);
+  const columns = useMemo<TableColumn<Member>[]>(
     () => [
       {
-        accessorKey: 'name',
-        header: '成员',
-        size: 240,
-        cell: ({ row }) => (
+        dataIndex: 'name',
+        title: '成员',
+        width: 240,
+        render: (_value, record) => (
           <Input
-            aria-label={`姓名: ${row.original.id}`}
-            value={row.original.name}
+            aria-label={`成员姓名 ${record.id}`}
+            value={record.name}
             onChange={(event) => {
               const name = event.currentTarget.value;
               setData((previous) =>
-                previous.map((member) =>
-                  member.id === row.original.id ? { ...member, name } : member,
-                ),
+                previous.map((member) => (member.id === record.id ? { ...member, name } : member)),
               );
             }}
           />
         ),
       },
-      { accessorKey: 'email', header: '邮箱', size: 260 },
-      { accessorKey: 'team', header: '团队', size: 140 },
+      { dataIndex: 'email', title: '邮箱', width: 260 },
+      { dataIndex: 'team', title: '团队', width: 140 },
     ],
     [],
   );
-  const table = useDataTable({
-    data,
-    columns,
-    rowKey: 'id',
-    localPagination: false,
-  });
-  return <DataTable table={table} aria-label="编辑成员姓名" pagination={false} />;
+  return (
+    <Table data={data} columns={columns} rowKey="id" aria-label="编辑成员姓名" pagination={false} />
+  );
 }

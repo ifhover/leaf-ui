@@ -121,7 +121,7 @@ test('color guides show semantic shades and a matching editable surface example'
     const mutedSurfaceRow = tokensPage
       .split('\n')
       .find((line) => line.includes('`mutedSurfaceColor`'));
-    assert.doesNotMatch(mutedSurfaceRow, /DataTable|Modal/u);
+    assert.doesNotMatch(mutedSurfaceRow, /Table|Modal/u);
   }
 });
 

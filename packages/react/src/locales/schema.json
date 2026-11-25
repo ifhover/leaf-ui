@@ -1005,13 +1005,7 @@
         "loadError": {
           "type": "string",
           "description": "English: Unable to load data. Please try again."
-        }
-      }
-    },
-    "dataTable": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
+        },
         "resizeColumn": {
           "type": "string",
           "description": "English: Resize column: {label}"

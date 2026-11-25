@@ -1,23 +1,24 @@
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
-const members = [
-  { id: 'alex', name: 'Alex Morgan', team: 'Design', projects: 8 },
-  { id: 'sam', name: 'Sam Taylor', team: 'Engineering', projects: 3 },
-  { id: 'jordan', name: 'Jordan Lee', team: 'Product', projects: 12 },
+const invoices = [
+  { id: 'INV-101', customer: 'Northstar Labs', status: 'Paid', amount: '$12,800' },
+  { id: 'INV-102', customer: 'Harbor Studio', status: 'Pending', amount: '$6,400' },
+  { id: 'INV-103', customer: 'Clearwater Data', status: 'Paid', amount: '$19,200' },
 ];
 
 export function TableSimple() {
   return (
-    <DataTable
+    <Table
       bordered
-      data={members}
+      data={invoices}
       columns={[
-        { accessorKey: 'name', header: 'Member' },
-        { accessorKey: 'team', header: 'Team' },
-        { accessorKey: 'projects', header: 'Projects' },
+        { dataIndex: 'id', title: 'Invoice' },
+        { dataIndex: 'customer', title: 'Customer' },
+        { dataIndex: 'status', title: 'Status' },
+        { dataIndex: 'amount', title: 'Amount', align: 'end' },
       ]}
       rowKey="id"
-      aria-label="Bordered table"
+      aria-label="Bordered invoice table"
       pagination={false}
     />
   );

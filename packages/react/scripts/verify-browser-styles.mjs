@@ -30,8 +30,7 @@ const cases = {
     exclude: ['input', 'table', 'modal'],
   },
   table: {
-    names: ['DataTable'],
-    subpath: '/table',
+    names: ['Table'],
     include: ['table', 'scrollbar', 'loading', 'result', 'checkbox', 'pagination'],
     exclude: ['color-picker', 'date-picker', 'popover'],
   },
@@ -283,10 +282,10 @@ for (const engine of ['rspack', 'vite']) {
       );
     if (name === 'table') {
       const baseCellIndex = css.indexOf('.leaf-table__cell');
-      const utilityCellIndex = css.indexOf('.leaf-data-table__utility');
+      const utilityCellIndex = css.indexOf('.leaf-table__utility');
       assert.ok(
         baseCellIndex >= 0 && utilityCellIndex > baseCellIndex,
-        `${engine} table orders base Table CSS before DataTable CSS`,
+        `${engine} table orders base Table cell rules before utility column rules`,
       );
     }
     styles.set(name, css);

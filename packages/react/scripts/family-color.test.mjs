@@ -185,8 +185,7 @@ test('every public component export has a color responsibility in the inventory'
   const documented = rows.map((line) => line.split('|').slice(2, -1).join('|')).join('\n');
   for (const entry of entries)
     assert.ok(documented.includes(`\`${entry.slice(2)}\``), `${entry}: missing color review`);
-  // Table's core and adapter paths intentionally share one implementation row.
-  assert.equal(rows.length, entries.length - 1);
+  assert.equal(rows.length, entries.length);
 });
 
 test('dialog overlays avoid light-dark() and root tokens default color-scheme to light', async () => {

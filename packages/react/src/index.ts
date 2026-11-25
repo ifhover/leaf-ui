@@ -219,7 +219,23 @@ export type { StepItem, StepsProps } from './steps';
 export { Steps } from './steps';
 export type { SwitchProps } from './switch';
 export { Switch } from './switch';
-export type { DataTablePresentationProps } from './tabletanstack/defaults';
+export type {
+  TableCellProps,
+  TableColumn,
+  TableExpandable,
+  TableHeaderCellProps,
+  TableKey,
+  TablePaginationProps,
+  TablePresentationProps,
+  TableProps,
+  TableRowKey,
+  TableRowProps,
+  TableRowSelection,
+  TableSorterState,
+  TableSortOrder,
+  TableVirtualOptions,
+} from './table';
+export { Table } from './table';
 export type { TabItem, TabsProps } from './tabs';
 export { Tabs } from './tabs';
 export type { CheckableTagProps, TagGroupProps, TagOption, TagProps } from './tag';

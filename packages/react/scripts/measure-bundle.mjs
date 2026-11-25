@@ -10,8 +10,7 @@ await mkdir(output, { recursive: true });
 const cases = {
   base: `import '@ifhover/leaf-ui/styles.css'; export const baseStyles = true;`,
   button: `import { Button } from '@ifhover/leaf-ui/button'; export { Button };`,
-  table: `export { DataTable } from '@ifhover/leaf-ui/table';`,
-  tableAdapter: `export { DataTable } from '@ifhover/leaf-ui/table/tanstack';`,
+  table: `export { Table } from '@ifhover/leaf-ui/table';`,
   form: `export { ConfigProvider } from '@ifhover/leaf-ui/config-provider'; export { Form, FormField } from '@ifhover/leaf-ui/form'; export { Input } from '@ifhover/leaf-ui/input'; export { InputNumber } from '@ifhover/leaf-ui/input-number'; export { Select } from '@ifhover/leaf-ui/select'; export { DatePicker } from '@ifhover/leaf-ui/date-picker'; export { CheckboxGroup } from '@ifhover/leaf-ui/checkbox'; export { Button } from '@ifhover/leaf-ui/button';`,
   all: `export * from '@ifhover/leaf-ui';`,
 };
@@ -76,15 +75,14 @@ for (const [name, modules] of inputs) {
     !modules.some((file) => /viewerjs|yet-another-react-lightbox/u.test(file)),
     `${name} must not load an external image preview engine`,
   );
-  if (!['table', 'tableAdapter'].includes(name))
-    assert.ok(
-      !modules.some((file) =>
-        /@tanstack[\\/]react-table|@tanstack[\\/]table-core|[\\/]tabletanstack[\\/]/u.test(file),
-      ),
-      `${name} must not load the optional table engine`,
-    );
-  if (['table', 'tableAdapter'].includes(name))
-    assert.ok(report.cases[name].js.gzip < 96 * 1024, 'DataTable JS exceeds 96 KiB gzip');
+  assert.ok(
+    !modules.some((file) =>
+      /@tanstack[\\/]react-table|@tanstack[\\/]table-core|[\\/]tabletanstack[\\/]/u.test(file),
+    ),
+    `${name} must not load @tanstack/react-table`,
+  );
+  if (name === 'table')
+    assert.ok(report.cases[name].js.gzip < 96 * 1024, 'Table JS exceeds 96 KiB gzip');
   if (name === 'button') {
     const css = await readFile(path.join(output, `${name}.css`), 'utf8');
     assert.match(css, /\.leaf-button/);
@@ -110,9 +108,9 @@ assert.ok(
   'Form + services CSS regression: over 21.25 KiB gzip',
 );
 assert.ok(report.cases.all.js.gzip < 250 * 1024, 'Library JS regression: over 250 KiB gzip');
-// Calendar, picker, Card, Menu, FileList and dialog structures raise full CSS from
-// npm 0.8.1's 46.10 to 51.04 KiB; retain about 6% headroom, not a changed metric.
-assert.ok(report.cases.all.css.gzip < 54 * 1024, 'Library CSS regression: over 54 KiB gzip');
+// Root exports now include Table and its styles (previously excluded on an optional subpath);
+// keep headroom above the measured ~55.9 KiB total without loosening single-component budgets.
+assert.ok(report.cases.all.css.gzip < 58 * 1024, 'Library CSS regression: over 58 KiB gzip');
 assert.ok(
   report.cases.button.css.gzip < report.cases.all.css.gzip,
   'Component CSS must be smaller than the whole library',

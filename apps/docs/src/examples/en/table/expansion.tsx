@@ -1,32 +1,42 @@
-import { Text } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { Table, Text } from '@ifhover/leaf-ui';
 
-const members = Array.from({ length: 26 }, (_, index) => ({
-  id: `member-${index + 1}`,
-  name: ['Alex Morgan', 'Sam Taylor', 'Jordan Lee'][index % 3] ?? '',
-  email: `member${index + 1}@example.com`,
-  team: ['Design', 'Engineering', 'Product'][index % 3] ?? '',
-  projects: index + 1,
-}));
+const orders = [
+  {
+    id: 'ORD-01',
+    product: 'Mechanical Keyboard',
+    total: '$129',
+    note: 'Deliver during business hours with invoice included.',
+  },
+  {
+    id: 'ORD-02',
+    product: '4K Display',
+    total: '$499',
+    note: 'Call the recipient before arrival.',
+  },
+  {
+    id: 'ORD-03',
+    product: 'Desk Stand',
+    total: '$49',
+    note: '',
+  },
+];
 
 export function TableExpansion() {
   return (
-    <DataTable
-      data={members}
+    <Table
+      data={orders}
       columns={[
-        { accessorKey: 'name', header: 'Member' },
-        { accessorKey: 'team', header: 'Team' },
-        { accessorKey: 'projects', header: 'Projects' },
+        { dataIndex: 'id', title: 'Order' },
+        { dataIndex: 'product', title: 'Product' },
+        { dataIndex: 'total', title: 'Total', align: 'end' },
       ]}
       rowKey="id"
-      aria-label="Team directory"
-      getRowLabel={(row) => `${row.original.name} (${row.original.id})`}
-      options={{
-        getRowCanExpand: () => true,
-        initialState: { pagination: { pageIndex: 0, pageSize: 5 } },
+      aria-label="Expandable orders"
+      pagination={false}
+      expandable={{
+        rowExpandable: (record) => Boolean(record.note),
+        expandedRowRender: (record) => <Text tone="muted">Note: {record.note}</Text>,
       }}
-      renderExpandedRow={(row) => <Text>Email: {row.original.email}</Text>}
-      pagination={{ showSizeChanger: false }}
     />
   );
 }

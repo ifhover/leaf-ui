@@ -470,11 +470,12 @@ test('loading compiles standalone animation variants, color overrides, and reduc
   assert.equal(pulseRing['border-radius'], '50%');
 });
 
-test('pagination preserves button icon padding shrink and keeps solid active page static and unclickable', async () => {
+test('pagination uses icon-only nav controls and keeps solid active page static and unclickable', async () => {
   const styles = await compiledStyles('pagination/pagination.scss');
-  const nav = styles('.leaf-pagination > .leaf-button.leaf-pagination__nav');
-  assert.equal(nav.gap, '4px');
-  assert.equal(nav.padding, undefined);
+  assert.throws(
+    () => styles('.leaf-pagination > .leaf-button.leaf-pagination__nav'),
+    /missing compiled rule/u,
+  );
 
   const pageButton = styles(
     '.leaf-pagination > .leaf-button:not(.leaf-pagination__nav):not(.leaf-pagination__jump)',

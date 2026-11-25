@@ -1,4 +1,4 @@
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
 const members = [
   { id: 'alex', name: 'Alex Morgan', team: 'Design', projects: 8 },
@@ -11,16 +11,16 @@ const members = [
 
 export function TableBasic() {
   return (
-    <DataTable
+    <Table
       data={members}
       columns={[
-        { accessorKey: 'name', header: 'Member' },
-        { accessorKey: 'team', header: 'Team' },
-        { accessorKey: 'projects', header: 'Projects' },
+        { dataIndex: 'name', title: 'Member' },
+        { dataIndex: 'team', title: 'Team' },
+        { dataIndex: 'projects', title: 'Projects', align: 'end' },
       ]}
       rowKey="id"
       aria-label="Team members"
-      options={{ initialState: { pagination: { pageSize: 5 } } }}
+      pagination={{ defaultPageSize: 5 }}
     />
   );
 }

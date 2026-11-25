@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { type HTMLAttributes, type ReactNode, useEffect, useId, useRef, useState } from 'react';
-import { ButtonControl } from '../button/button';
+import { ButtonControl, toIconButtonSize } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { InputNumberControl as InputNumber } from '../inputnumber/inputnumber';
@@ -43,7 +43,7 @@ export function PaginationControl({
   disabled = false,
   hideOnSinglePage = false,
   size = 'md',
-  variant = 'ghost',
+  variant = 'outline',
   className,
   dir,
   'aria-label': label,
@@ -142,15 +142,15 @@ export function PaginationControl({
         </span>
       )}
       <ButtonControl
-        size={size}
+        size={toIconButtonSize(size)}
         variant={variant === 'outline' ? 'outline' : 'text'}
         type="button"
         className="leaf-pagination__nav"
+        aria-label={messages.pagination.previousPage}
         disabled={disabled || page === 1}
         onClick={() => choose(page - 1)}
       >
         <ChevronLeft aria-hidden="true" />
-        {messages.pagination.previousPage}
       </ButtonControl>
       {simple ? (
         <span className="leaf-pagination__simple">
@@ -207,14 +207,14 @@ export function PaginationControl({
         ))
       )}
       <ButtonControl
-        size={size}
+        size={toIconButtonSize(size)}
         variant={variant === 'outline' ? 'outline' : 'text'}
         type="button"
         className="leaf-pagination__nav"
+        aria-label={messages.pagination.nextPage}
         disabled={disabled || page === pages}
         onClick={() => choose(page + 1)}
       >
-        {messages.pagination.nextPage}
         <ChevronRight aria-hidden="true" />
       </ButtonControl>
       {showSizeChanger && (

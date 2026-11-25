@@ -293,7 +293,7 @@
   --leaf-table-header-color: var(--leaf-table-text);
   --leaf-table-hover-background: color-mix(
     in srgb,
-    var(--leaf-table-text) 4%,
+    var(--leaf-table-text) 2%,
     var(--leaf-table-surface)
   );
   --leaf-table-header-sort-background: var(
@@ -306,16 +306,7 @@
     var(--leaf-table-text) 2%,
     var(--leaf-table-surface)
   );
-  --leaf-table-selected-background: color-mix(
-    in srgb,
-    var(--leaf-color-primary) 6%,
-    var(--leaf-table-surface)
-  );
-  --leaf-table-selected-hover-background: color-mix(
-    in srgb,
-    var(--leaf-color-primary) 10%,
-    var(--leaf-table-surface)
-  );
+  --leaf-table-selected-background: var(--leaf-table-hover-background);
   // Retain the historical optional compatibility variable; its default is local to this family.
   --leaf-table-overlay-background: var(
     --leaf-color-surface-alpha-80,

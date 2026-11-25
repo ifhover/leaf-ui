@@ -1,35 +1,32 @@
-import { DataTable, type DataTableColumnDef } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-}
-
-const products: Product[] = [
+const products = [
   {
-    id: '1',
-    name: '可调节桌面显示器支架，适用 24 至 32 英寸屏幕',
-    description: '铝合金材质，支持横竖屏切换',
-    status: '在售',
+    sku: 'LF-101',
+    name: '静音机械键盘 75%',
+    description: '支持热插拔与双模连接，适合长时间代码编写与文档整理。',
+    price: '¥799',
   },
-  { id: '2', name: '无线键盘', description: '支持三台设备切换', status: '在售' },
-  { id: '3', name: '桌面收纳架', description: '分层收纳常用办公用品', status: '缺货' },
-];
-const columns: DataTableColumnDef<Product>[] = [
-  { accessorKey: 'name', header: '商品名称', minSize: 200, meta: { flex: 2 } },
-  { accessorKey: 'description', header: '说明', minSize: 160, meta: { flex: 1 } },
-  { accessorKey: 'status', header: '状态', size: 100 },
+  {
+    sku: 'LF-102',
+    name: '便携 4K 扩展屏',
+    description: '单根 Type-C 一线直连，默认校色，适合外出演示与副屏监控。',
+    price: '¥1,499',
+  },
 ];
 
 export function TableSizing() {
   return (
-    <DataTable
+    <Table
       data={products}
-      columns={columns}
-      rowKey="id"
-      aria-label="商品列宽分配"
+      columns={[
+        { dataIndex: 'sku', title: '编号', width: 100 },
+        { dataIndex: 'name', title: '商品名称', flex: 2, minWidth: 140, ellipsis: true },
+        { dataIndex: 'description', title: '说明', flex: 1, minWidth: 160, ellipsis: true },
+        { dataIndex: 'price', title: '价格', width: 100, align: 'end' },
+      ]}
+      rowKey="sku"
+      aria-label="列宽分配示例"
       pagination={false}
     />
   );

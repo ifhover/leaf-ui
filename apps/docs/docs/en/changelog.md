@@ -7,6 +7,21 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.22.0 - 2026-11-25
+
+### Improvements and fixes
+
+- **`Table` hover and selection visuals**: Softened normal row hover fill from `4%` to `2% --leaf-table-text`; selected rows now share the same neutral hover surface and remain visually unchanged when hovered.
+- **Native `Table` tree data and documentation refresh**: Added nested `children` tree rows (`indentSize` and `childrenColumnName`), controlled/uncontrolled single and multi-column sorting, current-page select-all preserving off-page selections, column pinning and resizing, virtual scrolling, and server-side sorting/pagination inside the native `Table`, along with streamlined bilingual docs and examples.
+
+### Breaking changes and migration
+
+- **Native `Table` rewrite, removing `@tanstack/react-table` and `DataTable`**:
+  - Renamed the table component to `Table` and exported it directly from the root `@ifhover/leaf-ui` entry (retaining the standard `@ifhover/leaf-ui/table` subpath while removing `@ifhover/leaf-ui/table/tanstack`, the optional `@tanstack/react-table` dependency, `DataTable`, `useDataTable`, and `useDataTableSelection`).
+  - Replaced TanStack adapter APIs with declarative `columns` (`TableColumn<TData>`: `title`, `dataIndex`, `key`, `render`, `align`, `width`, `minWidth`, `maxWidth`, `flex`, `fixed`, `ellipsis`, `sorter`, `sortDirections`, `resizable`, `onCell`, `onHeaderCell`) and declarative props (`rowSelection`, `expandable`, `sort` / `defaultSort` / `onSortChange` / `multiSort` / `manualSorting` / `manualPagination` / `onRow`, `resizable`, `virtual`, `pagination`). Multi-level grouped headers and client-side row grouping were removed.
+  - Renamed the `ConfigProvider` component-defaults key from `components.DataTable` to `components.Table` (`TablePresentationProps`), merged `dataTable` locale keys into `table`, and removed the internal `--leaf-table-selected-hover-background` variable.
+- **`Pagination` default appearance update**: Changed default `variant` from `'ghost'` to `'outline'` (pass `variant="ghost"` for borderless controls) and updated Previous/Next controls to square icon-only buttons with preserved `aria-label` names (also applied to `Table` unknown-total pagination).
+
 ## 0.21.0 - 2026-11-25
 
 ### Improvements and fixes

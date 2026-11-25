@@ -1,45 +1,32 @@
-import { DataTable, type DataTableColumnDef } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-}
-
-const products: Product[] = [
+const products = [
   {
-    id: '1',
-    name: 'Adjustable desktop monitor arm for 24 to 32 inch screens',
-    description: 'Aluminum frame with landscape and portrait rotation',
-    status: 'Active',
+    sku: 'LF-101',
+    name: 'Quiet Mechanical Keyboard 75%',
+    description: 'Hot-swappable dual-mode keyboard suited for long writing and coding sessions.',
+    price: '$129',
   },
   {
-    id: '2',
-    name: 'Wireless keyboard',
-    description: 'Switch between three devices',
-    status: 'Active',
+    sku: 'LF-102',
+    name: 'Portable 4K Monitor',
+    description: 'Single-cable USB-C display calibrated out of the box for secondary workflows.',
+    price: '$299',
   },
-  {
-    id: '3',
-    name: 'Desktop organizer',
-    description: 'Tiered storage for office supplies',
-    status: 'Sold out',
-  },
-];
-const columns: DataTableColumnDef<Product>[] = [
-  { accessorKey: 'name', header: 'Product', minSize: 200, meta: { flex: 2 } },
-  { accessorKey: 'description', header: 'Description', minSize: 160, meta: { flex: 1 } },
-  { accessorKey: 'status', header: 'Status', size: 100 },
 ];
 
 export function TableSizing() {
   return (
-    <DataTable
+    <Table
       data={products}
-      columns={columns}
-      rowKey="id"
-      aria-label="Product column sizing"
+      columns={[
+        { dataIndex: 'sku', title: 'SKU', width: 100 },
+        { dataIndex: 'name', title: 'Product', flex: 2, minWidth: 140, ellipsis: true },
+        { dataIndex: 'description', title: 'Description', flex: 1, minWidth: 160, ellipsis: true },
+        { dataIndex: 'price', title: 'Price', width: 100, align: 'end' },
+      ]}
+      rowKey="sku"
+      aria-label="Column sizing"
       pagination={false}
     />
   );

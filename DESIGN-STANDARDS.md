@@ -11,7 +11,7 @@
 ### 视觉方向
 
 - 默认外观安静、可读。所有组件使用语义主题 token，支持浅色 / 深色区域，并继承宽松 / 紧凑密度；组件局部覆盖与显式尺寸优先。
-- 桌面工具视觉：纯白（深色模式 `#0d0d0d`）净面与克制的黑白灰阶边界、柔和圆角，紧凑控件放在宽松的容器留白中，避免过度堆叠灰色底板。品牌色可配置（默认 `#007aff`，支持 `'neutral'` 自适应黑白灰单色主色），收敛至主要操作 `Button`、勾选/开关/滑块/进度、日历选中日期、分页当前页、默认线形标签页、表单字段聚焦、表格选中浅底及激活排序/拖拽指示与状态标识；卡片/分段标签页与菜单保持黑白灰中性外观；更换品牌色时视觉结构保持一致。
+- 桌面工具视觉：纯白（深色模式 `#0d0d0d`）净面与克制的黑白灰阶边界、柔和圆角，紧凑控件放在宽松的容器留白中，避免过度堆叠灰色底板。品牌色可配置（默认 `#007aff`，支持 `'neutral'` 自适应黑白灰单色主色），收敛至主要操作 `Button`、勾选/开关/滑块/进度、日历选中日期、分页当前页、默认线形标签页、表单字段聚焦、表格激活排序/拖拽指示与状态标识；卡片/分段标签页与菜单保持黑白灰中性外观；更换品牌色时视觉结构保持一致。
 - 中性角色来自一套由 `neutralColor` 种子（默认纯灰 `#707070`）生成的共享色阶：默认灰阶不偏蓝，显式带色相的中性基色仍保留其色相。浅色模式把文字、边框、表面映射到适合浅底的档位，深色模式把同一色阶映射到深色表面。组件消费这些角色，不硬编码中性值。语义状态色和可读的焦点反馈与中性表面区分开。
 - 可选主题预设可以使用更粗的外边框和偏移阴影；token 缺省时默认外观不变。全局 `borderWidth`、`controlShadow`、`surfaceShadow` 与显式组件状态绘制必须经由 ConfigProvider 生效，包括 Portal 和 API 反馈服务。结构分割线保留自身细线。
 - 更粗的边框从内部控件几何和嵌套圆角中扣除，不增加控件高度。自定义阴影必须保留清晰的焦点轮廓、禁用语义、减少动态效果与强制颜色模式。预设只包含可移植的主题数据；文档装饰不得提供私有组件皮肤规则。
@@ -25,7 +25,7 @@
 ### 圆角与嵌套
 
 - 层级来自圆角、边框和字体，不来自装饰。默认圆角：小标签 5px（`--leaf-radius-sm`）、控件 10px（`--leaf-radius`，并按 `sm / md / lg` 尺寸提供 `8 / 10 / 12px` 阶梯：`--leaf-control-radius-sm` / `--leaf-radius` / `--leaf-control-radius-lg`）、内容面 14px（`--leaf-radius-md`，`sm / lg` 卡片与带边框 `Descriptions` 为 `12 / 16px`）、浮层与抽屉 16px（`--leaf-radius-lg`），均由基础圆角按整数偏移步进（`-5 / -2 / 0 / +2 / +4 / +6 px` 并下限归零）派生（`borderRadius: 0` 时全数归零）。Square `Avatar`（sm / md / lg）使用 `8 / 12 / 16px`，`Tag`（sm / md / lg）使用 `4 / 5 / 6px`，`InputOTP`（sm / md / lg）使用 `8 / 10 / 12px`。
-- 圆角由外向内递减：Modal 与 Confirm 用 medium，抽屉和通用浮层用 large；表单浮层跟随字段实际圆角，Dropdown 使用组件圆角或基础圆角；内容面（Card、Collapse、Descriptions、Transfer、Upload、FileList、Result 内容、选择卡片与列表）用 medium；按钮、字段与 Alert 用 base；复选框与小标签用 small；DataTable 仅顶部使用 base 圆角，Tag 见下文。
+- 圆角由外向内递减：Modal 与 Confirm 用 medium，抽屉和通用浮层用 large；表单浮层跟随字段实际圆角，Dropdown 使用组件圆角或基础圆角；内容面（Card、Collapse、Descriptions、Transfer、Upload、FileList、Result 内容、选择卡片与列表）用 medium；按钮、字段与 Alert 用 base；复选框与小标签用 small；Table 仅顶部使用 base 圆角，Tag 见下文。
 - 嵌套表面使用同心曲线：`内圆角 = max(0px, 外圆角 - 内边距 - 边框宽度)`。例：外圆角 16px、内边距 6px、边框 1px 的通用浮层，内圆角为 9px。
 - 选择类浮层与 Dropdown 的选项圆角固定为字段 / 基础圆角减 2px（最小为 0），与 Select 一致，不随面板内边距变化；行内反馈层继承该选项圆角。日期 / 时间面板内的时间行、日期格与日历标题同样使用该选项圆角；周选择只在行首尾保留外侧圆角。其他嵌套表面使用共享几何辅助函数处理不等的横纵内缩。主题和组件内边距变化自动更新曲线；小圆角与直角主题收敛到 0。
 - 独立控件、日历格、标签和图标保留各自的语义圆角。不要用裁剪掩盖圆角不匹配。
@@ -38,7 +38,7 @@
 
 ### 阴影与边框
 
-- 纯白内容面在白色背景上通过清晰而不过重的中性外框区分边界：`Card`、`Collapse`（bordered）、`Descriptions`（bordered）、`Transfer`、`Modal`、`Drawer` 与 `FileList` 外框统一使用 `--leaf-color-border`（浅色 `#e5e5e5`，深色 `#262626`）；`Card` 默认加最轻的朝下静止阴影（`shadow-xs`），内嵌标签栏分割线复用基于 `--leaf-color-divider` 柔化 70% 的 `softened-frame-color`；`DataTable` 保持平面、默认无外框，网格与分隔线同样使用 70% `softened-frame-color`。
+- 纯白内容面在白色背景上通过清晰而不过重的中性外框区分边界：`Card`、`Collapse`（bordered）、`Descriptions`（bordered）、`Transfer`、`Modal`、`Drawer` 与 `FileList` 外框统一使用 `--leaf-color-border`（浅色 `#e5e5e5`，深色 `#262626`）；`Card` 默认加最轻的朝下静止阴影（`shadow-xs`），内嵌标签栏分割线复用基于 `--leaf-color-divider` 柔化 70% 的 `softened-frame-color`；`Table` 保持平面、默认无外框，网格与分隔线同样使用 70% `softened-frame-color`。
 - `Button`（`outline` 与 `solid`）使用极轻的 `--leaf-shadow-control`（`0 2px 0 rgb(0 0 0 / 0.02)`）；`Collapse`（bordered）、`Transfer` 面板与 `Upload` 符号徽标共用朝下的 `shadow-xs` 静止阴影，悬停不抬起；`Pagination` 当前页使用无阴影 `solid` 按钮。
 - 普通内部分割线、`Modal`（`size="mini"` 除外）/ `Drawer` 标题底线与页脚顶线（`divided`）、`Transfer` 表头底线使用更轻的 `--leaf-color-divider`（浅色 `#eaeaea`，深色 `#212121`），形成“外框清、内线轻”的层级。
 - 更强的阴影只用于浮起的层和手柄：分段 `Tabs` 轨道保持扁平无阴影、选中滑块使用 `shadow-sm`；浮层、`Modal` 与 `Confirm` 使用 `shadow-md`；`Drawer` `shadow-lg`；滑块手柄使用各自抬起阴影。
@@ -103,10 +103,9 @@
 
 ### Pagination
 
-- 默认使用无边框的 `variant="ghost"`；`variant="outline"` 为常规分页与翻页按钮提供表面填充描边样式。两者共用控件高度 token、稳定的按下几何与默认 `--leaf-color-text` 正文色（含总数、省略号与条数标签）。
-- 上一页、下一页按钮在图标旁直接展示文字（中文“上一页 / 下一页”，英文“Previous / Next”）。
-- `ghost` 与 `outline` 模式下，非当前页与翻页按钮分别保持透明无边框（`text`）或表面填充描边（`outline`）；当前选中页统一使用按钮的 `solid` 样式（`--leaf-color-primary` 背景配 `--leaf-color-on-primary` 前景，无阴影），并保持不可点击、悬停时鼠标指针保持 `default` 且无视觉变化，不使用滑动指示器过渡动画（整组分页 `disabled` 时同步应用禁用透明度与 `not-allowed` 指针）。
-- 上一页、下一页翻页按钮复用 Button 图标侧自动收窄内边距的行为（仅收窄图标一侧）。
+- 默认使用描边样式 `variant="outline"`；`variant="ghost"` 为常规分页与翻页按钮提供透明无边框样式。两者共用控件高度 token、稳定的按下几何与默认 `--leaf-color-text` 正文色（含总数、省略号与条数标签）。
+- 上一页、下一页按钮采用正方形纯图标按钮，仅展示左右箭头图标并通过 `aria-label` 保留“上一页 / 下一页”（英文 “Previous / Next”）无障碍名称，不展示文字标签。
+- `outline` 与 `ghost` 模式下，非当前页与翻页按钮分别保持表面填充描边（`outline`）或透明无边框（`text`）；当前选中页统一使用按钮的 `solid` 样式（`--leaf-color-primary` 背景配 `--leaf-color-on-primary` 前景，无阴影），并保持不可点击、悬停时鼠标指针保持 `default` 且无视觉变化，不使用滑动指示器过渡动画（整组分页 `disabled` 时同步应用禁用透明度与 `not-allowed` 指针）。
 - `showSizeChanger` 在禁止输入搜索的紧凑下拉框内部展示 `{count} 条/页`（英文 `{count} / page`）；`showQuickJumper` 展示“跳至 [输入框] 页”（英文 “Go to [input] page”），在 Enter 或离开分页区域时提交，不覆盖已点击的分页操作。`showTotal` 接受布尔值或渲染函数，页码和每页条数变化使用同一回调。
 
 ## 选择与导航
@@ -249,14 +248,14 @@
 - Card 与 CardTitle 默认都是 h3，除非文档大纲需要，调用方不指定 level。`description` 位于标题下方，`extra` 位于行尾，与 Card 标题区一致。
 - Card 自己决定内部标题尺寸，不消费独立 CardTitle 的默认参数；用户传入的 CardTitle 元素仍读取区域默认值。
 
-### DataTable
+### Table
 
-- 仅保留单一简洁表格结构：默认内容表面仅顶部使用基础圆角（默认 10px），无内层框、阴影和固定列边缘阴影。表头采用基于当前表面混入 `surface-muted` 的浅灰底（`subtle-action-background`）、常规正文色 `--leaf-table-text`（保留 `--leaf-component-table-color` 组件覆盖）与 `600` 字重；非末列且非跨列 / 工具列的列头右侧显示 `1px × 1.6em` 居中短竖分隔线（`--leaf-table-header-split`），悬停或排序时隐藏短竖线且列头切换为 `--leaf-color-surface-muted`（排序表体列使用表头浅灰底）。框线与分隔线共用基于 `--leaf-color-divider` 柔化 70% 的 `--leaf-table-frame-color`（显式颜色和边框色覆盖优先）。`bordered` 开启上左外框与单元格右侧/底部网格线（保留末行底线），同时隐藏表头短竖分隔线。标题、标签栏与筛选工具栏由外部使用 `Card`、`CardTitle`、`Tabs` 等组件自由组合，不由表格组件重复承载。
-- 尺寸仅保留 `sm | md`（默认 `size="md"`，移除 `lg`；运行时传入非 `sm` 值统一回退到 `md`），使用基础字号（默认 14px）、约 1.5714 倍行高（默认 22px）与等宽数字 `tabular-nums`，表头字重为 `600`；`sm / md` 的上下内边距为 `8 / 16px`，水平内边距为 `12 / 16px`，单行正文与表头高度为 `39 / 55px`。表头始终固定且不可关闭；高度受限的 flex 布局收缩表体视口。分组表头、固定列和虚拟行共用一个原生 table；列配置 `meta.ellipsis` 时启用单行省略并在未固定列宽时自动切换固定布局以约束列宽。
-- 排序表头右侧放置上下双三角排序图标（`.leaf-data-table__sort-icons`），激活排序三角高亮为 `--leaf-color-primary`；拖拽调整列宽线（`.leaf-data-table__resize`）悬停及激活同样高亮为 `--leaf-color-primary`。默认显示细行分割线，包括末行；设置 `striped` 后省略所有表体与表尾横向分割线，并从第二行数据开始展示基于 `2% --leaf-table-text` 的浅灰交替背景（`bordered` 下同样隐藏内部横向分割线）。详情行与虚拟占位行不影响条纹奇偶。选择列与展开列左对齐且右内边距归零（复用首业务列左内边距）：`sm / md` 下选择列左内边距对齐首列阅读边（默认 `12 / 16px`），默认宽 `30 / 34px`；展开列作为首列时扣除图标按钮单侧内留白使 `14px` 箭头对齐阅读边（宽松密度默认宽 `32 / 36px`），紧跟选择列时左内边距固定 `8px`（宽松宽 `34px`、紧凑 `30px`）；`bordered` 模式下选择列与展开列额外加上 `borderWidth`（默认 `1px`）以保证网格边框后内容对齐；多级表头中跨行工具列之后的子表头行不再重复读取首列外缘覆盖。
-- 普通行悬停基于 `4% --leaf-table-text` 混合浅灰底，选中行与选中悬停分别基于 `6%` 与 `10% --leaf-color-primary` 混合淡主题色底。展开操作复用小号纯图标文字按钮及其中性反馈；空数据与加载失败状态均复用 `Result` 组件渲染。显式组件状态覆盖优先。
-- 默认内容布局填满容器；尺寸布局遵循固定列宽与弹性分配，全部固定或达到最大宽度时允许右侧留白。内容区域的最小宽度只是下限。
-- 内部结构与引擎见 [Table 实现说明](packages/react/src/table/README.md)。
+- 仅保留单一简洁表格结构（由 `@ifhover/leaf-ui` 主入口直接导出，零 `@tanstack/react-table` 依赖）：默认内容表面仅顶部使用基础圆角（默认 10px），无内层框、阴影和固定列边缘阴影。表头采用基于当前表面混入 `surface-muted` 的浅灰底（`subtle-action-background`）、常规正文色 `--leaf-table-text`（保留 `--leaf-component-table-color` 组件覆盖）与 `600` 字重；非末列且非工具列的列头右侧显示 `1px × 1.6em` 居中短竖分隔线（`--leaf-table-header-split`），悬停或排序时隐藏短竖线且列头切换为 `--leaf-color-surface-muted`（排序表体列使用表头浅灰底）。框线与分隔线共用基于 `--leaf-color-divider` 柔化 70% 的 `--leaf-table-frame-color`（显式颜色和边框色覆盖优先）。`bordered` 开启上左外框与单元格右侧/底部网格线（保留末行底线），同时隐藏表头短竖分隔线。标题、标签栏与筛选工具栏由外部使用 `Card`、`CardTitle`、`Tabs` 等组件自由组合，不由表格组件重复承载。
+- 尺寸仅保留 `sm | md`（默认 `size="md"`，运行时传入非 `sm` 值统一回退到 `md`），使用基础字号（默认 14px）、约 1.5714 倍行高（默认 22px）与等宽数字 `tabular-nums`，表头字重为 `600`；`sm / md` 的上下内边距为 `8 / 16px`，水平内边距为 `12 / 16px`，单行正文与表头高度为 `39 / 55px`。表头始终固定且不可关闭；高度受限的 flex 布局收缩表体视口。固定列、展开详情行、树形子行和虚拟行共用一个原生 table；列配置 `ellipsis` 时启用单行省略并在未固定列宽时自动切换固定布局以约束列宽。
+- 排序表头右侧放置上下双三角排序图标（`.leaf-table__sort-icons`），激活排序三角高亮为 `--leaf-color-primary`；拖拽调整列宽线（`.leaf-table__resize`）悬停及激活同样高亮为 `--leaf-color-primary`。默认显示细行分割线，包括末行；设置 `striped` 后省略所有表体与表尾横向分割线，并从第二行数据开始展示基于 `2% --leaf-table-text` 的浅灰交替背景（`bordered` 下同样隐藏内部横向分割线）。详情行与虚拟占位行不影响条纹奇偶。选择列与独立展开列左对齐且右内边距归零（复用首业务列左内边距），存在起始固定列时随起始侧同步固定；纯树形数据在首业务列内联展开按钮并按层缩进（默认每层 `16px`），无子行节点自动占位对齐。
+- 普通行悬停基于 `2% --leaf-table-text` 混合浅灰底；选中行复用相同的 `2%` 浅灰底，且已选中行悬停时保持颜色不变。展开操作复用小号纯图标文字按钮及其中性反馈；空数据与加载失败状态均复用 `Result` 组件渲染。显式组件状态覆盖优先。
+- 默认内容布局填满容器；尺寸布局遵循固定列宽与弹性分配（`flex` + `minWidth` / `maxWidth`），全部固定或达到最大宽度时允许右侧留白。内容区域的最小宽度只是下限。
+- 内部结构与实现见 [Table 实现说明](packages/react/src/table/README.md)。
 
 ### FileList
 

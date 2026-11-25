@@ -1,6 +1,4 @@
-import { Input } from '@ifhover/leaf-ui';
-import { DataTable, useDataTable } from '@ifhover/leaf-ui/table';
-import type { ColumnDef } from '@tanstack/react-table';
+import { Input, Table, type TableColumn } from '@ifhover/leaf-ui';
 import { useMemo, useState } from 'react';
 
 interface Member {
@@ -10,46 +8,45 @@ interface Member {
   team: string;
 }
 
-const members: Member[] = Array.from({ length: 3 }, (_, index) => ({
-  id: String(index + 1),
-  name: ['Alex', 'Sam', 'Riley'][index % 3] ?? '',
-  email: `member${index + 1}@example.com`,
-  team: index % 2 ? 'Design' : 'Engineering',
-}));
+const initialMembers: Member[] = [
+  { id: '1', name: 'Alex', email: 'member1@example.com', team: 'Engineering' },
+  { id: '2', name: 'Sam', email: 'member2@example.com', team: 'Design' },
+  { id: '3', name: 'Riley', email: 'member3@example.com', team: 'Engineering' },
+];
 
 export function TableEditable() {
-  const [data, setData] = useState(members);
-  const columns = useMemo<ColumnDef<Member>[]>(
+  const [data, setData] = useState(initialMembers);
+  const columns = useMemo<TableColumn<Member>[]>(
     () => [
       {
-        accessorKey: 'name',
-        header: 'Member',
-        size: 240,
-        cell: ({ row }) => (
+        dataIndex: 'name',
+        title: 'Member',
+        width: 240,
+        render: (_value, record) => (
           <Input
-            aria-label={`Name: ${row.original.id}`}
-            value={row.original.name}
+            aria-label={`Name: ${record.id}`}
+            value={record.name}
             onChange={(event) => {
               const name = event.currentTarget.value;
               setData((previous) =>
-                previous.map((member) =>
-                  member.id === row.original.id ? { ...member, name } : member,
-                ),
+                previous.map((member) => (member.id === record.id ? { ...member, name } : member)),
               );
             }}
           />
         ),
       },
-      { accessorKey: 'email', header: 'Email', size: 260 },
-      { accessorKey: 'team', header: 'Team', size: 140 },
+      { dataIndex: 'email', title: 'Email', width: 260 },
+      { dataIndex: 'team', title: 'Team', width: 140 },
     ],
     [],
   );
-  const table = useDataTable({
-    data,
-    columns,
-    rowKey: 'id',
-    localPagination: false,
-  });
-  return <DataTable table={table} aria-label="Editable member names" pagination={false} />;
+  return (
+    <Table
+      data={data}
+      columns={columns}
+      rowKey="id"
+      aria-label="Edit member names"
+      pagination={false}
+    />
+  );
 }

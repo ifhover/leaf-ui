@@ -1,41 +1,32 @@
-import { Button } from '@ifhover/leaf-ui';
-import { DataTable, useDataTable } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
-const members = Array.from({ length: 26 }, (_, index) => ({
-  id: `member-${index + 1}`,
-  name: ['Alex Morgan', 'Sam Taylor', 'Jordan Lee'][index % 3] ?? '',
-  email: `member${index + 1}@example.com`,
-  team: ['Design', 'Engineering', 'Product'][index % 3] ?? '',
-  projects: index + 1,
+const deployments = Array.from({ length: 12 }, (_, index) => ({
+  id: `dep-${index + 1}`,
+  service: `service-${index + 1}`,
+  region: index % 2 === 0 ? '华东 1' : '华北 2',
+  version: `v2.${index}.0`,
+  owner: ['林澈', '周岚', '许言', '陈宁'][index % 4] ?? '',
+  updatedAt: `2026-10-${String(10 + index).padStart(2, '0')} 14:20`,
+  status: index % 3 === 0 ? '运行中' : '已发布',
 }));
-const columns = [
-  { accessorKey: 'name', header: '成员', size: 200, minSize: 160, maxSize: 320 },
-  { accessorKey: 'email', header: '邮箱', size: 260, minSize: 180, maxSize: 400 },
-  { accessorKey: 'team', header: '团队', size: 160, minSize: 120, maxSize: 240 },
-  { accessorKey: 'projects', header: '项目数', size: 100, minSize: 80, maxSize: 160 },
-];
 
 export function TableColumns() {
-  const table = useDataTable({
-    data: members,
-    columns,
-    rowKey: 'id',
-    localPagination: false,
-    options: {
-      columnResizeMode: 'onChange',
-      initialState: { columnPinning: { left: ['name'], right: ['projects'] } },
-    },
-  });
   return (
-    <>
-      <Button onClick={() => table.resetColumnSizing()}>重置列宽</Button>
-      <DataTable
-        table={table}
-        aria-label="固定列与列宽调整"
-        maxHeight={300}
-        resizable
-        pagination={false}
-      />
-    </>
+    <Table
+      data={deployments}
+      columns={[
+        { dataIndex: 'service', title: '服务', fixed: 'left', width: 140, minWidth: 100 },
+        { dataIndex: 'region', title: '区域', width: 140 },
+        { dataIndex: 'version', title: '版本', width: 140 },
+        { dataIndex: 'owner', title: '负责人', width: 140 },
+        { dataIndex: 'updatedAt', title: '更新时间', width: 200 },
+        { dataIndex: 'status', title: '状态', fixed: 'right', width: 110, resizable: false },
+      ]}
+      rowKey="id"
+      aria-label="固定列与列宽调整"
+      resizable
+      maxHeight={260}
+      pagination={false}
+    />
   );
 }

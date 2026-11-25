@@ -1,5 +1,4 @@
-import { CardTitle, Flex, Input, Text, Typography } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { CardTitle, Flex, Input, Table, Text, Typography } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const members = [
@@ -30,13 +29,13 @@ export function DataRegion() {
             {visible.length} {visible.length === 1 ? 'member' : 'members'}
           </Text>
         </Flex>
-        <DataTable
+        <Table
           aria-label="Team members"
           data={visible}
           rowKey="id"
           columns={[
-            { accessorKey: 'name', header: 'Member' },
-            { accessorKey: 'team', header: 'Team' },
+            { dataIndex: 'name', title: 'Member' },
+            { dataIndex: 'team', title: 'Team' },
           ]}
           pagination={false}
         />

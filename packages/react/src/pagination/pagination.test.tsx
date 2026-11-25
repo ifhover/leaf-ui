@@ -17,11 +17,13 @@ describe('Pagination', () => {
     );
     const prev = screen.getByRole('button', { name: 'Previous' });
     const next = screen.getByRole('button', { name: 'Next' });
-    expect(prev).toHaveAttribute('data-trailing-text', '');
+    expect(prev).toHaveClass('leaf-button', 'leaf-button--outline', 'leaf-button--icon');
+    expect(prev).toHaveTextContent('');
     expect(prev).not.toHaveAttribute('data-leading-text');
-    expect(next).toHaveClass('leaf-button', 'leaf-button--text');
-    expect(next).toHaveTextContent('Next');
-    expect(next).toHaveAttribute('data-leading-text', '');
+    expect(prev).not.toHaveAttribute('data-trailing-text');
+    expect(next).toHaveClass('leaf-button', 'leaf-button--outline', 'leaf-button--icon');
+    expect(next).toHaveTextContent('');
+    expect(next).not.toHaveAttribute('data-leading-text');
     expect(next).not.toHaveAttribute('data-trailing-text');
     expect(next).toHaveAttribute('type', 'button');
     expect(next).toBeEnabled();
@@ -342,20 +344,20 @@ describe('Pagination', () => {
     expect(screen.queryByRole('navigation')).not.toBeInTheDocument();
   });
 
-  it('renders labeled previous/next buttons and unclickable solid current page in outline variant', async () => {
+  it('renders icon-only previous/next buttons and unclickable solid current page in ghost variant', async () => {
     const change = vi.fn();
     render(
       <ConfigProvider locale="en-US">
-        <Pagination total={100} defaultCurrent={2} size="sm" variant="outline" onChange={change} />
+        <Pagination total={100} defaultCurrent={2} size="sm" variant="ghost" onChange={change} />
       </ConfigProvider>,
     );
     const prev = screen.getByRole('button', { name: 'Previous' });
     const next = screen.getByRole('button', { name: 'Next' });
     const active = screen.getByRole('button', { name: 'Page 2' });
-    expect(prev).toHaveClass('leaf-button--sm', 'leaf-button--outline');
-    expect(prev).toHaveTextContent('Previous');
-    expect(next).toHaveClass('leaf-button--sm', 'leaf-button--outline');
-    expect(next).toHaveTextContent('Next');
+    expect(prev).toHaveClass('leaf-button--icon-sm', 'leaf-button--text');
+    expect(prev).toHaveTextContent('');
+    expect(next).toHaveClass('leaf-button--icon-sm', 'leaf-button--text');
+    expect(next).toHaveTextContent('');
     expect(active).toHaveClass('leaf-button--sm', 'leaf-button--solid');
     expect(active).toHaveAttribute('aria-current', 'page');
     expect(active).toBeDisabled();

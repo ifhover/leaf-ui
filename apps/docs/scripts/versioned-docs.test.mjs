@@ -284,9 +284,9 @@ test('every component preview has a valid, independently extracted code sample',
   const basic = await readFile(path.resolve(directory, '../src/examples/table/basic.tsx'), 'utf8');
   assert.doesNotMatch(
     extractExampleSource(basic, 'TableBasic'),
-    /TableStates|TableSimple|useState|<Table[\s.>]/,
+    /TableStates|TableSimple|useState|<DataTable[\s.>]/,
   );
-  assert.match(extractExampleSource(basic, 'TableBasic'), /<DataTable/);
+  assert.match(extractExampleSource(basic, 'TableBasic'), /<Table\b/);
 });
 
 test('merged mode APIs deduplicate top-level unions without breaking callback signatures', async () => {
@@ -618,52 +618,47 @@ test('API defaults distinguish required, explicit, previous and absent values', 
   assert.equal(apiDefaultCell({ optional: false, english: true, override: '—' }), '—');
 });
 
-test('API defaults use the declared parameter type for composed table roots', async () => {
+test('API defaults use the declared parameter type for Table root', async () => {
   const root = path.resolve(import.meta.dirname, '../../..');
-  const adapter = path.join(root, 'packages/react/src/tabletanstack/index.ts');
-  assert.equal((await properties(adapter, 'DataTableProps')).get('size').defaultValue, "'md'");
-  assert.equal(
-    (await properties(adapter, 'DataTableProps')).get('pagination').defaultValue,
-    'true',
-  );
-  const props = await properties(adapter, 'DataTableProps');
-  assert.equal(props.get('table').type, 'TanStackTable<TData>');
+  const entry = path.join(root, 'packages/react/src/index.ts');
+  const props = await properties(entry, 'TableProps');
+  assert.equal(props.get('size').defaultValue, "'md'");
+  assert.equal(props.get('pagination').defaultValue, 'true');
   assert.equal(props.get('bordered').type, 'boolean');
-  for (const name of [
-    'children',
-    'layout',
-    'toolbar',
-    'bleed',
-    'selectAllMode',
-    'columnReordering',
-    'onRowReorder',
-  ])
-    assert.equal(props.has(name), false, `${name} must not remain in DataTable props`);
-  assert.equal((await properties(adapter, 'UseDataTableOptions')).get('pagination'), undefined);
+  for (const name of ['children', 'table', 'options', 'localPagination', 'toolbar', 'bleed'])
+    assert.equal(props.has(name), false, `${name} must not appear in Table props`);
 });
 
-test('DataTable documents both data inputs in one public props table', async () => {
+test('Table documents declarative props and helper sub-tables consistently', async () => {
   const root = path.resolve(import.meta.dirname, '../../..');
   for (const language of ['', 'en/']) {
     const document = await readFile(
       path.join(root, `apps/docs/docs/${language}components/table.mdx`),
       'utf8',
     );
-    const section = apiSectionMatch(document, 'DataTableProps');
+    const section = apiSectionMatch(document, 'TableProps');
     assert.ok(section);
     const rows = readApiRows(section.match[2]);
-    for (const property of ['table', 'data', 'columns', 'rowKey', 'options', 'localPagination'])
-      assert.ok(rows.has(property), `${language}${property} must be in DataTable API`);
-    for (const property of ['data', 'columns', 'rowKey'])
-      assert.match(rows.get(property).defaultValue, /table/);
-    assert.equal(apiSectionMatch(document, 'DataTableInstanceProps'), null);
-    assert.equal(apiSectionMatch(document, 'DataTableDataProps'), null);
-    for (const anchor of ['datatableinstance-api', 'datatabledata-api'])
-      assert.ok(document.includes(`id="${anchor}"`), `Preserve the ${anchor} anchor`);
+    for (const property of [
+      'data',
+      'columns',
+      'rowKey',
+      'rowSelection',
+      'expandable',
+      'pagination',
+    ])
+      assert.ok(rows.has(property), `${language}${property} must be in Table API`);
+    for (const name of [
+      'TableColumn',
+      'TableRowSelection',
+      'TableExpandable',
+      'TableVirtualOptions',
+    ])
+      assert.ok(apiSectionMatch(document, name), `${language}${name} table exists`);
   }
 });
 
-test('DataTable pagination links to shared display options in a new tab', async () => {
+test('Table pagination links to shared display options in a new tab', async () => {
   const root = path.resolve(import.meta.dirname, '../../..');
   const reference =
     '<a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a>';
@@ -672,25 +667,15 @@ test('DataTable pagination links to shared display options in a new tab', async 
       path.join(root, `apps/docs/docs/${language}components/table.mdx`),
       'utf8',
     );
-    const mainRows = readApiRows(apiSectionMatch(document, 'DataTableProps').match[2]);
+    const mainRows = readApiRows(apiSectionMatch(document, 'TableProps').match[2]);
     assert.ok(mainRows.get('pagination').description.includes(reference));
-    const section = apiSectionMatch(document, 'DataTablePaginationProps');
+    const section = apiSectionMatch(document, 'TablePaginationProps');
     assert.ok(section.match[2].includes(reference));
     assert.deepEqual(
       [...readApiRows(section.match[2]).keys()],
-      ['hasNextPage'],
-      'Only the DataTable-specific option belongs in this table',
+      ['total', 'onChange', 'hasNextPage'],
+      'Only the Table-specific pagination differences belong in this table',
     );
-    for (const property of [
-      'total',
-      'current',
-      'pageSize',
-      'onChange',
-      'showSizeChanger',
-      'size',
-      'hasNextPage',
-    ])
-      assert.ok(section.match[2].includes(property), `Retain the ${property} difference`);
     const pagination = await readFile(
       path.join(root, `apps/docs/docs/${language}components/pagination.mdx`),
       'utf8',
@@ -699,87 +684,55 @@ test('DataTable pagination links to shared display options in a new tab', async 
   }
 });
 
-test('DataTable keeps shared types inline and groups complete selection tables under its Hook', async () => {
+test('Table keeps lightweight helper types inline with anchors', async () => {
   const root = path.resolve(import.meta.dirname, '../../..');
-  const adapter = path.join(root, 'packages/react/src/tabletanstack/index.ts');
   for (const language of ['', 'en/']) {
     const document = await readFile(
       path.join(root, `apps/docs/docs/${language}components/table.mdx`),
       'utf8',
     );
     for (const [name, anchor] of [
-      ['DataTablePresentationProps', 'datatablepresentation-api'],
-      ['UseDataTableOptions', 'usedatatableoptions'],
-      ['DataTableRowKey', 'datatablerowkey'],
-      ['DataTableColumnDef', 'datatablecolumndef'],
-      ['DataTableRowProps', 'datatablerow-api'],
-      ['DataTableCellProps', 'datatablecell-api'],
+      ['TablePresentationProps', 'tablepresentation-api'],
+      ['TableRowKey', 'tablerowkey'],
+      ['TableSorterState', 'tablesorterstate'],
+      ['TableRowProps', 'tablerow-api'],
+      ['TableCellProps', 'tablecell-api'],
+      ['TableHeaderCellProps', 'tableheadercell-api'],
     ]) {
       assert.equal(apiSectionMatch(document, name), null, `${name} must not repeat an API table`);
       assert.ok(document.includes(`id="${anchor}"`), `Preserve the ${anchor} anchor`);
       assert.ok(document.includes(`\`${name}`), `Retain the ${name} explanation`);
     }
-    const selection = apiSectionMatch(document, 'useDataTableSelection').match[2];
-    for (const name of [
-      'UseDataTableSelectionOptions',
-      'UseDataTableSelectionResult',
-      'DataTableSelectionOptions',
-    ]) {
-      const section = apiSectionMatch(document, name);
-      assert.ok(selection.includes(section.match[0]), `${name} belongs to the selection Hook`);
-      assert.deepEqual(
-        [...readApiRows(section.match[2]).keys()],
-        [...(await properties(adapter, name)).keys()],
-      );
-      assert.ok(document.includes(`id="${name.toLowerCase()}"`));
-    }
-    const bridge = apiSectionMatch(document, 'DataTableSelectionOptions').match[2];
-    assert.match(
-      bridge,
-      /<details className="leaf-api-details">[\s\S]*\| `state`[\s\S]*<\/details>/u,
-    );
   }
 });
 
-test('AI discovery publishes DataTable as the only table component at the canonical subpath', async () => {
+test('AI discovery publishes Table from the root package entry without TanStack helpers', async () => {
   const root = path.resolve(import.meta.dirname, '../../..');
   const api = await publicApi(root);
-  assert.ok(
-    !api.some((item) =>
-      /^Table(?:Props|Row|Cell|Body|Header|Footer|Caption|ColumnHeader|State|Empty|Loading|Error)?(?:Props)?$/.test(
-        item.name,
-      ),
-    ),
-  );
-  assert.equal(api.find((item) => item.name === 'DataTable')?.importPath, '@ifhover/leaf-ui/table');
+  assert.equal(api.find((item) => item.name === 'Table')?.importPath, '@ifhover/leaf-ui');
   for (const name of [
-    'DataTableSearch',
-    'DataTableSearchProps',
-    'DataTableColumnVisibility',
-    'DataTableColumnVisibilityProps',
-    'DataTableContent',
-    'DataTableContentProps',
-    'DataTableToolbar',
-    'DataTableFooter',
-    'DataTablePagination',
-    'DataTableRowReorderInfo',
-    'DataTableInstanceProps',
-    'DataTableDataProps',
+    'DataTable',
+    'DataTableProps',
+    'useDataTable',
+    'useDataTableSelection',
+    'TableHeader',
+    'TableBody',
+    'TableFooter',
   ])
     assert.equal(
       api.find((item) => item.name === name),
       undefined,
     );
-  assert.equal(api.find((item) => item.name === 'DataTableRowProps')?.kind, 'type');
-  assert.equal(api.find((item) => item.name === 'DataTableCellProps')?.kind, 'type');
   for (const name of [
-    'useDataTable',
-    'UseDataTableOptions',
-    'DataTableProps',
-    'DataTableRowKey',
-    'DataTableColumnDef',
+    'TableProps',
+    'TableColumn',
+    'TableRowSelection',
+    'TableExpandable',
+    'TablePaginationProps',
+    'TableRowKey',
+    'TablePresentationProps',
   ])
-    assert.equal(api.find((item) => item.name === name)?.importPath, '@ifhover/leaf-ui/table');
+    assert.equal(api.find((item) => item.name === name)?.importPath, '@ifhover/leaf-ui');
 });
 
 test('AI discovery preserves native Table and adapter imports in historical snapshots', async () => {

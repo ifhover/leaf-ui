@@ -17,14 +17,14 @@ import { DataRegion } from '../../src/examples/design-standards/data-region';
 | [Menu](/components/menu)       | 默认 `neutral`，悬停使用轻底、选中复用 `surface-muted` 中性灰阶。                           | 导航保持克制的黑白灰层级，不叠加额外大面积品牌色块；需要独立浮卡感或主色高亮时可选 `raised` 或 `primary`。                                 |
 | [Button](/components/button)   | 默认 `outline`，中性内容面、纯边框与轻量底阴影，悬停边框与文字转主色悬停态、按下变深。     | 普通操作默认使用 `outline`，主要操作使用 `solid` 承载主题色（支持 `'neutral'` 自适应黑白反色）；局部区域也可按需用 `ConfigProvider` 调整按钮主题色。 |
 | [Card](/components/card)       | 纯白内容面配柔化外框与最轻静止阴影（`shadow-xs`），支持 `variant="layered"` 分层画布与 `selected` 选中态。 | 独立任务分区需要清晰容器边界时使用，可通过 `description` 或独立 `CardTitle` 补充说明。 |
-| [DataTable](/components/table) | 默认使用中性内容表面与浅灰表头（600 字重）、细行分隔线与柔化边框。                           | 主要数据区域直接放置表格，筛选和其他操作控件与表格并列。                                                                                   |
+| [Table](/components/table) | 默认使用中性内容表面与浅灰表头（600 字重）、细行分隔线与柔化边框。                           | 主要数据区域直接放置表格，筛选和其他操作控件与表格并列。                                                                                   |
 
 “底板”和“内容面”是角色，不是固定浅灰和纯白。用户改变表面色或切换深色外观后，分组关系仍应保留。选中状态沿用组件自身的表面、勾选、边框或指示，不在页面层强制统一成“永远没有背景”或另一套主题色高亮。
 
 ## 组织页面
 
 - 先确定页面标题、任务分区与数据区域，再选容器。页面标题承担主要层级，分区标题不要全部做成大号强标题；相关操作靠近对应内容。
-- 导航、页头、工具栏和内容职责分开。导航用 Menu；普通并列内容用 Flex / Grid；独立任务区用 Card；数据区优先直接用 DataTable。
+- 导航、页头、工具栏和内容职责分开。导航用 Menu；普通并列内容用 Flex / Grid；独立任务区用 Card；数据区优先直接用 Table。
 - 用间距区分相关性，不为每段文字或每行字段增加卡片、分割线与阴影。页面级操作和行内操作分开，一个任务区优先只强调一个主要动作。
 - 控件紧凑不等于内容拥挤。同一组间距一致，分区之间比组内更宽；长标签允许换行，不缩小字体和点击区域硬塞。
 
@@ -131,7 +131,7 @@ Input、InputNumber、InputSearch、Select、AutoComplete、Cascader、TreeSelec
 
 ### 数据区域
 
-DataTable 已有独立的数据表面，筛选和其他操作控件与表格并列放置。此处只有三行，关闭分页；数据较多时沿用组件分页，不把所有数据硬塞在固定高度中。DataTable 使用独立的 `/table` 入口，需要安装其可选 TanStack 依赖，见[表格接入](/components/table)。
+Table 已有独立的数据表面，筛选和其他操作控件与表格并列放置。此处只有三行，关闭分页；数据较多时沿用组件分页，不把所有数据硬塞在固定高度中。更多用法见 [Table](/components/table)。
 
 <ComponentExample title="数据区域" preview={<DataRegion />} fileName="data-region.tsx" width={600}>
 

@@ -1,5 +1,4 @@
-import { Button, Flex } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { Button, Flex, Table } from '@ifhover/leaf-ui';
 import { useState } from 'react';
 
 const members: { id: string; name: string; team: string }[] = [];
@@ -8,17 +7,17 @@ export function TableStates() {
   const [state, setState] = useState<'empty' | 'loading' | 'error'>('empty');
   return (
     <Flex direction="column" gap="md">
-      <DataTable
+      <Table
         data={members}
         columns={[
-          { accessorKey: 'name', header: 'Member' },
-          { accessorKey: 'team', header: 'Team' },
+          { dataIndex: 'name', title: 'Member' },
+          { dataIndex: 'team', title: 'Team' },
         ]}
         rowKey="id"
         aria-label="Data states"
         pagination={false}
         loading={state === 'loading'}
-        error={state === 'error' ? 'Unable to load members' : undefined}
+        error={state === 'error' ? 'Failed to load members' : undefined}
         onRetry={() => setState('empty')}
       />
       <Flex gap="sm" wrap>

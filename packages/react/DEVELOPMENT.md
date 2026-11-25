@@ -124,7 +124,7 @@ Confirm 只公开 `useConfirm().confirm(options)`，配置使用 `ConfirmOptions
 
 数组词条整体替换；只有缺失和 `undefined` 回退，空字符串保留。Provider 纯函数合并且不修改传入对象，不使用跨请求的可变注册表；主题变化不重新解析未变的资源。FloatingPanel 与 ScopedPortal 同步当前 `lang`。测试需覆盖部分翻译、内置覆盖、嵌套链替换、运行时切换、实例优先、Portal、服务组件与 SSR / hydration。包导出五种内置 JSON、Schema 和 `leaf-ui-check-translations` 检查命令；文档构建将同版本资源复制到版本根目录的 `locales/`。
 
-ConfigProvider 的 `components` 支持全部公开 UI 组件、公开的复合部件和 Confirm API，公共类型为 `LeafComponentDefaults`。配置键与公开名称一致：DataTable 仅使用 DataTable，其他命名空间部件使用 LayoutHeader 等名称；FAB / ResizablePanels 分别沿用 FloatButton / Splitter。表格只公开 DataTable，内部原生 TableControl 不接受公开默认配置；`theme.components.Table` 仍是表格的视觉令牌配置。ConfigProvider 及 Confirm / ImagePreview / Message / Notification / LoadingBar 的 Provider 属于基础设施，不接受递归默认配置。以下规则适用于新增组件及已有实现的修改。
+ConfigProvider 的 `components` 支持全部公开 UI 组件、公开的复合部件和 Confirm API，公共类型为 `LeafComponentDefaults`。配置键与公开名称一致：Table 使用 `Table`（与 `theme.components.Table` 同名），其他命名空间部件使用 LayoutHeader 等名称；FAB / ResizablePanels 分别沿用 FloatButton / Splitter。内部原生 `TableControl` 不接受公开默认配置。ConfigProvider 及 Confirm / ImagePreview / Message / Notification / LoadingBar 的 Provider 属于基础设施，不接受递归默认配置。以下规则适用于新增组件及已有实现的修改。
 
 ### 公开入口与合并语义
 
@@ -148,8 +148,8 @@ ConfigProvider 的 `components` 支持全部公开 UI 组件、公开的复合�
 - 当前 Select 的 `options`、`multiple`、`value`、`defaultValue`、`onChange` 保留在实例；Modal 的 `open` 保留在实例。新增支持时逐项确认边界，不能只用 `Partial<Props>` 无差别开放所有字段。
 - 同样检查其他判别联合：DatePicker 的日期 / 时间模式、Slider 的单值 / 范围、Cascader / TreeSelect 的选择模式、InputNumber 的数字 / 十进制字符串模式均由实例决定，相关值、回调与边界参数不能从区域配置改变其类型。浮层必填的触发节点、数据、内容和可见状态继续由实例提供。
 - 不把所有值与回调一律禁用。普通 Input 的 `value`、`defaultValue` 和 `onChange` 可以配置，但必须遵守正常的受控、非受控、事件及表单 reset 语义，并在使用文档说明。
-- 泛型组件只开放与数据类型无关的参数：FormList 的行值 / 键 / 渲染、VirtualList 的项目 / 渲染 / 按项目测量函数、DataTable 的表实例 / 列 / 行回调留在实例。通过 `useGenericComponentDefaults` 获取明确的安全投影，再用组件自身完整的 `Props<T>` 合并，不能将业务类型强转为 `unknown` 或 `any` 来接入。VirtualList 的区域 `estimateSize` 只支持数字，实例仍可使用按项目计算的函数。
-- 全局配置类型不能让可选适配器变成必装依赖。DataTable 的通用参数集中在不导入 TanStack 的 `tabletanstack/defaults.ts`，由实现和配置共同使用；新增可选适配器同样需要拆出与引擎无关的参数类型，并验证未安装可选依赖时的根入口类型检查。
+- 泛型组件只开放与数据类型无关的参数：FormList 的行值 / 键 / 渲染、VirtualList 的项目 / 渲染 / 按项目测量函数、Table 的数据 / 列 / 行回调留在实例。通过 `useGenericComponentDefaults` 获取明确的安全投影，再用组件自身完整的 `Props<T>` 合并，不能将业务类型强转为 `unknown` 或 `any` 来接入。VirtualList 的区域 `estimateSize` 只支持数字，实例仍可使用按项目计算的函数。
+- 泛型展示参数拆出在 `table/types.ts`（`TablePresentationProps`），避免配置类型反向耦合业务泛型；新增可选适配器同样需要拆出与引擎无关的参数类型。
 - 类组件沿用原来的实例与 ref，使用 `contextType` 和纯合并函数解析默认参数；不要为了调用 Hook 包装或替换 ErrorBoundary 的公开类实例。需要比较配置变化时比较上次生效值，不能用当前配置重新解释旧 props。
 
 ### 内部控件与复合组件

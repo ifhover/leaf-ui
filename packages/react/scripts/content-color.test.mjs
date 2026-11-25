@@ -41,7 +41,7 @@ test('tables use subtle neutral headers with trailing short column dividers', as
     'var(--leaf-table-border-width)solid var(--leaf-table-divider)',
   );
   const split = table(
-    '.leaf-table__column-header:not(:last-child):not(.leaf-data-table__utility):not([colspan])::after',
+    '.leaf-table__column-header:not(:last-child):not(.leaf-table__utility):not([colspan])::after',
   );
   assert.equal(split.width, '1px');
   assert.equal(split.height, '1.6em');
@@ -96,7 +96,7 @@ test('segmented progress keeps the outer track radius and removes inner fill cur
   assert.equal(progress('.leaf-progress__track')['border-radius'], '100px');
 });
 
-test('tables use softened frame borders, subtle text hover/stripe tints, and primary selection', async () => {
+test('tables use softened frame borders, subtle text hover/stripe tints, and hover-matched selection', async () => {
   const table = await compiledStyles('table/table.scss');
   const palette = table('.leaf-table');
   assert.equal(palette['--leaf-table-header-color'], 'var(--leaf-table-text)');
@@ -116,34 +116,32 @@ test('tables use softened frame borders, subtle text hover/stripe tints, and pri
   );
   assert.equal(
     palette['--leaf-table-hover-background'],
-    'color-mix(in srgb,var(--leaf-table-text)4%,var(--leaf-table-surface))',
+    'color-mix(in srgb,var(--leaf-table-text)2%,var(--leaf-table-surface))',
   );
   assert.equal(
     palette['--leaf-table-striped-background'],
     'color-mix(in srgb,var(--leaf-table-text)2%,var(--leaf-table-surface))',
   );
-  assert.equal(
-    palette['--leaf-table-selected-background'],
-    'color-mix(in srgb,var(--leaf-color-primary)6%,var(--leaf-table-surface))',
-  );
-  assert.equal(
-    palette['--leaf-table-selected-hover-background'],
-    'color-mix(in srgb,var(--leaf-color-primary)10%,var(--leaf-table-surface))',
-  );
+  assert.equal(palette['--leaf-table-selected-background'], 'var(--leaf-table-hover-background)');
+  assert.equal(palette['--leaf-table-selected-hover-background'], undefined);
   assert.equal(
     palette['--leaf-table-header-sort-background'],
     'var(--leaf-component-table-background,var(--leaf-color-surface-muted))',
   );
   assert.equal(palette['--leaf-table-body-sort-background'], 'var(--leaf-table-header-background)');
   assert.equal(
+    table(
+      '.leaf-table__body > .leaf-table__row:not(.leaf-table__state-row):not([data-selected]):hover',
+    )['--leaf-table-row-background'],
+    'var(--leaf-table-hover-background)',
+  );
+  assert.equal(
     table('.leaf-table__body > .leaf-table__row[data-selected]')['--leaf-table-row-background'],
     'var(--leaf-table-selected-background)',
   );
-  assert.equal(
-    table('.leaf-table__body > .leaf-table__row[data-selected]:hover')[
-      '--leaf-table-row-background'
-    ],
-    'var(--leaf-table-selected-hover-background)',
+  assert.throws(
+    () => table('.leaf-table__body > .leaf-table__row[data-selected]:hover'),
+    /missing compiled rule/u,
   );
   assert.equal(
     table('.leaf-table--striped .leaf-table__body > .leaf-table__row[data-striped]')[
@@ -164,7 +162,7 @@ test('tables use softened frame borders, subtle text hover/stripe tints, and pri
 });
 
 test('table outer cell insets and utility columns align with reading edges in both directions', async () => {
-  const table = await compiledStyles('tabletanstack/tabletanstack.scss');
+  const table = await compiledStyles('table/table.scss');
   const root = table('.leaf-table');
   assert.equal(
     root['--leaf-table-edge-start'],
@@ -184,89 +182,74 @@ test('table outer cell insets and utility columns align with reading edges in bo
       'var(--leaf-component-table-padding-left,var(--leaf-table-padding-inline))',
     );
   }
-  const utility = table('.leaf-data-table__utility');
+  const utility = table('.leaf-table__utility');
   assert.equal(utility['text-align'], 'start');
   assert.equal(
-    table('.leaf-data-table__selection')['--leaf-table-selection-width'],
+    table('.leaf-table__selection')['--leaf-table-selection-width'],
     'calc(var(--leaf-table-edge-start)+ 18px)',
   );
-  assert.equal(table('.leaf-data-table__selection').width, 'var(--leaf-table-selection-width)');
+  assert.equal(table('.leaf-table__selection').width, 'var(--leaf-table-selection-width)');
+  assert.equal(table('.leaf-table__selection')['min-width'], 'var(--leaf-table-selection-width)');
+  assert.equal(table('.leaf-table__selection-col').width, 'var(--leaf-table-selection-width)');
   assert.equal(
-    table('.leaf-data-table__selection')['min-width'],
-    'var(--leaf-table-selection-width)',
-  );
-  assert.equal(table('.leaf-data-table__selection-col').width, 'var(--leaf-table-selection-width)');
-  assert.equal(
-    table('.leaf-table--bordered .leaf-data-table__selection')['--leaf-table-selection-width'],
+    table('.leaf-table--bordered .leaf-table__selection')['--leaf-table-selection-width'],
     'calc(var(--leaf-table-edge-start)+ 18px + var(--leaf-table-border-width))',
   );
   assert.equal(
-    table('.leaf-table--bordered .leaf-data-table__selection-col')['--leaf-table-selection-width'],
+    table('.leaf-table--bordered .leaf-table__selection-col')['--leaf-table-selection-width'],
     'calc(var(--leaf-table-edge-start)+ 18px + var(--leaf-table-border-width))',
   );
   assert.equal(
-    table('.leaf-table__cell.leaf-data-table__selection')['padding-inline'],
+    table('.leaf-table__cell.leaf-table__selection')['padding-inline'],
     'var(--leaf-table-edge-start)0',
   );
-  assert.equal(table('.leaf-data-table__expansion')['--leaf-table-expansion-start'], '8px');
+  assert.equal(table('.leaf-table__expansion')['--leaf-table-expansion-start'], '8px');
   assert.equal(
-    table('.leaf-data-table__expansion:first-child')['--leaf-table-expansion-start'],
+    table('.leaf-table__expansion:first-child')['--leaf-table-expansion-start'],
     'max(0px,calc(var(--leaf-table-edge-start)-(var(--leaf-table-expand-size)- 14px)/2))',
   );
   assert.equal(
-    table('.leaf-data-table__expansion-col:first-child')['--leaf-table-expansion-start'],
+    table('.leaf-table__expansion-col:first-child')['--leaf-table-expansion-start'],
     'max(0px,calc(var(--leaf-table-edge-start)-(var(--leaf-table-expand-size)- 14px)/2))',
   );
-  assert.equal(table('.leaf-data-table__expansion').width, 'var(--leaf-table-expansion-width)');
+  assert.equal(table('.leaf-table__expansion').width, 'var(--leaf-table-expansion-width)');
+  assert.equal(table('.leaf-table__expansion')['min-width'], 'var(--leaf-table-expansion-width)');
   assert.equal(
-    table('.leaf-data-table__expansion')['min-width'],
-    'var(--leaf-table-expansion-width)',
-  );
-  assert.equal(
-    table('.leaf-table--bordered .leaf-data-table__expansion')['--leaf-table-expansion-width'],
+    table('.leaf-table--bordered .leaf-table__expansion')['--leaf-table-expansion-width'],
     'calc(var(--leaf-table-expansion-start)+ var(--leaf-table-expand-size)+ var(--leaf-table-border-width))',
   );
   assert.equal(
-    table('.leaf-table__cell.leaf-data-table__expansion')['padding-inline'],
+    table('.leaf-table__cell.leaf-table__expansion')['padding-inline'],
     'var(--leaf-table-expansion-start)0',
-  );
-  assert.throws(
-    () => table('.leaf-table__cell.leaf-data-table__record-cell'),
-    /missing compiled rule/,
   );
   assert.equal(
     table(
-      '.leaf-table__row:not([aria-hidden=true]):not([data-spanned-start]) > .leaf-table__cell:first-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility)',
+      '.leaf-table__row:not([aria-hidden=true]) > .leaf-table__cell:first-child:not(.leaf-table__state-cell):not(.leaf-table__utility)',
     )['padding-inline-start'],
     'var(--leaf-table-edge-start)',
   );
   assert.equal(
     table(
-      '.leaf-table__row:not([aria-hidden=true]) > .leaf-table__cell:last-child:not(.leaf-table__state-cell):not(.leaf-data-table__utility)',
+      '.leaf-table__row:not([aria-hidden=true]) > .leaf-table__cell:last-child:not(.leaf-table__state-cell):not(.leaf-table__utility)',
     )['padding-inline-end'],
     'var(--leaf-table-edge-end)',
   );
-  const sort = table('.leaf-data-table__sort');
+  const sort = table('.leaf-table__sort');
   assert.equal(sort.display, 'flex');
   assert.equal(sort.width, '100%');
   assert.equal(
-    table('.leaf-data-table__sort-icons svg[data-active]').color,
+    table('.leaf-table__sort-icons svg[data-active]').color,
     'var(--leaf-color-primary)',
   );
-  assert.equal(table('.leaf-data-table__sort-down').rotate, '180deg');
+  assert.equal(table('.leaf-table__sort-down').rotate, '180deg');
+  assert.equal(table('.leaf-table__cell[data-ellipsis]')['text-overflow'], 'ellipsis');
   assert.equal(
-    table('.leaf-data-table .leaf-table__cell[data-ellipsis]')['text-overflow'],
+    table('.leaf-table__cell[data-ellipsis] > .leaf-table__row-content')['text-overflow'],
     'ellipsis',
   );
   assert.equal(
-    table('.leaf-data-table .leaf-table__cell[data-ellipsis] > .leaf-data-table__row-content')[
-      'text-overflow'
-    ],
+    table('.leaf-table__cell[data-ellipsis] .leaf-table__tree-content')['text-overflow'],
     'ellipsis',
-  );
-  assert.throws(
-    () => table('.leaf-data-table--card .leaf-data-table__card .leaf-table'),
-    /missing compiled rule/,
   );
 });
 

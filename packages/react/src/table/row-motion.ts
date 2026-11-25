@@ -3,7 +3,7 @@ import { animateMotion, useMotionEnabled } from '../shared/motion';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
-/** Retained tree rows collapse in their original cells, preserving native input instances. */
+/** 保留树形子行在原单元格内平滑收起/展开，同时不销毁行内原生表单控件实例。 */
 export function useRowMotion(
   ref: RefObject<HTMLTableRowElement | null>,
   collapsed: boolean,
@@ -27,14 +27,14 @@ export function useRowMotion(
     }
     const cells = Array.from(row.cells);
     const contents = cells.map((cell) => cell.firstElementChild as HTMLElement | null);
-    if (contents.some((content) => !content?.classList.contains('leaf-data-table__row-content'))) {
+    if (contents.some((content) => !content?.classList.contains('leaf-table__row-content'))) {
       for (const animation of animations.current) animation.cancel();
       animations.current = [];
       row.hidden = collapsed;
       setClosed(collapsed);
       return;
     }
-    // Read the visible state before cancelling a previous, possibly reversed transition.
+    // 取消前一次可能正在进行的反向过渡前，先读取当前实时几何状态。
     const live = animations.current.length
       ? cells.map((cell, index) => {
           const content = contents[index] as HTMLElement;
@@ -101,7 +101,7 @@ export function useRowMotion(
       setClosed(collapsed);
       return;
     }
-    // Hide before removing the final animated geometry; no forwards keyframes remain.
+    // 动画完成后先设置 hidden 再取消关键帧，由自然表格布局接管。
     void Promise.all(current.map((animation) => animation.finished)).then(
       () => {
         if (animations.current !== current) return;

@@ -5,7 +5,7 @@ import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from '../config-provider';
 import { Result } from '../result';
-import { TableControl as Table } from './table';
+import { TableControl as Table } from './table-frame';
 
 describe('Table', () => {
   afterEach(() => vi.unstubAllGlobals());

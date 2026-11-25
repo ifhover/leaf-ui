@@ -1,24 +1,24 @@
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
-const members = [
-  { id: 'alex', name: 'Alex Morgan', team: 'Design', projects: 8 },
-  { id: 'sam', name: 'Sam Taylor', team: 'Engineering', projects: 3 },
-  { id: 'jordan', name: 'Jordan Lee', team: 'Product', projects: 12 },
-  { id: 'riley', name: 'Riley Chen', team: 'Data', projects: 6 },
+const tasks = [
+  { id: '1', name: 'Color contract review', owner: 'Alex', progress: '100%' },
+  { id: '2', name: 'Pagination defaults update', owner: 'Sam', progress: '85%' },
+  { id: '3', name: 'Virtual scroll verification', owner: 'Jordan', progress: '60%' },
+  { id: '4', name: 'Locale resource check', owner: 'Riley', progress: '40%' },
 ];
 
 export function TableStriped() {
   return (
-    <DataTable
+    <Table
       striped
-      data={members}
+      data={tasks}
       columns={[
-        { accessorKey: 'name', header: 'Member' },
-        { accessorKey: 'team', header: 'Team' },
-        { accessorKey: 'projects', header: 'Projects' },
+        { dataIndex: 'name', title: 'Task' },
+        { dataIndex: 'owner', title: 'Owner' },
+        { dataIndex: 'progress', title: 'Progress', align: 'end' },
       ]}
       rowKey="id"
-      aria-label="Striped table"
+      aria-label="Striped task table"
       pagination={false}
     />
   );

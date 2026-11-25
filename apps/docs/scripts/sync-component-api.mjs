@@ -596,47 +596,20 @@ const choicePopupMaxWidth = [
   '可选的浮层最大宽度；未设置时不额外限制，仍受可视区域限制。',
   'Optional maximum popup width; no additional limit when unset, still bounded by the viewport.',
 ];
-const tableStripedDescription = [
-  '默认显示细行分割线；设置为 true 后切换为斑马条纹样式，从第二行开始展示交替浅灰背景并隐藏行间分割线。',
-  'Fine row dividers are shown by default; true enables zebra striping from the second row with an alternating light gray background and hides row dividers.',
-];
+const tableStripedDescription = ['开启斑马条纹交替背景。', 'Show alternating row backgrounds.'];
 const tableBorderedDescription = [
-  '开启外框与全单元格垂直网格线，并隐藏表头竖向短分隔线。',
-  'Enable an outer border and full vertical cell grid lines while hiding short header column dividers.',
+  '显示外边框和单元格网格线。',
+  'Show outer border and cell grid lines.',
 ];
 const tableHeightDescription = [
-  '表格视口最大高度，表头始终固定，表体在内部滚动；虚拟模式未指定时使用 400。',
-  'Maximum table viewport height. Headers always stay fixed while the body scrolls internally; virtual mode defaults to 400 when omitted.',
-];
-const localPaginationDescription = [
-  '是否让 TanStack 在本地切分当前页数据；关闭时保留分页状态和分页器，但直接展示传入的行。',
-  'Whether TanStack slices rows into local pages. Disable it to keep pagination state and controls while rendering all supplied rows.',
+  '最大高度，超出时表头固定、表体滚动；开启 virtual 且未指定时默认 400。',
+  'Maximum viewport height; headers stay fixed while the body scrolls. Defaults to 400 in virtual mode.',
 ];
 const paginationReference =
   '<a href="pagination.html#pagination-api" target="_blank" rel="noopener noreferrer">Pagination API</a>';
 const tablePaginationDescription = [
-  `分页器开关或展示参数，参见 ${paginationReference}；直接传入数据时，false 同时关闭本地切页。`,
-  `Pagination visibility or display options; see ${paginationReference}. With direct data input, false also disables local slicing.`,
-];
-const selectionModeDescription = [
-  '单选只保留最近请求的一个 key；多选保留全部已选 key。',
-  'Single keeps only the most recently requested key; multiple keeps every selected key.',
-];
-const selectedRowKeysDescription = [
-  '受控的已选业务行 key，数组顺序决定单选模式保留哪一项。',
-  'Controlled selected business row keys; array order determines which key single mode retains.',
-];
-const selectedResultKeysDescription = [
-  '当前已选业务行 key；受控时来自 selectedRowKeys，非受控时来自内部状态。',
-  'Current selected business row keys; sourced from selectedRowKeys when controlled, otherwise from internal state.',
-];
-const defaultSelectedRowKeysDescription = [
-  '非受控模式的初始已选业务行 key。',
-  'Initial selected business row keys for uncontrolled usage.',
-];
-const onSelectedRowKeysChangeDescription = [
-  '选择变化时返回规范化、去重后的字符串 key。',
-  'Called with normalized, unique string keys whenever selection changes.',
+  `分页开关或配置，参见 ${paginationReference}；设为 false 时关闭分页。`,
+  `Pagination visibility or options; see ${paginationReference}. Set false to disable pagination.`,
 ];
 const specificDefaults = {
   'FormFieldProps.controlAlign': ['继承 Form', 'Inherited from Form'],
@@ -757,16 +730,21 @@ const specificDefaults = {
   'DropdownProps.open': '—',
   'TooltipProps.open': '—',
   'PopoverProps.open': '—',
-  'DataTableProps.table': '—',
-  'DataTableProps.variant': "`'default'`",
-  'DataTablePresentationProps.variant': "`'default'`",
-  'DataTableProps.data': ['未传 table 时必填', 'Required without table'],
-  'DataTableProps.columns': ['未传 table 时必填', 'Required without table'],
-  'DataTableProps.rowKey': ['未传 table 时必填', 'Required without table'],
-  'DataTablePaginationProps.showSizeChanger': '`true`',
-  'DataTablePaginationProps.size': 'DataTable size',
-  'UseDataTableSelectionOptions.mode': '`multiple`',
-  'UseDataTableSelectionOptions.defaultSelectedRowKeys': '`[]`',
+  'TableColumn.align': "`'start'`",
+  'TableColumn.minWidth': '`20`',
+  'TableColumn.ellipsis': '`false`',
+  'TableColumn.sortDirections': "`['asc', 'desc']`",
+  'TableColumn.resizable': '`true`',
+  'TableRowSelection.type': "`'checkbox'`",
+  'TableRowSelection.defaultSelectedRowKeys': '`[]`',
+  'TableExpandable.defaultExpandedRowKeys': '`[]`',
+  'TableExpandable.defaultExpandAllRows': '`false`',
+  'TableExpandable.indentSize': '`16`',
+  'TableExpandable.childrenColumnName': "`'children'`",
+  'TableVirtualOptions.estimateRowHeight': '`48`',
+  'TableVirtualOptions.overscan': '`5`',
+  'TablePaginationProps.showSizeChanger': '`true`',
+  'TablePaginationProps.size': 'Table size',
 };
 function specificDefault(name, property, english) {
   const value = specificDefaults[`${name}.${property}`];
@@ -774,7 +752,7 @@ function specificDefault(name, property, english) {
 }
 // Difference-only tables link to the shared API instead of repeating its properties.
 const modeProperties = {
-  DataTablePaginationProps: ['hasNextPage'],
+  TablePaginationProps: ['total', 'onChange', 'hasNextPage'],
   SingleDatePickerProps: ['value', 'defaultValue', 'onChange'],
   NumericInputNumberProps: [
     'stringMode',
@@ -801,10 +779,18 @@ const modeProperties = {
 };
 const removedProperties = new Set([
   'CascaderProps.children',
-  'DataTableProps.children',
-  'DataTablePresentationProps.children',
+  'TableProps.children',
+  'TablePresentationProps.children',
 ]);
 const apiSectionOrder = {
+  'components/table': [
+    'TableProps',
+    'TableColumn',
+    'TableRowSelection',
+    'TableExpandable',
+    'TableVirtualOptions',
+    'TablePaginationProps',
+  ],
   'components/avatar': ['AvatarProps', 'AvatarGroupProps'],
   'components/config-provider': ['ConfigProviderProps', 'LeafTheme'],
   'components/scroll-area': ['ScrollAreaProps'],
@@ -906,7 +892,35 @@ const apiSectionOrder = {
 const apiPropertyOrder = {
   BadgeProps: ['children', 'count', 'max', 'showZero', 'dot', 'placement', 'color'],
   TagProps: ['children', 'color', 'variant', 'size', 'icon', 'closable', 'onClose'],
-  DataTableProps: ['data', 'columns', 'rowKey', 'options', 'localPagination', 'table'],
+  TableProps: [
+    'data',
+    'columns',
+    'rowKey',
+    'size',
+    'bordered',
+    'striped',
+    'rowSelection',
+    'expandable',
+    'sort',
+    'defaultSort',
+    'onSortChange',
+    'multiSort',
+    'manualSorting',
+    'pagination',
+    'manualPagination',
+    'resizable',
+    'onColumnResize',
+    'virtual',
+    'maxHeight',
+    'minWidth',
+    'loading',
+    'emptyContent',
+    'error',
+    'onRetry',
+    'getRowLabel',
+    'onRow',
+    'tableRef',
+  ],
   ConfigProviderProps: [
     'locale',
     'translations',
@@ -1713,8 +1727,6 @@ const specificTypes = {
     '((value: string | null) => void) | ((value: readonly string[]) => void)',
   'AlertProps.type': "'default' | 'success' | 'warning' | 'danger' | 'error'",
   'ResultProps.status': "'empty' | 'success' | 'warning' | 'danger' | 'error'",
-  'UseDataTableSelectionOptions.selectedRowKeys': 'readonly DataTableRowSelectionKey[]',
-  'UseDataTableSelectionOptions.defaultSelectedRowKeys': 'readonly DataTableRowSelectionKey[]',
 };
 const specific = {
   'CardProps.padding': [
@@ -3270,139 +3282,185 @@ const specific = {
     '补充状态文字或标签；不要放置交互控件。',
     'Supplementary status or tags; avoid interactive controls.',
   ],
-  'DataTableProps.table': [
-    '由 useDataTable 或 useReactTable 创建的实例；与 data、columns、rowKey、options 和 localPagination 互斥。',
-    'Instance from useDataTable or useReactTable; mutually exclusive with data, columns, rowKey, options and localPagination.',
-  ],
-  'DataTableProps.getRowProps': [
-    '自定义数据行的属性与事件。',
-    'Customize data row attributes and events.',
-  ],
-  'DataTableVirtualOptions.estimateRowHeight': [
-    '测量前的估算记录高度，包含数据行与展开详情。',
-    'Estimated record height before measurement, including the data row and expanded details.',
-  ],
-  'DataTableProps.pagination': tablePaginationDescription,
-  'DataTablePresentationProps.pagination': tablePaginationDescription,
-  'DataTableProps.localPagination': localPaginationDescription,
-  'UseDataTableOptions.localPagination': localPaginationDescription,
-  'DataTableProps.striped': tableStripedDescription,
-  'DataTablePresentationProps.striped': tableStripedDescription,
-  'DataTableProps.bordered': tableBorderedDescription,
-  'DataTablePresentationProps.bordered': tableBorderedDescription,
-  'DataTableProps.maxHeight': tableHeightDescription,
-  'DataTablePresentationProps.maxHeight': tableHeightDescription,
-  'DataTableProps.minWidth': [
-    '表格内容区域的最小宽度；默认适应容器与列宽。',
-    'Minimum content-area width; adapts to the container and column widths by default.',
-  ],
-  'DataTablePresentationProps.minWidth': [
-    '表格内容区域的最小宽度；默认适应容器与列宽。',
-    'Minimum content-area width; adapts to the container and column widths by default.',
-  ],
-  'DataTableColumnMeta.label': [
-    '排序和列宽调整使用的纯文字列名。',
-    'Plain-text column name for sorting and resize controls.',
-  ],
-  'DataTableColumnMeta.ellipsis': [
-    '是否开启单行省略截断；启用后自动切换为固定列宽分配以约束内容宽度。',
-    'Truncate overflowing cell content onto a single line with an ellipsis; automatically enables fixed width allocation.',
-  ],
-  'DataTableColumnMeta.flex': [
-    '分配剩余宽度的正数权重，受 minSize / maxSize 约束；固定列和手动调整宽度的列忽略此项。',
-    'Positive weight for sharing available width, bounded by minSize / maxSize; ignored on pinned or manually resized columns.',
-  ],
-  'DataTablePaginationProps.showSizeChanger': [
-    '展示每页条数选择器；DataTable 默认开启，可显式传入 false 关闭。',
-    'Show the page-size selector; enabled by default in DataTable and can be disabled with false.',
-  ],
-  'DataTablePaginationProps.pageSizeOptions': ['可选择的每页条数。', 'Available page sizes.'],
-  'DataTablePaginationProps.showQuickJumper': [
-    '回车或离开分页区域时跳转。',
-    'Commit a quick jump on Enter or when leaving the pagination region.',
-  ],
-  'DataTablePaginationProps.showTotal': [
-    'true 展示默认统计，也可传入函数定制总数及当前范围。',
-    'true shows a localized total; pass a function to customize the total and visible range.',
-  ],
-  'DataTablePaginationProps.variant': [
-    '分页按钮样式：描边 / 无边框。',
-    'Pagination button appearance: outlined or borderless.',
-  ],
-  'DataTablePaginationProps.simple': ['使用简洁分页器。', 'Use compact pagination.'],
-  'DataTablePaginationProps.hideOnSinglePage': [
-    '只有一页时隐藏分页器。',
-    'Hide when only one page exists.',
-  ],
-  'DataTablePaginationProps.size': [
-    '默认跟随 DataTable 的尺寸。',
-    'Inherit DataTable size by default.',
-  ],
-  'DataTablePaginationProps.hasNextPage': [
-    '未知总数时控制下一页是否可用。',
-    'Control next-page availability when the total is unknown.',
-  ],
-  'DataTableProps.data': [
-    '展示的数据，更新时使用新数组。',
+  'TableProps.data': [
+    '展示的数据数组，更新时使用新数组。',
     'Data to display; provide a new array when updating.',
   ],
-  'DataTableProps.columns': ['TanStack 的原生列定义。', 'Native TanStack column definitions.'],
-  'DataTableProps.rowKey': [
+  'TableProps.columns': ['列定义数组。', 'Column definitions.'],
+  'TableProps.rowKey': [
     '非可选的字符串或数字标识字段，或返回字符串 / 数字标识的函数。',
     'A required string/number identity field, or a function returning a string/number identity.',
   ],
-  'DataTableProps.options': [
-    '定制 TanStack 的状态、回调和服务端配置。',
-    'Customize TanStack state, callbacks and server configuration.',
+  'TableProps.pagination': tablePaginationDescription,
+  'TablePresentationProps.pagination': tablePaginationDescription,
+  'TableProps.striped': tableStripedDescription,
+  'TablePresentationProps.striped': tableStripedDescription,
+  'TableProps.bordered': tableBorderedDescription,
+  'TablePresentationProps.bordered': tableBorderedDescription,
+  'TableProps.maxHeight': tableHeightDescription,
+  'TablePresentationProps.maxHeight': tableHeightDescription,
+  'TableProps.minWidth': [
+    '表格内容区域的最小宽度；默认适应容器与列宽。',
+    'Minimum content-area width; adapts to the container and column widths by default.',
   ],
-  'UseDataTableOptions.data': [
-    '展示的数据，更新时使用新数组。',
-    'Data to display; provide a new array when updating.',
+  'TablePresentationProps.minWidth': [
+    '表格内容区域的最小宽度；默认适应容器与列宽。',
+    'Minimum content-area width; adapts to the container and column widths by default.',
   ],
-  'UseDataTableOptions.columns': ['TanStack 的原生列定义。', 'Native TanStack column definitions.'],
-  'UseDataTableOptions.rowKey': [
-    '每行稳定且唯一的字符串或数字标识。',
-    'A stable, unique string/number identity for every row.',
+  'TableProps.rowSelection': [
+    '行选择配置（多选或单选）。',
+    'Row selection options (multiple or single).',
   ],
-  'UseDataTableOptions.options': [
-    '定制 TanStack 的状态、回调、行模型和服务端配置。',
-    'Customize native TanStack state, callbacks, row models and server settings.',
+  'TableProps.expandable': [
+    '展开详情行与树形子行配置。',
+    'Expandable detail row and tree row options.',
   ],
-  'DataTableRowProps.selected': ['设置行的选中样式。', 'Apply the selected row appearance.'],
-  'DataTableCellProps.align': ['单元格内容对齐。', 'Cell content alignment.'],
-  'DataTableSelectionOptions.state': [
-    '传给 useDataTable options 的受控 rowSelection 状态。',
-    'Controlled rowSelection state for useDataTable options.',
+  'TableProps.sort': ['受控排序状态。', 'Controlled sorting state.'],
+  'TableProps.defaultSort': ['非受控初始排序状态。', 'Initial sorting state in uncontrolled mode.'],
+  'TableProps.onSortChange': [
+    '排序变化回调，返回主排序与完整排序列表。',
+    'Called when sorting changes with the primary sorter and full sorter list.',
   ],
-  'DataTableSelectionOptions.onRowSelectionChange': [
-    'TanStack 原生选择变更回调，内部会规范化业务 key。',
-    'Native TanStack selection callback; business keys are normalized internally.',
+  'TableProps.multiSort': [
+    '允许按住 Shift 点击列头叠加多列排序。',
+    'Allow Shift+clicking column headers to layer multiple sorters.',
   ],
-  'DataTableSelectionOptions.enableMultiRowSelection': [
-    '由 mode 决定；单选为 false，多选为 true。',
-    'Derived from mode: false for single and true for multiple.',
+  'TableProps.manualSorting': [
+    '服务端排序模式，开启后仅维护排序状态，不在本地重排数据。',
+    'Server-side sorting mode; tracks sorting state without reordering data locally.',
   ],
-  'UseDataTableSelectionOptions.mode': selectionModeDescription,
-  'UseDataTableSelectionOptions.selectedRowKeys': selectedRowKeysDescription,
-  'UseDataTableSelectionOptions.defaultSelectedRowKeys': defaultSelectedRowKeysDescription,
-  'UseDataTableSelectionOptions.onSelectedRowKeysChange': onSelectedRowKeysChangeDescription,
-  'UseDataTableSelectionResult.selectedRowKeys': selectedResultKeysDescription,
-  'UseDataTableSelectionResult.rowSelection': [
-    '由业务 key 派生的 TanStack 原生 rowSelection 映射。',
-    'Native TanStack rowSelection map derived from business keys.',
+  'TableProps.manualPagination': [
+    '由外部控制分页，不在本地切分 data；当 pagination.total 小于 0 或大于数据长度时自动启用。',
+    'Skip local page slicing for server pagination; enabled automatically when pagination.total is negative or exceeds data.length.',
   ],
-  'UseDataTableSelectionResult.onRowSelectionChange': [
-    '可直接传给 useDataTable 或原生 useReactTable。',
-    'Pass directly to useDataTable or native useReactTable.',
+  'TableProps.onColumnResize': [
+    '列宽拖拽或键盘调整回调。',
+    'Called when a column is resized via pointer or keyboard.',
   ],
-  'UseDataTableSelectionResult.selectionOptions': [
-    '可直接展开到 useDataTable options 的完整选择配置。',
-    'Complete selection options ready to spread into useDataTable options.',
+  'TableProps.getRowLabel': [
+    '行操作的可访问名称；默认使用解析后的行 key。',
+    'Accessible row-action name; defaults to the resolved row key.',
   ],
-  'UseDataTableSelectionResult.clearSelection': [
-    '清空受控或非受控选择，并触发变更回调。',
-    'Clear controlled or uncontrolled selection and notify the change callback.',
+  'TableProps.onRow': [
+    '自定义数据行原生属性、事件与选中样式。',
+    'Customize data row native attributes, events, and selection appearance.',
   ],
+  'TableColumn.key': [
+    '列唯一标识；省略时依次回退到 dataIndex 与列索引。',
+    'Unique column key; falls back to dataIndex then column index.',
+  ],
+  'TableColumn.dataIndex': [
+    '读取单元格值的字段名或嵌套路径数组。',
+    'Field name or nested path array for reading cell values.',
+  ],
+  'TableColumn.title': ['表头展示内容。', 'Column header content.'],
+  'TableColumn.label': [
+    '纯文字列名；表头为自定义节点时供排序与列宽调整无障碍标签使用。',
+    'Plain-text column name for sorting and resize controls when title is not a string.',
+  ],
+  'TableColumn.render': ['自定义单元格渲染函数。', 'Custom cell renderer.'],
+  'TableColumn.align': ['表头与单元格对齐方式。', 'Header and cell alignment.'],
+  'TableColumn.width': ['固定列宽（像素）。', 'Fixed column width in pixels.'],
+  'TableColumn.minWidth': ['最小列宽（像素）。', 'Minimum column width in pixels.'],
+  'TableColumn.maxWidth': ['最大列宽（像素）。', 'Maximum column width in pixels.'],
+  'TableColumn.flex': [
+    '分配剩余宽度的正数权重，受 minWidth / maxWidth 约束；固定列和手动调整宽度的列忽略此项。',
+    'Positive weight for sharing available width, bounded by minWidth / maxWidth; ignored on pinned or manually resized columns.',
+  ],
+  'TableColumn.fixed': ['将列固定在起点或终点。', 'Pin the column to the start or end edge.'],
+  'TableColumn.ellipsis': [
+    '开启单行省略截断，自动切换为固定列宽布局。',
+    'Truncate overflowing cell content onto a single line; automatically enables fixed layout.',
+  ],
+  'TableColumn.sorter': [
+    '启用排序；true 使用默认比较，也可传入自定义比较函数。',
+    'Enable sorting; true uses default comparison or pass a custom comparator.',
+  ],
+  'TableColumn.sortDirections': ['排序顺序循环。', 'Order cycle for toggling sort direction.'],
+  'TableColumn.resizable': [
+    '表格开启 resizable 时控制该列是否允许调整宽度。',
+    'Control whether this column can be resized when table resizable is enabled.',
+  ],
+  'TableColumn.className': ['数据单元格类名。', 'Cell class name.'],
+  'TableColumn.headerClassName': ['表头单元格类名。', 'Header cell class name.'],
+  'TableColumn.onCell': [
+    '自定义数据单元格属性、样式或合并；colSpan / rowSpan 为 0 时省略单元格。',
+    'Cell attributes, styles, or spans; a zero colSpan / rowSpan omits the cell.',
+  ],
+  'TableColumn.onHeaderCell': [
+    '自定义表头单元格属性与事件。',
+    'Header cell attributes and events.',
+  ],
+  'TableRowSelection.type': [
+    '多选复选框或单选框模式。',
+    'Multiple checkbox or single radio selection.',
+  ],
+  'TableRowSelection.selectedRowKeys': ['受控已选行 key 列表。', 'Controlled selected row keys.'],
+  'TableRowSelection.defaultSelectedRowKeys': [
+    '非受控初始已选行 key 列表。',
+    'Initial selected row keys in uncontrolled mode.',
+  ],
+  'TableRowSelection.onChange': ['选择变化回调。', 'Called when selection changes.'],
+  'TableRowSelection.getCheckboxProps': [
+    '控制单行选择控件是否禁用。',
+    'Configure per-row selection disabled state.',
+  ],
+  'TableRowSelection.fixed': [
+    '是否将选择列固定在起始侧；默认在存在起始固定列时自动固定。',
+    'Pin the selection column to the start edge; pinned automatically when a start-fixed column exists.',
+  ],
+  'TableExpandable.expandedRowRender': [
+    '渲染展开详情行内容。',
+    'Render expandable detail row content.',
+  ],
+  'TableExpandable.rowExpandable': [
+    '判断行是否允许展开。',
+    'Determine whether a row can be expanded.',
+  ],
+  'TableExpandable.expandedRowKeys': ['受控已展开行 key 列表。', 'Controlled expanded row keys.'],
+  'TableExpandable.defaultExpandedRowKeys': [
+    '非受控初始已展开行 key 列表。',
+    'Initial expanded row keys in uncontrolled mode.',
+  ],
+  'TableExpandable.defaultExpandAllRows': [
+    '初始默认展开所有可展开行。',
+    'Expand all eligible rows initially.',
+  ],
+  'TableExpandable.onExpandedRowsChange': [
+    '已展开行 key 列表变化回调。',
+    'Called when expanded row keys change.',
+  ],
+  'TableExpandable.onExpand': [
+    '单行展开或收起回调。',
+    'Called when a single row expands or collapses.',
+  ],
+  'TableExpandable.indentSize': [
+    '树形子行每层缩进像素。',
+    'Indentation in pixels per tree depth level.',
+  ],
+  'TableExpandable.childrenColumnName': [
+    '树形数据子节点字段名。',
+    'Field name holding nested tree child rows.',
+  ],
+  'TableVirtualOptions.estimateRowHeight': [
+    '测量前的估算记录高度，包含数据行与展开详情。',
+    'Estimated record height before measurement, including the data row and expanded details.',
+  ],
+  'TablePaginationProps.total': [
+    '数据总条数；本地分页可省略，未知总数传 -1。',
+    'Total row count; optional for local pagination, pass -1 when unknown.',
+  ],
+  'TablePaginationProps.onChange': [
+    '页码或每页条数变化回调。',
+    'Called when page or page size changes.',
+  ],
+  'TablePaginationProps.hasNextPage': [
+    '未知总数时控制下一页是否可用。',
+    'Control next-page availability when the total is unknown.',
+  ],
+  'TableRowProps.selected': ['设置行的选中样式。', 'Apply the selected row appearance.'],
+  'TableCellProps.align': ['单元格内容对齐。', 'Cell content alignment.'],
+  'TableHeaderCellProps.align': ['表头单元格对齐。', 'Header cell alignment.'],
   'LeafTheme.motion': [
     '启用当前区域的交互动效；系统减少动态效果优先，浮层继承此设置。',
     'Enable interaction motion in this region; reduced-motion preferences take precedence and portals inherit it.',
@@ -3576,12 +3634,14 @@ const specific = {
 };
 // These types are explained beside their consuming props instead of duplicating their tables.
 const inlineApiTypes = new Set([
-  'DataTablePresentationProps',
-  'UseDataTableOptions',
-  'DataTableRowKey',
-  'DataTableColumnDef',
-  'DataTableRowProps',
-  'DataTableCellProps',
+  'TablePresentationProps',
+  'TableKey',
+  'TableRowKey',
+  'TableSortOrder',
+  'TableSorterState',
+  'TableRowProps',
+  'TableCellProps',
+  'TableHeaderCellProps',
 ]);
 const anchors = new Map();
 const documentedTypes = new Set();
@@ -3623,8 +3683,12 @@ function typeCell(value, page, english, preserveAliases = false) {
   );
   if (!preserveAliases)
     for (const [name, expression] of expressions)
-      if (expression && expression.length < 230 && !expression.includes('{'))
-        text = text.replace(new RegExp(`\\b${name}\\b`, 'gu'), expression);
+      if (expression && expression.length < 230 && !expression.includes('{')) {
+        const needsParens = /\|/.test(expression);
+        text = text.replace(new RegExp(`\\b${name}\\b(\\[\\])?`, 'gu'), (_, arraySuffix) =>
+          arraySuffix ? (needsParens ? `(${expression})[]` : `${expression}[]`) : expression,
+        );
+      }
   const pieces = [];
   let position = 0;
   for (const match of text.matchAll(/\b[A-Za-z_]\w*\b/gu)) {

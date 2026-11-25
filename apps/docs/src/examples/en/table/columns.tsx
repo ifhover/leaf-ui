@@ -1,41 +1,32 @@
-import { Button } from '@ifhover/leaf-ui';
-import { DataTable, useDataTable } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
-const members = Array.from({ length: 26 }, (_, index) => ({
-  id: `member-${index + 1}`,
-  name: ['Alex Morgan', 'Sam Taylor', 'Jordan Lee'][index % 3] ?? '',
-  email: `member${index + 1}@example.com`,
-  team: ['Design', 'Engineering', 'Product'][index % 3] ?? '',
-  projects: index + 1,
+const deployments = Array.from({ length: 12 }, (_, index) => ({
+  id: `dep-${index + 1}`,
+  service: `service-${index + 1}`,
+  region: index % 2 === 0 ? 'us-east-1' : 'eu-west-1',
+  version: `v2.${index}.0`,
+  owner: ['Alex', 'Sam', 'Jordan', 'Riley'][index % 4] ?? '',
+  updatedAt: `2026-10-${String(10 + index).padStart(2, '0')} 14:20`,
+  status: index % 3 === 0 ? 'Running' : 'Deployed',
 }));
-const columns = [
-  { accessorKey: 'name', header: 'Member', size: 200, minSize: 160, maxSize: 320 },
-  { accessorKey: 'email', header: 'Email', size: 260, minSize: 180, maxSize: 400 },
-  { accessorKey: 'team', header: 'Team', size: 160, minSize: 120, maxSize: 240 },
-  { accessorKey: 'projects', header: 'Projects', size: 100, minSize: 80, maxSize: 160 },
-];
 
 export function TableColumns() {
-  const table = useDataTable({
-    data: members,
-    columns,
-    rowKey: 'id',
-    localPagination: false,
-    options: {
-      columnResizeMode: 'onChange',
-      initialState: { columnPinning: { left: ['name'], right: ['projects'] } },
-    },
-  });
   return (
-    <>
-      <Button onClick={() => table.resetColumnSizing()}>Reset widths</Button>
-      <DataTable
-        table={table}
-        aria-label="Pinned and resizable columns"
-        maxHeight={300}
-        resizable
-        pagination={false}
-      />
-    </>
+    <Table
+      data={deployments}
+      columns={[
+        { dataIndex: 'service', title: 'Service', fixed: 'left', width: 140, minWidth: 100 },
+        { dataIndex: 'region', title: 'Region', width: 140 },
+        { dataIndex: 'version', title: 'Version', width: 140 },
+        { dataIndex: 'owner', title: 'Owner', width: 140 },
+        { dataIndex: 'updatedAt', title: 'Updated', width: 200 },
+        { dataIndex: 'status', title: 'Status', fixed: 'right', width: 110, resizable: false },
+      ]}
+      rowKey="id"
+      aria-label="Pinning and resizing"
+      resizable
+      maxHeight={260}
+      pagination={false}
+    />
   );
 }

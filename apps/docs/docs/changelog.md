@@ -7,6 +7,21 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.22.0 - 2026-11-25
+
+### 改进与修复
+
+- **Table 视觉细节调整**：普通行悬停背景由 `4%` 调淡至 `2% --leaf-table-text`；选中行改用与悬停一致的中性浅灰底，且选中行再次悬停时保持颜色不变。
+- **Table 树形数据与文档体验优化**：原生内置 `Table` 新增 `children` 嵌套树形行展开（支持 `indentSize` 与 `childrenColumnName`）、受控/非受控单列及多列排序、当前页全选与跨页保留已选项、列固定与列宽拖拽、虚拟滚动及服务端分页/排序支持，并同步精简重构中英文文档与示例。
+
+### 破坏性变更与迁移说明
+
+- **Table 原生重构，移除 `@tanstack/react-table` 与 `DataTable`**：
+  - 表格组件统一重命名为 `Table` 并直接从主入口 `@ifhover/leaf-ui` 导出（保留 `@ifhover/leaf-ui/table` 标准按需子路径），彻底移除 `@ifhover/leaf-ui/table/tanstack` 子路径、`@tanstack/react-table` 可选依赖、`DataTable`、`useDataTable` 与 `useDataTableSelection`。
+  - 迁移为声明式 `columns`（`TableColumn<TData>`：`title` / `dataIndex` / `key` / `render` / `align` / `width` / `minWidth` / `maxWidth` / `flex` / `fixed` / `ellipsis` / `sorter` / `sortDirections` / `resizable` / `onCell` / `onHeaderCell`），行交互通过 `rowSelection`、`expandable`、`sort` / `defaultSort` / `onSortChange` / `multiSort` / `manualSorting` / `manualPagination` / `onRow`、`resizable`、`virtual`、`pagination` 配置；移除多级分组表头与客户端分组聚合。
+  - `ConfigProvider` 的区域默认配置键由 `components.DataTable` 统一为 `components.Table`（对应 `TablePresentationProps`），语言资源中的 `dataTable` 词条合并至 `table` 分组；同时移除内部变量 `--leaf-table-selected-hover-background`。
+- **`Pagination` 默认外观调整**：默认 `variant` 由 `'ghost'` 调整为 `'outline'`（需无边框外观请显式传入 `variant="ghost"`）；上一页与下一页按钮去除可见文字，改为正方形纯图标按钮并通过 `aria-label` 保留无障碍名称（同步应用于 `Table` 未知总数分页）。
+
 ## 0.21.0 - 2026-11-25
 
 ### 改进与修复

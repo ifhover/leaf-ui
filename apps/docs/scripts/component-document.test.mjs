@@ -646,22 +646,21 @@ test('build export produces detail and separate complete example files with work
       assert.equal(detail.version, index.version);
       assert.equal(detail.primaryApi, detail.apiNames[0]);
       assert.ok(detail.basic.includes('```tsx'));
-      if (item.component === 'DataTable') {
+      if (item.component === 'Table') {
         assert.deepEqual(detail.apiNames, [
-          'DataTableProps',
-          'useDataTable',
-          'useDataTableSelection',
-          'DataTableColumnMeta',
-          'DataTableVirtualOptions',
-          'DataTablePagination',
+          'TableProps',
+          'TableColumn',
+          'TableRowSelection',
+          'TableExpandable',
+          'TableVirtualOptions',
+          'TablePagination',
         ]);
         for (const name of [
-          'DataTableRowKey',
-          'DataTablePresentationProps',
-          'UseDataTableOptions',
+          'TableRowKey',
+          'TablePresentationProps',
+          'TableSorterState',
           'selectedRowKeys',
-          'onRowSelectionChange',
-          'enableMultiRowSelection',
+          'expandedRowRender',
           'hasNextPage',
         ])
           assert.ok(detail.api.includes(name), `${name} survives the compact API export`);

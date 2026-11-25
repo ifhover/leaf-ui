@@ -1,23 +1,24 @@
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
-const members = [
-  { id: 'alex', name: 'Alex Morgan', team: 'Design', projects: 8 },
-  { id: 'sam', name: 'Sam Taylor', team: 'Engineering', projects: 3 },
-  { id: 'jordan', name: 'Jordan Lee', team: 'Product', projects: 12 },
+const invoices = [
+  { id: 'INV-101', customer: '林深科技', status: '已支付', amount: '¥12,800' },
+  { id: 'INV-102', customer: '明远设计', status: '待核销', amount: '¥6,400' },
+  { id: 'INV-103', customer: '清风数据', status: '已支付', amount: '¥19,200' },
 ];
 
 export function TableSimple() {
   return (
-    <DataTable
+    <Table
       bordered
-      data={members}
+      data={invoices}
       columns={[
-        { accessorKey: 'name', header: '成员' },
-        { accessorKey: 'team', header: '团队' },
-        { accessorKey: 'projects', header: '项目数' },
+        { dataIndex: 'id', title: '单号' },
+        { dataIndex: 'customer', title: '客户' },
+        { dataIndex: 'status', title: '状态' },
+        { dataIndex: 'amount', title: '金额', align: 'end' },
       ]}
       rowKey="id"
-      aria-label="带边框的表格"
+      aria-label="带边框账单表格"
       pagination={false}
     />
   );

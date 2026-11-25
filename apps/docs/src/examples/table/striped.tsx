@@ -1,24 +1,24 @@
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
-const members = [
-  { id: 'alex', name: 'Alex Morgan', team: 'Design', projects: 8 },
-  { id: 'sam', name: 'Sam Taylor', team: 'Engineering', projects: 3 },
-  { id: 'jordan', name: 'Jordan Lee', team: 'Product', projects: 12 },
-  { id: 'riley', name: 'Riley Chen', team: 'Data', projects: 6 },
+const tasks = [
+  { id: '1', name: '设计系统颜色检查', owner: '林澈', progress: '100%' },
+  { id: '2', name: '分页控件默认值切换', owner: '周岚', progress: '85%' },
+  { id: '3', name: '表格虚拟滚动验证', owner: '许言', progress: '60%' },
+  { id: '4', name: '多语言翻译核对', owner: '陈宁', progress: '40%' },
 ];
 
 export function TableStriped() {
   return (
-    <DataTable
+    <Table
       striped
-      data={members}
+      data={tasks}
       columns={[
-        { accessorKey: 'name', header: '成员' },
-        { accessorKey: 'team', header: '团队' },
-        { accessorKey: 'projects', header: '项目数' },
+        { dataIndex: 'name', title: '任务' },
+        { dataIndex: 'owner', title: '负责人' },
+        { dataIndex: 'progress', title: '进度', align: 'end' },
       ]}
       rowKey="id"
-      aria-label="斑马条纹表格"
+      aria-label="斑马条纹任务表"
       pagination={false}
     />
   );

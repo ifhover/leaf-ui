@@ -17,14 +17,14 @@ This guide covers component composition and the scales for custom page layouts. 
 | [Menu](/en/components/menu)       | Defaults to `neutral`, using a subtle hover fill and `surface-muted` monochrome selection.                                             | Keep navigation neutral rather than adding large brand-colored highlights; choose `raised` or `primary` explicitly when needed.                                                             |
 | [Button](/en/components/button)   | Defaults to `outline`: a neutral surface, crisp border and subtle bottom shadow whose border and text shift to primary hover and darken on press. | Use `outline` for ordinary actions and reserve `solid` for primary actions (supporting adaptive `'neutral'` monochrome contrast); adjust button themes locally via `ConfigProvider` when needed. |
 | [Card](/en/components/card)       | Uses a clean content surface with softened framing and the lightest resting shadow (`shadow-xs`), plus `variant="layered"` and `selected` states. | Use for independent task sections needing clear container framing; add context via `description` or a standalone `CardTitle`. |
-| [DataTable](/en/components/table) | Uses a neutral data surface by default with a tinted neutral header (600 weight), fine dividers, and softened borders.                                                  | Place the main table directly and render filters and other actions alongside it. |
+| [Table](/en/components/table) | Uses a neutral data surface by default with a tinted neutral header (600 weight), fine dividers, and softened borders.                                                  | Place the main table directly and render filters and other actions alongside it. |
 
 Canvas and content surface are roles, not fixed light gray and pure white. Preserve their grouping when users change surface colors or switch to dark appearance. Retain each component's selected surface, checkmark, border or indicator; do not impose either "selection never has a background" or another page-level brand highlight.
 
 ## Organize the page
 
 - Establish the page heading, task sections and data regions before choosing containers. Let the page heading carry the main hierarchy; not every section needs a large bold heading. Keep actions near their content.
-- Separate navigation, page header, toolbar and content responsibilities. Use Menu for navigation, Flex / Grid for peers, Card for an independent task, and DataTable directly for data.
+- Separate navigation, page header, toolbar and content responsibilities. Use Menu for navigation, Flex / Grid for peers, Card for an independent task, and Table directly for data.
 - Use spacing to show relationships. Do not add cards, dividers and shadows to every paragraph or field. Separate page-level and row-level actions; prefer one primary action per task region.
 - Compact controls do not require crowded content. Keep spacing consistent within groups and wider between sections. Wrap long labels instead of shrinking text and hit targets to fit.
 
@@ -131,7 +131,7 @@ A standalone heading carries the description while the Card retains a short sect
 
 ### Data region
 
-DataTable provides its own data surface; place filters and other actions alongside the table. This three-row example disables pagination. For larger datasets, retain component pagination rather than squeezing everything into a fixed height. DataTable uses the separate `/table` entry and requires its optional TanStack dependency; see [Table setup](/en/components/table).
+Table provides its own data surface; place filters and other actions alongside the table. This three-row example disables pagination. For larger datasets, retain component pagination rather than squeezing everything into a fixed height. See [Table](/en/components/table) for more options.
 
 <ComponentExample title="Data region" preview={<DataRegion />} fileName="data-region.tsx" width={600}>
 

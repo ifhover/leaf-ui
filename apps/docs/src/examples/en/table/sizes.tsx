@@ -1,47 +1,39 @@
-import { Tabs } from '@ifhover/leaf-ui';
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { Button, Flex, Table } from '@ifhover/leaf-ui';
+import { useState } from 'react';
 
-const members = [
-  { id: '1', name: 'Alex Morgan', team: 'Design Systems', role: 'Design Engineer' },
-  { id: '2', name: 'Sam Taylor', team: 'Core Runtime', role: 'Staff Engineer' },
-  { id: '3', name: 'Jordan Lee', team: 'Research', role: 'UX Designer' },
-  { id: '4', name: 'Riley Chen', team: 'Quality', role: 'QA Engineer' },
-  { id: '5', name: 'Casey Kim', team: 'Documentation', role: 'Technical Writer' },
-  { id: '6', name: 'Taylor Smith', team: 'Visual Design', role: 'Interaction Designer' },
+const rows = [
+  { id: '1', service: 'API Gateway', latency: '24 ms', status: 'Healthy' },
+  { id: '2', service: 'Auth Service', latency: '18 ms', status: 'Healthy' },
+  { id: '3', service: 'Search Index', latency: '42 ms', status: 'Degraded' },
+  { id: '4', service: 'Billing Worker', latency: '31 ms', status: 'Healthy' },
+  { id: '5', service: 'Audit Logger', latency: '15 ms', status: 'Healthy' },
+  { id: '6', service: 'Media Proxy', latency: '29 ms', status: 'Healthy' },
 ];
-
-const columns = [
-  { accessorKey: 'name', header: 'Member' },
-  { accessorKey: 'team', header: 'Team' },
-  { accessorKey: 'role', header: 'Role' },
-];
-
-const sizeOptions = [
-  { key: 'sm', label: 'Small (sm)' },
-  { key: 'md', label: 'Medium (md)' },
-] as const;
 
 export function TableSizes() {
+  const [size, setSize] = useState<'md' | 'sm'>('md');
   return (
-    <Tabs
-      type="segmented"
-      size="sm"
-      defaultActiveKey="md"
-      aria-label="Table size"
-      items={sizeOptions.map(({ key, label }) => ({
-        key,
-        label,
-        children: (
-          <DataTable
-            size={key}
-            data={members}
-            columns={columns}
-            rowKey="id"
-            aria-label={`${label} members table`}
-            options={{ initialState: { pagination: { pageSize: 4 } } }}
-          />
-        ),
-      }))}
-    />
+    <Flex direction="column" gap="md">
+      <Flex gap="sm">
+        <Button variant={size === 'md' ? 'solid' : 'outline'} onClick={() => setSize('md')}>
+          Default md
+        </Button>
+        <Button variant={size === 'sm' ? 'solid' : 'outline'} onClick={() => setSize('sm')}>
+          Compact sm
+        </Button>
+      </Flex>
+      <Table
+        size={size}
+        data={rows}
+        columns={[
+          { dataIndex: 'service', title: 'Service' },
+          { dataIndex: 'latency', title: 'Latency', align: 'end' },
+          { dataIndex: 'status', title: 'Status' },
+        ]}
+        rowKey="id"
+        aria-label="Table sizes"
+        pagination={{ defaultPageSize: 3 }}
+      />
+    </Flex>
   );
 }

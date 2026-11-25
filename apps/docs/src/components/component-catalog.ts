@@ -18,13 +18,13 @@ export const componentCatalog = [
     'Browse long or wide content within a region.',
   ],
   [
-    'DataTable',
+    'Table',
     '表格',
     'table',
     '数据展示',
     'Data display',
-    '浏览、筛选和管理结构化数据。',
-    'Browse, filter and manage structured data.',
+    '浏览、排序与管理结构化数据。',
+    'Browse, sort and manage structured data.',
   ],
   [
     'Button',

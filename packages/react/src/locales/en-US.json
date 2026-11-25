@@ -266,9 +266,7 @@
   "table": {
     "table": "Table",
     "scrollArea": "Scroll area",
-    "loadError": "Unable to load data. Please try again."
-  },
-  "dataTable": {
+    "loadError": "Unable to load data. Please try again.",
     "resizeColumn": "Resize column: {label}",
     "selectRows": "Select rows",
     "selectAllRowsOnThisPage": "Select all rows on this page",

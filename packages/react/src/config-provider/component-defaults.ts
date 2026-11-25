@@ -79,7 +79,7 @@ import type { SplitterProps } from '../splitter/splitter';
 import type { CountdownProps, StatisticProps } from '../statistic/statistic';
 import type { StepsProps } from '../steps/steps';
 import type { SwitchProps } from '../switch/switch';
-import type { DataTablePresentationProps } from '../tabletanstack/defaults';
+import type { TablePresentationProps } from '../table/types';
 import type { TabsProps } from '../tabs/tabs';
 import type { CheckableTagProps, TagGroupProps } from '../tag/group';
 import type { TagProps } from '../tag/tag';
@@ -101,7 +101,7 @@ import type { AvatarUploadProps, UploadProps } from '../upload/upload';
 import type { VirtualListProps } from '../virtuallist/virtuallist';
 
 /** Only props independent of the caller's item type can cross a generic component boundary. */
-type GenericComponentName = 'FormList' | 'VirtualList' | 'DataTable';
+type GenericComponentName = 'FormList' | 'VirtualList' | 'Table';
 
 /** Full public props keep each hook key tied to its component, including Select's union. */
 interface ComponentPropsMap {
@@ -243,7 +243,6 @@ export interface LeafComponentDefaults {
   ColorPicker?: Partial<Omit<ColorPickerProps, 'key' | 'ref'>> | null;
   Confirm?: Partial<Omit<ConfirmOptions, 'key' | 'ref'>> | null;
   Countdown?: Partial<Omit<CountdownProps, 'key' | 'ref' | 'value'>> | null;
-  DataTable?: Partial<Omit<DataTablePresentationProps, 'tableRef'>> | null;
   DatePicker?: Partial<
     Omit<DatePickerProps, 'key' | 'ref' | 'value' | 'defaultValue' | 'onChange'>
   > | null;
@@ -332,6 +331,7 @@ export interface LeafComponentDefaults {
   Statistic?: Partial<Omit<StatisticProps, 'key' | 'ref' | 'value'>> | null;
   Steps?: Partial<Omit<StepsProps, 'key' | 'ref' | 'items'>> | null;
   Switch?: Partial<Omit<SwitchProps, 'key' | 'ref'>> | null;
+  Table?: Partial<Omit<TablePresentationProps, 'tableRef'>> | null;
   Tabs?: Partial<Omit<TabsProps, 'key' | 'ref' | 'items'>> | null;
   Tag?: Partial<Omit<TagProps, 'key' | 'ref'>> | null;
   TagGroup?: Partial<Omit<TagGroupProps, 'key' | 'ref' | 'options'>> | null;

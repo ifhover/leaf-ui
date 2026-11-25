@@ -26,10 +26,6 @@
       &:not(.leaf-pagination__nav):not(.leaf-pagination__jump) {
         padding: 0 8px;
       }
-      // 保留 Button 组件图标侧自动收窄内边距的行为，不硬编码覆盖 padding。
-      &.leaf-pagination__nav {
-        gap: 4px;
-      }
     }
     // 当前选中页统一使用 Button solid 样式，不可点击且悬停时鼠标指针与视觉状态均保持静止。
     & > .leaf-pagination__entry > .leaf-button[aria-current='page'] {

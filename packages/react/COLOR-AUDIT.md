@@ -102,7 +102,7 @@ Counts are direct static `var(--leaf-color-*)` consumers. Generated definitions,
 | `--leaf-color-on-success` | 1 | 1 | 2 |
 | `--leaf-color-on-warning` | 1 | 1 | 2 |
 | `--leaf-color-option-hover` | 8 | 2 | 20 |
-| `--leaf-color-primary` | 22 | 3 | 66 |
+| `--leaf-color-primary` | 22 | 3 | 64 |
 | `--leaf-color-primary-active` | 4 | 0 | 6 |
 | `--leaf-color-primary-alpha-20` | 0 | 1 | 1 |
 | `--leaf-color-primary-alpha-4` | 1 | 0 | 1 |

@@ -266,9 +266,7 @@
   "table": {
     "table": "表格",
     "scrollArea": "滾動區域",
-    "loadError": "載入失敗，請重試"
-  },
-  "dataTable": {
+    "loadError": "載入失敗，請重試",
     "resizeColumn": "調整列寬: {label}",
     "selectRows": "選擇行",
     "selectAllRowsOnThisPage": "選擇本頁所有行",

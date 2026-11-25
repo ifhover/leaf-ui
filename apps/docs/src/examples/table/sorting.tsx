@@ -1,27 +1,30 @@
-import { DataTable } from '@ifhover/leaf-ui/table';
+import { Table } from '@ifhover/leaf-ui';
 
 const members = [
-  { id: 'alex', name: 'Alex', projects: 8, team: 'Design' },
-  { id: 'sam', name: 'Sam', projects: 3, team: 'Engineering' },
-  { id: 'riley', name: 'Riley', projects: 12, team: 'Product' },
+  { id: '1', name: '林澈', team: '设计', projects: 8 },
+  { id: '2', name: '周岚', team: '研发', projects: 3 },
+  { id: '3', name: '许言', team: '产品', projects: 12 },
+  { id: '4', name: '陈宁', team: '设计', projects: 5 },
+  { id: '5', name: '苏杭', team: '研发', projects: 9 },
 ];
 
 export function TableSorting() {
   return (
-    <DataTable
+    <Table
       data={members}
       columns={[
-        { accessorKey: 'name', header: '姓名' },
-        { accessorKey: 'projects', header: '项目数' },
+        { dataIndex: 'name', title: '成员', sorter: true },
+        { dataIndex: 'team', title: '团队', sorter: true },
         {
-          accessorKey: 'team',
-          header: '团队',
-          enableSorting: false,
+          dataIndex: 'projects',
+          title: '项目数',
+          align: 'end',
+          sorter: (a, b) => a.projects - b.projects,
         },
       ]}
       rowKey="id"
-      aria-label="可排序成员"
-      options={{ enableSorting: true }}
+      multiSort
+      aria-label="排序成员列表"
       pagination={false}
     />
   );

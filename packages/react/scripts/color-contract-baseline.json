@@ -668,29 +668,14 @@
         "reason": "Table and Card softened frame colors blend the shared divider with their local surface."
       },
       {
-        "expression": "color-mix(in srgb,var(--leaf-color-primary)6%,var(--leaf-table-surface))",
-        "count": 1,
-        "reason": "Table selected rows blend a restrained 6% primary tint into the local table surface."
-      },
-      {
-        "expression": "color-mix(in srgb,var(--leaf-color-primary)10%,var(--leaf-table-surface))",
-        "count": 1,
-        "reason": "Table selected-row hover steps smoothly from 6% to 10% primary tint over the local table surface."
-      },
-      {
         "expression": "color-mix(in srgb,var(--leaf-table-surface)80%,transparent)",
         "count": 1,
         "reason": "Table loading scrim follows the actual table surface with a compatibility override."
       },
       {
         "expression": "color-mix(in srgb,var(--leaf-table-text)2%,var(--leaf-table-surface))",
-        "count": 1,
-        "reason": "Table stripes follow component-local text and surface."
-      },
-      {
-        "expression": "color-mix(in srgb,var(--leaf-table-text)4%,var(--leaf-table-surface))",
-        "count": 1,
-        "reason": "Table row hover follows component-local text and surface with a restrained 4% neutral step."
+        "count": 2,
+        "reason": "Table row hover/selected tint and stripes follow component-local text and surface with a subtle 2% neutral step."
       }
     ],
     "derivedTokenUsages": [

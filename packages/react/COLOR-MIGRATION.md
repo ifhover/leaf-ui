@@ -11,7 +11,7 @@
 
 Source-level review updated for the `0.18.0` monochrome redesign.
 
-- Scope: 78 public component exports and their concrete source directories. `./table` and `./table/tanstack` both resolve to `src/tabletanstack` and count as one public component.
+- Scope: 78 public component exports and their concrete source directories.
 - Every public export has an assigned color responsibility. The four source outcomes are shared family, inherited responsibility, no color responsibility, and explicit local exception.
 - "Reviewed" means the source ownership and token path were inspected. It does not mean that all exports received a separate browser visual check.
 
@@ -27,7 +27,7 @@ Source-level review updated for the `0.18.0` monochrome redesign.
 - `overlay-family`: dialog (light `rgb(0 0 0 / 28%)`, dark `[data-leaf-theme='dark']` `rgb(0 0 0 / 55%)`) and spotlight (light `rgb(0 0 0 / 45%)`, dark `[data-leaf-theme='dark']` `rgb(0 0 0 / 68%)`) overlay roles for `modal`, `drawer`, and `tour`.
 - `panel-canvas-family`: muted panel canvas for inset calendar-picker panels.
 - `status-ink-family` / `status-label-family`: readable status ink and soft status-label foreground/background roles (`primary` uses base `primary` directly; other semantic families use contrast-aware `*-ink`).
-- `table-family` + `softened-frame-color`: tinted `subtle-action-background` headers paired with full `--leaf-table-text` (preserving `--leaf-component-table-color` override), `surface-muted` hovered/sorted headers, softened `70% divider` frames/dividers/header splits, `4%` text row hover, `2%` text zebra stripes, `6% / 10% primary` selected/selected-hover fills, and `--leaf-color-primary` active sort/resize highlights, while the loading scrim retains the table's surface formula. Table is frameless by default (full cell grid with `bordered`) and has no pinned-column shadows.
+- `table-family` + `softened-frame-color`: tinted `subtle-action-background` headers paired with full `--leaf-table-text` (preserving `--leaf-component-table-color` override), `surface-muted` hovered/sorted headers, softened `70% divider` frames/dividers/header splits, `2%` text row hover & zebra stripes, hover-matched selected rows (unchanged on hover), and `--leaf-color-primary` active sort/resize highlights, while the loading scrim retains the table's surface formula. Table is frameless by default (full cell grid with `bordered`) and has no pinned-column shadows.
 
 Single-consumer paint stays on direct semantic tokens or remains a documented local exception. A family is not introduced for a single consumer.
 
@@ -98,7 +98,7 @@ Single-consumer paint stays on direct semantic tokens or remains a documented lo
 | 63 | `statistic` | `statistic` | Direct text, muted, and status roles | Reviewed |
 | 64 | `steps` | `steps` | `control-size`; `focus-ring`; active and finished icons/connectors use neutral `surface` / `text` roles | Reviewed |
 | 65 | `switch` | `switch` | `choice`; unchecked `option-hover` track; checked `primary` track and `primary` border; `on-primary` thumb with `primary` spinner | Reviewed |
-| 66 | `table` / `table/tanstack` | `tabletanstack` | `softened-frame-color` & `table-family`: `subtle-action-background` headers (`--leaf-table-text`), softened `70% divider` frames & rules, `4%`/`2%` hover & stripes, `6%`/`10% primary` selection, `primary` active sort/resize indicators; scrollbar | Inherited |
+| 66 | `table` | `table` | `softened-frame-color` & `table-family`: `subtle-action-background` headers (`--leaf-table-text`), softened `70% divider` frames & rules, `2%` hover & stripes, hover-matched selection (unchanged on hover), `primary` active sort/resize indicators; scrollbar | Reviewed |
 | 67 | `tabs` | `tabs` | `segmented-surface-family` (`surface-muted` track, `surface` active slider with `shadow-sm`); `control-size`; `line` tabs (`text` rest, `primary-hover` / `primary-link-active` / `primary` interactive & selected + `primary` indicator, `divider` bottom hairline) and monochrome `card` / `segmented` states | Reviewed |
 | 68 | `tag` | `tag` | `status-label-family`; soft backgrounds and foregrounds come from matching semantic roles (`primary` uses base `primary` directly); close feedback keeps `currentColor` translucency | Reviewed + exception |
 | 69 | `textarea` | `textarea` | `field`; native resize remains component-owned | Inherited |
@@ -133,7 +133,7 @@ The remaining numeric-token usages are deliberately transparent or appearance-sp
 - Typography's inline warning mark retains `warning-alpha-16` because it highlights document content; it is not a status-label surface.
 - Loading, QRCode, and Skeleton retain their own translucent scrim and shimmer formulas.
 
-Table stripes (`2% --leaf-table-text`), hover tint (`4% --leaf-table-text`), selected rows (`6% / 10% primary`), softened `70% divider` borders, and loading scrim follow the table's own `surface` and theme tokens so component overrides remain isolated.
+Table stripes and hover/selected rows (`2% --leaf-table-text`, with selected rows unchanged on hover), softened `70% divider` borders, and loading scrim follow the table's own `surface` and theme tokens so component overrides remain isolated.
 
 ## Explicit local exceptions
 
