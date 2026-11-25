@@ -23,7 +23,7 @@ export function TreeVirtualNodes({
   scrollElement: RefObject<HTMLDivElement | null>;
   height: number;
   itemHeight: number;
-  scrollRef: RefObject<((index: number) => void) | null>;
+  scrollRef: { current: ((index: number) => void) | null };
   renderNode: (
     node: TreeNode,
     level: number,

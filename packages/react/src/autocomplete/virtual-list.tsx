@@ -16,7 +16,7 @@ export function AutoCompleteVirtualList({
   optionHeight: number;
   listHeight: number;
   enabled: boolean;
-  scrollRef: RefObject<((index: number) => void) | null>;
+  scrollRef: { current: ((index: number) => void) | null };
   renderOption: (option: AutoCompleteOption, index: number) => ReactNode;
 }) {
   const virtualizer = useVirtualizer({

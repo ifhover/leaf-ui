@@ -23,7 +23,7 @@ export function SelectVirtualList({
   optionHeight: number;
   listHeight: number;
   enabled: boolean;
-  scrollRef: RefObject<((index: number) => void) | null>;
+  scrollRef: { current: ((index: number) => void) | null };
   renderOption: (option: SelectOption, index: number) => ReactNode;
 }) {
   const virtualizer = useVirtualizer({
