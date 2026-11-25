@@ -1,4 +1,3 @@
-import { readability, TinyColor } from '@ctrl/tinycolor';
 import { actionColor } from './action-colors';
 import { colorRecipes } from './color-recipes';
 import {
@@ -10,6 +9,7 @@ import {
   generateColorScale,
 } from './color-scale';
 import { type ColorShades, semanticColorShadeSteps } from './color-shades';
+import { colorReadability, isValidColor, parseColor, relativeLuminance } from './shared/color';
 
 const solidForeground = { black: '#000000', white: '#ffffff' } as const;
 export const semanticColorFamilies = ['primary', 'success', 'danger', 'warning', 'info'] as const;
@@ -34,16 +34,14 @@ export function mixColors(
   weight: number,
 ): string | undefined {
   if (!first || !second) return undefined;
-  const a = new TinyColor(first);
-  const b = new TinyColor(second);
-  if (cssColorExpression(first) || cssColorExpression(second) || !a.isValid || !b.isValid) {
-    const cssColor = (value: string) => cssColorExpression(value) || new TinyColor(value).isValid;
+  const x = parseColor(first);
+  const y = parseColor(second);
+  if (cssColorExpression(first) || cssColorExpression(second) || !x || !y) {
+    const cssColor = (value: string) => cssColorExpression(value) || isValidColor(value);
     return cssColor(first) && cssColor(second)
       ? `color-mix(in srgb, ${first} ${Math.min(100, Math.max(0, weight))}%, ${second})`
       : undefined;
   }
-  const x = a.toRgb();
-  const y = b.toRgb();
   const ratio = Math.min(1, Math.max(0, weight / 100));
   const alpha = x.a * ratio + y.a * (1 - ratio);
   const channel = (key: 'r' | 'g' | 'b') =>
@@ -87,8 +85,8 @@ type RoleChoice = { value: string; source: string };
 
 const colorVariable = (name: string): `--leaf-${string}` => `--leaf-color-${name}`;
 const concreteOpaque = (value: string) => {
-  const parsed = new TinyColor(value);
-  return !cssColorExpression(value) && parsed.isValid && parsed.getAlpha() === 1;
+  const parsed = parseColor(value);
+  return !cssColorExpression(value) && parsed !== null && parsed.a === 1;
 };
 
 function scaleForColor(color: string): ColorScale {
@@ -142,13 +140,14 @@ function chooseReadableColor(
   // Expressions remain browser-native. Do not guess a different brand color during SSR.
   if (!backgrounds.every(concreteOpaque) || !concreteOpaque(seed)) return { value: seed, source };
   const matches = (value: string) =>
-    backgrounds.every((background) => readability(value, background) >= minimum);
+    backgrounds.every((background) => colorReadability(value, background) >= minimum);
   if (matches(seed)) return { value: seed, source };
   for (const step of ordered) if (matches(shades[step])) return choice(step);
   for (const [source, value] of Object.entries(solidForeground))
     if (matches(value)) return { value, source };
   // Conflicting explicit surfaces can make a single accessible ink impossible.
-  const score = (value: string) => Math.min(...backgrounds.map((bg) => readability(value, bg)));
+  const score = (value: string) =>
+    Math.min(...backgrounds.map((bg) => colorReadability(value, bg)));
   return [{ value: seed, source }, ...ordered.map(choice)].reduce((best, candidate) =>
     score(candidate.value) > score(best.value) ? candidate : best,
   );
@@ -172,10 +171,9 @@ export function resolveColorRoles(
   const neutral = overrides.neutral ? scaleForColor(overrides.neutral) : neutralColorScale;
   assign('neutral', colors.neutral ?? colorSeeds.neutral, 'seed');
   const surfaceOverride = overrides.surface;
-  const darkSurface =
-    surfaceOverride && concreteOpaque(surfaceOverride)
-      ? new TinyColor(surfaceOverride).getLuminance() < 0.18
-      : dark;
+  const parsedSurface =
+    surfaceOverride && concreteOpaque(surfaceOverride) ? parseColor(surfaceOverride) : null;
+  const darkSurface = parsedSurface ? relativeLuminance(parsedSurface) < 0.18 : dark;
   const neutralRoleSteps: Record<string, ColorScaleStep | 'white'> = {
     text: darkSurface ? 100 : 900,
     'text-muted': darkSurface ? 400 : 600,
@@ -348,8 +346,29 @@ export function resolveColorRoles(
   return { values, sources };
 }
 
+const maxDeriveColorsCacheSize = 32;
+const deriveColorsCache = new Map<string, ColorVariables>();
+
+function buildOverridesKey(overrides: Record<string, string>): string {
+  const keys = Object.keys(overrides).sort();
+  if (keys.length === 0) return '';
+  let result = '';
+  for (const key of keys) {
+    const value = overrides[key];
+    if (value !== undefined) result += `${key}=${value};`;
+  }
+  return result;
+}
+
 /** Emit shared roles and only the optical recipes with actual consumers. */
 export function deriveColors(appearance: 'light' | 'dark', overrides: Record<string, string> = {}) {
+  const cacheKey = `${appearance}|${buildOverridesKey(overrides)}`;
+  const cached = deriveColorsCache.get(cacheKey);
+  if (cached) {
+    deriveColorsCache.delete(cacheKey);
+    deriveColorsCache.set(cacheKey, cached);
+    return { ...cached };
+  }
   const modern = resolveColorRoles(appearance, overrides);
   const colors: Record<string, string> = Object.fromEntries(
     Object.entries(modern.values).map(([key, value]) => [key.slice('--leaf-color-'.length), value]),
@@ -367,5 +386,11 @@ export function deriveColors(appearance: 'light' | 'dark', overrides: Record<str
     const value = mixColors(colors[first], other, ratio);
     if (value) result[key as `--leaf-${string}`] = value;
   }
-  return { ...result, ...modern.values };
+  const merged: ColorVariables = { ...result, ...modern.values };
+  if (deriveColorsCache.size >= maxDeriveColorsCacheSize) {
+    const oldestKey = deriveColorsCache.keys().next().value;
+    if (oldestKey !== undefined) deriveColorsCache.delete(oldestKey);
+  }
+  deriveColorsCache.set(cacheKey, merged);
+  return { ...merged };
 }

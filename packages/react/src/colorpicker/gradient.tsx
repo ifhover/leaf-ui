@@ -1,4 +1,3 @@
-import { TinyColor } from '@ctrl/tinycolor';
 import { Plus, X } from 'lucide-react';
 import { useId, useRef, useState } from 'react';
 import { ButtonControl } from '../button/button';
@@ -8,6 +7,7 @@ import { FieldScope, useFormField } from '../form/form';
 import { InputNumberControl as InputNumber } from '../inputnumber/inputnumber';
 import { classes } from '../shared/classes';
 import { ClearButton } from '../shared/clear-button';
+import { isValidColor } from '../shared/color';
 import { FormValue, useFieldValue } from '../shared/field';
 import { FloatingPanel, useFloatingDismiss, usePopupState } from '../shared/floating';
 import { useFormattedText } from '../shared/use-formatted-text';
@@ -37,7 +37,7 @@ export function parseGradient(value: string): ColorGradient | null {
   const stops: ColorGradientStop[] = [];
   for (const piece of pieces) {
     const stop = piece.trim().match(/^(.+?)\s+([\d.]+)%$/);
-    if (!stop || !new TinyColor(stop[1]).isValid) return null;
+    if (!stop || !isValidColor(stop[1] ?? '')) return null;
     stops.push({ color: stop[1] ?? '', offset: Math.min(100, Math.max(0, Number(stop[2]))) });
   }
   const angle = Number(match[1]);

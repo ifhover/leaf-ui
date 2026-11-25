@@ -1,9 +1,10 @@
 @use '../styles/geometry' as geometry;
+@use '../styles/layers';
 @use '../styles/mixins' as mixins;
 
 $include-field-styles: true !default;
 
-@layer leaf-ui {
+@layer leaf-ui.floating {
   .leaf-floating {
     @include geometry.nested-surface(
       floating,

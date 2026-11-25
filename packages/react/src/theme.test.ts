@@ -1,4 +1,3 @@
-import { readability, TinyColor } from '@ctrl/tinycolor';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
@@ -6,6 +5,7 @@ import { testThemes } from '../tests/fixtures/theme-data';
 import { colorScaleSteps } from './color-scale';
 import { semanticColorShadeSteps } from './color-shades';
 import { ConfigProvider } from './config-provider/config-provider';
+import { colorReadability, isValidColor } from './shared/color';
 import { type LeafTheme, leafThemeVariables, mergeLeafTheme } from './theme';
 
 describe('portable component themes', () => {
@@ -87,9 +87,9 @@ describe('portable component themes', () => {
         tokens.infoColor,
       ])
         for (const background of [tokens.surfaceColor, tokens.mutedSurfaceColor])
-          expect(readability(text ?? '', background ?? '')).toBeGreaterThanOrEqual(4.5);
+          expect(colorReadability(text ?? '', background ?? '')).toBeGreaterThanOrEqual(4.5);
       expect(
-        readability(preset.primaryColor ?? '', tokens.onPrimaryColor ?? ''),
+        colorReadability(preset.primaryColor ?? '', tokens.onPrimaryColor ?? ''),
       ).toBeGreaterThanOrEqual(4.5);
       const reset = leafThemeVariables(mergeLeafTheme(preset, testThemes.default));
       const defaults = leafThemeVariables(testThemes.default);
@@ -181,13 +181,13 @@ describe('portable component themes', () => {
       const base = `--leaf-color-${family}`;
       expect(at(light, base)).toBe(seeds[family]);
       expect(at(dark, base)).toBe(seeds[family]);
-      expect(new TinyColor(at(light, `--leaf-color-${family}-soft`) ?? '').isValid).toBe(true);
-      expect(new TinyColor(at(dark, `--leaf-color-${family}-soft`) ?? '').isValid).toBe(true);
+      expect(isValidColor(String(at(light, `--leaf-color-${family}-soft`) ?? ''))).toBe(true);
+      expect(isValidColor(String(at(dark, `--leaf-color-${family}-soft`) ?? ''))).toBe(true);
       expect(at(light, `--leaf-color-on-${family}`)).toBe(at(dark, `--leaf-color-on-${family}`));
     }
     for (const family of ['primary', 'danger', 'warning'] as const) {
-      expect(new TinyColor(at(light, `--leaf-color-${family}-border`) ?? '').isValid).toBe(true);
-      expect(new TinyColor(at(dark, `--leaf-color-${family}-border`) ?? '').isValid).toBe(true);
+      expect(isValidColor(String(at(light, `--leaf-color-${family}-border`) ?? ''))).toBe(true);
+      expect(isValidColor(String(at(dark, `--leaf-color-${family}-border`) ?? ''))).toBe(true);
     }
   });
 

@@ -26,9 +26,9 @@ const dependencies = {
   cascader: ['input', 'checkbox', 'scrollbar'],
   colorpicker: ['input', 'inputnumber', 'slider', 'tooltip', 'tabs'],
   form: [],
-  modal: ['scrollbar'],
+  modal: ['scrollbar', 'tabs'],
   confirm: ['modal', 'alert'],
-  drawer: ['modal'],
+  drawer: ['modal', 'tabs'],
   message: ['alert'],
   notification: ['alert'],
   filelist: ['image', 'modal'],
@@ -118,11 +118,9 @@ for (const name of directories) {
       },
     ],
   });
-  for (const format of ['esm', 'cjs']) {
-    const output = path.join(root, 'dist', format, 'styles');
-    await mkdir(output, { recursive: true });
-    await writeFile(path.join(output, `${name}.css`), prunePalette(compiled.css));
-  }
+  const output = path.join(root, 'dist/esm/styles');
+  await mkdir(output, { recursive: true });
+  await writeFile(path.join(output, `${name}.css`), prunePalette(compiled.css));
   count++;
 }
 console.log(`Built ${count} standalone component styles, including their visual dependencies.`);

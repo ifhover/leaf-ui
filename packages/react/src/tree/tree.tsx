@@ -1,4 +1,3 @@
-import { useVirtualizer } from '@tanstack/react-virtual';
 import { Check, ChevronRight, File, Folder, FolderOpen, LoaderCircle } from 'lucide-react';
 import {
   type CSSProperties,
@@ -20,9 +19,12 @@ import { ResultControl as Result } from '../result/result';
 import { ScrollbarControl } from '../scrollbar/scrollbar';
 import { classes } from '../shared/classes';
 import { inertProps } from '../shared/inert';
+import { createLazyModule } from '../shared/lazy-module';
 import { useFormattedText } from '../shared/use-formatted-text';
-import { TreeDragRow, TreeDragScope } from './drag';
 import { treeChecks, treeMatches, treeModel } from './model';
+
+const useTreeVirtualModule = createLazyModule(() => import('./virtual-nodes'));
+const useTreeDragModule = createLazyModule(() => import('./drag'));
 
 export interface TreeNode {
   key: string;
@@ -212,7 +214,10 @@ export function TreeControl({
     defaultExpandAll ? [...records.keys()] : defaultExpandedKeys,
   );
   const selected = selectedKeys ?? selection;
-  const expanded = new Set(expandedKeys ?? expansion);
+  const rawExpanded = expandedKeys ?? expansion;
+  const expanded = useMemo(() => new Set(rawExpanded), [rawExpanded]);
+  const selectedSet = useMemo(() => new Set(selected), [selected]);
+  const loadingSet = useMemo(() => new Set(loading), [loading]);
   useEffect(() => {
     if (disabled) return;
     for (const key of expandedKeys ?? expansion) {
@@ -224,8 +229,8 @@ export function TreeControl({
     () => treeChecks(records, checkedKeys ?? checks, checkStrictly),
     [records, checkedKeys, checks, checkStrictly],
   );
-  const checked = new Set(state.checked);
-  const half = new Set(state.half);
+  const checked = useMemo(() => new Set(state.checked), [state.checked]);
+  const half = useMemo(() => new Set(state.half), [state.half]);
   const matches = useMemo(
     () => treeMatches(records, searchValue, filterTreeNode),
     [records, searchValue, filterTreeNode],
@@ -236,34 +241,39 @@ export function TreeControl({
   const elements = useRef(new Map<string, HTMLDivElement>());
   const anchor = useRef<string | undefined>(undefined);
   const typeAhead = useRef({ text: '', time: 0 });
-  const visible: TreeNode[] = [];
   const isExpanded = (key: string) => (matches ? matches.visible.has(key) : expanded.has(key));
-  const collect = (nodes: readonly TreeNode[]) => {
-    for (const node of nodes) {
-      if (matches && !matches.visible.has(node.key)) continue;
-      visible.push(node);
-      if (isExpanded(node.key) && node.children) collect(node.children);
-    }
-  };
-  collect(data);
+  const { visible, visibleKeys, siblingMeta } = useMemo(() => {
+    const nextVisible: TreeNode[] = [];
+    const nextKeys = new Set<string>();
+    const nextSiblingMeta = new Map<string, { index: number; size: number }>();
+    const collect = (nodes: readonly TreeNode[]) => {
+      const siblings = matches ? nodes.filter((node) => matches.visible.has(node.key)) : nodes;
+      siblings.forEach((node, index) => {
+        nextVisible.push(node);
+        nextKeys.add(node.key);
+        nextSiblingMeta.set(node.key, { index, size: siblings.length });
+        const nodeExpanded = matches ? matches.visible.has(node.key) : expanded.has(node.key);
+        if (nodeExpanded && node.children) collect(node.children);
+      });
+    };
+    collect(data);
+    return { visible: nextVisible, visibleKeys: nextKeys, siblingMeta: nextSiblingMeta };
+  }, [data, matches, expanded]);
   const root = useRef<HTMLDivElement>(null);
-  const virtualizer = useVirtualizer({
-    count: visible.length,
-    getScrollElement: () => root.current,
-    estimateSize: () => Math.max(24, itemHeight),
-    overscan: 5,
-    enabled: virtual,
-    initialRect: { height, width: 400 },
-    getItemKey: (index) => visible[index]?.key ?? index,
-  });
-  const focusKey = visible.some((node) => node.key === active)
-    ? active
-    : (visible.find((node) => selected.includes(node.key))?.key ?? visible[0]?.key);
+  const virtualScrollRef = useRef<((index: number) => void) | null>(null);
+  const dragEnabled = Boolean(draggable);
+  const virtualModule = useTreeVirtualModule(virtual);
+  const dragModule = useTreeDragModule(dragEnabled);
+  const DragRowComponent = dragModule?.TreeDragRow;
+  const DragScopeComponent = dragModule?.TreeDragScope;
+  const focusKey =
+    active && visibleKeys.has(active)
+      ? active
+      : (visible.find((node) => selectedSet.has(node.key))?.key ?? visible[0]?.key);
   const itemIds = useMemo(
     () => new Map([...records.keys()].map((key, index) => [key, `${treeId}-${index}`])),
     [records, treeId],
   );
-  const visibleKeys = new Set(visible.map((node) => node.key));
   const hoveredKey = hovered && visibleKeys.has(hovered) ? hovered : undefined;
   const focusedKey = focusWithin && focusKey && visibleKeys.has(focusKey) ? focusKey : undefined;
   const highlightKey = hoveredKey ?? focusedKey ?? (highlightFirst ? focusKey : undefined);
@@ -272,7 +282,7 @@ export function TreeControl({
       setActive(key);
       if (virtual) {
         const index = visible.findIndex((node) => node.key === key);
-        if (index >= 0) virtualizer.scrollToIndex(index, { align: 'auto' });
+        if (index >= 0) virtualScrollRef.current?.(index);
         requestAnimationFrame(() => elements.current.get(key)?.focus());
       }
       elements.current.get(key)?.focus();
@@ -292,7 +302,7 @@ export function TreeControl({
     modifiers?: { shiftKey: boolean; ctrlKey: boolean; metaKey: boolean },
   ) => {
     if (disabled || node.disabled || !selectable || node.selectable === false) return;
-    let next = selected.includes(node.key) ? [] : [node.key];
+    let next = selectedSet.has(node.key) ? [] : [node.key];
     if (multiple) {
       if (modifiers?.shiftKey && anchor.current) {
         const first = visible.findIndex((item) => item.key === anchor.current);
@@ -302,7 +312,7 @@ export function TreeControl({
           .filter((item) => !item.disabled && item.selectable !== false)
           .map((item) => item.key);
       } else
-        next = selected.includes(node.key)
+        next = selectedSet.has(node.key)
           ? selected.filter((key) => key !== node.key)
           : [...selected, node.key];
     }
@@ -401,7 +411,7 @@ export function TreeControl({
         aria-setsize={setSize}
         aria-expanded={hasChildren ? opened : undefined}
         aria-selected={
-          selectable && node.selectable !== false ? selected.includes(node.key) : undefined
+          selectable && node.selectable !== false ? selectedSet.has(node.key) : undefined
         }
         aria-checked={
           checkable && node.checkable !== false
@@ -439,7 +449,8 @@ export function TreeControl({
         }}
       >
         <TreeRow
-          enabled={Boolean(draggable)}
+          enabled={dragEnabled}
+          DragRowComponent={DragRowComponent}
           node={node}
           draggable={
             !disabled && Boolean(typeof draggable === 'function' ? draggable(node) : draggable)
@@ -449,7 +460,7 @@ export function TreeControl({
           <div
             className="leaf-tree__row"
             id={itemIds.get(node.key)}
-            data-selected={selected.includes(node.key) || undefined}
+            data-selected={selectedSet.has(node.key) || undefined}
             data-disabled={inactive || undefined}
             data-highlighted={highlightKey === node.key || undefined}
             style={{ paddingInlineStart: `${(level - 1) * 20 + 4}px` }}
@@ -489,7 +500,7 @@ export function TreeControl({
                 expand(node, !opened);
               }}
             >
-              {loading.includes(node.key) ? (
+              {loadingSet.has(node.key) ? (
                 <LoaderCircle size={14} className="leaf-tree__spinner" aria-hidden="true" />
               ) : (
                 hasChildren && <ChevronRight size={14} aria-hidden="true" />
@@ -578,38 +589,32 @@ export function TreeControl({
     >
       {visible.length ? (
         virtual ? (
-          <div style={{ position: 'relative', height: virtualizer.getTotalSize() }}>
-            {virtualizer.getVirtualItems().map((row) => {
-              const node = visible[row.index];
-              if (!node) return null;
-              const record = records.get(node.key);
-              const siblings = (
-                record?.parent ? (records.get(record.parent)?.node.children ?? []) : data
-              ).filter((item) => !matches || matches.visible.has(item.key));
-              return (
-                <div
-                  key={node.key}
-                  ref={virtualizer.measureElement}
-                  data-index={row.index}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    transform: `translateY(${row.start}px)`,
-                  }}
-                >
-                  {renderNode(
-                    node,
-                    record?.level ?? 1,
-                    siblings.findIndex((item) => item.key === node.key),
-                    siblings.length,
-                    true,
-                  )}
-                </div>
-              );
-            })}
-          </div>
+          virtualModule ? (
+            <virtualModule.TreeVirtualNodes
+              visible={visible}
+              records={records}
+              siblingMeta={siblingMeta}
+              scrollElement={root}
+              height={height}
+              itemHeight={itemHeight}
+              scrollRef={virtualScrollRef}
+              renderNode={renderNode}
+            />
+          ) : (
+            <div
+              style={{ position: 'relative', height: visible.length * Math.max(24, itemHeight) }}
+            >
+              {visible.slice(0, 24).map((node) => {
+                const record = records.get(node.key);
+                const meta = siblingMeta.get(node.key);
+                return (
+                  <div key={node.key}>
+                    {renderNode(node, record?.level ?? 1, meta?.index ?? 0, meta?.size ?? 1, true)}
+                  </div>
+                );
+              })}
+            </div>
+          )
         ) : (
           renderNodes(data, 1)
         )
@@ -618,10 +623,10 @@ export function TreeControl({
       )}
     </ScrollbarControl>
   );
-  return draggable ? (
-    <TreeDragScope data={data} nodes={records} allowDrop={allowDrop} onDrop={onDrop}>
+  return dragEnabled && DragScopeComponent ? (
+    <DragScopeComponent data={data} nodes={records} allowDrop={allowDrop} onDrop={onDrop}>
       {content}
-    </TreeDragScope>
+    </DragScopeComponent>
   ) : (
     content
   );
@@ -655,19 +660,25 @@ function TreeGroup({
 
 function TreeRow({
   enabled,
+  DragRowComponent,
   node,
   draggable,
   children,
 }: {
   enabled: boolean;
+  DragRowComponent?: (props: {
+    node: TreeNode;
+    draggable: boolean;
+    children: ReactNode;
+  }) => ReactNode;
   node: TreeNode;
   draggable: boolean;
   children: ReactNode;
 }) {
-  return enabled ? (
-    <TreeDragRow node={node} draggable={draggable}>
+  return enabled && DragRowComponent ? (
+    <DragRowComponent node={node} draggable={draggable}>
       {children}
-    </TreeDragRow>
+    </DragRowComponent>
   ) : (
     children
   );

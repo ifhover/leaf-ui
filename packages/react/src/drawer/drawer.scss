@@ -49,6 +49,7 @@
   }
   .leaf-drawer {
     @include dialog-sections.sections(drawer);
+    @include dialog-sections.tabs(drawer);
     --leaf-z-index-popup: calc(var(--leaf-z-index-modal, 1100) + 1);
     position: relative;
     box-sizing: border-box;
@@ -103,6 +104,14 @@
         )
       );
       --leaf-dialog-header-padding-top: var(--leaf-dialog-padding-block);
+    }
+    &--swipeable#{&}--placement-bottom#{&}--tabbed:not(&--headed) {
+      --leaf-dialog-close-block: calc(
+        24px + (var(--leaf-dialog-tab-header-height) - var(--leaf-line-height-lg)) / 2
+      );
+      > .leaf-dialog-tabs > .leaf-tabs__header {
+        padding-block-start: 24px;
+      }
     }
     &--swipeable#{&}--placement-top {
       --leaf-dialog-padding-bottom: max(

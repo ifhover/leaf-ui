@@ -7,6 +7,19 @@ footer: false
 
 Features, improvements and fixes included in each npm release.
 
+## 0.23.0 - 2026-11-26
+
+### Features
+
+- **Embedded `tabs` for `Modal` and `Drawer`**: Added `tabs` (`ModalTabsProps` / `DrawerTabsProps`) to embed `line` tabs at the top of dialogs and drawers (positioned beneath the title when present, or replacing the title bar otherwise while moving `extra` into the tab bar on titleless `Drawer`), preserving visited tab panel state by default alongside bilingual examples and API docs.
+
+### Improvements and fixes
+
+- **`Collapse` sizing and `Table` resize divider refinement**: Increased `Collapse` header row height via row-padding tokens and reduced container base radius; `Table` column resizing now reuses the existing column header right divider without rendering a secondary static line, highlighting with the primary accent only on hover, focus-visible, or active drag.
+- **CSS Cascade sub-layers**: Split styles into `@layer leaf-ui.tokens, leaf-ui.primitives, leaf-ui.floating` sub-layers to resolve specificity/override collisions between primitives and floating layers while preserving unlayered user overrides.
+- **Bundle size and dependency slimming**: Replaced direct `intl-messageformat` and `@ctrl/tinycolor` dependencies with lightweight built-in ICU formatting and color utilities, switched `@dnd-kit/*` and `@tanstack/react-virtual` to on-demand lazy loading for sortable/virtualized modes, omitted redundant CJS stylesheet duplicates, and enabled CSS minification in release output.
+- **Runtime performance optimizations**: Updated `Scrollbar` to mutate thumb/track DOM refs directly without React re-renders during scroll and skip observers when `scrollbar="hidden"`; coalesced ancestor `MutationObserver` updates in microtasks with shallow style comparison in `FloatingPanel` and `ScopedPortal`; memoized `Tree` key sets and single-pass sibling metadata; isolated `Table` rows with `React.memo`, rAF-throttled column resizing, and split scroll/resize listeners; and introduced bounded `Intl` caches, singleton `matchMedia` motion subscriptions, reduced style reads in `useListMotion`, theme/palette derivation caches, and O(1) `Tabs` overflow measurement.
+
 ## 0.22.0 - 2026-11-25
 
 ### Improvements and fixes

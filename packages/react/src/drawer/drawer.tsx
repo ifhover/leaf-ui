@@ -20,6 +20,10 @@ import { resolveDialogPaddingFlags, resolvePaddingVars } from '../shared/padding
 import { useContentTransition, usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
 import type { ContainerPadding } from '../shared/types';
+import { type TabsProps, useTabsParts } from '../tabs/tabs';
+
+/** Tabs controls integrated with the drawer; Drawer fixes the line type and top placement. */
+export interface DrawerTabsProps extends Omit<TabsProps, 'type' | 'placement' | 'children'> {}
 
 export interface DrawerProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'title' | 'onResize'>,
@@ -27,6 +31,8 @@ export interface DrawerProps
   open: boolean;
   title?: ReactNode;
   description?: ReactNode;
+  /** Embedded tabs placed below the heading, or replacing it when no title is supplied. */
+  tabs?: DrawerTabsProps;
   icon?: ReactNode;
   /** Separate the header and footer with subtle borders. */
   divided?: boolean;
@@ -57,8 +63,10 @@ export interface DrawerProps
 
 interface DrawerInnerProps {
   id: string;
+  open: boolean;
   title?: ReactNode;
   description?: ReactNode;
+  tabs?: DrawerTabsProps;
   icon?: ReactNode;
   extra?: ReactNode;
   footer?: ReactNode;
@@ -66,13 +74,123 @@ interface DrawerInnerProps {
   onClose?: () => void;
   contentRef: Ref<HTMLDivElement>;
   ariaLabel?: string;
+  ariaLabelledBy?: string;
   children?: ReactNode;
+}
+
+interface DrawerTabsLayoutProps {
+  open: boolean;
+  tabs: DrawerTabsProps;
+  id: string;
+  title?: ReactNode;
+  hasHeading: boolean;
+  extraNode: ReactNode;
+  contentRef: Ref<HTMLDivElement>;
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
+  children?: ReactNode;
+}
+
+function hasRenderableNode(value: ReactNode): boolean {
+  return value != null && typeof value !== 'boolean';
+}
+
+function DrawerBody({
+  id,
+  title,
+  ariaLabel,
+  contentRef,
+  children,
+}: {
+  id: string;
+  title?: ReactNode;
+  ariaLabel?: string;
+  contentRef: Ref<HTMLDivElement>;
+  children?: ReactNode;
+}) {
+  return (
+    <ScrollbarControl
+      className="leaf-drawer__body"
+      viewportClassName="leaf-drawer__viewport"
+      orientation="vertical"
+      role={title != null || ariaLabel ? 'region' : 'presentation'}
+      aria-labelledby={title != null ? `${id}-title` : undefined}
+      aria-label={title == null ? ariaLabel : undefined}
+    >
+      <div ref={contentRef} className="leaf-drawer__content">
+        {children}
+      </div>
+    </ScrollbarControl>
+  );
+}
+
+function DrawerTabsLayout({
+  open,
+  tabs,
+  id,
+  title,
+  hasHeading,
+  extraNode,
+  contentRef,
+  ariaLabel,
+  ariaLabelledBy,
+  children,
+}: DrawerTabsLayoutProps) {
+  const tabExtra =
+    !hasHeading && extraNode != null ? (
+      <div className="leaf-dialog-tab-extra leaf-drawer__tab-extra">
+        {tabs.extra}
+        {extraNode}
+      </div>
+    ) : (
+      tabs.extra
+    );
+  const tabLabel = tabs['aria-label'] ?? (typeof title === 'string' ? title : ariaLabel);
+  const tabLabelledBy =
+    tabs['aria-labelledby'] ??
+    (tabs['aria-label'] == null && title != null
+      ? `${id}-title`
+      : tabs['aria-label'] == null
+        ? ariaLabelledBy
+        : undefined);
+  const parts = useTabsParts({
+    ...tabs,
+    type: 'line',
+    placement: 'top',
+    size: tabs.size ?? 'md',
+    'aria-label': tabLabel,
+    'aria-labelledby': tabLabelledBy,
+    extra: tabExtra,
+    className: classes(
+      'leaf-dialog-tabs',
+      hasHeading && 'leaf-dialog-tabs--headed',
+      'leaf-drawer__tabs',
+      tabs.className,
+    ),
+    panelsClassName: 'leaf-dialog-panels',
+    visibilityKey: open,
+  });
+  const hasContent = Boolean(parts?.hasPanels) || hasRenderableNode(children);
+
+  return (
+    <>
+      {parts && <div {...parts.rootProps}>{parts.header}</div>}
+      {hasContent && (
+        <DrawerBody id={id} title={title} ariaLabel={ariaLabel} contentRef={contentRef}>
+          {parts?.panels}
+          {children}
+        </DrawerBody>
+      )}
+    </>
+  );
 }
 
 function DrawerInner({
   id,
+  open,
   title,
   description,
+  tabs,
   icon,
   extra,
   footer,
@@ -80,9 +198,11 @@ function DrawerInner({
   onClose,
   contentRef,
   ariaLabel,
+  ariaLabelledBy,
   children,
 }: DrawerInnerProps) {
   const { messages } = useLeafConfig();
+  const hasTabs = Boolean(tabs?.items?.length);
   const hasHeading = title != null || description != null || icon != null;
   const closeButton = closable ? (
     <button
@@ -98,7 +218,7 @@ function DrawerInner({
 
   return (
     <>
-      {(hasHeading || extra != null) && (
+      {(hasHeading || (!hasTabs && extra != null)) && (
         <div
           className={classes('leaf-drawer__header', !hasHeading && 'leaf-drawer__header--compact')}
         >
@@ -121,18 +241,25 @@ function DrawerInner({
         </div>
       )}
       {closeButton}
-      <ScrollbarControl
-        className="leaf-drawer__body"
-        viewportClassName="leaf-drawer__viewport"
-        orientation="vertical"
-        role={title != null || ariaLabel ? 'region' : 'presentation'}
-        aria-labelledby={title != null ? `${id}-title` : undefined}
-        aria-label={title == null ? ariaLabel : undefined}
-      >
-        <div ref={contentRef} className="leaf-drawer__content">
+      {hasTabs && tabs ? (
+        <DrawerTabsLayout
+          open={open}
+          tabs={tabs}
+          id={id}
+          title={title}
+          hasHeading={hasHeading}
+          extraNode={extraNode}
+          contentRef={contentRef}
+          ariaLabel={ariaLabel}
+          ariaLabelledBy={ariaLabelledBy}
+        >
           {children}
-        </div>
-      </ScrollbarControl>
+        </DrawerTabsLayout>
+      ) : (
+        <DrawerBody id={id} title={title} ariaLabel={ariaLabel} contentRef={contentRef}>
+          {children}
+        </DrawerBody>
+      )}
       {footer != null && <div className="leaf-drawer__footer">{footer}</div>}
     </>
   );
@@ -142,6 +269,7 @@ function DrawerSurface({
   open,
   title,
   description,
+  tabs,
   icon,
   divided = false,
   padding,
@@ -180,6 +308,8 @@ function DrawerSurface({
   const present = usePresence(open, backdrop);
   const layer = useOverlayLayer(present, open);
   const hasHeading = title != null || description != null || icon != null;
+  const hasTabs = Boolean(tabs?.items?.length);
+  const tabsSize = hasTabs ? (tabs?.size ?? 'md') : undefined;
   const swipeHandleVisible = showSwipeHandle ?? placement === 'bottom';
   const paddingStyle = resolvePaddingVars('drawer', padding);
   const paddingFlags = resolveDialogPaddingFlags(padding);
@@ -279,9 +409,11 @@ function DrawerSurface({
           swipeHandleVisible && 'leaf-drawer--swipeable',
           divided && 'leaf-drawer--divided',
           hasHeading && 'leaf-drawer--headed',
+          hasTabs && 'leaf-drawer--tabbed',
           closable && 'leaf-drawer--closable',
           className,
         )}
+        data-tabs-size={tabsSize}
         {...paddingFlags}
         {...surfaceFlags}
         style={{
@@ -453,8 +585,10 @@ function DrawerSurface({
         <OverlayOwner.Provider value={id}>
           <DrawerInner
             id={id}
+            open={open}
             title={title}
             description={description}
+            tabs={tabs}
             icon={icon}
             extra={extra}
             footer={footer}
@@ -462,6 +596,7 @@ function DrawerSurface({
             onClose={onClose}
             contentRef={content}
             ariaLabel={props['aria-label']}
+            ariaLabelledBy={props['aria-labelledby']}
           >
             {children}
           </DrawerInner>

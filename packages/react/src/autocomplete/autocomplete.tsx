@@ -1,4 +1,3 @@
-import { useVirtualizer } from '@tanstack/react-virtual';
 import {
   type CSSProperties,
   forwardRef,
@@ -24,8 +23,11 @@ import {
   usePopupState,
 } from '../shared/floating';
 import { FloatingFeedback } from '../shared/floating-feedback';
+import { createLazyModule } from '../shared/lazy-module';
 import type { ControlSize, ControlStatus } from '../shared/types';
 import { useFormattedText } from '../shared/use-formatted-text';
+
+const useAutoCompleteVirtualModule = createLazyModule(() => import('./virtual-list'));
 
 export interface AutoCompleteOption {
   value: string;
@@ -148,19 +150,13 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
       .toLocaleLowerCase()
       .includes(text.toLocaleLowerCase());
   });
-  const virtual = virtualProp ?? visibleOptions.length > 100;
-  const virtualizer = useVirtualizer({
-    count: visibleOptions.length,
-    getScrollElement: () => panelRef.current,
-    estimateSize: () => optionHeight,
-    enabled: open && virtual,
-    initialRect: { height: listHeight, width: 240 },
-    overscan: 5,
-  });
-  useEffect(() => {
-    if (open && virtual && active >= 0) virtualizer.scrollToIndex(active, { align: 'auto' });
-  }, [open, virtual, active, virtualizer]);
   const expanded = open && !disabled && !readOnly;
+  const virtual = virtualProp ?? visibleOptions.length > 100;
+  const virtualScrollRef = useRef<((index: number) => void) | null>(null);
+  const virtualModule = useAutoCompleteVirtualModule(expanded && virtual);
+  useEffect(() => {
+    if (open && virtual && active >= 0) virtualScrollRef.current?.(active);
+  }, [open, virtual, active]);
   const hasSuggestions = visibleOptions.length > 0 && !errorContent;
   const listboxProps = {
     id: listId,
@@ -302,66 +298,74 @@ export const AutoComplete = forwardRef<HTMLInputElement, AutoCompleteProps>(func
             {errorContent}
           </div>
         ) : visibleOptions.length ? (
-          <div
-            className={virtual ? undefined : 'leaf-floating__options'}
-            style={
-              virtual ? { height: virtualizer.getTotalSize(), position: 'relative' } : undefined
-            }
-          >
-            {(virtual
-              ? virtualizer.getVirtualItems().map((item) => ({
-                  option: visibleOptions[item.index],
-                  index: item.index,
-                  start: item.start,
-                }))
-              : visibleOptions.map((option, index) => ({ option, index, start: 0 }))
-            ).map(
-              ({ option, index, start }) =>
-                option && (
-                  <div
-                    key={option.value}
-                    ref={virtual ? virtualizer.measureElement : undefined}
-                    data-index={virtual ? index : undefined}
-                    style={
-                      virtual
-                        ? {
-                            position: 'absolute',
-                            top: 0,
-                            insetInlineStart: 0,
-                            width: '100%',
-                            transform: `translateY(${start}px)`,
-                          }
-                        : undefined
-                    }
+          virtual && virtualModule ? (
+            <virtualModule.AutoCompleteVirtualList
+              options={visibleOptions}
+              panelRef={panelRef}
+              optionHeight={optionHeight}
+              listHeight={listHeight}
+              enabled={expanded && virtual}
+              scrollRef={virtualScrollRef}
+              renderOption={(option, index) => (
+                <div key={option.value}>
+                  {groups.has(option.value) &&
+                    (index === 0 ||
+                      groups.get(visibleOptions[index - 1]?.value ?? '') !==
+                        groups.get(option.value)) && (
+                      <div className="leaf-select__group">{groups.get(option.value)}</div>
+                    )}
+                  <button
+                    id={`${listId}-${index}`}
+                    type="button"
+                    role="option"
+                    tabIndex={-1}
+                    aria-selected={active === index}
+                    disabled={option.disabled}
+                    aria-disabled={option.disabled || undefined}
+                    className="leaf-floating__option"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onMouseEnter={() => !option.disabled && setActive(index)}
+                    onClick={() => select(option)}
                   >
-                    {groups.has(option.value) &&
-                      (index === 0 ||
-                        groups.get(visibleOptions[index - 1]?.value ?? '') !==
-                          groups.get(option.value)) && (
-                        <div className="leaf-select__group">{groups.get(option.value)}</div>
-                      )}
-                    <button
-                      key={option.value}
-                      id={`${listId}-${index}`}
-                      type="button"
-                      role="option"
-                      tabIndex={-1}
-                      aria-selected={active === index}
-                      disabled={option.disabled}
-                      aria-disabled={option.disabled || undefined}
-                      className="leaf-floating__option"
-                      onMouseDown={(event) => event.preventDefault()}
-                      onMouseEnter={() => !option.disabled && setActive(index)}
-                      onClick={() => select(option)}
-                    >
-                      <span className="leaf-floating__option-label">
-                        {optionRender?.(option) ?? option.label ?? option.value}
-                      </span>
-                    </button>
-                  </div>
-                ),
-            )}
-          </div>
+                    <span className="leaf-floating__option-label">
+                      {optionRender?.(option) ?? option.label ?? option.value}
+                    </span>
+                  </button>
+                </div>
+              )}
+            />
+          ) : (
+            <div className="leaf-floating__options">
+              {(virtual ? visibleOptions.slice(0, 24) : visibleOptions).map((option, index) => (
+                <div key={option.value}>
+                  {groups.has(option.value) &&
+                    (index === 0 ||
+                      groups.get(visibleOptions[index - 1]?.value ?? '') !==
+                        groups.get(option.value)) && (
+                      <div className="leaf-select__group">{groups.get(option.value)}</div>
+                    )}
+                  <button
+                    key={option.value}
+                    id={`${listId}-${index}`}
+                    type="button"
+                    role="option"
+                    tabIndex={-1}
+                    aria-selected={active === index}
+                    disabled={option.disabled}
+                    aria-disabled={option.disabled || undefined}
+                    className="leaf-floating__option"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onMouseEnter={() => !option.disabled && setActive(index)}
+                    onClick={() => select(option)}
+                  >
+                    <span className="leaf-floating__option-label">
+                      {optionRender?.(option) ?? option.label ?? option.value}
+                    </span>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )
         ) : (
           <FloatingFeedback>{notFoundContent ?? messages.autoComplete.empty}</FloatingFeedback>
         )}

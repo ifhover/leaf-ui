@@ -12,6 +12,7 @@
 @use '../autocomplete/autocomplete';
 @use '../cascader/cascader';
 @use '../form/form';
+@use '../tabs/tabs';
 @use '../modal/modal';
 @use '../alert/alert';
 @use '../dropdown/dropdown';
@@ -27,7 +28,6 @@
 @use '../progress/progress';
 @use '../tooltip/tooltip';
 @use '../calendar/calendar' as calendar-view;
-@use '../tabs/tabs';
 @use '../inputnumber/inputnumber';
 @use '../avatar/avatar';
 @use '../card/card';

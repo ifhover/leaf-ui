@@ -1,14 +1,19 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 import type { ButtonProps } from '../button/button';
 import { useComponentProps } from '../config-provider/component-defaults';
+import { classes } from '../shared/classes';
 import type { DialogFocusOptions } from '../shared/dialog';
 import type { ContainerPadding } from '../shared/types';
-import { ModalBase } from './base';
+import { type TabsProps, useTabsParts } from '../tabs/tabs';
+import { hasRenderableNode, ModalBase, ModalBody, type ModalTabsRenderProps } from './base';
 
 export interface ModalFooterActions {
   confirmButton: ReactNode;
   cancelButton: ReactNode;
 }
+
+/** Tabs controls integrated with the modal; Modal fixes the line type and top placement. */
+export interface ModalTabsProps extends Omit<TabsProps, 'type' | 'placement' | 'children'> {}
 
 export interface ModalProps
   extends Omit<HTMLAttributes<HTMLDivElement>, 'title'>,
@@ -21,6 +26,8 @@ export interface ModalProps
   danger?: boolean;
   /** Supporting text displayed below the title. */
   description?: ReactNode;
+  /** Embedded tabs placed below the heading, or replacing it when no title is supplied. */
+  tabs?: ModalTabsProps;
   /** Decorative header icon. */
   icon?: ReactNode;
   /** Separate the header and footer with subtle borders. */
@@ -45,6 +52,63 @@ export interface ModalProps
   destroyOnClose?: boolean;
   preserve?: boolean;
   container?: Element | DocumentFragment | (() => Element | DocumentFragment);
+}
+
+function ModalTabsLayout({
+  open,
+  tabs,
+  title,
+  titleId,
+  hasHeading,
+  contentRef,
+  ariaLabel,
+  ariaLabelledBy,
+  scrollbarLabel,
+  scrollbarLabelledBy,
+  children,
+}: ModalTabsRenderProps) {
+  const hasTitle = hasRenderableNode(title);
+  const tabLabel = tabs['aria-label'] ?? (typeof title === 'string' ? title : ariaLabel);
+  const tabLabelledBy =
+    tabs['aria-labelledby'] ??
+    (tabs['aria-label'] == null && hasTitle
+      ? titleId
+      : tabs['aria-label'] == null
+        ? ariaLabelledBy
+        : undefined);
+  const parts = useTabsParts({
+    ...tabs,
+    type: 'line',
+    placement: 'top',
+    size: tabs.size ?? 'md',
+    'aria-label': tabLabel,
+    'aria-labelledby': tabLabelledBy,
+    className: classes(
+      'leaf-dialog-tabs',
+      hasHeading && 'leaf-dialog-tabs--headed',
+      'leaf-modal__tabs',
+      tabs.className,
+    ),
+    panelsClassName: 'leaf-dialog-panels',
+    visibilityKey: open,
+  });
+  const hasContent = Boolean(parts?.hasPanels) || hasRenderableNode(children);
+
+  return (
+    <>
+      {parts && <div {...parts.rootProps}>{parts.header}</div>}
+      {hasContent && (
+        <ModalBody
+          contentRef={contentRef}
+          scrollbarLabel={scrollbarLabel}
+          scrollbarLabelledBy={scrollbarLabelledBy}
+        >
+          {parts?.panels}
+          {children}
+        </ModalBody>
+      )}
+    </>
+  );
 }
 
 type ModalControlProps = ModalProps;
@@ -75,6 +139,7 @@ function ModalControl({
       keyboard={keyboard}
       forceRender={forceRender}
       destroyOnClose={destroyOnClose}
+      renderTabsLayout={ModalTabsLayout}
     />
   );
 }

@@ -3,6 +3,7 @@ import { type KeyboardEvent, type ReactNode, useEffect, useRef, useState } from 
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from './classes';
 import { calendarDays, dateKey, formatMonthLabel, sameDate, shiftMonth } from './date';
+import { getDateTimeFormat } from './intl';
 import { useContentTransition } from './presence';
 
 export type CalendarMode = 'year' | 'quarter' | 'month' | 'week' | 'date' | 'datetime';
@@ -305,7 +306,7 @@ export function CalendarPanel({
           aria-label={messages.calendar.month}
           onClick={() => setView('month')}
         >
-          {new Intl.DateTimeFormat(locale, { month: 'short' }).format(visible)}
+          {getDateTimeFormat(locale, { month: 'short' }).format(visible)}
         </button>
       )}
       <button
@@ -466,7 +467,7 @@ export function CalendarPanel({
                   {view === 'date'
                     ? date.getDate()
                     : view === 'month'
-                      ? new Intl.DateTimeFormat(locale, { month: 'short' }).format(date)
+                      ? getDateTimeFormat(locale, { month: 'short' }).format(date)
                       : view === 'quarter'
                         ? `Q${Math.floor(date.getMonth() / 3) + 1}`
                         : date.getFullYear()}

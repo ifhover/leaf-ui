@@ -1,5 +1,13 @@
 import { X } from 'lucide-react';
-import { type ReactNode, type Ref, useEffect, useId, useRef, useState } from 'react';
+import {
+  type ComponentType,
+  type ReactNode,
+  type Ref,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import { ButtonControl } from '../button/button';
 import { useLeafConfig } from '../config-provider/context';
 import { ScrollbarControl as Scrollbar } from '../scrollbar/scrollbar';
@@ -10,13 +18,29 @@ import { OverlayOwner } from '../shared/overlay-owner';
 import { resolveDialogPaddingFlags, resolvePaddingVars } from '../shared/padding';
 import { usePresence } from '../shared/presence';
 import { ScopedPortal } from '../shared/scoped-portal';
-import type { ModalFooterActions, ModalProps } from './modal';
+import type { ModalFooterActions, ModalProps, ModalTabsProps } from './modal';
+
+export interface ModalTabsRenderProps {
+  open: boolean;
+  tabs: ModalTabsProps;
+  title?: ReactNode;
+  titleId: string;
+  hasHeading: boolean;
+  contentRef: Ref<HTMLDivElement>;
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
+  scrollbarLabel?: string;
+  scrollbarLabelledBy?: string;
+  children?: ReactNode;
+}
 
 export interface ModalBaseProps extends ModalProps {
   /** 仅供内部确认服务在异步 onConfirm 完成后自动关闭弹窗。 */
   closeOnConfirm?: boolean;
   /** 仅供内部确认服务在异步 onConfirm 失败后关闭当前框并弹出失败提示。 */
   onConfirmError?: (reason: unknown) => void;
+  /** 由公开 Modal 注入内嵌标签页布局，避免 Confirm 与 ConfigProvider 静态依赖 Tabs。 */
+  renderTabsLayout?: ComponentType<ModalTabsRenderProps>;
 }
 
 export interface ModalBodyProps {
@@ -57,6 +81,7 @@ function ModalSurface({
   open,
   title,
   description,
+  tabs,
   icon,
   size = 'md',
   danger = false,
@@ -84,6 +109,7 @@ function ModalSurface({
   container: _container,
   closeOnConfirm = false,
   onConfirmError,
+  renderTabsLayout: RenderTabsLayout,
   children,
   className,
   style,
@@ -203,6 +229,8 @@ function ModalSurface({
   const hasHeading = hasTitle || hasDescription || hasIcon;
   const hasFooter = hasRenderableNode(renderedFooter);
   const hasBody = hasRenderableNode(children);
+  const hasTabs = Boolean(tabs?.items?.length && RenderTabsLayout);
+  const tabsSize = hasTabs ? (tabs?.size ?? 'md') : undefined;
   const paddingStyle = resolvePaddingVars('modal', padding);
   const paddingFlags = resolveDialogPaddingFlags(padding);
   const modalTheme = theme.components?.Modal;
@@ -264,9 +292,11 @@ function ModalSurface({
           danger && 'leaf-modal--danger',
           divided && 'leaf-modal--divided',
           hasHeading && 'leaf-modal--headed',
+          hasTabs && 'leaf-modal--tabbed',
           closable && 'leaf-modal--closable',
           className,
         )}
+        data-tabs-size={tabsSize}
         {...paddingFlags}
         {...surfaceFlags}
         style={{ width: resolvedWidth, ...layer.popupStyle, ...paddingStyle, ...style }}
@@ -292,14 +322,31 @@ function ModalSurface({
             </div>
           )}
           {closeButton}
-          {hasBody && (
-            <ModalBody
+          {hasTabs && tabs && RenderTabsLayout ? (
+            <RenderTabsLayout
+              open={open}
+              tabs={tabs}
+              title={title}
+              titleId={titleId}
+              hasHeading={hasHeading}
               contentRef={content}
+              ariaLabel={props['aria-label']}
+              ariaLabelledBy={props['aria-labelledby']}
               scrollbarLabel={scrollbarLabel}
               scrollbarLabelledBy={scrollbarLabelledBy}
             >
               {children}
-            </ModalBody>
+            </RenderTabsLayout>
+          ) : (
+            hasBody && (
+              <ModalBody
+                contentRef={content}
+                scrollbarLabel={scrollbarLabel}
+                scrollbarLabelledBy={scrollbarLabelledBy}
+              >
+                {children}
+              </ModalBody>
+            )
           )}
           {hasFooter && <div className="leaf-modal__footer">{renderedFooter}</div>}
         </OverlayOwner.Provider>

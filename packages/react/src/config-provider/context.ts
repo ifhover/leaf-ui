@@ -16,6 +16,7 @@ const defaultConfig = {
   translations: {} as LeafTranslations,
   // The default language is complete; only ConfigProvider needs the fallback resolver and other packs.
   messages: zhCN as LocaleMessages,
+  fallbackMessages: undefined as LocaleMessages | undefined,
   messageLocales: {} as Partial<Record<TranslationKey, string>>,
   theme: {} as LeafTheme,
   direction: 'ltr' as LeafDirection,

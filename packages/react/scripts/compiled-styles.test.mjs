@@ -611,3 +611,35 @@ test('button isolates text variant from frame borders and keeps neutral borderCo
     'var(--leaf-component-button-border-color,var(--leaf-button-frame-border))',
   );
 });
+
+test('foundation tokens, primitives and floating keep sub-layer order below component styles', async () => {
+  const compile = (file) => sass.compileAsync(path.resolve(import.meta.dirname, '..', 'src', file));
+  const layerOrder =
+    /@layer\s+leaf-ui\.tokens\s*,\s*leaf-ui\.primitives\s*,\s*leaf-ui\.floating\s*;/u;
+
+  for (const [file, sublayer] of [
+    ['styles/tokens.scss', 'leaf-ui.tokens'],
+    ['scrollbar/scrollbar.scss', 'leaf-ui.primitives'],
+    ['button/button.scss', 'leaf-ui.primitives'],
+    ['shared/_floating.scss', 'leaf-ui.floating'],
+  ]) {
+    const { css } = await compile(file);
+    assert.match(css, layerOrder, `${file} declares sub-layer order`);
+    assert.match(css, new RegExp(`@layer\\s+${sublayer.replace('.', '\\.')}\\b`, 'u'), file);
+    assert.doesNotMatch(
+      css,
+      /@layer\s+leaf-ui\s*\{/u,
+      `${file} does not write directly to parent leaf-ui layer`,
+    );
+  }
+
+  for (const file of ['tooltip/tooltip.scss', 'popover/popover.scss']) {
+    const { css } = await compile(file);
+    assert.match(
+      css,
+      /@layer\s+leaf-ui\s*\{/u,
+      `${file} stays directly inside parent leaf-ui layer`,
+    );
+    assert.doesNotMatch(css, /@layer\s+leaf-ui\./u, `${file} does not drop into a sub-layer`);
+  }
+});

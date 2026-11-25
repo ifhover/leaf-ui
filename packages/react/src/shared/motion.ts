@@ -11,14 +11,46 @@ import { ConfigContext } from '../config-provider/config-context';
 const reducedQuery = '(prefers-reduced-motion: reduce)';
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
+const motionListeners = new Set<() => void>();
+let cachedMatchMedia: typeof window.matchMedia | undefined;
+let cachedMediaQuery: MediaQueryList | undefined;
+let boundMediaListener: (() => void) | undefined;
+
+function getMotionQuery(): MediaQueryList | undefined {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return undefined;
+  // 测试环境可能替换 window.matchMedia stub，检测函数引用变化以重新绑定监听。
+  if (cachedMatchMedia !== window.matchMedia || !cachedMediaQuery) {
+    if (cachedMediaQuery && boundMediaListener) {
+      cachedMediaQuery.removeEventListener?.('change', boundMediaListener);
+    }
+    cachedMatchMedia = window.matchMedia;
+    cachedMediaQuery = window.matchMedia(reducedQuery);
+    boundMediaListener = () => {
+      for (const listener of motionListeners) listener();
+    };
+    if (motionListeners.size > 0) {
+      cachedMediaQuery?.addEventListener?.('change', boundMediaListener);
+    }
+  }
+  return cachedMediaQuery;
+}
+
 function reducedMotion() {
-  return typeof window !== 'undefined' && Boolean(window.matchMedia?.(reducedQuery).matches);
+  return Boolean(getMotionQuery()?.matches);
 }
 
 function subscribeMotion(listener: () => void) {
-  const query = typeof window !== 'undefined' ? window.matchMedia?.(reducedQuery) : undefined;
-  query?.addEventListener?.('change', listener);
-  return () => query?.removeEventListener?.('change', listener);
+  const query = getMotionQuery();
+  if (motionListeners.size === 0 && query && boundMediaListener) {
+    query.addEventListener?.('change', boundMediaListener);
+  }
+  motionListeners.add(listener);
+  return () => {
+    motionListeners.delete(listener);
+    if (motionListeners.size === 0 && cachedMediaQuery && boundMediaListener) {
+      cachedMediaQuery.removeEventListener?.('change', boundMediaListener);
+    }
+  };
 }
 
 /** Live preference with a deterministic server snapshot; CSS handles the first frame. */
@@ -121,52 +153,62 @@ export function useListMotion(
     }
     if (!Object.is(layout.current, layoutKey)) previous.current = null;
     layout.current = layoutKey;
-    // React has already changed layout. Recover the remaining visual offset from
-    // the running animation, then measure the new, unanimated layout in a batch.
-    const live = new Map(
-      nodes.map((node) => [
-        node,
-        {
-          rect: node.getBoundingClientRect(),
-          opacity: getComputedStyle(node).opacity,
-        },
-      ]),
+    const willAnimate = Boolean(enabled && previous.current);
+    const hasRunningAnimations = animations.current.some(
+      (animation) => animation.playState !== 'finished',
     );
+    // 仅在存在运行中动画且即将播放下一段位移时读取实时视觉偏移，避免无谓重排与样式查询。
+    const live =
+      willAnimate && hasRunningAnimations
+        ? new Map(
+            nodes.map((node) => [
+              node,
+              {
+                rect: node.getBoundingClientRect(),
+                opacity: getComputedStyle(node).opacity,
+              },
+            ]),
+          )
+        : null;
     for (const animation of animations.current) animation.cancel();
     animations.current = [];
     const geometry = listGeometry(root, nodes);
     const current = new Map<string | HTMLElement, LayoutPosition>();
-    const positions = geometry.positions.map(({ node, key, position, rect }) => {
-      current.set(key, position);
-      const rendered = live.get(node);
-      return {
-        node,
-        key,
-        position,
-        offset: {
-          left: ((rendered?.rect.left ?? rect.left) - rect.left) / geometry.scaleX,
-          top: ((rendered?.rect.top ?? rect.top) - rect.top) / geometry.scaleY,
-        },
-        opacity: rendered?.opacity ?? '1',
-        naturalOpacity: getComputedStyle(node).opacity,
-      };
-    });
-    if (enabled && previous.current) {
-      for (const { node, key, position, offset, opacity, naturalOpacity } of positions) {
-        const before = previous.current.get(key);
-        const x = before ? before.left + offset.left - position.left : 0;
-        const y = before ? before.top + offset.top - position.top : 5;
-        if (before && Math.abs(x) < 0.5 && Math.abs(y) < 0.5) continue;
-        const animation = animateMotion(
-          node,
-          [
-            { translate: `${x}px ${y}px`, opacity: before ? opacity : 0 },
-            { translate: '0 0', opacity: naturalOpacity },
-          ],
-          { durationMultiplier: 1.5 },
-        );
-        if (animation) animations.current.push(animation);
+    if (!willAnimate || !previous.current) {
+      for (const { key, position } of geometry.positions) {
+        current.set(key, position);
       }
+      previous.current = current;
+      return;
+    }
+    const duration = motionDuration(root, 1.5);
+    const rootStyle = duration ? getComputedStyle(root) : null;
+    const easing = rootStyle?.getPropertyValue('--leaf-motion-easing').trim();
+    const canAnimate = Boolean(duration);
+    for (const { node, key, position, rect } of geometry.positions) {
+      current.set(key, position);
+      if (!canAnimate || !node.animate) continue;
+      const rendered = live?.get(node);
+      const offsetLeft = ((rendered?.rect.left ?? rect.left) - rect.left) / geometry.scaleX;
+      const offsetTop = ((rendered?.rect.top ?? rect.top) - rect.top) / geometry.scaleY;
+      const before = previous.current.get(key);
+      const x = before ? before.left + offsetLeft - position.left : 0;
+      const y = before ? before.top + offsetTop - position.top : 5;
+      if (before && Math.abs(x) < 0.5 && Math.abs(y) < 0.5) continue;
+      const animation = node.animate(
+        [
+          {
+            translate: `${x}px ${y}px`,
+            opacity: before ? (rendered?.opacity ?? '1') : 0,
+          },
+          { translate: '0 0', opacity: getComputedStyle(node).opacity },
+        ],
+        {
+          duration,
+          easing: easing || 'cubic-bezier(0.22, 1, 0.36, 1)',
+        },
+      );
+      if (animation) animations.current.push(animation);
     }
     previous.current = current;
   }, [changeKey, selector, rootRef, enabled, layoutKey]);

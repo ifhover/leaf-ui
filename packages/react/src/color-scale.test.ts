@@ -1,4 +1,3 @@
-import { TinyColor } from '@ctrl/tinycolor';
 import { describe, expect, it } from 'vitest';
 import {
   type ColorScale,
@@ -7,6 +6,7 @@ import {
   colorScaleSteps,
   generateColorScale,
 } from './color-scale';
+import { parseColor, relativeLuminance } from './shared/color';
 
 type ReferenceOklch = {
   lightness: number;
@@ -20,7 +20,7 @@ const srgbToLinear = (channel: number) => {
 };
 
 const referenceOklch = (color: string): ReferenceOklch => {
-  const { r, g, b } = new TinyColor(color).toRgb();
+  const { r, g, b } = parseColor(color) ?? { r: 0, g: 0, b: 0 };
   const red = srgbToLinear(r);
   const green = srgbToLinear(g);
   const blue = srgbToLinear(b);
@@ -54,9 +54,9 @@ const expectValidScale = (scale: ColorScale) => {
   for (const step of colorScaleSteps) {
     const value = scale[step];
     expect(value).toMatch(/^#[0-9a-f]{6}$/);
-    const parsed = new TinyColor(value);
-    expect(parsed.isValid).toBe(true);
-    expect(parsed.getAlpha()).toBe(1);
+    const parsed = parseColor(value);
+    expect(parsed !== null).toBe(true);
+    expect(parsed?.a).toBe(1);
   }
 };
 
@@ -131,9 +131,13 @@ describe('generateColorScale', () => {
         const previous = scale[colorScaleSteps[index - 1] ?? 100];
         const current = scale[colorScaleSteps[index] ?? 900];
         expect(referenceOklch(current).lightness).toBeLessThan(referenceOklch(previous).lightness);
-        expect(new TinyColor(current).getLuminance()).toBeLessThan(
-          new TinyColor(previous).getLuminance(),
+        const currentLuminance = relativeLuminance(
+          parseColor(current) ?? { r: 0, g: 0, b: 0, a: 1 },
         );
+        const previousLuminance = relativeLuminance(
+          parseColor(previous) ?? { r: 0, g: 0, b: 0, a: 1 },
+        );
+        expect(currentLuminance).toBeLessThan(previousLuminance);
       }
     }
   });

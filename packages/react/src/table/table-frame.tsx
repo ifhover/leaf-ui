@@ -93,23 +93,31 @@ const TableRootControl = forwardRef<HTMLTableElement, TableFrameProps>(function 
   useEffect(() => {
     const node = viewport.current;
     if (!node) return;
-    let frame: number | undefined;
-    const update = () => {
-      frame = undefined;
+    let scrollFrame: number | undefined;
+    let layoutFrame: number | undefined;
+    const updateScrollEdges = () => {
+      scrollFrame = undefined;
       const maximum = Math.max(0, node.scrollWidth - node.clientWidth);
       const offset = Math.min(maximum, Math.max(0, Math.abs(node.scrollLeft)));
       const next = {
         start: maximum <= 1 || offset <= 1,
         end: maximum <= 1 || offset >= maximum - 1,
       };
-      setViewportWidth(node.clientWidth || undefined);
-      setVerticalOverflow(node.scrollHeight > node.clientHeight + 1);
       setScrollEdges((previous) =>
         previous.start === next.start && previous.end === next.end ? previous : next,
       );
     };
-    const schedule = () => {
-      if (frame === undefined) frame = requestAnimationFrame(update);
+    const updateLayout = () => {
+      layoutFrame = undefined;
+      setViewportWidth(node.clientWidth || undefined);
+      setVerticalOverflow(node.scrollHeight > node.clientHeight + 1);
+      updateScrollEdges();
+    };
+    const scheduleScroll = () => {
+      if (scrollFrame === undefined) scrollFrame = requestAnimationFrame(updateScrollEdges);
+    };
+    const scheduleLayout = () => {
+      if (layoutFrame === undefined) layoutFrame = requestAnimationFrame(updateLayout);
     };
     const containWheel = (event: WheelEvent) => {
       if (
@@ -135,26 +143,23 @@ const TableRootControl = forwardRef<HTMLTableElement, TableFrameProps>(function 
       }
       event.preventDefault();
     };
-    update();
-    node.addEventListener('scroll', schedule, { passive: true });
+    updateLayout();
+    node.addEventListener('scroll', scheduleScroll, { passive: true });
     // 不支持 CSS overscroll-behavior-y 的旧版浏览器回退到边界滚轮隔离。
     if (typeof CSS === 'undefined' || !CSS.supports?.('overscroll-behavior-y', 'contain'))
       node.addEventListener('wheel', containWheel, { passive: false });
     const observer =
-      typeof ResizeObserver === 'undefined'
-        ? undefined
-        : new ResizeObserver(() => {
-            schedule();
-          });
+      typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(scheduleLayout);
     observer?.observe(node);
     if (element.current) observer?.observe(element.current);
-    window.addEventListener('resize', schedule);
+    window.addEventListener('resize', scheduleLayout);
     return () => {
-      node.removeEventListener('scroll', schedule);
+      node.removeEventListener('scroll', scheduleScroll);
       node.removeEventListener('wheel', containWheel);
       observer?.disconnect();
-      window.removeEventListener('resize', schedule);
-      if (frame !== undefined) cancelAnimationFrame(frame);
+      window.removeEventListener('resize', scheduleLayout);
+      if (scrollFrame !== undefined) cancelAnimationFrame(scrollFrame);
+      if (layoutFrame !== undefined) cancelAnimationFrame(layoutFrame);
     };
   }, []);
 

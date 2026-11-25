@@ -1,6 +1,7 @@
+@use './layers';
 @use './palette';
 
-@layer leaf-ui {
+@layer leaf-ui.tokens {
   :root,
   :host,
   [data-leaf-theme='light'] {

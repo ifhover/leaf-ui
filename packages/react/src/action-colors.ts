@@ -1,10 +1,11 @@
-import { TinyColor } from '@ctrl/tinycolor';
+import { hsvToRgba, parseColor, rgbaToHex, rgbaToHsv } from './shared/color';
 
 // Ant Design HSV 色阶：链接悬停取第 4 阶，按压取第 7 阶。
 // The algorithm and its MIT notice are documented in THIRD_PARTY.md.
 export function actionColor(seed: string, offset: -2 | -1 | 1): string {
-  const parsed = new TinyColor(seed);
-  const { h, s, v } = parsed.toHsv();
+  const parsed = parseColor(seed);
+  if (!parsed) return seed;
+  const { h, s, v, a } = rgbaToHsv(parsed);
   const light = offset < 0;
   const distance = Math.abs(offset);
   const hueDirection = Math.round(h) >= 60 && Math.round(h) <= 240 ? 1 : -1;
@@ -15,7 +16,5 @@ export function actionColor(seed: string, offset: -2 | -1 | 1): string {
       : Math.round(Math.max(0.06, Math.min(1, s + (light ? -0.16 : 0.05) * distance)) * 100) / 100;
   const value =
     Math.round(Math.max(0, Math.min(1, v + (light ? 0.05 : -0.15) * distance)) * 100) / 100;
-  return new TinyColor({ h: hue, s: saturation, v: value })
-    .setAlpha(parsed.getAlpha())
-    .toHexString();
+  return rgbaToHex(hsvToRgba({ h: hue, s: saturation, v: value, a }));
 }

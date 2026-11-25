@@ -46,6 +46,11 @@ test('tables use subtle neutral headers with trailing short column dividers', as
   assert.equal(split.width, '1px');
   assert.equal(split.height, '1.6em');
   assert.equal(split.background, 'var(--leaf-table-header-split)');
+  assert.equal(table('.leaf-table__resize::after').background, 'transparent');
+  assert.equal(
+    table('.leaf-table__resize[data-resizing]::after').background,
+    'var(--leaf-color-primary)',
+  );
   assert.throws(() => table('.leaf-table__cell[data-pin-edge]::after'), /missing compiled rule/);
 });
 
@@ -407,7 +412,7 @@ test('Cards keep independent section padding fallbacks when header-only tabs or 
   );
 });
 
-test('Modal and Drawer omit embedded tab bars and restore divided header dividers outside mini', async () => {
+test('Modal and Drawer share embedded line tab bars while restoring divided header dividers outside mini', async () => {
   const modal = await compiledStyles('modal/modal.scss');
   assert.equal(
     modal(
@@ -415,7 +420,30 @@ test('Modal and Drawer omit embedded tab bars and restore divided header divider
     )['border-block-end'],
     '1px solid var(--leaf-dialog-divider)',
   );
-  assert.throws(() => modal('.leaf-dialog-tabs'), /missing compiled rule/u);
+  assert.equal(
+    modal('.leaf-modal--tabbed > .leaf-modal__header:not(.leaf-modal__header--compact)')[
+      'border-block-end'
+    ],
+    '0px',
+  );
+  assert.equal(
+    modal(
+      '.leaf-modal--tabbed.leaf-modal--divided:not(.leaf-modal--mini) > .leaf-modal__header:not(.leaf-modal__header--compact)',
+    )['border-block-end'],
+    '0px',
+  );
+  assert.equal(
+    modal('.leaf-dialog-tabs.leaf-tabs--line > .leaf-tabs__header::before')[
+      'border-block-end-color'
+    ],
+    'var(--leaf-dialog-divider)',
+  );
+  assert.equal(
+    modal(
+      '.leaf-modal--tabbed.leaf-modal--closable:not(.leaf-modal--headed) > .leaf-dialog-tabs > .leaf-tabs__header',
+    )['padding-inline-end'],
+    'calc(var(--leaf-dialog-padding-end)+ var(--leaf-dialog-close-clearance))',
+  );
 
   const drawer = await compiledStyles('drawer/drawer.scss');
   assert.equal(
@@ -424,7 +452,30 @@ test('Modal and Drawer omit embedded tab bars and restore divided header divider
     )['border-block-end'],
     '1px solid var(--leaf-dialog-divider)',
   );
-  assert.throws(() => drawer('.leaf-dialog-tabs'), /missing compiled rule/u);
+  assert.equal(
+    drawer('.leaf-drawer--tabbed > .leaf-drawer__header:not(.leaf-drawer__header--compact)')[
+      'border-block-end'
+    ],
+    '0px',
+  );
+  assert.equal(
+    drawer('.leaf-dialog-tabs.leaf-tabs--line > .leaf-tabs__header::before')[
+      'border-block-end-color'
+    ],
+    'var(--leaf-dialog-divider)',
+  );
+  assert.equal(
+    drawer(
+      '.leaf-drawer--tabbed.leaf-drawer--closable:not(.leaf-drawer--headed) > .leaf-dialog-tabs > .leaf-tabs__header',
+    )['padding-inline-end'],
+    'calc(var(--leaf-dialog-padding-end)+ var(--leaf-dialog-close-clearance))',
+  );
+  assert.equal(
+    drawer(
+      '.leaf-drawer--swipeable.leaf-drawer--placement-bottom.leaf-drawer--tabbed:not(.leaf-drawer--headed) > .leaf-dialog-tabs > .leaf-tabs__header',
+    )['padding-block-start'],
+    '24px',
+  );
 });
 
 test('every local custom property has a consumer in its component source', async () => {
@@ -480,4 +531,29 @@ test('select hides input carets when readonly or closed', async () => {
   assert.equal(readonlyInput['user-select'], 'none');
   const closedInput = select('.leaf-select:not([data-open]) .leaf-select__input');
   assert.equal(closedInput['caret-color'], 'transparent');
+});
+
+test('Collapse uses stepped base radius and row-padding header height', async () => {
+  const collapse = await compiledStyles('collapse/collapse.scss');
+  const root = collapse('.leaf-collapse');
+  assert.equal(
+    root['border-radius'],
+    'var(--leaf-component-collapse-radius,var(--leaf-current-radius))',
+  );
+  assert.equal(root['--leaf-current-radius'], 'var(--leaf-radius)');
+  assert.equal(root['--leaf-collapse-padding-block'], 'var(--leaf-density-row-padding)');
+  assert.equal(root['--leaf-collapse-padding-inline'], '16px');
+
+  const sm = collapse('.leaf-collapse--sm');
+  assert.equal(sm['--leaf-current-radius'], 'var(--leaf-control-radius-sm)');
+  assert.equal(
+    sm['--leaf-collapse-padding-block'],
+    'max(6px,calc(var(--leaf-density-row-padding)- 4px))',
+  );
+  assert.equal(sm['--leaf-collapse-padding-inline'], '12px');
+
+  const lg = collapse('.leaf-collapse--lg');
+  assert.equal(lg['--leaf-current-radius'], 'var(--leaf-control-radius-lg)');
+  assert.equal(lg['--leaf-collapse-padding-block'], 'calc(var(--leaf-density-row-padding)+ 4px)');
+  assert.equal(lg['--leaf-collapse-padding-inline'], '20px');
 });

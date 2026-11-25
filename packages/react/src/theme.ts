@@ -127,23 +127,26 @@ function mergeComponentTokens(
 }
 
 export function mergeLeafTheme(parent: LeafTheme, theme?: LeafTheme): LeafTheme {
+  if (!theme) return parent;
+  const definedTheme = defined(theme);
+  if (Object.keys(definedTheme).length === 0) return parent;
   return {
     ...parent,
-    ...defined(theme),
-    breakpoints: { ...parent.breakpoints, ...defined(theme?.breakpoints) },
+    ...definedTheme,
+    breakpoints: { ...parent.breakpoints, ...defined(theme.breakpoints) },
     components: Object.fromEntries(
       [
         ...new Set([
           ...Object.keys(parent.components ?? {}),
-          ...Object.keys(theme?.components ?? {}),
+          ...Object.keys(theme.components ?? {}),
         ]),
       ].map((key) => [
         key,
-        mergeComponentTokens(parent.components?.[key], theme?.components?.[key]),
+        mergeComponentTokens(parent.components?.[key], theme.components?.[key]),
       ]),
     ),
-    ...(parent.tokens || theme?.tokens
-      ? { tokens: { ...parent.tokens, ...defined(theme?.tokens) } }
+    ...(parent.tokens || theme.tokens
+      ? { tokens: { ...parent.tokens, ...defined(theme.tokens) } }
       : {}),
   };
 }

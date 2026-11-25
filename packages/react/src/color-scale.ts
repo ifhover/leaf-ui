@@ -1,4 +1,4 @@
-import { TinyColor } from '@ctrl/tinycolor';
+import { parseColor } from './shared/color';
 
 export const colorScaleSteps = [100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
 
@@ -122,10 +122,10 @@ export function generateColorScale(color: string): ColorScale | undefined {
   const input = color.trim();
   if (!input) return undefined;
   if (colorFunction.test(input) && !legacyColorFunction.test(input)) return undefined;
-  const parsed = new TinyColor(input);
-  if (!parsed.isValid || parsed.getAlpha() < 1) return undefined;
+  const parsed = parseColor(input);
+  if (!parsed || parsed.a < 1) return undefined;
 
-  const { r, g, b } = parsed.toRgb();
+  const { r, g, b } = parsed;
   const source = rgbToOklch(r, g, b);
   const scale = Object.fromEntries(
     colorScaleSteps.map((step) => [

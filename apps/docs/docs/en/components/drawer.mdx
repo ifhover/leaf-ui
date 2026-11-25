@@ -2,6 +2,7 @@ import { ComponentExample } from '../../../src/components/component-example';
 import { DrawerBasic } from '../../../src/examples/en/drawer/basic';
 import { DrawerPlacement } from '../../../src/examples/en/drawer/placement';
 import { DrawerSections } from '../../../src/examples/en/drawer/sections';
+import { DrawerTabs } from '../../../src/examples/en/drawer/tabs';
 import { DrawerResize } from '../../../src/examples/en/drawer/resize';
 import { DrawerNested } from '../../../src/examples/en/drawer/nested';
 
@@ -53,6 +54,17 @@ Associate the footer submit button with the form using its `form` attribute to r
 
 </ComponentExample>
 
+### Embedded tabs
+
+Embed `line` tabs at the top of the drawer with `tabs.items`, placed below the heading when a title is present or replacing the heading and moving `extra` to the tab bar when omitted. See <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for additional tab props.
+
+<ComponentExample exampleId="tabs" preview={<DrawerTabs />} fileName="tabs.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/drawer/tabs.tsx"
+```
+
+</ComponentExample>
+
 ### Resizing
 
 <a id="advanced-usage"></a>
@@ -94,6 +106,7 @@ Configuration for controlled visibility, placement, content regions and dismissa
 | `open` | `boolean` | Required | Controlled open state, updated by the application. |
 | `title` | `ReactNode` | — | Drawer title. |
 | `description` | `ReactNode` | — | Additional description. |
+| `tabs` | [`DrawerTabsProps`](#drawertabs-api) | — | Embedded tabs; replaces the heading and moves extra to the tab bar when no title is supplied, otherwise sits below it. |
 | `onClose` | `() => void` | — | Close request; update open in application state |
 | `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | Opening edge |
 | `width` | `number \| string` | `380` | Width for left and right drawers |
@@ -119,3 +132,11 @@ Configuration for controlled visibility, placement, content regions and dismissa
 | `preserve` | `boolean` | — | Control content preservation, taking precedence over destroyOnClose; does not reset external controlled state. |
 | `forceRender` | `boolean` | `false` | Mount before opening and keep hidden while closed. |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Portal mount target; may also return a ShadowRoot. |
+
+### DrawerTabs API
+
+See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Drawer fixes `type="line"` and `placement="top"`, places `extra` beside `tabs.extra` on the tab bar when untitled, and restores an ordinary drawer when `items` is empty.
+
+```ts
+type DrawerTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
+```

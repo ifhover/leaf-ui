@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StrictMode, useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -534,5 +534,183 @@ describe('Modal and Confirm', () => {
       </ConfigProvider>,
     );
     expect(screen.getByRole('dialog', { name: 'Explicit width' })).toHaveStyle({ width: '400px' });
+  });
+});
+
+describe('Modal tabs', () => {
+  const tabItems = [
+    { key: 'details', label: 'Details', children: <input aria-label="Project name" /> },
+    { key: 'billing', label: 'Billing', disabled: true, children: 'Billing content' },
+    { key: 'members', label: 'Members', children: 'Team members' },
+  ];
+
+  it('uses Tabs keyboard navigation, links heading labels, and keeps visited state inside the scrollable body', async () => {
+    const change = vi.fn();
+    render(
+      <Modal
+        open
+        title="Workspace"
+        tabs={{ items: tabItems, size: 'sm', onChange: change }}
+        footer={null}
+      >
+        Shared notes
+      </Modal>,
+    );
+    const dialog = screen.getByRole('dialog', { name: 'Workspace' });
+    expect(dialog).toHaveClass('leaf-modal--tabbed', 'leaf-modal--headed');
+    expect(dialog).toHaveAttribute('data-tabs-size', 'sm');
+
+    const tablist = screen.getByRole('tablist');
+    expect(tablist).toHaveAccessibleName('Workspace');
+    expect(tablist).toHaveAttribute('aria-labelledby');
+    expect(tablist.closest('.leaf-tabs')).toHaveClass('leaf-tabs--sm', 'leaf-tabs--line');
+
+    const body = dialog.querySelector('.leaf-modal__body');
+    expect(body).not.toBeNull();
+    expect(body?.contains(tablist)).toBe(false);
+    expect(body?.contains(screen.getByRole('tabpanel', { name: 'Details' }))).toBe(true);
+    expect(within(body as HTMLElement).getByText('Shared notes')).toBeInTheDocument();
+
+    await userEvent.type(screen.getByRole('textbox', { name: 'Project name' }), 'Leaf');
+    screen.getByRole('tab', { name: 'Details' }).focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: 'Members' })).toHaveFocus();
+    expect(screen.getByRole('tabpanel', { name: 'Members' })).toHaveTextContent('Team members');
+    expect(change).toHaveBeenCalledWith('members');
+    expect(screen.getByText('Shared notes')).toBeInTheDocument();
+
+    await userEvent.keyboard('{Home}');
+    expect(screen.getByRole('textbox', { name: 'Project name' })).toHaveValue('Leaf');
+  });
+
+  it('supports non-string titles, explicit tab labels, and untitled headerless tabs', () => {
+    const { rerender } = render(
+      <Modal
+        open
+        title={
+          <span>
+            Workspace <strong>Pro</strong>
+          </span>
+        }
+        tabs={{
+          items: [
+            { key: 'a', label: 'A', children: 'Panel A' },
+            { key: 'b', label: 'B', children: 'Panel B' },
+          ],
+        }}
+      />,
+    );
+    const headedList = screen.getByRole('tablist');
+    expect(headedList).toHaveAccessibleName('Workspace Pro');
+    expect(headedList).not.toHaveAttribute('aria-label');
+    expect(headedList).toHaveAttribute('aria-labelledby');
+
+    rerender(
+      <Modal
+        open
+        title={<span>Workspace Pro</span>}
+        tabs={{
+          'aria-label': 'Custom sections',
+          items: [{ key: 'a', label: 'A', children: 'Panel A' }],
+        }}
+      />,
+    );
+    expect(screen.getByRole('tablist')).toHaveAccessibleName('Custom sections');
+    expect(screen.getByRole('tablist')).not.toHaveAttribute('aria-labelledby');
+
+    rerender(
+      <Modal
+        open
+        aria-label="Account"
+        tabs={{
+          items: [{ key: 'profile', label: 'Profile', children: 'Profile body' }],
+        }}
+      />,
+    );
+    const untitled = screen.getByRole('dialog', { name: 'Account' });
+    expect(untitled).toHaveClass('leaf-modal--tabbed', 'leaf-modal--closable');
+    expect(untitled).not.toHaveClass('leaf-modal--headed');
+    expect(untitled).toHaveAttribute('data-tabs-size', 'md');
+    expect(untitled.querySelector('.leaf-modal__header')).toBeNull();
+    expect(untitled.querySelector(':scope > .leaf-modal__close')).not.toBeNull();
+    expect(screen.getByRole('tablist')).toHaveAccessibleName('Account');
+  });
+
+  it('supports controlled destroyInactive, header-only switcher tabs, empty fallback, and ignores Tabs defaults', async () => {
+    function SwitcherModal() {
+      const [view, setView] = useState('overview');
+      const [closableTabs, setClosableTabs] = useState([
+        { key: 'draft', label: 'Draft', children: 'Draft body', closable: true },
+      ]);
+      return (
+        <ConfigProvider locale="en-US" components={{ Tabs: { type: 'card', size: 'lg' } }}>
+          <Modal
+            open
+            aria-label="Switcher"
+            footer={null}
+            tabs={{
+              activeKey: view,
+              onChange: setView,
+              items: [
+                { key: 'overview', label: 'Overview' },
+                { key: 'activity', label: 'Activity' },
+              ],
+            }}
+          >
+            {view === 'overview' ? 'Overview body' : 'Activity body'}
+          </Modal>
+          <Modal
+            open
+            title="Closable"
+            tabs={{
+              items: closableTabs,
+              onClose: (key) => setClosableTabs((list) => list.filter((item) => item.key !== key)),
+            }}
+          >
+            Shared fallback
+          </Modal>
+        </ConfigProvider>
+      );
+    }
+
+    const { rerender } = render(
+      <Modal
+        open
+        aria-label="Controlled"
+        tabs={{ items: tabItems, activeKey: 'details', destroyInactive: true }}
+      />,
+    );
+    expect(screen.getByRole('textbox', { name: 'Project name' })).toBeInTheDocument();
+    rerender(
+      <Modal
+        open
+        aria-label="Controlled"
+        tabs={{ items: tabItems, activeKey: 'members', destroyInactive: true }}
+      />,
+    );
+    expect(screen.queryByRole('textbox', { hidden: true })).toBeNull();
+
+    rerender(<SwitcherModal />);
+    const switcher = screen.getByRole('dialog', { name: 'Switcher' });
+    expect(within(switcher).getByRole('tablist').closest('.leaf-tabs')).toHaveClass(
+      'leaf-tabs--line',
+      'leaf-tabs--md',
+    );
+    expect(switcher.querySelector('.leaf-tabs__panels')).toBeNull();
+    expect(within(switcher).queryByRole('tabpanel')).toBeNull();
+    expect(within(switcher).getByRole('tab', { name: 'Overview' })).not.toHaveAttribute(
+      'aria-controls',
+    );
+    expect(within(switcher).getByText('Overview body').closest('.leaf-modal__body')).not.toBeNull();
+
+    await userEvent.click(within(switcher).getByRole('tab', { name: 'Activity' }));
+    expect(within(switcher).getByText('Activity body')).toBeInTheDocument();
+
+    const closableDialog = screen.getByRole('dialog', { name: 'Closable' });
+    await userEvent.click(within(closableDialog).getByRole('button', { name: 'Close tab Draft' }));
+    expect(within(closableDialog).queryByRole('tablist')).toBeNull();
+    expect(closableDialog).not.toHaveClass('leaf-modal--tabbed');
+    expect(closableDialog).not.toHaveAttribute('data-tabs-size');
+    expect(within(closableDialog).getByText('Shared fallback')).toBeInTheDocument();
   });
 });

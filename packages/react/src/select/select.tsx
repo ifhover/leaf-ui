@@ -1,4 +1,3 @@
-import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronDown, LoaderCircle, Plus } from 'lucide-react';
 import {
   type CSSProperties,
@@ -26,9 +25,12 @@ import {
   usePopupState,
 } from '../shared/floating';
 import { FloatingFeedback } from '../shared/floating-feedback';
+import { createLazyModule } from '../shared/lazy-module';
 import { SelectionContent } from '../shared/selection-content';
 import type { ControlSize, ControlStatus } from '../shared/types';
 import { useFormattedText } from '../shared/use-formatted-text';
+
+const useSelectVirtualModule = createLazyModule(() => import('./virtual-list'));
 
 export interface SelectOption {
   value: string;
@@ -264,21 +266,14 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
     });
     return entries;
   }, [filtered, optionGroups]);
-  const virtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => panel.current,
-    estimateSize: () => Math.max(24, optionHeight),
-    overscan: 5,
-    getItemKey: (index) => rows[index]?.key ?? index,
-    enabled: open && virtual,
-    initialRect: { height: listHeight, width: 240 },
-  });
+  const virtualScrollRef = useRef<((index: number) => void) | null>(null);
+  const virtualModule = useSelectVirtualModule(open && virtual);
   useEffect(() => {
     if (open && virtual && highlighted >= 0) {
       const index = rows.findIndex((row) => row.index === highlighted);
-      if (index >= 0) virtualizer.scrollToIndex(index, { align: 'auto' });
+      if (index >= 0) virtualScrollRef.current?.(index);
     }
-  }, [open, virtual, highlighted, rows, virtualizer]);
+  }, [open, virtual, highlighted, rows]);
   const updateQuery = (next: string) => {
     setQuery(next);
     onSearch?.(next);
@@ -688,38 +683,27 @@ export const SelectControl = forwardRef<HTMLInputElement, SelectProps>(function 
             <FloatingFeedback loading>{messages.common.loading}</FloatingFeedback>
           ) : filtered.length ? (
             virtual ? (
-              <div
-                style={{
-                  height: virtualizer.getTotalSize(),
-                  position: 'relative',
-                  minWidth: '100%',
-                }}
-              >
-                {virtualizer.getVirtualItems().map((item) => {
-                  const row = rows[item.index];
-                  if (!row) return null;
-                  return (
-                    <div
-                      key={row.key}
-                      ref={virtualizer.measureElement}
-                      data-index={item.index}
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        transform: `translateY(${item.start}px)`,
-                      }}
-                    >
-                      {row.option ? (
-                        renderOption(row.option, row.index)
-                      ) : (
-                        <div className="leaf-select__group">{row.group}</div>
-                      )}
+              virtualModule ? (
+                <virtualModule.SelectVirtualList
+                  rows={rows}
+                  panelRef={panel}
+                  optionHeight={optionHeight}
+                  listHeight={listHeight}
+                  enabled={open && virtual}
+                  scrollRef={virtualScrollRef}
+                  renderOption={renderOption}
+                />
+              ) : (
+                rows.slice(0, 24).map((row) =>
+                  row.option ? (
+                    renderOption(row.option, row.index)
+                  ) : (
+                    <div key={row.key} className="leaf-select__group">
+                      {row.group}
                     </div>
-                  );
-                })}
-              </div>
+                  ),
+                )
+              )
             ) : (
               rows.map((row) =>
                 row.option ? (

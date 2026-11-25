@@ -10,6 +10,7 @@ import {
 import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
+import { getNumberFormat } from '../shared/intl';
 import { motionDuration, useMotionEnabled } from '../shared/motion';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
@@ -88,7 +89,7 @@ export function StatisticControl({
   const digits = precision === undefined ? undefined : Math.max(0, Math.min(20, precision));
   const numberFormat = useMemo(
     () =>
-      new Intl.NumberFormat(locale, {
+      getNumberFormat(locale, {
         minimumFractionDigits: digits,
         maximumFractionDigits: digits ?? 6,
         useGrouping: grouping,

@@ -207,7 +207,7 @@ API 生成器读取 TypeScript 声明，保留文档中的说明和默认值，�
 
 颜色专项检查与同步范围见 [颜色系统规范](../../COLOR-SYSTEM.md#自动约束与验收)。[COLOR-AUDIT.md](COLOR-AUDIT.md) 是生成报告，不是颜色规则或允许新增债务的依据。
 
-验证范围、命令、兼容矩阵与体积要求见 [QUALITY.md 的当前规则](QUALITY.md#当前验收规则)。新增子路径时维护 package.json、样式依赖图与 verify-package.mjs。独立样式入口 `<component>/style.css` 包含公共 tokens 和视觉依赖，禁止无关组件整库混入。build-component-styles.mjs 同时输出 ESM / CommonJS 样式。
+验证范围、命令、兼容矩阵与体积要求见 [QUALITY.md 的当前规则](QUALITY.md#当前验收规则)。新增子路径时维护 package.json、样式依赖图与 verify-package.mjs。独立样式入口 `<component>/style.css` 包含公共 tokens 和视觉依赖，禁止无关组件整库混入。共享样式输出至 `dist/esm/styles`，ESM 与 CommonJS 浏览器入口共用同一份 CSS 切片。
 
 ## 设计资源与验收支持
 

@@ -417,7 +417,7 @@
     &__resize {
       display: block;
       position: absolute;
-      inset-block: 6px;
+      inset-block: 0;
       inset-inline-end: 0;
       width: 8px;
       height: auto;
@@ -429,13 +429,16 @@
       cursor: col-resize;
       touch-action: none;
       user-select: none;
+      // 静止态完全透明，仅在悬停/聚焦/拖拽时复用并高亮列头右侧分割线位置，不绘制第二条指示线。
       &::after {
         position: absolute;
-        inset-block: 2px;
-        inset-inline-end: 3px;
+        inset-block-start: 50%;
+        inset-inline-end: 0;
         width: 2px;
+        height: 1.6em;
         border-radius: 1px;
-        background: var(--leaf-color-border);
+        background: transparent;
+        transform: translateY(-50%);
         content: '';
         transition: var(--leaf-action-transition);
       }
@@ -447,6 +450,12 @@
       &:focus-visible {
         @include focus-ring;
       }
+    }
+
+    &--bordered &__resize::after {
+      inset-block: 0;
+      height: auto;
+      transform: none;
     }
 
     &__spacer > td {
@@ -561,8 +570,10 @@
       outline: 1px solid Highlight;
       outline-offset: -2px;
     }
-    .leaf-table__resize::after {
-      background: ButtonText;
+    .leaf-table__resize:hover::after,
+    .leaf-table__resize:focus-visible::after,
+    .leaf-table__resize[data-resizing]::after {
+      background: Highlight;
     }
   }
 }

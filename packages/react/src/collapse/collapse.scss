@@ -2,10 +2,10 @@
 
 @layer leaf-ui {
   .leaf-collapse {
-    @include mixins.control-size(collapse, $with-radius: false);
+    @include mixins.control-size(collapse);
     min-width: 0;
     overflow: clip;
-    border-radius: var(--leaf-component-collapse-radius, var(--leaf-radius-md));
+    border-radius: var(--leaf-component-collapse-radius, var(--leaf-current-radius));
     color: var(--leaf-component-collapse-color, var(--leaf-color-text));
     background: var(--leaf-component-collapse-background, var(--leaf-color-surface));
     font: var(--leaf-component-collapse-font-size, var(--leaf-current-font-size)) /
@@ -48,7 +48,8 @@
       box-sizing: border-box;
       padding: var(
         --leaf-component-collapse-padding,
-        var(--leaf-collapse-padding-block, var(--leaf-density-option-padding)) 12px
+        var(--leaf-collapse-padding-block, var(--leaf-density-row-padding))
+          var(--leaf-collapse-padding-inline, 16px)
       );
       border: 0;
       border-radius: inherit;
@@ -79,7 +80,7 @@
       }
     }
     &__extra {
-      margin-inline-end: 16px;
+      margin-inline-end: var(--leaf-collapse-padding-inline, 16px);
     }
     &__item[data-open='true'] &__trigger > svg {
       transform: rotate(90deg);
@@ -101,7 +102,9 @@
       overflow: hidden;
     }
     &__body {
-      padding: 6px 12px 12px 38px;
+      padding: 4px var(--leaf-collapse-padding-inline, 16px)
+        var(--leaf-collapse-padding-inline, 16px)
+        calc(var(--leaf-collapse-padding-inline, 16px) + 26px);
       color: var(--leaf-color-text-muted);
       transform: translateY(-5px);
       transition: transform var(--leaf-motion-slow) var(--leaf-motion-easing);
@@ -115,12 +118,15 @@
   }
 
   .leaf-collapse {
-    --leaf-collapse-padding-block: var(--leaf-density-option-padding);
+    --leaf-collapse-padding-block: var(--leaf-density-row-padding);
+    --leaf-collapse-padding-inline: 16px;
   }
   .leaf-collapse--sm {
-    --leaf-collapse-padding-block: max(2px, calc(var(--leaf-density-option-padding) - 3px));
+    --leaf-collapse-padding-block: max(6px, calc(var(--leaf-density-row-padding) - 4px));
+    --leaf-collapse-padding-inline: 12px;
   }
   .leaf-collapse--lg {
-    --leaf-collapse-padding-block: calc(var(--leaf-density-option-padding) + 2px);
+    --leaf-collapse-padding-block: calc(var(--leaf-density-row-padding) + 4px);
+    --leaf-collapse-padding-inline: 20px;
   }
 }

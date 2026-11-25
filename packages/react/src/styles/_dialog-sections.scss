@@ -161,7 +161,7 @@
     }
   }
   &[data-body-padding] > &__body {
-    &:not(.leaf-#{$component}__header ~ &) {
+    &:not(.leaf-#{$component}__header ~ &):not(.leaf-dialog-tabs ~ &) {
       margin-block-start: calc(-1 * var(--leaf-dialog-padding-block));
       border-start-start-radius: inherit;
       border-start-end-radius: inherit;
@@ -257,5 +257,82 @@
   @media (max-width: 480px) {
     --leaf-dialog-heading-gap: var(--leaf-component-#{$component}-gap, 12px);
     --leaf-dialog-icon-size: var(--leaf-control-height);
+  }
+}
+
+@layer leaf-ui {
+  .leaf-dialog-tabs {
+    flex-shrink: 0;
+    margin-inline: calc(-1 * var(--leaf-dialog-padding-start))
+      calc(-1 * var(--leaf-dialog-padding-end));
+    border-start-start-radius: inherit;
+    border-start-end-radius: inherit;
+    &:not(&--headed) {
+      margin-block-start: calc(-1 * var(--leaf-dialog-padding-block));
+    }
+    &--headed {
+      margin-block-start: calc(-1 * var(--leaf-dialog-gap));
+      border-start-start-radius: 0;
+      border-start-end-radius: 0;
+    }
+    > .leaf-tabs__header {
+      padding-inline: var(--leaf-dialog-padding-start) var(--leaf-dialog-padding-end);
+      border-start-start-radius: inherit;
+      border-start-end-radius: inherit;
+    }
+    // 内嵌线形标签栏始终保留贯穿全宽的底部分割线，即使 divided={false} 也与 Card 内嵌标签一致。
+    &.leaf-tabs--line > .leaf-tabs__header {
+      @include mixins.line-header-divider(var(--leaf-dialog-divider));
+    }
+  }
+  .leaf-dialog-tab-extra {
+    display: flex;
+    align-items: center;
+    gap: var(--leaf-spacing-sm);
+  }
+  .leaf-dialog-panels {
+    > .leaf-tabs__panel {
+      padding-block: 0;
+    }
+    &:has(> .leaf-tabs__panel:not([hidden])) + * {
+      margin-block-start: var(--leaf-dialog-gap);
+    }
+  }
+}
+
+@mixin tabs($component) {
+  // 标题区下方衔接内嵌标签栏时，移除标题底线并收紧下边距，使标题与标签栏作为连续头部衔接。
+  &--tabbed > &__header:not(.leaf-#{$component}__header--compact) {
+    border-block-end: 0;
+  }
+  &--tabbed:not([data-header-padding]) > &__header:not(.leaf-#{$component}__header--compact) {
+    padding-block-end: var(--leaf-spacing-xs);
+  }
+  &--tabbed#{&}--divided:not(&--mini) > &__header:not(.leaf-#{$component}__header--compact) {
+    border-block-end: 0;
+  }
+  &--tabbed#{&}--divided:not(&--mini):not([data-header-padding])
+    > &__header:not(.leaf-#{$component}__header--compact),
+  &--tabbed[data-header-surface]:not([data-header-padding]) > &__header {
+    padding-block-end: var(--leaf-spacing-xs);
+  }
+  // 无标题时标签栏直接位于顶部，关闭按钮自动对齐标签栏垂直中心，并在标签栏末端预留避让距离。
+  &--tabbed:not(&--headed) {
+    --leaf-dialog-tab-header-height: calc(var(--leaf-font-size) + 8px + 24px);
+    --leaf-dialog-close-block: calc(
+      (var(--leaf-dialog-tab-header-height) - var(--leaf-line-height-lg)) / 2
+    );
+    &[data-tabs-size='sm'] {
+      --leaf-dialog-tab-header-height: calc(var(--leaf-font-size) + 8px + 16px);
+    }
+    &[data-tabs-size='lg'] {
+      --leaf-dialog-tab-header-height: calc(var(--leaf-font-size-lg) + 8px + 32px);
+    }
+  }
+  &--tabbed#{&}--closable:not(&--headed) > .leaf-dialog-tabs > .leaf-tabs__header {
+    padding-inline-end: calc(var(--leaf-dialog-padding-end) + var(--leaf-dialog-close-clearance));
+  }
+  > .leaf-dialog-tabs > .leaf-tabs__header {
+    background: var(--leaf-component-#{$component}-header-background, transparent);
   }
 }

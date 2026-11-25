@@ -586,6 +586,27 @@ const foundationCss = await readFile(
 assert.match(foundationCss, /--leaf-control-height:\s*32px/);
 assert.match(foundationCss, /--leaf-font-size:\s*14px/);
 assert.match(foundationCss, /@layer\s+leaf-ui\b/);
+assert.match(
+  foundationCss,
+  /@layer\s+leaf-ui\.tokens\s*,\s*leaf-ui\.primitives\s*,\s*leaf-ui\.floating\s*;/,
+);
+assert.match(foundationCss, /@layer\s+leaf-ui\.tokens\b/);
+assert.match(foundationCss, /@layer\s+leaf-ui\.floating\b/);
+const buttonStandaloneCss = await readFile(
+  new URL(manifest.exports['./button/style.css'], packageRoot),
+  'utf8',
+);
+assert.match(
+  buttonStandaloneCss,
+  /@layer\s+leaf-ui\.tokens\s*,\s*leaf-ui\.primitives\s*,\s*leaf-ui\.floating\s*;/,
+);
+assert.match(buttonStandaloneCss, /@layer\s+leaf-ui\.floating\s*\{\s*\.leaf-floating\b/);
+const tooltipComponentCss = await readFile(
+  new URL('dist/esm/styles/components/tooltip.css', packageRoot),
+  'utf8',
+);
+assert.match(tooltipComponentCss, /@layer\s+leaf-ui\s*\{/);
+assert.doesNotMatch(tooltipComponentCss, /@layer\s+leaf-ui\./);
 for (const fileName of await readdir(new URL('dist/esm/styles/components/', packageRoot))) {
   if (!fileName.endsWith('.css')) continue;
   const componentCss = await readFile(

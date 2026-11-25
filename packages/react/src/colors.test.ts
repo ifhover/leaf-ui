@@ -1,4 +1,3 @@
-import { readability, TinyColor } from '@ctrl/tinycolor';
 import { describe, expect, it } from 'vitest';
 import { colorRecipes } from './color-recipes';
 import { colorScaleSteps, generateColorScale } from './color-scale';
@@ -12,7 +11,10 @@ import {
   resolveColorRoles,
   semanticColorFamilies,
 } from './colors';
+import { colorReadability, isValidColor, parseColor, relativeLuminance } from './shared/color';
 import { leafThemeVariables, mergeLeafTheme } from './theme';
+
+const readability = colorReadability;
 
 const semanticSeeds = {
   primary: '#007aff',
@@ -138,7 +140,7 @@ describe('theme color derivation', () => {
     for (const mode of ['light', 'dark'] as const) {
       const values = deriveColors(mode);
       for (const key of Object.keys(colorRecipes))
-        expect(new TinyColor(values[key as keyof typeof values]).isValid, key).toBe(true);
+        expect(isValidColor(values[key as keyof typeof values] ?? ''), key).toBe(true);
     }
   });
   it('keeps warning accents separate from soft ink and uses configurable white solid labels', () => {
@@ -200,8 +202,8 @@ describe('theme color derivation', () => {
         const [direction, amount] = step.split('-');
         const target = direction === 'light' ? '#ffffff' : '#000000';
         expect(shades[step]).toBe(mixColors(seed, target, 100 - Number(amount) * 10));
-        const lightness = new TinyColor(shades[step]).getLuminance();
-        const original = new TinyColor(seed).getLuminance();
+        const lightness = relativeLuminance(parseColor(shades[step]) ?? { r: 0, g: 0, b: 0, a: 1 });
+        const original = relativeLuminance(parseColor(seed) ?? { r: 0, g: 0, b: 0, a: 1 });
         if (direction === 'light') expect(lightness).toBeGreaterThanOrEqual(original);
         else expect(lightness).toBeLessThanOrEqual(original);
       }
@@ -239,10 +241,18 @@ describe('theme color derivation', () => {
       const defaults = leafThemeVariables({ appearance });
       const tinted = leafThemeVariables({ appearance, tokens: { neutralColor: '#6c737e' } });
       for (const role of ['text-muted', 'surface-muted', 'border', 'divider'] as const) {
-        const { r, g, b } = new TinyColor(String(defaults[`--leaf-color-${role}`])).toRgb();
+        const { r, g, b } = parseColor(String(defaults[`--leaf-color-${role}`])) ?? {
+          r: 0,
+          g: 0,
+          b: 0,
+        };
         expect(r, `${appearance} ${role}`).toBe(g);
         expect(g, `${appearance} ${role}`).toBe(b);
-        const explicit = new TinyColor(String(tinted[`--leaf-color-${role}`])).toRgb();
+        const explicit = parseColor(String(tinted[`--leaf-color-${role}`])) ?? {
+          r: 0,
+          g: 0,
+          b: 0,
+        };
         expect(explicit.b).toBeGreaterThan(explicit.g);
         expect(explicit.g).toBeGreaterThan(explicit.r);
       }
@@ -462,7 +472,10 @@ describe('theme color derivation', () => {
     expect(light['--leaf-color-primary-soft-hover']).toBe(neutralColorScale[200]);
     expect(light['--leaf-color-primary-border']).toBe(neutralColorScale[300]);
     expect(
-      readability(light['--leaf-color-on-primary'] ?? '', light['--leaf-color-primary'] ?? ''),
+      readability(
+        String(light['--leaf-color-on-primary'] ?? ''),
+        String(light['--leaf-color-primary'] ?? ''),
+      ),
     ).toBeGreaterThanOrEqual(4.5);
 
     const dark = leafThemeVariables({ appearance: 'dark', primaryColor: 'neutral' });
@@ -475,7 +488,10 @@ describe('theme color derivation', () => {
       mixColors(neutralColorScale[100], 'transparent', 20),
     );
     expect(
-      readability(dark['--leaf-color-on-primary'] ?? '', dark['--leaf-color-primary'] ?? ''),
+      readability(
+        String(dark['--leaf-color-on-primary'] ?? ''),
+        String(dark['--leaf-color-primary'] ?? ''),
+      ),
     ).toBeGreaterThanOrEqual(4.5);
 
     const customOnPrimary = leafThemeVariables({
@@ -496,9 +512,9 @@ describe('theme color derivation', () => {
         for (const family of ['primary', 'danger'] as const) {
           const active = values[`--leaf-color-${family}-active`];
           expect(active).toBe(mixColors(seed, '#000000', 90));
-          expect(new TinyColor(active).getLuminance()).toBeLessThanOrEqual(
-            new TinyColor(seed).getLuminance(),
-          );
+          expect(
+            relativeLuminance(parseColor(active ?? '') ?? { r: 0, g: 0, b: 0, a: 1 }),
+          ).toBeLessThanOrEqual(relativeLuminance(parseColor(seed) ?? { r: 0, g: 0, b: 0, a: 1 }));
         }
       }
     }

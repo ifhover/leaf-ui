@@ -1,3 +1,5 @@
+import { getDateTimeFormat } from './intl';
+
 export function dateKey(date: Date) {
   const year = String(date.getFullYear()).padStart(4, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -28,7 +30,7 @@ export function shiftMonth(date: Date, amount: number) {
 }
 
 export function formatDateLabel(date: Date, locale = 'zh-CN') {
-  return new Intl.DateTimeFormat(locale, {
+  return getDateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -36,7 +38,7 @@ export function formatDateLabel(date: Date, locale = 'zh-CN') {
 }
 
 export function formatMonthLabel(date: Date, locale = 'zh-CN') {
-  return new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long' }).format(date);
+  return getDateTimeFormat(locale, { year: 'numeric', month: 'long' }).format(date);
 }
 
 export function isBeforeDay(left: Date, right: Date) {

@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useLeafConfig } from '../config-provider/context';
 import type { LeafThemeStyle } from '../theme';
 import { composedParent, inheritedAttribute } from './dom';
-import { readThemeVariables } from './theme-variables';
+import { readThemeVariables, shallowEqualThemeStyle } from './theme-variables';
 
 /** Transfer inherited variables into a portal without moving the React context. */
 export function ScopedPortal({
@@ -23,13 +23,28 @@ export function ScopedPortal({
       // Read the owning element; hidden markers can omit inherited custom
       // properties from computed-style enumeration in Firefox.
       const source = composedParent(node) ?? node;
-      setPortalState({
-        style: readThemeVariables(source),
-        theme: inheritedAttribute(source, 'data-leaf-theme'),
-      });
+      const nextStyle = readThemeVariables(source);
+      const nextTheme = inheritedAttribute(source, 'data-leaf-theme');
+      setPortalState((previous) =>
+        previous &&
+        previous.theme === nextTheme &&
+        shallowEqualThemeStyle(previous.style, nextStyle)
+          ? previous
+          : { style: nextStyle, theme: nextTheme },
+      );
     };
     sync();
-    const observer = new MutationObserver(sync);
+    let disposed = false;
+    let syncQueued = false;
+    const scheduleSync = () => {
+      if (syncQueued || disposed) return;
+      syncQueued = true;
+      queueMicrotask(() => {
+        syncQueued = false;
+        if (!disposed) sync();
+      });
+    };
+    const observer = new MutationObserver(scheduleSync);
     let parent: HTMLElement | null = node;
     while (parent) {
       observer.observe(parent, {
@@ -45,7 +60,10 @@ export function ScopedPortal({
       });
       parent = composedParent(parent);
     }
-    return () => observer.disconnect();
+    return () => {
+      disposed = true;
+      observer.disconnect();
+    };
   }, []);
   const portalTheme = config.theme.appearance ?? portalState?.theme;
   return (

@@ -1,6 +1,7 @@
+@use '../styles/layers';
 @use '../styles/mixins' as mixins;
 
-@layer leaf-ui {
+@layer leaf-ui.primitives {
   .leaf-scrollbar {
     display: flex;
     flex-direction: column;

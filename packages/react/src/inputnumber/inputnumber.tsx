@@ -11,6 +11,7 @@ import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { useFieldValue, useMergedRef } from '../shared/field';
+import { getNumberFormat } from '../shared/intl';
 import type { ControlSize, ControlStatus } from '../shared/types';
 import { InputNumberFrame } from './frame';
 import { ExactInputNumber, type StringInputNumberProps } from './string';
@@ -91,7 +92,7 @@ const NumericInputNumber = forwardRef<HTMLInputElement, NumericInputNumberProps>
   ) {
     const field = useFormField();
     const { messages, locale } = useLeafConfig();
-    const symbols = new Intl.NumberFormat(numberLocale ?? locale).formatToParts(10000.1);
+    const symbols = getNumberFormat(numberLocale ?? locale).formatToParts(10000.1);
     const group = symbols.find((part) => part.type === 'group')?.value ?? ',';
     const decimal = symbols.find((part) => part.type === 'decimal')?.value ?? '.';
     const parseInput = useCallback(
@@ -117,7 +118,7 @@ const NumericInputNumber = forwardRef<HTMLInputElement, NumericInputNumberProps>
         formatter
           ? formatter(number, { userTyping: false, input: '' })
           : grouping && number !== null
-            ? new Intl.NumberFormat(numberLocale ?? locale, {
+            ? getNumberFormat(numberLocale ?? locale, {
                 minimumFractionDigits: digits,
                 maximumFractionDigits: digits ?? 15,
               }).format(number)

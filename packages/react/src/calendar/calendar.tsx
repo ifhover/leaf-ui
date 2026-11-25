@@ -5,6 +5,7 @@ import {
   type ReactNode,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -12,6 +13,7 @@ import { useComponentProps } from '../config-provider/component-defaults';
 import { useLeafConfig } from '../config-provider/context';
 import { classes } from '../shared/classes';
 import { calendarDays, dateKey, sameDate } from '../shared/date';
+import { getDateTimeFormat } from '../shared/intl';
 import { useContentTransition } from '../shared/presence';
 
 export interface CalendarProps
@@ -154,13 +156,19 @@ export function Calendar(rawProps: CalendarProps) {
   const withActiveDay = (month: Date) =>
     new Date(month.getFullYear(), month.getMonth(), Math.min(active.getDate(), daysInMonth(month)));
 
-  const days = calendarDays(visible, weekStartsOn);
-  const weeks = Array.from({ length: days.length / 7 }, (_, row) =>
-    days.slice(row * 7, row * 7 + 7),
+  const visibleYear = visible.getFullYear();
+  const visibleMonth = visible.getMonth();
+  const days = useMemo(
+    () => calendarDays(new Date(visibleYear, visibleMonth, 1), weekStartsOn),
+    [visibleYear, visibleMonth, weekStartsOn],
   );
-  const months = Array.from(
-    { length: 12 },
-    (_, index) => new Date(visible.getFullYear(), index, 1),
+  const weeks = useMemo(
+    () => Array.from({ length: days.length / 7 }, (_, row) => days.slice(row * 7, row * 7 + 7)),
+    [days],
+  );
+  const months = useMemo(
+    () => Array.from({ length: 12 }, (_, index) => new Date(visibleYear, index, 1)),
+    [visibleYear],
   );
   const candidates = [active, selected, today].filter((date): date is Date => Boolean(date));
   const activeDay =
@@ -285,34 +293,36 @@ export function Calendar(rawProps: CalendarProps) {
     focusRequested.current = true;
   };
 
-  const dayFormat = new Intl.DateTimeFormat(locale, {
+  const dayFormat = getDateTimeFormat(locale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
-  const monthDayFormat = new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' });
-  const monthFormat = new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'long' });
-  const monthNameFormat = new Intl.DateTimeFormat(locale, { month: fullscreen ? 'long' : 'short' });
-  const weekdayLong = new Intl.DateTimeFormat(locale, { weekday: 'long' });
-  const weekdayShort = new Intl.DateTimeFormat(locale, { weekday: 'short' });
-  const weekdayNarrow = new Intl.DateTimeFormat(locale, { weekday: 'narrow' });
-  // 2024-01-07 is a Sunday, so adding a JS weekday index yields that weekday.
-  const weekdays = Array.from({ length: 7 }, (_, index) => {
-    const weekday = (weekStartsOn + index) % 7;
-    const date = new Date(2024, 0, 7 + weekday);
-    return {
-      key: weekday,
-      long: weekdayLong.format(date),
-      short: fullscreen
-        ? weekdayShort.format(date)
-        : (messages.calendar.weekdays[(weekday + 6) % 7] ?? weekdayShort.format(date)),
-      narrow: weekdayNarrow.format(date),
-    };
-  });
+  const monthDayFormat = getDateTimeFormat(locale, { month: 'short', day: 'numeric' });
+  const monthFormat = getDateTimeFormat(locale, { year: 'numeric', month: 'long' });
+  const monthNameFormat = getDateTimeFormat(locale, { month: fullscreen ? 'long' : 'short' });
+  const weekdays = useMemo(() => {
+    const weekdayLong = getDateTimeFormat(locale, { weekday: 'long' });
+    const weekdayShort = getDateTimeFormat(locale, { weekday: 'short' });
+    const weekdayNarrow = getDateTimeFormat(locale, { weekday: 'narrow' });
+    // 2024-01-07 为周日，按偏移量即可生成一周七天展示文本。
+    return Array.from({ length: 7 }, (_, index) => {
+      const weekday = (weekStartsOn + index) % 7;
+      const date = new Date(2024, 0, 7 + weekday);
+      return {
+        key: weekday,
+        long: weekdayLong.format(date),
+        short: fullscreen
+          ? weekdayShort.format(date)
+          : (messages.calendar.weekdays[(weekday + 6) % 7] ?? weekdayShort.format(date)),
+        narrow: weekdayNarrow.format(date),
+      };
+    });
+  }, [locale, weekStartsOn, fullscreen, messages.calendar.weekdays]);
 
   // Emphasize the month in "October 2026" / "2026年10月" without hard-coding locale order.
-  const titleParts = new Intl.DateTimeFormat(
+  const titleParts = getDateTimeFormat(
     locale,
     view === 'days' ? { year: 'numeric', month: 'long' } : { year: 'numeric' },
   ).formatToParts(visible);

@@ -35,7 +35,7 @@ import { assignRef } from './field';
 import { inertProps } from './inert';
 import { OverlayOwner } from './overlay-owner';
 import { usePresence } from './presence';
-import { readThemeVariables } from './theme-variables';
+import { readThemeVariables, shallowEqualThemeStyle } from './theme-variables';
 
 const useBrowserLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 const PopupParent = createContext<string | undefined>(undefined);
@@ -210,25 +210,8 @@ export function FloatingPanel({
   const referenceElement = triggerRef.current;
   const hasArrow = arrow ?? (props as { 'data-arrow'?: unknown })['data-arrow'] === 'true';
   const arrowMiddleware = useMemo(() => createArrowMiddleware(hasArrow), [hasArrow]);
-  if (open) closingContent.current = children;
-  const {
-    refs,
-    floatingStyles,
-    isPositioned,
-    update,
-    placement: resolvedPlacement,
-    middlewareData,
-  } = useFloating({
-    open,
-    placement,
-    strategy: 'fixed',
-    // Keep viewport positioning outside the popup's local scale/translate motion.
-    transform: false,
-    whileElementsMounted: (reference, floating, update) =>
-      autoUpdate(reference, floating, () => {
-        if (openRef.current) update();
-      }),
-    middleware: [
+  const middleware = useMemo(
+    () => [
       offset(popupOffset, [popupOffset]),
       flip({ padding: 12, fallbackAxisSideDirection: sideFallback ? 'end' : 'none' }),
       shift({ padding: 12 }),
@@ -277,6 +260,40 @@ export function FloatingPanel({
       ),
       arrowMiddleware,
     ],
+    [
+      popupOffset,
+      sideFallback,
+      matchWidth,
+      width,
+      minWidth,
+      maxWidth,
+      maxHeight,
+      style?.width,
+      style?.minWidth,
+      style?.maxWidth,
+      style?.maxHeight,
+      arrowMiddleware,
+    ],
+  );
+  if (open) closingContent.current = children;
+  const {
+    refs,
+    floatingStyles,
+    isPositioned,
+    update,
+    placement: resolvedPlacement,
+    middlewareData,
+  } = useFloating({
+    open,
+    placement,
+    strategy: 'fixed',
+    // Keep viewport positioning outside the popup's local scale/translate motion.
+    transform: false,
+    whileElementsMounted: (reference, floating, update) =>
+      autoUpdate(reference, floating, () => {
+        if (openRef.current) update();
+      }),
+    middleware,
   });
   const arrowData = middlewareData.leafArrow as { x?: number; y?: number } | undefined;
   const arrowStyle: LeafThemeStyle = {};
@@ -339,10 +356,20 @@ export function FloatingPanel({
           }
         }
       }
-      setTheme(variables);
+      setTheme((previous) => (shallowEqualThemeStyle(previous, variables) ? previous : variables));
     };
     syncTheme();
-    const observer = new MutationObserver(syncTheme);
+    let disposed = false;
+    let syncQueued = false;
+    const scheduleSync = () => {
+      if (syncQueued || disposed) return;
+      syncQueued = true;
+      queueMicrotask(() => {
+        syncQueued = false;
+        if (!disposed) syncTheme();
+      });
+    };
+    const observer = new MutationObserver(scheduleSync);
     let ancestor: HTMLElement | null = trigger;
     while (ancestor) {
       observer.observe(ancestor, {
@@ -351,7 +378,10 @@ export function FloatingPanel({
       });
       ancestor = composedParent(ancestor);
     }
-    return () => observer.disconnect();
+    return () => {
+      disposed = true;
+      observer.disconnect();
+    };
   }, [triggerRef, referenceElement, refs.setReference, present, position, resetSurfaceGeometry]);
 
   useBrowserLayoutEffect(() => {

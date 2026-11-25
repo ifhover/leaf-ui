@@ -1,9 +1,12 @@
 import enUS from './en-US.json';
 import jaJP from './ja-JP.json';
 import koKR from './ko-KR.json';
+import { getMessage } from './lookup';
 import type { LeafTranslations, LocaleMessages, TranslationKey } from './types';
 import zhCN from './zh-CN.json';
 import zhTW from './zh-TW.json';
+
+export { getMessage };
 
 const builtins: Readonly<Record<string, LocaleMessages>> = {
   'en-US': enUS,
@@ -85,13 +88,13 @@ export function resolveTranslations(
     result[group] = entries;
   }
   // Every group and entry above comes from the complete English template.
-  return { messages: result as unknown as LocaleMessages, messageLocales };
+  return {
+    messages: result as unknown as LocaleMessages,
+    messageLocales,
+    fallbackMessages: enUS as LocaleMessages,
+  };
 }
 
-export function getMessage(messages: LocaleMessages, key: TranslationKey): string {
-  const [group, name] = key.split('.') as [Group, string];
-  return (messages[group] as Record<string, string>)[name] as string;
-}
 export function getEnglishMessage(key: TranslationKey) {
   return getMessage(enUS, key);
 }

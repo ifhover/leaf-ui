@@ -7,6 +7,19 @@ footer: false
 
 记录每个 npm 版本的新增功能、体验改进与问题修复。
 
+## 0.23.0 - 2026-11-26
+
+### 新增功能
+
+- **Modal 与 Drawer 内嵌标签页**：支持通过 `tabs`（`ModalTabsProps` / `DrawerTabsProps`）在弹窗与抽屉顶部集成 `line` 标签页；有标题时位于标题下方，无标题时替代标题栏（`Drawer` 无标题时将 `extra` 移至标签栏右侧），默认保留已访问标签页内容状态，并同步补充中英文示例与 API 文档。
+
+### 改进与修复
+
+- **Collapse 与 Table 交互细节调整**：`Collapse` 调整标题行内边距以适当增加头部高度，并缩小容器基础圆角尺寸；`Table` 列宽拖拽直接复用列头原有右侧分割线，静止态不再绘制额外指示线，仅在悬停、聚焦或拖拽时高亮主色。
+- **CSS 级联子层隔离**：拆分 `@layer leaf-ui.tokens, leaf-ui.primitives, leaf-ui.floating` 级联子层，修复基础控件与浮层样式之间的覆盖优先级冲突，同时保持外部未分层样式正常覆盖。
+- **产物体积与依赖优化**：使用轻量内置 ICU 格式化器与色彩工具替代 `intl-messageformat` 和 `@ctrl/tinycolor` 直接依赖，将 `@dnd-kit/*` 与 `@tanstack/react-virtual` 改为启用排序或虚拟滚动时按需懒加载，移除未使用的 CJS 样式副本并开启发布 CSS 压缩。
+- **运行时性能优化**：`Scrollbar` 滚动改为 DOM ref 直写并跳过 `scrollbar="hidden"` 的观察监听；`FloatingPanel` 与 `ScopedPortal` 祖先变量监听增加微任务合并与浅比对；`Tree` 缓存节点集合并单次遍历构建兄弟元数据；`Table` 增加行级 `React.memo` 隔离、列宽拖拽 `rAF` 节流与滚动/尺寸监听拆分；共享有界 `Intl` 缓存、单例 `matchMedia` 动效订阅、`useListMotion` 样式读取降频、主题/色板缓存与 `Tabs` O(1) 溢出检测。
+
 ## 0.22.0 - 2026-11-25
 
 ### 改进与修复

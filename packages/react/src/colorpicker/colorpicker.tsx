@@ -1,4 +1,3 @@
-import { TinyColor } from '@ctrl/tinycolor';
 import { Check } from 'lucide-react';
 import {
   type ButtonHTMLAttributes,
@@ -20,6 +19,17 @@ import { FieldScope, useFormField } from '../form/form';
 import { InputControl as Input } from '../input/input';
 import { classes } from '../shared/classes';
 import { ClearButton } from '../shared/clear-button';
+import {
+  hsvToRgba,
+  isLightColor,
+  parseColor,
+  type RgbaColor,
+  rgbaToHex,
+  rgbaToHex8,
+  rgbaToHslString,
+  rgbaToHsv,
+  rgbaToRgbString,
+} from '../shared/color';
 import { FormValue, useFieldValue } from '../shared/field';
 import {
   FloatingPanel,
@@ -128,27 +138,30 @@ export function SolidColorPicker({
     defaultOpen,
   );
   const id = `${useId()}-color`;
-  const color = new TinyColor(current || defaultColors.light.primary);
-  const hsv = color.isValid ? color.toHsv() : new TinyColor(defaultColors.light.primary).toHsv();
+  const fallbackRgba = parseColor(defaultColors.light.primary) ?? { r: 0, g: 122, b: 255, a: 1 };
+  const color = parseColor(current || defaultColors.light.primary);
+  const hsv = rgbaToHsv(color ?? fallbackRgba);
   const [rememberedHue, setRememberedHue] = useState(hsv.h);
   const [coordinates, setCoordinates] = useState<{ value: string; hsv: HSV }>();
+  const parsedCoord = coordinates ? parseColor(coordinates.value) : null;
   const activeHsv = {
-    ...(coordinates && new TinyColor(coordinates.value).toHex8String() === color.toHex8String()
+    ...(coordinates && parsedCoord && color && rgbaToHex8(parsedCoord) === rgbaToHex8(color)
       ? coordinates.hsv
       : { ...hsv, h: hsv.s === 0 || hsv.v === 0 ? rememberedHue : hsv.h }),
     a: disableAlpha ? 1 : hsv.a,
   };
-  const serialize = (next: TinyColor) => {
-    const normalized = disableAlpha ? next.setAlpha(1) : next;
+  const serialize = (next: RgbaColor) => {
+    const normalized = disableAlpha ? { ...next, a: 1 } : next;
     return format === 'rgb'
-      ? normalized.toRgbString()
+      ? rgbaToRgbString(normalized)
       : format === 'hsl'
-        ? normalized.toHslString()
-        : normalized.getAlpha() < 1
-          ? normalized.toHex8String()
-          : normalized.toHexString();
+        ? rgbaToHslString(normalized)
+        : normalized.a < 1
+          ? rgbaToHex8(normalized)
+          : rgbaToHex(normalized);
   };
-  const display = current ? serialize(new TinyColor(activeHsv)) : '';
+  const activeRgba = hsvToRgba(activeHsv);
+  const display = current ? serialize(activeRgba) : '';
   const [input, setInput] = useState(display);
   const [invalid, setInvalid] = useState(false);
   const latest = useRef(display);
@@ -165,7 +178,7 @@ export function SolidColorPicker({
   const change = (next: HSV, complete = false) => {
     if (disabled || readOnly) return;
     setRememberedHue(next.h);
-    const result = serialize(new TinyColor(next));
+    const result = serialize(hsvToRgba(next));
     setCoordinates({ value: result, hsv: { ...next, a: disableAlpha ? 1 : next.a } });
     latest.current = result;
     setCurrent(result);
@@ -176,12 +189,12 @@ export function SolidColorPicker({
   };
   const chooseText = () => {
     if (input === display) return;
-    const next = new TinyColor(input);
-    if (!next.isValid) {
+    const next = parseColor(input);
+    if (!next) {
       setInvalid(true);
       return;
     }
-    change(next.toHsv(), true);
+    change(rgbaToHsv(next), true);
   };
   const areaChange = (event: PointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -205,9 +218,10 @@ export function SolidColorPicker({
     event.preventDefault();
     change(next, true);
   };
-  const previewColor = current ? new TinyColor(activeHsv).toRgbString() : 'transparent';
-  const hueColor = new TinyColor({ h: activeHsv.h, s: 1, v: 1 }).toHexString();
-  const opaqueColor = new TinyColor({ ...activeHsv, a: 1 }).toRgbString();
+  const activeHex8 = rgbaToHex8(activeRgba);
+  const previewColor = current ? rgbaToRgbString(activeRgba) : 'transparent';
+  const hueColor = rgbaToHex(hsvToRgba({ h: activeHsv.h, s: 1, v: 1, a: 1 }));
+  const opaqueColor = rgbaToRgbString({ ...activeRgba, a: 1 });
   const clearable = allowClear && Boolean(current) && !disabled && !readOnly;
   return (
     <>
@@ -448,27 +462,26 @@ export function SolidColorPicker({
           <div className="leaf-color-picker__presets" key={index}>
             <div className="leaf-color-picker__preset-label">{group.label}</div>
             <div>
-              {[...new Set(group.colors)].map((preset) => (
-                <button
-                  type="button"
-                  key={preset}
-                  className="leaf-color-picker__preset"
-                  aria-label={preset}
-                  aria-pressed={
-                    new TinyColor(preset).toHex8String() === new TinyColor(activeHsv).toHex8String()
-                  }
-                  style={{
-                    background: preset,
-                    color: new TinyColor(preset).isLight() ? '#203329' : '#fff',
-                  }}
-                  onClick={() => change(new TinyColor(preset).toHsv(), true)}
-                >
-                  {new TinyColor(preset).toHex8String() ===
-                    new TinyColor(activeHsv).toHex8String() && (
-                    <Check size={12} aria-hidden="true" />
-                  )}
-                </button>
-              ))}
+              {[...new Set(group.colors)].map((preset) => {
+                const parsedPreset = parseColor(preset);
+                const selected = parsedPreset !== null && rgbaToHex8(parsedPreset) === activeHex8;
+                return (
+                  <button
+                    type="button"
+                    key={preset}
+                    className="leaf-color-picker__preset"
+                    aria-label={preset}
+                    aria-pressed={selected}
+                    style={{
+                      background: preset,
+                      color: !parsedPreset || isLightColor(parsedPreset) ? '#203329' : '#fff',
+                    }}
+                    onClick={() => parsedPreset && change(rgbaToHsv(parsedPreset), true)}
+                  >
+                    {selected && <Check size={12} aria-hidden="true" />}
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}

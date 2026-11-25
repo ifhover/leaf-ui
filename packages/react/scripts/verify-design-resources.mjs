@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { TinyColor } from '@ctrl/tinycolor';
 import { build } from 'esbuild';
 import { JSDOM } from 'jsdom';
 
@@ -31,7 +30,7 @@ for (const [name, value] of Object.entries({
 const { outputFiles } = await build({
   stdin: {
     contents:
-      "export * from './colors'; export * from './color-shades'; export * from './color-scale';",
+      "export * from './colors'; export * from './color-shades'; export * from './color-scale'; export * from './shared/color';",
     resolveDir: path.join(root, 'packages/react/src'),
   },
   bundle: true,
@@ -43,6 +42,8 @@ const {
   deriveColors,
   generateColorShades,
   neutralColorScale,
+  parseColor,
+  rgbaToHex,
   semanticColorFamilies,
   semanticColorShadeSteps,
 } = await import(
@@ -73,9 +74,13 @@ for (const mode of ['light', 'dark']) {
   assert.equal(Object.keys(tokens[mode].color).length, Object.keys(runtime).length);
   for (const [variable, value] of Object.entries(runtime)) {
     const name = variable.slice('--leaf-color-'.length);
-    const parsed = new TinyColor(value);
-    assert.equal(tokens[mode].color[name].$value.hex, parsed.toHexString(), `${mode} ${name}`);
-    assert.equal(tokens[mode].color[name].$value.alpha, parsed.getAlpha(), `${mode} ${name} alpha`);
+    const parsed = parseColor(value);
+    assert.equal(tokens[mode].color[name].$value.hex, rgbaToHex(parsed), `${mode} ${name}`);
+    assert.equal(
+      tokens[mode].color[name].$value.alpha,
+      Math.round(parsed.a * 100) / 100,
+      `${mode} ${name} alpha`,
+    );
     assert.equal(studio[mode].color[name].value, value, `${mode} ${name} studio`);
   }
   for (const family of expectedFamilies) {

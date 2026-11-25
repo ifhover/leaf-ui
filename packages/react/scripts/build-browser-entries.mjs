@@ -175,23 +175,25 @@ for (const name of [...styled, ...sharedCssEntries.keys()]) {
   const module = sharedCssEntries.get(name) ?? `${name}/${name}`;
   componentCss.set(name, (await compileComponentCss(name, module)).css);
 }
+const sharedStyles = path.join(root, 'dist/esm/styles');
+const componentStyles = path.join(sharedStyles, 'components');
+await mkdir(componentStyles, { recursive: true });
+for (const [name, css] of componentCss)
+  await writeFile(path.join(componentStyles, `${name}.css`), css);
+await writeFile(path.join(sharedStyles, 'foundation.css'), base.css);
+await writeFile(
+  path.join(sharedStyles, 'base.css'),
+  `@import './foundation.css';\n${serviceStyles.map((name) => `@import './components/${name}.css';`).join('\n')}\n`,
+);
 for (const format of ['esm', 'cjs']) {
   const output = path.join(root, 'dist', format);
   const browser = path.join(output, 'browser');
   const modules = path.join(browser, 'modules');
-  const styles = path.join(output, 'styles/components');
   const extension = format === 'esm' ? 'js' : 'cjs';
   const files = (await readdir(output, { recursive: true })).filter(
     (file) => file.endsWith(`.${extension}`) && file.split(path.sep)[0] !== 'browser',
   );
   await mkdir(modules, { recursive: true });
-  await mkdir(styles, { recursive: true });
-  for (const [name, css] of componentCss) await writeFile(path.join(styles, `${name}.css`), css);
-  await writeFile(path.join(output, 'styles/foundation.css'), base.css);
-  await writeFile(
-    path.join(output, 'styles/base.css'),
-    `@import './foundation.css';\n${serviceStyles.map((name) => `@import './components/${name}.css';`).join('\n')}\n`,
-  );
   // CSS belongs to the implementation, not a re-export wrapper. Bundlers may
   // bypass side-effect-free barrels, but keep a used component's own module.
   // Mirror the complete graph so root and subpath imports share contexts and identity.
@@ -225,7 +227,7 @@ for (const format of ['esm', 'cjs']) {
       /^(?:(?:"use (?:client|strict)"|'use (?:client|strict)');\s*)*/,
     )[0];
     const css = owner
-      ? [path.join(output, 'styles/foundation.css'), path.join(styles, `${owner}.css`)]
+      ? [path.join(sharedStyles, 'foundation.css'), path.join(componentStyles, `${owner}.css`)]
       : [];
     const statements = css.map((file) => {
       const relativeCss = path.relative(path.dirname(destination), file).replaceAll(path.sep, '/');

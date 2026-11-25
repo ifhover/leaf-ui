@@ -2,6 +2,7 @@ import { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import { useLeafConfig } from '../config-provider/context';
 import { useFormField } from '../form/form';
 import { useFieldValue, useMergedRef } from '../shared/field';
+import { getNumberFormat } from '../shared/intl';
 import { addDecimal, compareDecimal, decimalParts, roundDecimal } from './decimal';
 import { InputNumberFrame } from './frame';
 import type { NumericInputNumberProps } from './inputnumber';
@@ -58,7 +59,7 @@ export const ExactInputNumber = forwardRef<HTMLInputElement, StringInputNumberPr
     const input = useRef<HTMLInputElement>(null);
     const merged = useMergedRef(input, ref);
     const [current, setCurrent] = useFieldValue(value, defaultValue, input, props.form);
-    const symbols = new Intl.NumberFormat(numberLocale ?? config.locale).formatToParts(10000.1);
+    const symbols = getNumberFormat(numberLocale ?? config.locale).formatToParts(10000.1);
     const group = symbols.find((part) => part.type === 'group')?.value ?? ',';
     const decimal = symbols.find((part) => part.type === 'decimal')?.value ?? '.';
     const format = useCallback(

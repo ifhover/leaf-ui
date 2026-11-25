@@ -47,7 +47,13 @@ export function useMovingIndicator(
       previous.current = active;
     };
     refresh.current = measure;
-    const schedule = () => {
+    const scheduleMeasure = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        measure(false);
+      });
+    };
+    const scheduleSync = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         for (const node of host.querySelectorAll<HTMLElement>('[data-leaf-indicator-item]'))
@@ -55,7 +61,8 @@ export function useMovingIndicator(
         measure(false);
       });
     };
-    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(schedule);
+    const observer =
+      typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(scheduleMeasure);
     observer?.observe(host);
     for (const node of host.querySelectorAll<HTMLElement>('[data-leaf-indicator-item]'))
       observer?.observe(node);
@@ -63,7 +70,9 @@ export function useMovingIndicator(
       typeof MutationObserver === 'undefined'
         ? null
         : new MutationObserver((records) => {
-            if (records.some((record) => record.target !== marker)) schedule();
+            if (!records.some((record) => record.target !== marker)) return;
+            if (records.some((record) => record.type === 'childList')) scheduleSync();
+            else scheduleMeasure();
           });
     mutation?.observe(host, {
       childList: true,
@@ -74,7 +83,7 @@ export function useMovingIndicator(
     });
     // 监听祖先与 ShadowRoot 宿主的 inert/hidden 变化，解除遮蔽后恢复指示条测量
     const ancestorObserver =
-      typeof MutationObserver === 'undefined' ? null : new MutationObserver(schedule);
+      typeof MutationObserver === 'undefined' ? null : new MutationObserver(scheduleMeasure);
     for (
       let current: Node | null = host.parentNode;
       current;
@@ -89,19 +98,19 @@ export function useMovingIndicator(
         });
       }
     }
-    host.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', schedule);
+    host.addEventListener('scroll', scheduleMeasure, { passive: true });
+    window.addEventListener('resize', scheduleMeasure);
     measure(false);
     // Font loading can change intrinsic widths without a viewport resize.
-    document.fonts?.addEventListener('loadingdone', schedule);
+    document.fonts?.addEventListener('loadingdone', scheduleMeasure);
     return () => {
       cancelAnimationFrame(frame);
       observer?.disconnect();
       mutation?.disconnect();
       ancestorObserver?.disconnect();
-      host.removeEventListener('scroll', schedule);
-      window.removeEventListener('resize', schedule);
-      document.fonts?.removeEventListener('loadingdone', schedule);
+      host.removeEventListener('scroll', scheduleMeasure);
+      window.removeEventListener('resize', scheduleMeasure);
+      document.fonts?.removeEventListener('loadingdone', scheduleMeasure);
       refresh.current = () => {};
     };
   }, [container, indicator, selector, enabled]);

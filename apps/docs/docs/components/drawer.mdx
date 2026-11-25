@@ -2,6 +2,7 @@ import { ComponentExample } from '../../src/components/component-example';
 import { DrawerBasic } from '../../src/examples/drawer/basic';
 import { DrawerPlacement } from '../../src/examples/drawer/placement';
 import { DrawerSections } from '../../src/examples/drawer/sections';
+import { DrawerTabs } from '../../src/examples/drawer/tabs';
 import { DrawerResize } from '../../src/examples/drawer/resize';
 import { DrawerNested } from '../../src/examples/drawer/nested';
 
@@ -53,6 +54,17 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 
 </ComponentExample>
 
+### 内嵌标签页
+
+通过 `tabs.items` 在抽屉顶部集成 `line` 标签页，有标题时位于标题下方，无标题时替代标题栏并将 `extra` 移至标签栏右侧。其他标签配置见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。
+
+<ComponentExample exampleId="tabs" preview={<DrawerTabs />} fileName="tabs.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../src/examples/drawer/tabs.tsx"
+```
+
+</ComponentExample>
+
 ### 调整尺寸
 
 <a id="进阶用法"></a>
@@ -94,6 +106,7 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 | `open` | `boolean` | 必填 | 受控的打开状态，应用负责更新。 |
 | `title` | `ReactNode` | — | 抽屉标题。 |
 | `description` | `ReactNode` | — | 补充说明。 |
+| `tabs` | [`DrawerTabsProps`](#drawertabs-api) | — | 内嵌标签页；无标题时替代标题栏并将 extra 移至标签栏右侧，有标题时位于其下方。 |
 | `onClose` | `() => void` | — | 请求关闭，由应用更新 open |
 | `placement` | `'left' \| 'right' \| 'top' \| 'bottom'` | `'right'` | 展开方向 |
 | `width` | `number \| string` | `380` | 左右抽屉宽度 |
@@ -119,3 +132,11 @@ export const leafDoc = { component: 'Drawer', primaryApi: 'DrawerProps' };
 | `preserve` | `boolean` | — | 指定是否保留内容，优先于 destroyOnClose；不重置组件外的受控状态。 |
 | `forceRender` | `boolean` | `false` | 打开前也挂载内容，关闭时保持隐藏。 |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | 指定 Portal 挂载目标，也可返回 ShadowRoot。 |
+
+### DrawerTabs API
+
+内嵌标签页的可用属性见 <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a>（新标签页打开）。Drawer 固定使用 `type="line"` 与 `placement="top"`；无标题时 `extra` 与 `tabs.extra` 一并显示在标签栏右侧，`items` 为空时恢复普通抽屉。
+
+```ts
+type DrawerTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
+```

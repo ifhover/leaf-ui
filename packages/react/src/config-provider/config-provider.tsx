@@ -71,7 +71,11 @@ export function ConfigProvider({
   const text = useMemo(
     () =>
       languages === parent.localeChain && resources === parent.translations
-        ? { messages: parent.messages, messageLocales: parent.messageLocales }
+        ? {
+            messages: parent.messages,
+            messageLocales: parent.messageLocales,
+            fallbackMessages: parent.fallbackMessages,
+          }
         : resolveTranslations(languages, resources),
     [
       languages,
@@ -80,6 +84,7 @@ export function ConfigProvider({
       parent.translations,
       parent.messages,
       parent.messageLocales,
+      parent.fallbackMessages,
     ],
   );
   const merged = useMemo(() => {

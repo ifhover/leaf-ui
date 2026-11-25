@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, it, vi } from 'vitest';
@@ -255,5 +255,153 @@ describe('Drawer', () => {
     const separator = screen.getByRole('separator', { name: 'Resize drawer' });
     expect(separator).toHaveAttribute('aria-orientation', 'vertical');
     expect(separator).toHaveAttribute('aria-valuenow', '360');
+  });
+});
+
+describe('Drawer tabs', () => {
+  const tabItems = [
+    { key: 'details', label: 'Details', children: <input aria-label="Service name" /> },
+    { key: 'billing', label: 'Billing', disabled: true, children: 'Billing details' },
+    { key: 'members', label: 'Members', children: 'Team members' },
+  ];
+
+  it('uses Tabs keyboard navigation, preserves header extra when headed, and retains visited state', async () => {
+    const change = vi.fn();
+    render(
+      <Drawer
+        open
+        title="Workspace"
+        extra={<button type="button">Help</button>}
+        tabs={{ items: tabItems, size: 'lg', onChange: change }}
+      >
+        Shared notes
+      </Drawer>,
+    );
+
+    const dialog = screen.getByRole('dialog', { name: 'Workspace' });
+    expect(dialog).toHaveClass('leaf-drawer--tabbed', 'leaf-drawer--headed');
+    expect(dialog).toHaveAttribute('data-tabs-size', 'lg');
+    expect(dialog.querySelector('.leaf-drawer__header > .leaf-drawer__extra')).toHaveTextContent(
+      'Help',
+    );
+
+    const tablist = screen.getByRole('tablist');
+    expect(tablist).toHaveAccessibleName('Workspace');
+    expect(tablist).toHaveAttribute('aria-labelledby');
+    expect(tablist.closest('.leaf-tabs')).toHaveClass('leaf-tabs--lg', 'leaf-tabs--line');
+
+    const body = dialog.querySelector('.leaf-drawer__body');
+    expect(body).not.toBeNull();
+    expect(body?.contains(tablist)).toBe(false);
+    expect(body?.contains(screen.getByRole('tabpanel', { name: 'Details' }))).toBe(true);
+    expect(within(body as HTMLElement).getByText('Shared notes')).toBeInTheDocument();
+
+    await userEvent.type(screen.getByRole('textbox', { name: 'Service name' }), 'Leaf');
+    screen.getByRole('tab', { name: 'Details' }).focus();
+    await userEvent.keyboard('{ArrowRight}');
+    expect(screen.getByRole('tab', { name: 'Members' })).toHaveFocus();
+    expect(screen.getByRole('tabpanel', { name: 'Members' })).toHaveTextContent('Team members');
+    expect(change).toHaveBeenCalledWith('members');
+
+    await userEvent.keyboard('{Home}');
+    expect(screen.getByRole('textbox', { name: 'Service name' })).toHaveValue('Leaf');
+  });
+
+  it('replaces the header when untitled and moves drawer extra alongside tabs extra while keeping floating close', () => {
+    render(
+      <Drawer
+        open
+        aria-label="Settings"
+        extra={<button type="button">Help</button>}
+        tabs={{
+          extra: <button type="button">Reset</button>,
+          items: [{ key: 'general', label: 'General', children: 'General body' }],
+        }}
+      />,
+    );
+
+    const dialog = screen.getByRole('dialog', { name: 'Settings' });
+    expect(dialog).toHaveClass('leaf-drawer--tabbed', 'leaf-drawer--closable');
+    expect(dialog).not.toHaveClass('leaf-drawer--headed');
+    expect(dialog).toHaveAttribute('data-tabs-size', 'md');
+    expect(dialog.querySelector('.leaf-drawer__header')).toBeNull();
+    expect(dialog.querySelector(':scope > .leaf-drawer__close')).not.toBeNull();
+    expect(dialog.querySelector('.leaf-drawer__tab-extra > .leaf-drawer__close')).toBeNull();
+
+    const tabExtra = dialog.querySelector('.leaf-drawer__tab-extra');
+    expect(tabExtra).not.toBeNull();
+    expect(within(tabExtra as HTMLElement).getByRole('button', { name: 'Reset' })).toBeVisible();
+    expect(within(tabExtra as HTMLElement).getByRole('button', { name: 'Help' })).toBeVisible();
+    expect(screen.getByRole('tablist')).toHaveAccessibleName('Settings');
+  });
+
+  it('supports header-only tabs, closing to empty fallback, bottom swipe handle, and isolates Tabs defaults', async () => {
+    function Example() {
+      const [view, setView] = useState('overview');
+      const [closableTabs, setClosableTabs] = useState([
+        { key: 'draft', label: 'Draft', children: 'Draft body', closable: true },
+      ]);
+      return (
+        <ConfigProvider locale="en-US" components={{ Tabs: { type: 'segmented', size: 'lg' } }}>
+          <Drawer
+            open
+            placement="bottom"
+            aria-label="Bottom tabs"
+            tabs={{
+              activeKey: view,
+              onChange: setView,
+              items: [
+                { key: 'overview', label: 'Overview' },
+                { key: 'history', label: 'History' },
+              ],
+            }}
+          >
+            {view === 'overview' ? 'Overview body' : 'History body'}
+          </Drawer>
+          <Drawer
+            open
+            aria-label="Header-only empty"
+            tabs={{ items: [{ key: 'only', label: 'Only' }] }}
+          />
+          <Drawer
+            open
+            aria-label="Closable drawer"
+            extra={<button type="button">Info</button>}
+            tabs={{
+              items: closableTabs,
+              onClose: (key) => setClosableTabs((list) => list.filter((item) => item.key !== key)),
+            }}
+          >
+            Fallback body
+          </Drawer>
+        </ConfigProvider>
+      );
+    }
+
+    render(<Example />);
+    const bottom = screen.getByRole('dialog', { name: 'Bottom tabs' });
+    expect(bottom).toHaveClass('leaf-drawer--swipeable', 'leaf-drawer--tabbed');
+    expect(bottom.querySelector('[data-swipe-handle]')).not.toBeNull();
+    expect(within(bottom).getByRole('tablist').closest('.leaf-tabs')).toHaveClass(
+      'leaf-tabs--line',
+      'leaf-tabs--md',
+    );
+    expect(bottom.querySelector('.leaf-tabs__panels')).toBeNull();
+    expect(within(bottom).getByText('Overview body').closest('.leaf-drawer__body')).not.toBeNull();
+    await userEvent.click(within(bottom).getByRole('tab', { name: 'History' }));
+    expect(within(bottom).getByText('History body')).toBeInTheDocument();
+
+    const emptyBodyDrawer = screen.getByRole('dialog', { name: 'Header-only empty' });
+    expect(emptyBodyDrawer.querySelector('.leaf-drawer__body')).toBeNull();
+
+    const closableDrawer = screen.getByRole('dialog', { name: 'Closable drawer' });
+    await userEvent.click(within(closableDrawer).getByRole('button', { name: 'Close tab Draft' }));
+    expect(within(closableDrawer).queryByRole('tablist')).toBeNull();
+    expect(closableDrawer).not.toHaveClass('leaf-drawer--tabbed');
+    expect(closableDrawer).not.toHaveAttribute('data-tabs-size');
+    expect(
+      closableDrawer.querySelector('.leaf-drawer__header--compact > .leaf-drawer__extra'),
+    ).toHaveTextContent('Info');
+    expect(within(closableDrawer).getByText('Fallback body')).toBeInTheDocument();
   });
 });

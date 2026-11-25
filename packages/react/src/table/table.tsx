@@ -1,11 +1,11 @@
-import { defaultRangeExtractor, useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   Fragment,
+  memo,
   type MouseEvent as ReactMouseEvent,
   type ReactNode,
   type TouchEvent as ReactTouchEvent,
-  type RefObject,
+  useCallback,
   useEffect,
   useId,
   useMemo,
@@ -25,8 +25,12 @@ import { RadioControl as Radio } from '../radio/radio';
 import { classes } from '../shared/classes';
 import { assignRef } from '../shared/field';
 import { inertProps } from '../shared/inert';
+import { createLazyModule } from '../shared/lazy-module';
 import { useFormattedText } from '../shared/use-formatted-text';
 import { useText } from '../shared/use-text';
+
+const useTableVirtualModule = createLazyModule(() => import('./virtual-rows'));
+
 import {
   type ColumnPinInfo,
   computePinLayout,
@@ -47,7 +51,6 @@ import type {
   TableRowProps,
   TableRowSelection,
   TableSorterState,
-  TableVirtualOptions,
 } from './types';
 
 export type {
@@ -416,12 +419,12 @@ interface DataRowProps<TData> {
   striped: boolean;
   loading: boolean;
   rowSelection?: TableRowSelection<TData>;
-  selectedIds: ReadonlySet<string>;
+  isSelected: boolean;
   onToggleSelect: (node: TreeRowNode<TData>) => void;
   hasExpandColumn: boolean;
   hasInlineTree: boolean;
   indentSize: number;
-  expandedIds: ReadonlySet<string>;
+  isExpanded: boolean;
   canExpand: boolean;
   canRenderDetail: boolean;
   expandedRowRender?: TableExpandable<TData>['expandedRowRender'];
@@ -430,7 +433,7 @@ interface DataRowProps<TData> {
   onRow?: (record: TData, index: number) => TableRowProps;
 }
 
-function DataRow<TData>({
+const DataRow = memo(function DataRow<TData>({
   tableId,
   item,
   rowIndex,
@@ -445,12 +448,12 @@ function DataRow<TData>({
   striped,
   loading,
   rowSelection,
-  selectedIds,
+  isSelected,
   onToggleSelect,
   hasExpandColumn,
   hasInlineTree,
   indentSize,
-  expandedIds,
+  isExpanded,
   canExpand,
   canRenderDetail,
   expandedRowRender,
@@ -462,7 +465,6 @@ function DataRow<TData>({
   const format = useFormattedText();
   const detailsId = `${tableId}-detail-${encodeURIComponent(node.id)}`;
   const label = getRowLabel?.(node.record, node.index) ?? node.id;
-  const isExpanded = expandedIds.has(node.id);
   const detailOpen = Boolean(!collapsed && canRenderDetail && isExpanded);
   const [visited, setVisited] = useState(detailOpen);
   useEffect(() => {
@@ -486,7 +488,7 @@ function DataRow<TData>({
   }, [measureRef, canRenderDetail]);
 
   const customRow = onRow?.(node.record, node.index);
-  const isSelected = rowSelection ? selectedIds.has(node.id) : customRow?.selected;
+  const rowSelected = rowSelection ? isSelected : customRow?.selected;
   const checkboxDisabled = Boolean(
     loading || rowSelection?.getCheckboxProps?.(node.record)?.disabled,
   );
@@ -527,7 +529,7 @@ function DataRow<TData>({
         aria-hidden={collapsed || undefined}
         {...inertProps(collapsed)}
         aria-rowindex={ariaRowIndex}
-        selected={isSelected}
+        selected={rowSelected}
       >
         {rowSelection && (
           <Cell className="leaf-table__utility leaf-table__selection" {...selectionPin}>
@@ -536,14 +538,14 @@ function DataRow<TData>({
                 name={`${tableId}-selection`}
                 form={`${tableId}-detached-selection`}
                 aria-label={format('table.selectRow', { label })}
-                checked={selectedIds.has(node.id)}
+                checked={isSelected}
                 disabled={checkboxDisabled}
                 onChange={() => onToggleSelect(node)}
               />
             ) : (
               <Checkbox
                 aria-label={format('table.selectRow', { label })}
-                checked={selectedIds.has(node.id)}
+                checked={isSelected}
                 disabled={checkboxDisabled}
                 onChange={() => onToggleSelect(node)}
               />
@@ -609,112 +611,7 @@ function DataRow<TData>({
       )}
     </Fragment>
   );
-}
-
-function VirtualRows<TData>({
-  rows,
-  colSpan,
-  viewport,
-  tableElement,
-  focusedRowId,
-  rowIndexes,
-  virtual,
-  maxHeight,
-  expandedVersion,
-  renderRow,
-}: {
-  rows: readonly FlatRowItem<TData>[];
-  colSpan: number;
-  viewport: RefObject<HTMLDivElement | null>;
-  tableElement: RefObject<HTMLTableElement | null>;
-  focusedRowId?: string;
-  rowIndexes: readonly number[];
-  virtual: boolean | TableVirtualOptions;
-  maxHeight?: TableProps<TData>['maxHeight'];
-  expandedVersion: string;
-  renderRow: (
-    item: FlatRowItem<TData>,
-    rowIndex: number,
-    ariaRowIndex: number | undefined,
-    measureRef: (node: HTMLTableRowElement | null) => void,
-  ) => ReactNode;
-}) {
-  const options = typeof virtual === 'object' ? virtual : {};
-  const headerHeight = useRef(44);
-  const focusedIndex = focusedRowId ? rows.findIndex((item) => item.node.id === focusedRowId) : -1;
-  const virtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => viewport.current,
-    estimateSize: () => Math.max(1, options.estimateRowHeight ?? 48),
-    overscan: Math.max(1, options.overscan ?? 5),
-    getItemKey: (index) => rows[index]?.node.id ?? index,
-    scrollMargin: headerHeight.current,
-    initialRect: { width: 0, height: typeof maxHeight === 'number' ? maxHeight : 400 },
-    rangeExtractor: (range) => {
-      const visible = defaultRangeExtractor(range);
-      return focusedIndex < 0
-        ? visible
-        : [...new Set([...visible, focusedIndex])].sort((first, second) => first - second);
-    },
-    measureElement: (element) => {
-      const detail = element.nextElementSibling;
-      return (
-        element.getBoundingClientRect().height +
-        (detail?.hasAttribute('data-detail-row') ? detail.getBoundingClientRect().height : 0)
-      );
-    },
-  });
-
-  useEffect(() => {
-    const header = tableElement.current?.tHead;
-    if (!header) return;
-    const measure = () => {
-      headerHeight.current = header.getBoundingClientRect().height;
-      virtualizer.measure();
-    };
-    measure();
-    const observer =
-      typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
-    observer?.observe(header);
-    return () => observer?.disconnect();
-  }, [tableElement, virtualizer]);
-
-  useEffect(() => {
-    void expandedVersion;
-    virtualizer.measure();
-  }, [expandedVersion, virtualizer]);
-
-  const items = virtualizer.getVirtualItems();
-  const last = items.at(-1);
-  const bottom = last
-    ? Math.max(0, virtualizer.getTotalSize() - last.end + headerHeight.current)
-    : virtualizer.getTotalSize();
-
-  return (
-    <>
-      {items.map((item, index) => {
-        const row = rows[item.index];
-        const previous = items[index - 1];
-        const gap = Math.max(0, item.start - (previous?.end ?? headerHeight.current));
-        return row ? (
-          <Fragment key={row.node.id}>
-            {gap > 0 && (
-              <TableFrame.Row className="leaf-table__spacer" aria-hidden="true">
-                <td colSpan={colSpan} style={{ height: gap }} />
-              </TableFrame.Row>
-            )}
-            {renderRow(row, item.index, rowIndexes[item.index], virtualizer.measureElement)}
-          </Fragment>
-        ) : null;
-      })}
-      {bottom > 0 && (
-        <TableFrame.Row className="leaf-table__spacer" aria-hidden="true">
-          <td colSpan={colSpan} style={{ height: bottom }} />
-        </TableFrame.Row>
-      )}
-    </>
-  );
-}
+}) as <TData>(props: DataRowProps<TData>) => ReactNode;
 
 function TablePaginationBar({
   config,
@@ -962,7 +859,8 @@ function TableRoot<TData = Record<string, unknown>>({
   const expandedIds = useMemo(() => new Set(expandedKeys.map(String)), [expandedKeys]);
   const expandedVersion = useMemo(() => expandedKeys.map(String).join('\u0000'), [expandedKeys]);
 
-  const handleToggleExpand = (node: TreeRowNode<TData>) => {
+  const toggleExpandLatestRef = useRef<(node: TreeRowNode<TData>) => void>(() => {});
+  toggleExpandLatestRef.current = (node: TreeRowNode<TData>) => {
     const currentlyExpanded = expandedIds.has(node.id);
     const nextKeys = currentlyExpanded
       ? expandedKeys.filter((key) => String(key) !== node.id)
@@ -971,6 +869,10 @@ function TableRoot<TData = Record<string, unknown>>({
     expandable?.onExpand?.(!currentlyExpanded, node.record);
     expandable?.onExpandedRowsChange?.(nextKeys);
   };
+  const handleToggleExpand = useCallback(
+    (node: TreeRowNode<TData>) => toggleExpandLatestRef.current(node),
+    [],
+  );
 
   const hasExpandColumn = hasDetailRenderer;
   const hasInlineTree = !hasExpandColumn && hasTree;
@@ -1020,7 +922,8 @@ function TableRoot<TData = Record<string, unknown>>({
     rowSelection.onChange?.(deduped, nextRows);
   };
 
-  const handleToggleSelectRow = (node: TreeRowNode<TData>) => {
+  const toggleSelectLatestRef = useRef<(node: TreeRowNode<TData>) => void>(() => {});
+  toggleSelectLatestRef.current = (node: TreeRowNode<TData>) => {
     if (!rowSelection) return;
     if (selectionType === 'radio') {
       commitSelection([node.key]);
@@ -1032,6 +935,10 @@ function TableRoot<TData = Record<string, unknown>>({
       : [...normalizedSelectedKeys, node.key];
     commitSelection(next);
   };
+  const handleToggleSelectRow = useCallback(
+    (node: TreeRowNode<TData>) => toggleSelectLatestRef.current(node),
+    [],
+  );
 
   const selectableCurrentPage = useMemo(() => {
     if (!rowSelection || selectionType !== 'checkbox') return [];
@@ -1086,19 +993,33 @@ function TableRoot<TData = Record<string, unknown>>({
     const sign = effectiveDirection === 'rtl' ? -1 : 1;
     setResizingKey(columnKey);
 
-    const updateWidth = (clientX: number) => {
+    let pendingX: number | null = null;
+    let resizeFrame: number | undefined;
+    const flushWidth = () => {
+      resizeFrame = undefined;
+      if (pendingX === null) return;
+      const clientX = pendingX;
+      pendingX = null;
       const next = Math.round(Math.min(max, Math.max(min, startWidth + (clientX - startX) * sign)));
       setResizedWidths((previous) =>
         previous[columnKey] === next ? previous : { ...previous, [columnKey]: next },
       );
       onColumnResize?.(columnKey, next);
     };
+    const scheduleWidth = (clientX: number) => {
+      pendingX = clientX;
+      if (resizeFrame === undefined) resizeFrame = requestAnimationFrame(flushWidth);
+    };
 
-    const onMouseMove = (moveEvent: MouseEvent) => updateWidth(moveEvent.clientX);
+    const onMouseMove = (moveEvent: MouseEvent) => scheduleWidth(moveEvent.clientX);
     const onTouchMove = (moveEvent: TouchEvent) => {
-      if (moveEvent.touches[0]) updateWidth(moveEvent.touches[0].clientX);
+      if (moveEvent.touches[0]) scheduleWidth(moveEvent.touches[0].clientX);
     };
     const cleanup = () => {
+      if (resizeFrame !== undefined) {
+        cancelAnimationFrame(resizeFrame);
+        flushWidth();
+      }
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', cleanup);
       window.removeEventListener('touchmove', onTouchMove);
@@ -1247,6 +1168,7 @@ function TableRoot<TData = Record<string, unknown>>({
         : null;
 
   const rowExpandable = expandable?.rowExpandable;
+  const virtualModule = useTableVirtualModule(Boolean(virtual));
   const virtualMeta = useMemo(() => {
     if (!virtual) return { indexes: [] as number[], count: 0 };
     let count = 1;
@@ -1285,12 +1207,12 @@ function TableRoot<TData = Record<string, unknown>>({
       striped={striped}
       loading={loading}
       rowSelection={rowSelection}
-      selectedIds={selectedIds}
+      isSelected={selectedIds.has(item.node.id)}
       onToggleSelect={handleToggleSelectRow}
       hasExpandColumn={hasExpandColumn}
       hasInlineTree={hasInlineTree}
       indentSize={indentSize}
-      expandedIds={expandedIds}
+      isExpanded={expandedIds.has(item.node.id)}
       canExpand={canNodeExpand(item.node)}
       canRenderDetail={canNodeRenderDetail(item.node)}
       expandedRowRender={expandable?.expandedRowRender}
@@ -1499,20 +1421,34 @@ function TableRoot<TData = Record<string, unknown>>({
               ) : status === 'empty' ? (
                 <TableFrame.Empty colSpan={colSpan}>{emptyContent}</TableFrame.Empty>
               ) : virtual ? (
-                <VirtualRows
-                  rows={renderedRows}
-                  colSpan={colSpan}
-                  viewport={viewportRef}
-                  tableElement={elementRef}
-                  focusedRowId={focusedRowId}
-                  rowIndexes={virtualMeta.indexes}
-                  virtual={virtual}
-                  maxHeight={effectiveMaxHeight}
-                  expandedVersion={expandedVersion}
-                  renderRow={(item, rowIndex, ariaRowIndex, measureRef) =>
-                    renderDataRow(item, rowIndex, rowIndex, ariaRowIndex, measureRef)
-                  }
-                />
+                virtualModule ? (
+                  <virtualModule.VirtualRows
+                    rows={renderedRows}
+                    colSpan={colSpan}
+                    viewport={viewportRef}
+                    tableElement={elementRef}
+                    focusedRowId={focusedRowId}
+                    rowIndexes={virtualMeta.indexes}
+                    virtual={virtual}
+                    maxHeight={effectiveMaxHeight}
+                    expandedVersion={expandedVersion}
+                    renderRow={(item, rowIndex, ariaRowIndex, measureRef) =>
+                      renderDataRow(item, rowIndex, rowIndex, ariaRowIndex, measureRef)
+                    }
+                  />
+                ) : (
+                  renderedRows.slice(0, 20).map((item, rowIndex) => {
+                    const stripeIndex = item.collapsed
+                      ? visibleStripeCursor
+                      : visibleStripeCursor++;
+                    return renderDataRow(
+                      item,
+                      rowIndex,
+                      stripeIndex,
+                      virtualMeta.indexes[rowIndex],
+                    );
+                  })
+                )
               ) : (
                 renderedRows.map((item, rowIndex) => {
                   const stripeIndex = item.collapsed ? visibleStripeCursor : visibleStripeCursor++;

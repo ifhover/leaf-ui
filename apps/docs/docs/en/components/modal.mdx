@@ -3,6 +3,7 @@ import { ModalBasic } from '../../../src/examples/en/modal/basic';
 import { ModalDescription } from '../../../src/examples/en/modal/description';
 import { ModalMini } from '../../../src/examples/en/modal/mini';
 import { ModalFooter } from '../../../src/examples/en/modal/footer';
+import { ModalTabs } from '../../../src/examples/en/modal/tabs';
 import { ModalDestroy } from '../../../src/examples/en/modal/destroy';
 import { ModalFocus } from '../../../src/examples/en/modal/focus';
 import { ModalAsync } from '../../../src/examples/en/modal/async';
@@ -67,6 +68,17 @@ The footer provides built-in spacing between actions, so a `footer` render funct
 
 </ComponentExample>
 
+### Embedded tabs
+
+Embed `line` tabs at the top of the modal with `tabs.items`, placed below the heading when a title is present or replacing the heading when omitted. Visited tab inputs remain mounted by default; see <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for additional tab props.
+
+<ComponentExample exampleId="tabs" preview={<ModalTabs />} fileName="tabs.tsx" width="fit-content">
+
+```tsx lineNumbers file="../../../src/examples/en/modal/tabs.tsx"
+```
+
+</ComponentExample>
+
 <a id="advanced-usage"></a>
 
 ### Destroy content on close
@@ -117,6 +129,7 @@ Provide `aria-label` when omitting `title`.
 | `open` | `boolean` | Required | Controlled open state, updated by the application. |
 | `title` | `ReactNode` | — | Dialog title. |
 | `description` | `ReactNode` | — | Additional description. |
+| `tabs` | [`ModalTabsProps`](#modaltabs-api) | — | Embedded tabs; replaces the heading when no title is supplied, otherwise sits below it. |
 | `onClose` | `() => void` | — | Requests closure; update open in the application |
 | `onConfirm` | `() => void \| Promise<void>` | — | Default confirm-button action, optionally returning a Promise; blocks repeated confirmation and built-in closing while pending. The application must still update open after success. |
 | `onCancel` | `() => void` | — | Called when Cancel, the close button, the mask or Escape requests closing; falls back to onClose. |
@@ -142,6 +155,14 @@ Provide `aria-label` when omitting `title`.
 | `preserve` | `boolean` | — | Control content preservation, taking precedence over destroyOnClose; does not reset external controlled state. |
 | `forceRender` | `boolean` | `false` | Mount before opening and keep hidden while closed. |
 | `container` | `Element \| DocumentFragment \| (() => Element \| DocumentFragment)` | — | Portal mount target; may also return a ShadowRoot. |
+
+### ModalTabs API
+
+See the <a href="tabs.html#tabs-api" target="_blank" rel="noopener noreferrer">Tabs API</a> (opens in a new tab) for embedded tab props. Modal fixes `type="line"` and `placement="top"` and keeps `tabs.extra` on the tab bar; an empty `items` list restores an ordinary modal.
+
+```ts
+type ModalTabsProps = Omit<TabsProps, 'type' | 'placement' | 'children'>;
+```
 
 ### ModalFooterActions
 

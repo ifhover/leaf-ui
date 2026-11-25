@@ -1,0 +1,2 @@
+// 锁定基础层与公共原语子层顺序；所有子层均嵌套在 leaf-ui 内部，优先级天然低于 @layer leaf-ui 直接规则。
+@layer leaf-ui.tokens, leaf-ui.primitives, leaf-ui.floating;

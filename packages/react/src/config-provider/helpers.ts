@@ -1,5 +1,5 @@
-import { TinyColor } from '@ctrl/tinycolor';
 import { useEffect, useState } from 'react';
+import { parseColor, type RgbaColor, relativeLuminance } from '../shared/color';
 import { useLeafConfig } from './context';
 export function useSystemAppearance(initial: 'light' | 'dark' = 'light') {
   const [appearance, setAppearance] = useState(initial);
@@ -13,31 +13,20 @@ export function useSystemAppearance(initial: 'light' | 'dark' = 'light') {
   return appearance;
 }
 export function colorContrast(foreground: string, background: string, canvas = '#ffffff') {
-  const fg = new TinyColor(foreground),
-    bg = new TinyColor(background);
-  if (!fg.isValid || !bg.isValid) return null;
-  const base = new TinyColor(canvas);
-  if (!base.isValid || base.getAlpha() !== 1) return null;
-  const composite = (front: TinyColor, back: TinyColor) => {
-    const a = front.toRgb(),
-      b = back.toRgb();
-    return new TinyColor({
-      r: a.r * a.a + b.r * (1 - a.a),
-      g: a.g * a.a + b.g * (1 - a.a),
-      b: a.b * a.a + b.b * (1 - a.a),
-    });
-  };
+  const fg = parseColor(foreground),
+    bg = parseColor(background);
+  if (!fg || !bg) return null;
+  const base = parseColor(canvas);
+  if (base?.a !== 1) return null;
+  const composite = (front: RgbaColor, back: RgbaColor): RgbaColor => ({
+    r: front.r * front.a + back.r * (1 - front.a),
+    g: front.g * front.a + back.g * (1 - front.a),
+    b: front.b * front.a + back.b * (1 - front.a),
+    a: 1,
+  });
   const backgroundColor = composite(bg, base);
-  const luminance = (color: TinyColor) => {
-    const { r, g, b } = color.toRgb();
-    const values = [r, g, b].map((channel) => {
-      const value = channel / 255;
-      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
-    });
-    return (values[0] ?? 0) * 0.2126 + (values[1] ?? 0) * 0.7152 + (values[2] ?? 0) * 0.0722;
-  };
-  const a = luminance(composite(fg, backgroundColor)),
-    b = luminance(backgroundColor);
+  const a = relativeLuminance(composite(fg, backgroundColor)),
+    b = relativeLuminance(backgroundColor);
   return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
 export function useBreakpoint(

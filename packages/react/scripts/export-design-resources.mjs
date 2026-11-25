@@ -10,7 +10,7 @@ await fs.mkdir(publicPath, { recursive: true });
 await fs.mkdir(pluginPath, { recursive: true });
 const bundle = await build({
   stdin: {
-    contents: `export * from './src/colors'; export * from './src/density';`,
+    contents: `export * from './src/colors'; export * from './src/density'; export * from './src/shared/color';`,
     resolveDir: path.join(root, 'packages/react'),
   },
   bundle: true,
@@ -18,10 +18,10 @@ const bundle = await build({
   platform: 'node',
   format: 'esm',
 });
-const { deriveColors, densityTokens } = await import(
-  `data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`
-);
-const { TinyColor } = await import('@ctrl/tinycolor');
+const { deriveColors, densityTokens, mixColors, parseColor, rgbaToHex, rgbaToRgbString } =
+  await import(
+    `data:text/javascript;base64,${Buffer.from(bundle.outputFiles[0].text).toString('base64')}`
+  );
 const palettes = Object.fromEntries(
   ['light', 'dark'].map((mode) => [
     mode,
@@ -34,12 +34,12 @@ const palettes = Object.fromEntries(
   ]),
 );
 const colorValue = (value) => {
-  const c = new TinyColor(value).toRgb();
+  const c = parseColor(value);
   return {
     colorSpace: 'srgb',
-    components: [c.r, c.g, c.b].map((channel) => channel / 255),
-    alpha: c.a,
-    hex: new TinyColor(value).toHexString(),
+    components: [c.r, c.g, c.b].map((channel) => Math.round(channel) / 255),
+    alpha: Math.round(c.a * 100) / 100,
+    hex: rgbaToHex(c),
   };
 };
 const tokens = {},
@@ -181,7 +181,7 @@ for (const [mode, p] of Object.entries(palettes)) {
               ? p['option-hover']
               : 'none'
             : state === 'Pressed'
-              ? new TinyColor(p.surface).mix(p['surface-muted'], 50).toRgbString()
+              ? rgbaToRgbString(parseColor(mixColors(p.surface, p['surface-muted'], 50)))
               : p.surface;
       const border =
         variant === 'outline'
@@ -230,8 +230,16 @@ await fs.writeFile(
         mode,
         Object.fromEntries(
           Object.entries(p).map(([key, value]) => {
-            const c = new TinyColor(value).toRgb();
-            return [key, { r: c.r / 255, g: c.g / 255, b: c.b / 255, a: c.a }];
+            const c = parseColor(value);
+            return [
+              key,
+              {
+                r: Math.round(c.r) / 255,
+                g: Math.round(c.g) / 255,
+                b: Math.round(c.b) / 255,
+                a: Math.round(c.a * 100) / 100,
+              },
+            ];
           }),
         ),
       ]),

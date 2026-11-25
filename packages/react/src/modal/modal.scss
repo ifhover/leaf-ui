@@ -42,6 +42,7 @@
   }
   .leaf-modal {
     @include dialog-sections.sections(modal);
+    @include dialog-sections.tabs(modal);
     --leaf-dialog-icon-size: var(--leaf-control-height-lg);
     --leaf-z-index-popup: calc(var(--leaf-z-index-modal, 1100) + 1);
     position: relative;

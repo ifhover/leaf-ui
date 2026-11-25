@@ -84,7 +84,7 @@ describe('Tree', () => {
         <Tree data={data} defaultExpandAll draggable onDrop={drop} onSelect={select} />
       </ConfigProvider>,
     );
-    const handle = screen.getByRole('button', { name: 'Move node Code' });
+    const handle = await screen.findByRole('button', { name: 'Move node Code' });
     handle.focus();
     await userEvent.keyboard('[Space]');
     await waitFor(() => expect(handle).toHaveAttribute('aria-pressed', 'true'));
